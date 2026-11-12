@@ -27,7 +27,8 @@ public record DrawResult(
       numbers.forEach(
           (tier, list) -> {
             if (tier != null && list != null) {
-              deepCopy.put(tier, List.copyOf(list));
+              List<String> sanitized = list.stream().filter(Objects::nonNull).toList();
+              deepCopy.put(tier, List.copyOf(sanitized));
             }
           });
     }
