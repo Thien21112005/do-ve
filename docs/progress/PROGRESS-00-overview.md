@@ -1,6 +1,6 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 45 / 179 task hoàn thành (25.1%)
+**Tổng:** 63 / 179 task hoàn thành (35.2%)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -8,7 +8,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 |---|---|---|---|---|
 | 01 | [Khởi tạo repo, tooling, CI](PROGRESS-01-setup.md) | 21 / 21 | DONE | Hoàn thành monorepo, tooling, CI, Spring Boot, Expo, NativeWind, Jest |
 | 02 | [Domain và engine dò số (TDD, thuần Java)](PROGRESS-02-domain-matching.md) | 24 / 24 | DONE | Thuần Java, 126 unit tests, coverage 98% instruction / 95% branch |
-| 03 | [Cơ sở dữ liệu và persistence](PROGRESS-03-database.md) | 0 / 18 | TODO |  |
+| 03 | [Cơ sở dữ liệu và persistence](PROGRESS-03-database.md) | 18 / 18 | DONE | Flyway V1-V7, JPA Entities & Repositories, mapper bảo toàn số 0 đầu, lưu idempotent, Testcontainers |
 | 04 | [Ingestion: tự động lấy kết quả](PROGRESS-04-ingestion.md) | 0 / 23 | TODO |  |
 | 05 | [REST API](PROGRESS-05-rest-api.md) | 0 / 21 | TODO |  |
 | 06 | [Mobile app: dò vé và xem kết quả](PROGRESS-06-mobile-core.md) | 0 / 33 | TODO |  |
@@ -20,7 +20,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | Mốc | Ngày dự kiến | Ngày thực tế | Ghi chú |
 |---|---|---|---|
 | M1 Engine chạy | 2026-11-12 | 2026-11-12 | Hoàn thành toàn bộ Phase 02 (24/24 task TDD) |
-| M2 Có dữ liệu |  |  |  |
+| M2 Có dữ liệu | 2026-11-13 | 2026-11-13 | Hoàn thành toàn bộ Phase 03 (18/18 task Flyway + JPA + Idempotent + Testcontainers) |
 | M3 API dùng được |  |  |  |
 | M4 Dò được trên app |  |  |  |
 | M5 MVP |  |  |  |
