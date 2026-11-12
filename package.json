@@ -1,0 +1,14 @@
+{
+  "name": "dove",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DoVe - Tra cuu va do ve so kien thiet mien Nam",
+  "scripts": {
+    "commitlint": "commitlint"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0"
+  }
+}
+
