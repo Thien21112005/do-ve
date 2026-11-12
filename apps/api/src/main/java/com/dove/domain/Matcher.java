@@ -126,4 +126,64 @@ public final class Matcher {
     }
     return Optional.empty();
   }
+
+  /**
+   * Checks if a ticket wins the Encouragement Prize (Giải khuyến khích).
+   *
+   * <p>Rule: Matches the first digit of the Special prize number, and differs by exactly 1 digit in
+   * the remaining 5 positions (indices 1 through 5).
+   *
+   * @param ticket the ticket number
+   * @param specialNumber the 6-digit special prize number
+   * @return true if matches Encouragement Prize, false otherwise
+   */
+  public static boolean isEncouragement(TicketNumber ticket, String specialNumber) {
+    if (ticket == null || specialNumber == null || specialNumber.length() != 6) {
+      return false;
+    }
+    String ticketStr = ticket.value();
+    if (ticketStr.length() != 6) {
+      return false;
+    }
+    if (ticketStr.charAt(0) != specialNumber.charAt(0)) {
+      return false;
+    }
+
+    int diffCount = 0;
+    for (int i = 1; i < 6; i++) {
+      if (ticketStr.charAt(i) != specialNumber.charAt(i)) {
+        diffCount++;
+      }
+    }
+    return diffCount == 1;
+  }
+
+  /**
+   * Matches a ticket against the Encouragement Prize tier.
+   *
+   * @param ticket the ticket number to check
+   * @param drawResult the draw result to match against
+   * @param prizeTable the prize money table
+   * @return an Optional containing Win if matched, empty otherwise
+   */
+  public static Optional<Win> matchEncouragement(
+      TicketNumber ticket, DrawResult drawResult, PrizeTable prizeTable) {
+    Objects.requireNonNull(ticket, "ticket không được null");
+    Objects.requireNonNull(drawResult, "drawResult không được null");
+    Objects.requireNonNull(prizeTable, "prizeTable không được null");
+
+    Optional<String> specialOpt = drawResult.getSpecialNumber();
+    if (specialOpt.isEmpty()) {
+      return Optional.empty();
+    }
+    String specialNumber = specialOpt.get();
+    if (isEncouragement(ticket, specialNumber)) {
+      return Optional.of(
+          new Win(
+              PrizeTier.ENCOURAGEMENT,
+              specialNumber,
+              prizeTable.getPrizeMoney(PrizeTier.ENCOURAGEMENT)));
+    }
+    return Optional.empty();
+  }
 }
