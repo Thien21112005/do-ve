@@ -1,13 +1,13 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 21 / 179 task hoàn thành (11.7%)
+**Tổng:** 45 / 179 task hoàn thành (25.1%)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | 01 | [Khởi tạo repo, tooling, CI](PROGRESS-01-setup.md) | 21 / 21 | DONE | Hoàn thành monorepo, tooling, CI, Spring Boot, Expo, NativeWind, Jest |
-| 02 | [Domain và engine dò số (TDD, thuần Java)](PROGRESS-02-domain-matching.md) | 0 / 24 | TODO |  |
+| 02 | [Domain và engine dò số (TDD, thuần Java)](PROGRESS-02-domain-matching.md) | 24 / 24 | DONE | Thuần Java, 126 unit tests, coverage 98% instruction / 95% branch |
 | 03 | [Cơ sở dữ liệu và persistence](PROGRESS-03-database.md) | 0 / 18 | TODO |  |
 | 04 | [Ingestion: tự động lấy kết quả](PROGRESS-04-ingestion.md) | 0 / 23 | TODO |  |
 | 05 | [REST API](PROGRESS-05-rest-api.md) | 0 / 21 | TODO |  |
@@ -19,7 +19,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
 | Mốc | Ngày dự kiến | Ngày thực tế | Ghi chú |
 |---|---|---|---|
-| M1 Engine chạy |  |  |  |
+| M1 Engine chạy | 2026-11-12 | 2026-11-12 | Hoàn thành toàn bộ Phase 02 (24/24 task TDD) |
 | M2 Có dữ liệu |  |  |  |
 | M3 API dùng được |  |  |  |
 | M4 Dò được trên app |  |  |  |
