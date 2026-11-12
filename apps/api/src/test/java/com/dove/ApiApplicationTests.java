@@ -14,14 +14,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @ActiveProfiles("test")
 class ApiApplicationTests {
 
-    @MockitoBean
-    private DataSource dataSource;
+  @MockitoBean private DataSource dataSource;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+  @Autowired private ApplicationContext applicationContext;
 
-    @Test
-    void contextLoads() {
-        assertThat(applicationContext).isNotNull();
-    }
+  @Test
+  void contextLoads() {
+    assertThat(applicationContext).isNotNull();
+  }
 }
