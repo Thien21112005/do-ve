@@ -186,4 +186,43 @@ public final class Matcher {
     }
     return Optional.empty();
   }
+
+  /**
+   * Evaluates a ticket against a draw result and prize table according to Southern lottery rules
+   * (BR-01..04).
+   *
+   * <p>Aggregates all matching standard tiers and derived special consolation/encouragement prizes.
+   *
+   * @param ticket the ticket number
+   * @param drawResult the draw result
+   * @param prizeTable the prize table
+   * @return comprehensive CheckResult
+   */
+  public static CheckResult checkTicket(
+      TicketNumber ticket, DrawResult drawResult, PrizeTable prizeTable) {
+    Objects.requireNonNull(ticket, "ticket không được null");
+    Objects.requireNonNull(drawResult, "drawResult không được null");
+    Objects.requireNonNull(prizeTable, "prizeTable không được null");
+
+    List<Win> wins = new ArrayList<>();
+
+    // 1. Dò các giải thường (SPECIAL, FIRST..EIGHTH)
+    List<Win> standardWins = matchStandardTiers(ticket, drawResult, prizeTable);
+    wins.addAll(standardWins);
+
+    boolean hasSpecialWin = standardWins.stream().anyMatch(w -> w.tier() == PrizeTier.SPECIAL);
+
+    // 2. BR-04: SPECIAL, SPECIAL_CONSOLATION và ENCOURAGEMENT loại trừ lẫn nhau
+    if (!hasSpecialWin) {
+      Optional<Win> specialConsolation = matchSpecialConsolation(ticket, drawResult, prizeTable);
+      if (specialConsolation.isPresent()) {
+        wins.add(specialConsolation.get());
+      } else {
+        Optional<Win> encouragement = matchEncouragement(ticket, drawResult, prizeTable);
+        encouragement.ifPresent(wins::add);
+      }
+    }
+
+    return CheckResult.of(ticket, wins);
+  }
 }
