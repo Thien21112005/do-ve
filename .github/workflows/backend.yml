@@ -38,3 +38,4 @@ jobs:
       - name: Build and run tests
         working-directory: apps/api
         run: ./mvnw -B clean verify
+
