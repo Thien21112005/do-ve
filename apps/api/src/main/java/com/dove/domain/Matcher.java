@@ -1,5 +1,10 @@
 package com.dove.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 /** Utility methods for lottery number matching algorithms. */
 public final class Matcher {
 
@@ -37,5 +42,35 @@ public final class Matcher {
       return false;
     }
     return suffixMatches(ticket.value(), prizeNumber, digits);
+  }
+
+  /**
+   * Matches a ticket against the 9 standard drawn prize tiers (SPECIAL through EIGHTH). Evaluates
+   * every drawn number individually.
+   *
+   * @param ticket the ticket number to check
+   * @param drawResult the draw result to match against
+   * @param prizeTable the prize money table
+   * @return list of Win objects for all matching standard numbers
+   */
+  public static List<Win> matchStandardTiers(
+      TicketNumber ticket, DrawResult drawResult, PrizeTable prizeTable) {
+    Objects.requireNonNull(ticket, "ticket không được null");
+    Objects.requireNonNull(drawResult, "drawResult không được null");
+    Objects.requireNonNull(prizeTable, "prizeTable không được null");
+
+    List<Win> wins = new ArrayList<>();
+    for (PrizeTier tier : PrizeTier.values()) {
+      if (tier.isDerived()) {
+        continue;
+      }
+      List<String> drawnNumbers = drawResult.getNumbers(tier);
+      for (String drawnNumber : drawnNumbers) {
+        if (suffixMatches(ticket, drawnNumber, tier.digits())) {
+          wins.add(new Win(tier, drawnNumber, prizeTable.getPrizeMoney(tier)));
+        }
+      }
+    }
+    return Collections.unmodifiableList(wins);
   }
 }
