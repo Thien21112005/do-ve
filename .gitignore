@@ -26,6 +26,7 @@ desktop.ini
 target/
 *.class
 *.jar
+!**/wrapper/*.jar
 *.war
 *.ear
 .mvn/timing.properties

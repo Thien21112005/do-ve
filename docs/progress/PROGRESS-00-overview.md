@@ -1,12 +1,12 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 0 / 179 task hoàn thành (0%)
+**Tổng:** 21 / 179 task hoàn thành (11.7%)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| 01 | [Khởi tạo repo, tooling, CI](PROGRESS-01-setup.md) | 0 / 21 | TODO |  |
+| 01 | [Khởi tạo repo, tooling, CI](PROGRESS-01-setup.md) | 21 / 21 | DONE | Hoàn thành monorepo, tooling, CI, Spring Boot, Expo, NativeWind, Jest |
 | 02 | [Domain và engine dò số (TDD, thuần Java)](PROGRESS-02-domain-matching.md) | 0 / 24 | TODO |  |
 | 03 | [Cơ sở dữ liệu và persistence](PROGRESS-03-database.md) | 0 / 18 | TODO |  |
 | 04 | [Ingestion: tự động lấy kết quả](PROGRESS-04-ingestion.md) | 0 / 23 | TODO |  |
