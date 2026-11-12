@@ -1,56 +1,43 @@
-# Welcome to your Expo app 👋
+# 📱 DoVe Mobile App (React Native + Expo)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ứng dụng di động tra cứu và dò vé số kiến thiết miền Nam, xây dựng trên nền tảng **React Native**, **Expo Router**, và **TypeScript**.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Hướng Dẫn Chạy App Trên Thiết Bị Thật (Expo Go)
 
-   ```bash
-   npm install
-   ```
+### 1. Chuẩn Bị
+1. Cài đặt ứng dụng **Expo Go** trên điện thoại:
+   - **Android:** Tải từ [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent).
+   - **iOS:** Tải từ [Apple App Store](https://apps.apple.com/app/expo-go/id982107779).
+2. Đảm bảo điện thoại và máy tính kết nối **cùng một mạng Wi-Fi** (hoặc dùng chế độ `--tunnel`).
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 2. Khởi Động Dev Server
+Tại thư mục gốc dự án:
 
 ```bash
-npm run reset-project
+cd apps/mobile
+npm run start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Hoặc chạy với cờ tunnel nếu mạng công ty/quán cafe chặn mạng LAN:
 
-### Other setup steps
+```bash
+npx expo start --tunnel
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Terminal sẽ hiển thị một **mã QR** lớn và menu phím tắt:
+- Bấm `a` để mở Android Emulator (nếu có cài Android Studio).
+- Bấm `w` để mở bản Web trên trình duyệt máy tính.
+- Bấm `r` để reload app.
+- Bấm `c` để xóa cache Metro Bundler.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Kết Nối & Xem Trực Tiếp Trên Điện Thoại
+- **Trên Android:** Mở ứng dụng **Expo Go**, chọn **Scan QR Code**, quét mã QR trên màn hình terminal.
+- **Trên iOS:** Mở ứng dụng **Camera** mặc định của iPhone, lia ống kính vào mã QR, bấm vào banner thông báo mở bằng **Expo Go**.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Khi bundler hoàn tất (thường mất 5-10 giây lần đầu), bạn sẽ thấy giao diện **DoVe — Ứng dụng dò vé số kiến thiết miền Nam** xuất hiện trên màn hình điện thoại thật! Mọi thay đổi trong code sẽ được Hot-Reload cập nhật ngay lập tức.
