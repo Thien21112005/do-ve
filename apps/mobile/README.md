@@ -7,6 +7,7 @@
 ## 🚀 Hướng Dẫn Chạy App Trên Thiết Bị Thật (Expo Go)
 
 ### 1. Chuẩn Bị
+
 1. Cài đặt ứng dụng **Expo Go** trên điện thoại:
    - **Android:** Tải từ [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent).
    - **iOS:** Tải từ [Apple App Store](https://apps.apple.com/app/expo-go/id982107779).
@@ -15,6 +16,7 @@
 ---
 
 ### 2. Khởi Động Dev Server
+
 Tại thư mục gốc dự án:
 
 ```bash
@@ -29,6 +31,7 @@ npx expo start --tunnel
 ```
 
 Terminal sẽ hiển thị một **mã QR** lớn và menu phím tắt:
+
 - Bấm `a` để mở Android Emulator (nếu có cài Android Studio).
 - Bấm `w` để mở bản Web trên trình duyệt máy tính.
 - Bấm `r` để reload app.
@@ -37,6 +40,7 @@ Terminal sẽ hiển thị một **mã QR** lớn và menu phím tắt:
 ---
 
 ### 3. Kết Nối & Xem Trực Tiếp Trên Điện Thoại
+
 - **Trên Android:** Mở ứng dụng **Expo Go**, chọn **Scan QR Code**, quét mã QR trên màn hình terminal.
 - **Trên iOS:** Mở ứng dụng **Camera** mặc định của iPhone, lia ống kính vào mã QR, bấm vào banner thông báo mở bằng **Expo Go**.
 
