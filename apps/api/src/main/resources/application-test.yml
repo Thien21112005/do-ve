@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:16:///testdb
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    show-sql: false
+  flyway:
+    enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always

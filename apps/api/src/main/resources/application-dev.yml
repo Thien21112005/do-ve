@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/dove}
+    username: ${DB_USER:dove}
+    password: ${DB_PASSWORD:dove}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
