@@ -15,6 +15,22 @@ public record TicketNumber(String value) {
     }
   }
 
+  /**
+   * Normalizes raw user input by trimming, stripping whitespace and hyphens, then returns a valid
+   * TicketNumber.
+   *
+   * @param raw the raw ticket input string (e.g. " 123-456 ")
+   * @return normalized TicketNumber instance
+   * @throws InvalidTicketException if raw is null or resulting digits do not form a 6-digit ticket
+   */
+  public static TicketNumber parse(String raw) {
+    if (raw == null) {
+      throw new InvalidTicketException("Số vé không được để trống (null)");
+    }
+    String normalized = raw.replace("-", "").replaceAll("\\s+", "");
+    return new TicketNumber(normalized);
+  }
+
   @Override
   public String toString() {
     return value;

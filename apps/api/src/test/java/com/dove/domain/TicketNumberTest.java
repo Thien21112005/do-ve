@@ -55,4 +55,29 @@ class TicketNumberTest {
     assertThatThrownBy(() -> new TicketNumber(invalidValue))
         .isInstanceOf(InvalidTicketException.class);
   }
+
+  @Test
+  @DisplayName("parse chuẩn hoá chuỗi thô có dấu gạch ngang và khoảng trắng")
+  void shouldNormalizeRawTicketInput() {
+    TicketNumber ticket1 = TicketNumber.parse(" 123-456 ");
+    assertThat(ticket1.value()).isEqualTo("123456");
+
+    TicketNumber ticket2 = TicketNumber.parse("01-23-45");
+    assertThat(ticket2.value()).isEqualTo("012345");
+
+    TicketNumber ticket3 = TicketNumber.parse("  98 76 54  ");
+    assertThat(ticket3.value()).isEqualTo("987654");
+  }
+
+  @Test
+  @DisplayName("parse ném InvalidTicketException khi chuỗi thô null hoặc không đủ 6 số")
+  void shouldRejectInvalidRawInputInParse() {
+    assertThatThrownBy(() -> TicketNumber.parse(null)).isInstanceOf(InvalidTicketException.class);
+
+    assertThatThrownBy(() -> TicketNumber.parse(" 12-34 "))
+        .isInstanceOf(InvalidTicketException.class);
+
+    assertThatThrownBy(() -> TicketNumber.parse("123-4567"))
+        .isInstanceOf(InvalidTicketException.class);
+  }
 }
