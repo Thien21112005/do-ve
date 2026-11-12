@@ -1,29 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>DoVe</Text>
-      <Text style={styles.subtitle}>Ứng dụng dò vé số kiến thiết miền Nam</Text>
+    <View className="flex-1 items-center justify-center bg-white dark:bg-slate-900 p-6">
+      <Text className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+        DoVe
+      </Text>
+      <Text className="text-base text-slate-500 dark:text-slate-400 text-center">
+        Ứng dụng dò vé số kiến thiết miền Nam
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#64748b',
-  },
-});
