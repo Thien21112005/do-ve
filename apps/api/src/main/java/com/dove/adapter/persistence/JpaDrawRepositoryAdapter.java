@@ -5,6 +5,7 @@ import com.dove.domain.DrawResult;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,12 +56,11 @@ public class JpaDrawRepositoryAdapter implements DrawRepository {
                         "Không tìm thấy đài với mã: " + drawResult.stationCode()));
 
     DrawResultEntity entity = DrawResultMapper.toEntity(drawResult, station, source);
-    DrawResultEntity saved = drawResultRepository.save(entity);
+    DrawResultEntity saved = drawResultRepository.saveAndFlush(entity);
     return DrawResultMapper.toDomain(saved);
   }
 
   @Override
-  @Transactional
   public boolean saveIfAbsent(DrawResult drawResult, String source) {
     Objects.requireNonNull(drawResult, "drawResult không được null");
     Optional<DrawResultEntity> existing =
@@ -69,7 +69,11 @@ public class JpaDrawRepositoryAdapter implements DrawRepository {
     if (existing.isPresent()) {
       return false;
     }
-    save(drawResult, source);
-    return true;
+    try {
+      save(drawResult, source);
+      return true;
+    } catch (DataIntegrityViolationException ex) {
+      return false;
+    }
   }
 }

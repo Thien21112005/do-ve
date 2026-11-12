@@ -12,13 +12,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "draw_results")
+@Table(
+    name = "draw_results",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_draw_results_station_date",
+          columnNames = {"station_id", "draw_date"})
+    })
 public class DrawResultEntity {
 
   @Id

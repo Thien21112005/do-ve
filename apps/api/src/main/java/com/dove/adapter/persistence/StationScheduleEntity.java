@@ -9,9 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "station_schedule")
+@Table(
+    name = "station_schedule",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_station_schedule_station_weekday",
+          columnNames = {"station_id", "weekday"})
+    })
 public class StationScheduleEntity {
 
   @Id

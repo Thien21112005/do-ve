@@ -9,9 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "draw_prize_numbers")
+@Table(
+    name = "draw_prize_numbers",
+    uniqueConstraints = {
+      @UniqueConstraint(
+          name = "uk_draw_prize_numbers_tier_pos",
+          columnNames = {"draw_result_id", "tier", "position"})
+    })
 public class PrizeNumberEntity {
 
   @Id
