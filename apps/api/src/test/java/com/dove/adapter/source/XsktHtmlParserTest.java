@@ -62,4 +62,51 @@ class XsktHtmlParserTest {
         .containsExactly("tp-hcm", "long-an", "hau-giang", "binh-phuoc");
     assertThat(sections.getFirst().drawDate()).isEqualTo(LocalDate.of(2026, 11, 7));
   }
+
+  @Test
+  @DisplayName("parsePrizes extracts exactly 18 numbers per station for Monday draw")
+  void parsePrizesMondayDraw() throws Exception {
+    String html = loadHtml("xskt_xsmn_2026-11-02.html");
+
+    List<XsktHtmlParser.StationSection> sections = parser.parseStationSections(html);
+    assertThat(sections).hasSize(3);
+
+    for (XsktHtmlParser.StationSection section : sections) {
+      java.util.Map<com.dove.domain.PrizeTier, List<String>> prizes = parser.parsePrizes(section);
+      int totalNumbers = prizes.values().stream().mapToInt(List::size).sum();
+      assertThat(totalNumbers)
+          .as("Station " + section.stationCode() + " must have 18 winning numbers")
+          .isEqualTo(18);
+    }
+
+    // Check TP.HCM specific numbers
+    XsktHtmlParser.StationSection tphcm = sections.get(0);
+    java.util.Map<com.dove.domain.PrizeTier, List<String>> tphcmPrizes = parser.parsePrizes(tphcm);
+    assertThat(tphcmPrizes.get(com.dove.domain.PrizeTier.SPECIAL)).containsExactly("482915");
+    assertThat(tphcmPrizes.get(com.dove.domain.PrizeTier.EIGHTH)).containsExactly("15");
+    assertThat(tphcmPrizes.get(com.dove.domain.PrizeTier.FOURTH))
+        .containsExactly("17523", "49182", "30819", "65471", "82934", "10283", "74659");
+
+    // Check Đồng Tháp leading zero preservation
+    XsktHtmlParser.StationSection dt = sections.get(1);
+    java.util.Map<com.dove.domain.PrizeTier, List<String>> dtPrizes = parser.parsePrizes(dt);
+    assertThat(dtPrizes.get(com.dove.domain.PrizeTier.SPECIAL)).containsExactly("019283");
+  }
+
+  @Test
+  @DisplayName("parsePrizes extracts exactly 18 numbers per station for Saturday 4-station draw")
+  void parsePrizesSaturdayDraw() throws Exception {
+    String html = loadHtml("xskt_xsmn_2026-11-07.html");
+
+    List<XsktHtmlParser.StationSection> sections = parser.parseStationSections(html);
+    assertThat(sections).hasSize(4);
+
+    for (XsktHtmlParser.StationSection section : sections) {
+      java.util.Map<com.dove.domain.PrizeTier, List<String>> prizes = parser.parsePrizes(section);
+      int totalNumbers = prizes.values().stream().mapToInt(List::size).sum();
+      assertThat(totalNumbers)
+          .as("Station " + section.stationCode() + " must have 18 winning numbers")
+          .isEqualTo(18);
+    }
+  }
 }

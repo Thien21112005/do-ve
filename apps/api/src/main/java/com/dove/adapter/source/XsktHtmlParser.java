@@ -1,13 +1,16 @@
 package com.dove.adapter.source;
 
+import com.dove.domain.PrizeTier;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
@@ -128,6 +131,124 @@ public class XsktHtmlParser {
     return Collections.unmodifiableList(sections);
   }
 
+  /**
+   * Extracts winning numbers per prize tier for a given station section.
+   *
+   * @param section the parsed station section
+   * @return map of PrizeTier to list of winning numbers for that station
+   */
+  public Map<PrizeTier, List<String>> parsePrizes(StationSection section) {
+    Objects.requireNonNull(section, "section không được null");
+    Element table = section.tableElement();
+    if (table == null) {
+      return Collections.emptyMap();
+    }
+
+    Map<PrizeTier, List<String>> result = new EnumMap<>(PrizeTier.class);
+    Elements rows = table.select("tbody tr, tr");
+
+    for (Element row : rows) {
+      Element labelCell =
+          row.selectFirst("td.prize-label, td.prize-name, th.prize-label, td:first-child");
+      String labelText = labelCell != null ? labelCell.text() : "";
+      PrizeTier tier = resolvePrizeTier(labelText, row.className());
+      if (tier == null) {
+        continue;
+      }
+
+      Elements cells = row.select("td");
+      if (section.columnIndex() < cells.size()) {
+        Element valueCell = cells.get(section.columnIndex());
+        List<String> numbers = extractNumbersFromCell(valueCell);
+        if (!numbers.isEmpty()) {
+          result.computeIfAbsent(tier, k -> new ArrayList<>()).addAll(numbers);
+        }
+      }
+    }
+
+    return Collections.unmodifiableMap(result);
+  }
+
+  /** Resolves prize tier from label text or row CSS classes. */
+  public PrizeTier resolvePrizeTier(String labelText, String className) {
+    String norm = normalizeString(labelText);
+    String classNorm = className != null ? className.toLowerCase(Locale.ROOT) : "";
+
+    if (norm.contains("db")
+        || norm.contains("dac biet")
+        || classNorm.contains("gdb")
+        || classNorm.contains("special")) {
+      return PrizeTier.SPECIAL;
+    }
+    if (norm.equals("g 1")
+        || norm.equals("g1")
+        || norm.contains("nhat")
+        || classNorm.contains("g1")) {
+      return PrizeTier.FIRST;
+    }
+    if (norm.equals("g 2")
+        || norm.equals("g2")
+        || norm.contains("nhi")
+        || classNorm.contains("g2")) {
+      return PrizeTier.SECOND;
+    }
+    if (norm.equals("g 3")
+        || norm.equals("g3")
+        || norm.contains("ba")
+        || classNorm.contains("g3")) {
+      return PrizeTier.THIRD;
+    }
+    if (norm.equals("g 4")
+        || norm.equals("g4")
+        || norm.contains("tu")
+        || classNorm.contains("g4")) {
+      return PrizeTier.FOURTH;
+    }
+    if (norm.equals("g 5")
+        || norm.equals("g5")
+        || norm.contains("nam")
+        || classNorm.contains("g5")) {
+      return PrizeTier.FIFTH;
+    }
+    if (norm.equals("g 6")
+        || norm.equals("g6")
+        || norm.contains("sau")
+        || classNorm.contains("g6")) {
+      return PrizeTier.SIXTH;
+    }
+    if (norm.equals("g 7")
+        || norm.equals("g7")
+        || norm.contains("bay")
+        || classNorm.contains("g7")) {
+      return PrizeTier.SEVENTH;
+    }
+    if (norm.equals("g 8")
+        || norm.equals("g8")
+        || norm.contains("tam")
+        || classNorm.contains("g8")) {
+      return PrizeTier.EIGHTH;
+    }
+
+    return null;
+  }
+
+  /** Extracts clean digit tokens from an HTML table cell. */
+  public List<String> extractNumbersFromCell(Element cell) {
+    if (cell == null) {
+      return List.of();
+    }
+    String text = cell.text();
+    String digitsOnly = text.replaceAll("[^0-9]", " ");
+    String[] tokens = digitsOnly.trim().split("\\s+");
+    List<String> list = new ArrayList<>();
+    for (String token : tokens) {
+      if (!token.isBlank()) {
+        list.add(token.trim());
+      }
+    }
+    return list;
+  }
+
   /** Resolves a station code from HTML element attributes or text content. */
   public String resolveStationCode(Element headerCell) {
     if (headerCell == null) {
@@ -159,7 +280,6 @@ public class XsktHtmlParser {
   }
 
   private LocalDate extractDate(Document doc) {
-    // 1. Try finding in table data-date
     Element dateElem = doc.selectFirst("[data-date]");
     if (dateElem != null && !dateElem.attr("data-date").isBlank()) {
       try {
@@ -168,20 +288,17 @@ public class XsktHtmlParser {
       }
     }
 
-    // 2. Try title or h2 / h1 text
     Elements titles = doc.select("h1, h2, title, .box-ketqua, .title-xsmn");
     for (Element el : titles) {
       String text = el.text();
       Matcher m = DATE_PATTERN.matcher(text);
       if (m.find()) {
         if (m.group(1) != null) {
-          // YYYY-MM-DD
           return LocalDate.of(
               Integer.parseInt(m.group(1)),
               Integer.parseInt(m.group(2)),
               Integer.parseInt(m.group(3)));
         } else if (m.group(4) != null) {
-          // DD/MM/YYYY
           return LocalDate.of(
               Integer.parseInt(m.group(6)),
               Integer.parseInt(m.group(5)),
