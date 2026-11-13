@@ -28,6 +28,7 @@
 4. **Tối giản mã nguồn (Ponytail):** Tuân thủ The Minimization Ladder. Tuyệt đối không cài thêm thư viện npm/maven bừa bãi khi Web API, Node hoặc Expo đã có sẵn.
 5. **Diệt AI-Slop về giao diện:** Áp dụng skill `impeccable` và `emil-design-eng`: cấm gradient lòe loẹt, cấm card lồng card, màu sắc rõ ràng, typography sắc nét, phản hồi xúc giác (haptic) tinh tế.
 6. **Không suy đoán / Không hallucinate:** Dò vé là bài toán đòi hỏi chính xác 100%. Không đoán mò giải thưởng, không làm tròn số, số vé là chuỗi 6 ký tự phải giữ nguyên số `0` đứng đầu (`012345`).
+7. **Tự hành an toàn (Safe Auto-Accept - `.agents/skills/safe-auto-accept/SKILL.md`):** Tự động thực thi liền mạch các thao tác phát triển thông thường (chạy test, format spotless, git commit atomic, tick progress, chuyển task) mà không hỏi popup/bảng xác nhận vụn vặt. Tuyệt đối giữ 2 ranh giới thép: (a) CHỈ thao tác bên trong workspace `d:\Tu-hoc\project\DoVe`, không đụng thư mục ngoài; (b) CẤM TUYỆT ĐỐI các lệnh phá hoại (`git reset --hard`, `git push -f`, `git clean -fdx`, `rm -rf`, `DROP DATABASE`,...). Khi gặp lệnh nguy hiểm bắt buộc phải dừng lại xin ý kiến người dùng.
 
 ---
 

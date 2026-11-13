@@ -537,6 +537,17 @@ Bộ các mảnh ghép hoàn thiện để đưa code an toàn lên production:
 
 ---
 
+### ⚡ Skill 5: `safe-auto-accept` (Tự hành thông minh & Vành đai bảo vệ Workspace)
+- **Nguồn:** Workspace Skill (`.agents/skills/safe-auto-accept/SKILL.md`)
+- **Công dụng chính:**
+  - **Auto-Accept (Zero Friction):** Tự động đồng ý tiến hành các thao tác phát triển thông thường (chạy test, format spotless, git commit atomic, tick progress, chuyển task) mà không ngắt quãng hỏi người dùng.
+  - **Ràng buộc Workspace 100%:** Tuyệt đối chỉ đọc, ghi, chạy lệnh trong thư mục dự án hiện tại (`d:\Tu-hoc\project\DoVe`), cấm tuyệt đối truy xuất ra ngoài.
+  - **Blacklist câu lệnh nguy hiểm:** Chặn đứng tức thì các lệnh phá hoại: `git reset --hard`, `git push --force`, `git clean -fdx`, `rm -rf`, `DROP DATABASE`, v.v. Bắt buộc dừng lại cảnh báo người dùng khi gặp lệnh có rủi ro cao.
+- **Prompt mẫu:**
+  > *"Kích hoạt `safe-auto-accept` để tự động làm việc theo plan, tự commit và tick tiến độ mà không cần dừng lại xin phép các bước vụn vặt."*
+
+---
+
 ## 🔄 11. Sơ Đồ Toàn Diện: Chu Trình Vibecoding Khép Kín 14 Bước Chịu Tải Cao (Full 100% Production)
 
 ```mermaid
