@@ -170,4 +170,23 @@ class DrawPollSchedulerTest {
     // Ingestion should NOT be called because all stations are already complete
     assertThat(ingestUseCase.callCount.get()).isEqualTo(0);
   }
+
+  @Test
+  @DisplayName(
+      "Custom configured window start and end (e.g. 10:00 - 11:00) works without code modification")
+  void customWindowConfiguration() {
+    DrawPollScheduler customScheduler =
+        new DrawPollScheduler(
+            ingestUseCase,
+            schedulePort,
+            drawRepository,
+            fixedClockAt("2026-11-02T03:30:00Z"), // 10:30 VN
+            "10:00",
+            "11:00");
+
+    assertThat(customScheduler.getWindowStart()).isEqualTo(java.time.LocalTime.of(10, 0));
+    assertThat(customScheduler.getWindowEnd()).isEqualTo(java.time.LocalTime.of(11, 0));
+    assertThat(customScheduler.isWithinWindow(java.time.LocalTime.of(10, 30))).isTrue();
+    assertThat(customScheduler.isWithinWindow(java.time.LocalTime.of(11, 30))).isFalse();
+  }
 }

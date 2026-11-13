@@ -12,6 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,22 @@ public class DrawPollScheduler {
         clock,
         DEFAULT_WINDOW_START,
         DEFAULT_WINDOW_END);
+  }
+
+  public DrawPollScheduler(
+      IngestDrawsUseCase ingestUseCase,
+      StationSchedulePort schedulePort,
+      DrawRepository drawRepository,
+      Clock clock,
+      @Value("${dove.scheduler.window-start:16:10}") String windowStart,
+      @Value("${dove.scheduler.window-end:17:30}") String windowEnd) {
+    this(
+        ingestUseCase,
+        schedulePort,
+        drawRepository,
+        clock,
+        LocalTime.parse(windowStart),
+        LocalTime.parse(windowEnd));
   }
 
   public DrawPollScheduler(
@@ -107,5 +124,13 @@ public class DrawPollScheduler {
                     .findByStationAndDate(code, date)
                     .map(DrawResult::isComplete)
                     .orElse(false));
+  }
+
+  public LocalTime getWindowStart() {
+    return windowStart;
+  }
+
+  public LocalTime getWindowEnd() {
+    return windowEnd;
   }
 }
