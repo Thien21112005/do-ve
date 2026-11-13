@@ -1,5 +1,7 @@
 package com.dove.adapter.source;
 
+import com.dove.domain.DrawResult;
+import com.dove.domain.InvalidDrawResultException;
 import com.dove.domain.PrizeTier;
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -167,6 +169,63 @@ public class XsktHtmlParser {
     }
 
     return Collections.unmodifiableMap(result);
+  }
+
+  /**
+   * Parses, normalizes, and validates the lottery draw result for the given station section.
+   *
+   * @param section the station section
+   * @return a valid, complete 18-number domain DrawResult
+   * @throws DrawParseException if the parsed result fails structural validation
+   */
+  public DrawResult parseDrawResult(StationSection section) {
+    Objects.requireNonNull(section, "section không được null");
+    Map<PrizeTier, List<String>> rawPrizes = parsePrizes(section);
+
+    Map<PrizeTier, List<String>> normalizedPrizes = new EnumMap<>(PrizeTier.class);
+    rawPrizes.forEach(
+        (tier, list) -> {
+          if (tier != null && list != null) {
+            List<String> sanitized =
+                list.stream()
+                    .map(s -> s != null ? s.replaceAll("[^0-9]", "") : "")
+                    .filter(s -> !s.isBlank())
+                    .toList();
+            normalizedPrizes.put(tier, sanitized);
+          }
+        });
+
+    DrawResult drawResult =
+        new DrawResult(section.stationCode(), section.drawDate(), normalizedPrizes);
+    try {
+      drawResult.validate();
+    } catch (InvalidDrawResultException ex) {
+      throw new DrawParseException(
+          "Lỗi cấu trúc kết quả mở thưởng đài ["
+              + section.stationCode()
+              + "] ngày ["
+              + section.drawDate()
+              + "]: "
+              + ex.getMessage(),
+          ex);
+    }
+
+    return drawResult;
+  }
+
+  /**
+   * Parses all station draws present in the HTML document.
+   *
+   * @param html raw HTML string
+   * @return list of validated domain DrawResults
+   */
+  public List<DrawResult> parseAll(String html) {
+    List<StationSection> sections = parseStationSections(html);
+    List<DrawResult> results = new ArrayList<>(sections.size());
+    for (StationSection section : sections) {
+      results.add(parseDrawResult(section));
+    }
+    return Collections.unmodifiableList(results);
   }
 
   /** Resolves prize tier from label text or row CSS classes. */
