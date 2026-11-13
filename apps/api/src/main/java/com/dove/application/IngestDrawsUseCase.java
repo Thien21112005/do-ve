@@ -52,6 +52,15 @@ public class IngestDrawsUseCase {
 
     for (String stationCode : scheduledStations) {
       try {
+        // T04.14: Check if draw is already stored and complete before querying external source
+        Optional<DrawResult> existing = drawRepository.findByStationAndDate(stationCode, date);
+        if (existing.isPresent() && existing.get().isComplete()) {
+          alreadyExisted++;
+          log.debug(
+              "Kỳ quay [{}] ngày [{}] đã lưu đủ 18 số, bỏ qua không gọi nguồn", stationCode, date);
+          continue;
+        }
+
         Optional<DrawResult> fetched = resultSource.fetch(stationCode, date);
         if (fetched.isPresent()) {
           boolean saved = drawRepository.saveIfAbsent(fetched.get(), "SCRAPER");
