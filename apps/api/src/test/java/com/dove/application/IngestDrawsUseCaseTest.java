@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dove.domain.DrawResult;
 import com.dove.domain.PrizeTier;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("IngestDrawsUseCase Orchestration Specification (T04.13 & T04.14)")
+@DisplayName("IngestDrawsUseCase Orchestration Specification (T04.13, T04.14, T04.19)")
 class IngestDrawsUseCaseTest {
 
   private InMemoryDrawRepository fakeDrawRepository;
@@ -174,5 +175,37 @@ class IngestDrawsUseCaseTest {
 
     // Assert that external source was NEVER called on rerun
     assertThat(trackingSource.callCount.get()).isEqualTo(0);
+  }
+
+  @Test
+  @DisplayName(
+      "Ghi nhận metrics ingest.success, ingest.failure và timer ingest.time chính xác (T04.19)")
+  void recordsMetricsOnSuccessAndFailure() {
+    SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    IngestDrawsUseCase metricsUseCase =
+        new IngestDrawsUseCase(
+            fakeSchedulePort, fakeResultSource, fakeDrawRepository, meterRegistry);
+
+    LocalDate date = LocalDate.of(2026, 11, 2);
+    fakeSchedulePort.setStations(List.of("tp-hcm", "dong-thap", "ca-mau"));
+
+    DrawResult tphcm = new DrawResult("tp-hcm", date, Map.of(PrizeTier.SPECIAL, List.of("482915")));
+    fakeResultSource.register(tphcm);
+    // dong-thap throws exception or is unavailable, ca-mau is empty
+
+    IngestDrawsUseCase.IngestSummary summary = metricsUseCase.ingestForDate(date);
+
+    assertThat(summary.totalStations()).isEqualTo(3);
+    assertThat(summary.newlySaved()).isEqualTo(1);
+    assertThat(summary.failedOrUnavailable()).isEqualTo(2);
+
+    // Verify Micrometer metrics
+    double successCount = meterRegistry.counter("ingest.success").count();
+    double failureCount = meterRegistry.counter("ingest.failure").count();
+    long timerCount = meterRegistry.timer("ingest.time").count();
+
+    assertThat(successCount).isEqualTo(1.0);
+    assertThat(failureCount).isEqualTo(2.0);
+    assertThat(timerCount).isEqualTo(3);
   }
 }
