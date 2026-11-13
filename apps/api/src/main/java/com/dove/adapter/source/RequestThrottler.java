@@ -1,6 +1,7 @@
 package com.dove.adapter.source;
 
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,7 @@ public class RequestThrottler {
     this(Duration.ofSeconds(2), Thread::sleep, System::currentTimeMillis);
   }
 
+  @Autowired
   public RequestThrottler(
       @Value("${dove.ingestion.rate-limit-interval-ms:2000}") long minIntervalMs) {
     this(Duration.ofMillis(minIntervalMs), Thread::sleep, System::currentTimeMillis);

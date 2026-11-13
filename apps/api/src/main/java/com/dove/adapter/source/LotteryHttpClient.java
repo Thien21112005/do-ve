@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,7 @@ public class LotteryHttpClient {
         Duration.ofSeconds(10));
   }
 
+  @Autowired
   public LotteryHttpClient(
       @Value("${dove.ingestion.user-agent:" + DEFAULT_USER_AGENT + "}") String userAgent,
       @Value("${dove.ingestion.connect-timeout-ms:5000}") long connectTimeoutMs,

@@ -2,6 +2,7 @@ package com.dove.adapter.source;
 
 import java.time.Duration;
 import java.util.concurrent.Callable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,7 @@ public class RetryExecutor {
   private final Duration[] backoffDelays;
   private final Sleeper sleeper;
 
+  @Autowired
   public RetryExecutor() {
     this(
         3,
