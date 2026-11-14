@@ -6,9 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.dove.adapter.persistence.StationEntity;
+import com.dove.adapter.persistence.StationRepository;
 import com.dove.adapter.web.dto.CheckTicketRequest;
 import com.dove.application.CheckTicketUseCase;
 import com.dove.application.DrawRepository;
+import com.dove.application.StationSchedulePort;
 import com.dove.domain.DrawResult;
 import com.dove.domain.PrizeTier;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,16 +23,196 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@DisplayName("T05.09 - POST /api/v1/check Worked Examples Specification (SRS 3.4)")
+@DisplayName(
+    "T05.09 & T05.10 - POST /api/v1/check Worked Examples & Station Drawing Schedule Specification")
 class CheckControllerTest {
 
   private TestDrawRepository drawRepository;
+  private TestStationSchedulePort stationSchedulePort;
+  private TestStationRepository stationRepository;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
+
+  static class TestStationSchedulePort implements StationSchedulePort {
+    private final Map<LocalDate, List<String>> schedule = new HashMap<>();
+
+    void setSchedule(LocalDate date, List<String> stations) {
+      schedule.put(date, stations);
+    }
+
+    @Override
+    public List<String> getDrawingStationCodes(LocalDate drawDate) {
+      return schedule.getOrDefault(drawDate, List.of());
+    }
+  }
+
+  static class TestStationRepository implements StationRepository {
+    private final Map<String, StationEntity> stations = new HashMap<>();
+
+    void addStation(String code, String name, String region) {
+      stations.put(code, new StationEntity(code, name, region));
+    }
+
+    @Override
+    public Optional<StationEntity> findByCode(String code) {
+      return Optional.ofNullable(stations.get(code));
+    }
+
+    @Override
+    public List<StationEntity> findByRegion(String region) {
+      return stations.values().stream()
+          .filter(s -> s.getRegion().equalsIgnoreCase(region))
+          .toList();
+    }
+
+    @Override
+    public List<StationEntity> findByRegionIgnoreCase(String region) {
+      return findByRegion(region);
+    }
+
+    @Override
+    public void flush() {}
+
+    @Override
+    public <S extends StationEntity> S saveAndFlush(S entity) {
+      return entity;
+    }
+
+    @Override
+    public <S extends StationEntity> List<S> saveAllAndFlush(Iterable<S> entities) {
+      return List.of();
+    }
+
+    @Override
+    public void deleteAllInBatch(Iterable<StationEntity> entities) {}
+
+    @Override
+    public void deleteAllByIdInBatch(Iterable<Long> longs) {}
+
+    @Override
+    public void deleteAllInBatch() {}
+
+    @Override
+    public StationEntity getOne(Long aLong) {
+      return null;
+    }
+
+    @Override
+    public StationEntity getById(Long aLong) {
+      return null;
+    }
+
+    @Override
+    public StationEntity getReferenceById(Long aLong) {
+      return null;
+    }
+
+    @Override
+    public <S extends StationEntity> Optional<S> findOne(Example<S> example) {
+      return Optional.empty();
+    }
+
+    @Override
+    public <S extends StationEntity> List<S> findAll(Example<S> example) {
+      return List.of();
+    }
+
+    @Override
+    public <S extends StationEntity> List<S> findAll(Example<S> example, Sort sort) {
+      return List.of();
+    }
+
+    @Override
+    public <S extends StationEntity> Page<S> findAll(Example<S> example, Pageable pageable) {
+      return Page.empty();
+    }
+
+    @Override
+    public <S extends StationEntity> long count(Example<S> example) {
+      return 0;
+    }
+
+    @Override
+    public <S extends StationEntity> boolean exists(Example<S> example) {
+      return false;
+    }
+
+    @Override
+    public <S extends StationEntity, R> R findBy(
+        Example<S> example,
+        java.util.function.Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+      return null;
+    }
+
+    @Override
+    public <S extends StationEntity> S save(S entity) {
+      return entity;
+    }
+
+    @Override
+    public <S extends StationEntity> List<S> saveAll(Iterable<S> entities) {
+      return List.of();
+    }
+
+    @Override
+    public Optional<StationEntity> findById(Long aLong) {
+      return Optional.empty();
+    }
+
+    @Override
+    public boolean existsById(Long aLong) {
+      return false;
+    }
+
+    @Override
+    public List<StationEntity> findAll() {
+      return List.copyOf(stations.values());
+    }
+
+    @Override
+    public List<StationEntity> findAllById(Iterable<Long> longs) {
+      return List.of();
+    }
+
+    @Override
+    public long count() {
+      return stations.size();
+    }
+
+    @Override
+    public void deleteById(Long aLong) {}
+
+    @Override
+    public void delete(StationEntity entity) {}
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {}
+
+    @Override
+    public void deleteAll(Iterable<? extends StationEntity> entities) {}
+
+    @Override
+    public void deleteAll() {}
+
+    @Override
+    public List<StationEntity> findAll(Sort sort) {
+      return List.copyOf(stations.values());
+    }
+
+    @Override
+    public Page<StationEntity> findAll(Pageable pageable) {
+      return Page.empty();
+    }
+  }
 
   static class TestDrawRepository implements DrawRepository {
     private final Map<String, DrawResult> storage = new HashMap<>();
@@ -87,7 +270,15 @@ class CheckControllerTest {
   @BeforeEach
   void setUp() {
     drawRepository = new TestDrawRepository();
-    CheckTicketUseCase useCase = new CheckTicketUseCase(drawRepository);
+    stationSchedulePort = new TestStationSchedulePort();
+    stationRepository = new TestStationRepository();
+
+    stationRepository.addStation("tp-hcm", "TP. Hồ Chí Minh", "SOUTH");
+    stationSchedulePort.setSchedule(
+        LocalDate.of(2026, 11, 9), List.of("tp-hcm", "dong-thap", "ca-mau"));
+
+    CheckTicketUseCase useCase =
+        new CheckTicketUseCase(drawRepository, stationSchedulePort, stationRepository);
     CheckController controller = new CheckController(useCase);
     mockMvc =
         MockMvcBuilders.standaloneSetup(controller)
@@ -147,5 +338,42 @@ class CheckControllerTest {
         .andExpect(jsonPath("$.won").value(false))
         .andExpect(jsonPath("$.wins", hasSize(0)))
         .andExpect(jsonPath("$.totalAmount").value(0L));
+  }
+
+  @Test
+  @DisplayName("Đài không quay vào ngày đã chọn trả về 422 và code STATION_NOT_DRAWING (BR-07)")
+  void checkTicket_stationNotDrawingOnDate_returns422() throws Exception {
+    LocalDate tuesday = LocalDate.of(2026, 11, 10);
+    // Tuesday schedule does not include tp-hcm
+    stationSchedulePort.setSchedule(tuesday, List.of("ben-tre", "vung-tau", "bac-lieu"));
+
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", tuesday);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(422))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_DRAWING"));
+  }
+
+  @Test
+  @DisplayName("Mã đài không tồn tại trong hệ thống trả về 404 và code STATION_NOT_FOUND")
+  void checkTicket_unknownStation_returns404() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    CheckTicketRequest request = new CheckTicketRequest("654321", "unknown-station", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"));
   }
 }
