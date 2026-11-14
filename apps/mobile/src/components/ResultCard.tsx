@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,10 +27,13 @@ export function ResultCard({
   result,
   onSaveTicket,
   isSaved = false,
+  onCheckAgain,
   testID = 'result-card',
 }: ResultCardProps) {
   const { colors } = useTheme();
-  const isWon = Boolean(result.won);
+  const isPending = result.status === 'RESULT_NOT_AVAILABLE';
+  const isWon = !isPending && Boolean(result.won);
+
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(12);
 
@@ -54,14 +57,26 @@ export function ResultCard({
   const formattedDate = formatDateVN(result.drawDate);
   const longestMatched = getLongestMatchedSuffix(result.ticket, result.wins);
 
+  const cardBg = isPending
+    ? colors.pendingBg
+    : isWon
+      ? colors.winBg
+      : colors.surface;
+
+  const cardBorder = isPending
+    ? colors.pendingBorder
+    : isWon
+      ? colors.winBorder
+      : colors.border;
+
   return (
     <Animated.View
       testID={testID}
       style={[
         animatedStyle,
         {
-          backgroundColor: isWon ? colors.winBg : colors.surface,
-          borderColor: isWon ? colors.winBorder : colors.border,
+          backgroundColor: cardBg,
+          borderColor: cardBorder,
         },
       ]}
       className="mt-6 mx-5 p-5 rounded-2xl border shadow-sm"
@@ -75,26 +90,48 @@ export function ResultCard({
           <View
             className="w-10 h-10 rounded-full items-center justify-center"
             style={{
-              backgroundColor: isWon ? `${colors.win}1A` : colors.surfaceSubtle,
+              backgroundColor: isPending
+                ? `${colors.pending}1A`
+                : isWon
+                  ? `${colors.win}1A`
+                  : colors.surfaceSubtle,
             }}
           >
             <Icon
-              name={isWon ? 'trophy' : 'info'}
+              name={isPending ? 'clock' : isWon ? 'trophy' : 'info'}
               size={20}
-              color={isWon ? colors.win : colors.textMuted}
+              color={
+                isPending
+                  ? colors.pending
+                  : isWon
+                    ? colors.win
+                    : colors.textMuted
+              }
             />
           </View>
           <View className="ml-3">
             <Text
               className="text-base font-bold tracking-tight"
-              style={{ color: isWon ? colors.win : colors.textMain }}
+              style={{
+                color: isPending
+                  ? colors.pending
+                  : isWon
+                    ? colors.win
+                    : colors.textMain,
+              }}
             >
-              {isWon
-                ? 'Chúc mừng bạn đã trúng thưởng!'
-                : 'Rất tiếc, vé không trúng giải'}
+              {isPending
+                ? 'Chưa có kết quả'
+                : isWon
+                  ? 'Chúc mừng bạn đã trúng thưởng!'
+                  : 'Rất tiếc, vé không trúng giải'}
             </Text>
             <Text className="text-xs" style={{ color: colors.textMuted }}>
-              {isWon ? `Trúng ${winCount} giải` : 'Chúc bạn may mắn lần sau'}
+              {isPending
+                ? 'Chưa có kết quả, thường có sau 16h30'
+                : isWon
+                  ? `Trúng ${winCount} giải`
+                  : 'Chúc bạn may mắn lần sau'}
             </Text>
           </View>
         </View>
@@ -109,6 +146,20 @@ export function ResultCard({
               style={{ color: colors.win }}
             >
               TRÚNG
+            </Text>
+          </View>
+        )}
+
+        {isPending && (
+          <View
+            className="px-2.5 py-1 rounded-full"
+            style={{ backgroundColor: `${colors.pending}20` }}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: colors.pending }}
+            >
+              CHỜ QUAY
             </Text>
           </View>
         )}
@@ -142,8 +193,41 @@ export function ResultCard({
         </View>
       </View>
 
-      {/* Wins list or empty message */}
-      {isWon && result.wins && result.wins.length > 0 ? (
+      {/* Body: Pending notice, Wins list, or non-winning notice */}
+      {isPending ? (
+        <View className="py-2.5 mb-2">
+          <Text
+            className="text-sm leading-relaxed"
+            style={{ color: colors.textMain }}
+          >
+            Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết
+            miền Nam thường có sau 16h30 hàng ngày.
+          </Text>
+
+          {/* Dò lại button */}
+          {onCheckAgain && (
+            <TouchableOpacity
+              testID="result-card-retry-btn"
+              onPress={onCheckAgain}
+              className="mt-3.5 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
+              style={{
+                borderColor: colors.pending,
+                backgroundColor: `${colors.pending}15`,
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Dò lại kết quả"
+            >
+              <Icon name="refresh" size={16} color={colors.pending} />
+              <Text
+                className="text-sm font-semibold ml-2"
+                style={{ color: colors.pending }}
+              >
+                Dò lại
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      ) : isWon && result.wins && result.wins.length > 0 ? (
         <View className="space-y-2 mb-3">
           <Text
             className="text-xs font-semibold uppercase tracking-wider mb-1"
@@ -234,7 +318,11 @@ export function ResultCard({
             className="text-sm font-medium ml-1.5"
             style={{ color: isSaved ? colors.win : colors.textMain }}
           >
-            {isSaved ? 'Đã lưu vé' : 'Lưu vé này'}
+            {isSaved
+              ? 'Đã lưu vé'
+              : isPending
+                ? 'Lưu vé để tự động dò sau'
+                : 'Lưu vé này'}
           </Text>
         </Pressable>
       )}

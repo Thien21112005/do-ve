@@ -218,7 +218,11 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
           {/* API Result Card */}
           {result && !isLoading && (
-            <ResultCard result={result} testID="check-result-section" />
+            <ResultCard
+              result={result}
+              testID="check-result-section"
+              onCheckAgain={handleSubmit}
+            />
           )}
         </ScrollView>
       </KeyboardAvoidingView>

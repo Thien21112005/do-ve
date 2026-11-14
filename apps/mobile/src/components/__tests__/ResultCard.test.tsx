@@ -39,6 +39,18 @@ describe('ResultCard Component', () => {
     totalPrize: 0,
   };
 
+  const notAvailableResult: CheckTicketResponse = {
+    ticket: '777888',
+    station: 'TPHCM',
+    stationName: 'TP. Hồ Chí Minh',
+    drawDate: '2026-11-14',
+    status: 'RESULT_NOT_AVAILABLE',
+    won: null,
+    wins: [],
+    totalPrize: 0,
+    message: 'Chưa có kết quả cho kỳ quay này',
+  };
+
   it('renders winning state with congratulation message, prize list, and total amount', async () => {
     const { getByText, getByTestId } = await render(
       <ResultCard result={winningResult} />,
@@ -98,5 +110,22 @@ describe('ResultCard Component', () => {
     const { getByText } = await render(<ResultCard result={winningResult} />);
 
     expect(getByText(/tham khảo/i)).toBeTruthy();
+  });
+
+  it('renders RESULT_NOT_AVAILABLE state with 16h30 notice and retry button', async () => {
+    const onCheckAgain = jest.fn();
+    const { getByText, getByTestId } = await render(
+      <ResultCard result={notAvailableResult} onCheckAgain={onCheckAgain} />,
+    );
+
+    expect(getByTestId('result-card')).toBeTruthy();
+    expect(getByText('Chưa có kết quả')).toBeTruthy();
+    expect(getByText('Chưa có kết quả, thường có sau 16h30')).toBeTruthy();
+    expect(getByText('777888')).toBeTruthy();
+
+    const retryBtn = getByTestId('result-card-retry-btn');
+    expect(retryBtn).toBeTruthy();
+    fireEvent.press(retryBtn);
+    expect(onCheckAgain).toHaveBeenCalled();
   });
 });
