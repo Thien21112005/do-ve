@@ -32,7 +32,23 @@ export const STRINGS = {
     headerTitle: 'Vé đã lưu',
     subtitle: 'Lưu trữ và theo dõi các vé số đã dò',
     emptyTitle: 'Chưa có vé nào được lưu',
-    emptyDesc: 'Khi dò vé, bạn có thể bấm nút "Lưu vé này" để theo dõi kết quả tại đây.',
+    emptyDesc:
+      'Khi dò vé, bạn có thể bấm nút "Lưu vé" để theo dõi và đối chiếu kết quả tại đây.',
+    emptyAction: 'Dò vé ngay',
+    ticketCount: (count: number) => `${count} vé đã lưu`,
+    drawDateGroup: (date: string) => `Kỳ quay ngày ${date}`,
+    statusWon: 'Trúng thưởng',
+    statusLost: 'Không trúng',
+    statusPending: 'Chờ kết quả',
+    totalPrizePrefix: 'Tổng trúng:',
+    privacyNotice: 'Vé được lưu trên máy này, không gửi lên máy chủ.',
+    deleteTicket: 'Xóa vé',
+    deleteConfirmTitle: 'Xóa vé này?',
+    deleteConfirmMsg: 'Bạn có chắc chắn muốn xóa vé số này khỏi thiết bị?',
+    clearAll: 'Xóa tất cả',
+    clearAllConfirmTitle: 'Xóa tất cả vé?',
+    clearAllConfirmMsg:
+      'Toàn bộ danh sách vé đã lưu trên thiết bị sẽ bị xóa. Thao tác này không thể hoàn tác.',
   },
 
   check: {
