@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 11 / 25 task hoàn thành
+- **Tổng quan:** 12 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -19,7 +19,7 @@
 | T08.09 | Metric cơ bản | DONE | eda967c | 2026-11-14 | Soạn thảo docs/observability.md: Actuator metrics, HTTP 5xx, JVM, HikariCP và Alert rules |
 | T08.10 | Header bảo mật backend | DONE | 4699cc2 | 2026-11-14 | Thêm SecurityHeadersFilter (HSTS, X-Content-Type-Options, CSP, frame-ancestors, tắt Server header) |
 | T08.11 | Quét phụ thuộc trong CI | DONE | d530473 | 2026-11-14 | Cấu hình npm audit --audit-level=high cho mobile và OWASP dependency-check cho API trong CI workflow |
-| T08.12 | Chiến lược backup Postgres | TODO |  |  |  |
+| T08.12 | Chiến lược backup Postgres | DONE | 30a634f | 2026-11-14 | Viết script backup-db.sh, restore-db.sh định dạng -Fc và tài liệu docs/postgres-backup.md |
 | T08.13 | Màn Giới thiệu và miễn trừ | TODO |  |  |  |
 | T08.14 | Chọn hosting và deploy backend | TODO |  |  |  |
 | T08.15 | Icon, splash và định danh app | TODO |  |  |  |
@@ -48,6 +48,7 @@
 - 2026-11-14 | T08.09 | Biên soạn tài liệu docs/observability.md hướng dẫn giám sát Spring Actuator metrics, connection pool, ingest status và bảng ngưỡng cảnh báo (Alerting rules).
 - 2026-11-14 | T08.10 | Triển khai SecurityHeadersFilter tiêm toàn bộ header chuẩn bảo mật OWASP (HSTS, nosniff, DENY clickjacking, CSP), tắt Server header banner.
 - 2026-11-14 | T08.11 | Tích hợp npm audit mức High cho mobile và OWASP dependency-check-maven cho backend vào GitHub Actions workflows.
+- 2026-11-14 | T08.12 | Soạn thảo kịch bản sao lưu nén tự động backup-db.sh (retention 7 ngày), restore-db.sh và cẩm nang diễn tập khôi phục docs/postgres-backup.md.
 
 ## Vấn đề mở
 
