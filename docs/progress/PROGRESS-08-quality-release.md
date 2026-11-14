@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 7 / 25 task hoàn thành
+- **Tổng quan:** 8 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -15,7 +15,7 @@
 | T08.05 | Dockerfile backend | DONE | 41dcb53 | 2026-11-14 | Xây dựng multi-stage Dockerfile cho Spring Boot 4/Java 21, user non-root dove, healthcheck Actuator |
 | T08.06 | Compose production | DONE | b5ca895 | 2026-11-14 | Xây dựng docker-compose.prod.yml (Caddy HTTPS proxy, API Spring Boot, Postgres 16, network nội bộ) |
 | T08.07 | Tài liệu biến môi trường | DONE | 6ea691e | 2026-11-14 | Soạn thảo docs/deploy.md đặc tả toàn bộ biến môi trường Backend, Mobile và Hạ tầng |
-| T08.08 | Log JSON có correlation id | TODO |  |  |  |
+| T08.08 | Log JSON có correlation id | DONE | 5500dfe | 2026-11-14 | Thêm CorrelationIdFilter gắn requestId vào MDC, cấu hình format JSON console cho prod |
 | T08.09 | Metric cơ bản | TODO |  |  |  |
 | T08.10 | Header bảo mật backend | TODO |  |  |  |
 | T08.11 | Quét phụ thuộc trong CI | TODO |  |  |  |
@@ -44,6 +44,7 @@
 - 2026-11-14 | T08.05 | Tạo multi-stage Dockerfile cho backend API: cache Maven dependencies, build artifact nhẹ, chạy non-root user dove, cấu hình JVM container và healthcheck Actuator.
 - 2026-11-14 | T08.06 | Tạo docker-compose.prod.yml với Caddy tự động cấp SSL/HTTPS, cấu hình bảo mật header, mạng nội bộ dove-net và volume persistent.
 - 2026-11-14 | T08.07 | Biên soạn tài liệu docs/deploy.md đặc tả đầy đủ biến môi trường của Backend (Spring Boot), Mobile App (Expo) và Docker Compose.
+- 2026-11-14 | T08.08 | Triển khai CorrelationIdFilter gán UUID/X-Request-Id vào SLF4J MDC (requestId), cấu hình format structured JSON console ECS cho production.
 
 ## Vấn đề mở
 
