@@ -247,6 +247,27 @@ export const STRINGS = {
     reminderPermissionDeniedMsg: 'Vui lòng cho phép quyền thông báo trong cài đặt thiết bị để nhận lời nhắc dò vé.',
   },
 
+  about: {
+    screenTitle: 'Giới thiệu & Miễn trừ',
+    appName: 'DoVe',
+    tagline: 'Ứng dụng tra cứu & dò vé số kiến thiết miền Nam',
+    versionLabel: 'Phiên bản',
+    buildLabel: 'Bản dựng',
+    disclaimerHeader: 'MIỄN TRỪ TRÁCH NHIỆM',
+    disclaimerText:
+      'Kết quả tra cứu trên ứng dụng DoVe chỉ mang tính chất tham khảo. Quý khách vui lòng đối chiếu trực tiếp với tờ vé giấy vật lý tại các Công ty Xổ số kiến thiết hoặc đại lý vé số chính thức trước khi tiến hành lĩnh thưởng.\n\nỨng dụng DoVe không bán vé số, không tổ chức cá cược, không nạp/rút tiền và không tham gia vào bất kỳ hoạt động cờ bạc, đổi thưởng nào dưới mọi hình thức.',
+    dataSourceHeader: 'NGUỒN DỮ LIỆU KẾT QUẢ',
+    dataSourceText:
+      'Dữ liệu kết quả mở thưởng được thu thập và cập nhật tự động từ cổng thông tin kết quả xổ số kiến thiết 21 tỉnh thành miền Nam (XSKT) vào lúc 16h15 các ngày trong tuần. Hệ thống thực hiện chuẩn hoá và kiểm tra chéo nhiều nguồn để đảm bảo độ tin cậy.',
+    privacyHeader: 'QUYỀN RIÊNG TƯ & DỮ LIỆU',
+    privacyText:
+      'Vé chỉ lưu trên máy này, không gửi lên server.\n\nDoVe tôn trọng quyền riêng tư của bạn. Toàn bộ các vé số bạn đã lưu hoặc tra cứu đều được lưu trữ hoàn toàn trong bộ nhớ cục bộ (Offline-First) trên thiết bị của bạn. Ứng dụng không thu thập thông tin danh tính, số điện thoại hay vị trí người dùng.',
+    contactHeader: 'LIÊN HỆ & HỖ TRỢ',
+    contactEmail: 'contact@dove.vn',
+    contactWebsite: 'https://dove.app',
+    copyright: '© 2026 DoVe. Phát triển vì cộng đồng người tra cứu vé số kiến thiết.',
+  },
+
   gate: {
     maintenanceTitle: 'Hệ thống đang bảo trì',
     maintenanceDefaultMsg:

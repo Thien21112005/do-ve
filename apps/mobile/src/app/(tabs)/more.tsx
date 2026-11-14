@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, Alert } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
@@ -31,13 +31,7 @@ export default function MoreScreen() {
       title: STRINGS.more.aboutTitle,
       subtitle: STRINGS.more.aboutDesc,
       icon: 'info' as const,
-      onPress: () => {
-        Alert.alert(
-          STRINGS.more.aboutDialogTitle,
-          STRINGS.more.aboutDialogMessage,
-          [{ text: STRINGS.common.confirm }],
-        );
-      },
+      onPress: () => router.push('/about'),
     },
   ];
 
