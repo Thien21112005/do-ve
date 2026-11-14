@@ -1,7 +1,7 @@
 # PROGRESS 05 — REST API
 
 - **Plan:** [`plans/PLAN-05-rest-api.md`](../plans/PLAN-05-rest-api.md)
-- **Tổng quan:** 2 / 21 task hoàn thành
+- **Tổng quan:** 3 / 21 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | T05.01 | Xử lý lỗi Problem Details | DONE | b0be698 | 2026-11-14 | RFC 7807 ProblemDetail @RestControllerAdvice kèm custom property 'code' |
 | T05.02 | Bảng mã lỗi nghiệp vụ | DONE | 24010db | 2026-11-14 | Enum ErrorCode (5 mã lỗi SRS 6.2) & Exception hierarchy |
-| T05.03 | GET /stations | TODO |  |  |  |
+| T05.03 | GET /stations | DONE | 50f794a | 2026-11-14 | Endpoint GET /api/v1/stations với lọc region (trả 21 đài SOUTH) |
 | T05.04 | GET /stations/{code} | TODO |  |  |  |
 | T05.05 | GET /draws/schedule | TODO |  |  |  |
 | T05.06 | GET /draws (một kỳ) | TODO |  |  |  |
