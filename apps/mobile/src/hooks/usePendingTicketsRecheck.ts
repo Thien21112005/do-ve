@@ -55,7 +55,7 @@ export async function recheckPendingTickets(
       try {
         const ticketCodes = group.tickets.map((t) => t.ticket);
         const response = await batchCheckFn({
-          station: group.station,
+          stationCode: group.station,
           drawDate: group.drawDate,
           tickets: ticketCodes,
         });
@@ -70,7 +70,7 @@ export async function recheckPendingTickets(
                 const newStatus = itemResult.won ? 'WON' : 'LOST';
                 await updateFn(matchedTicket.id, {
                   status: newStatus,
-                  totalPrize: itemResult.totalPrize || 0,
+                  totalPrize: itemResult.totalAmount || 0,
                   wins: itemResult.wins || [],
                 });
                 updatedCount++;

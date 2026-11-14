@@ -135,7 +135,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       submitCheck(
         {
           ticket: ticketNumber,
-          station: selectedStation,
+          stationCode: selectedStation,
           drawDate: selectedDate,
         },
         {
@@ -153,13 +153,13 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     } else {
       submitBatchCheck(
         {
-          station: selectedStation,
+          stationCode: selectedStation,
           drawDate: selectedDate,
           tickets: parsedBatch.validTickets,
         },
         {
           onSuccess: (data) => {
-            if (data.totalWonTickets > 0) {
+            if ((data.results?.filter((r) => r.won).length ?? 0) > 0) {
               haptics.success();
             }
             onCheckSuccess?.(data);
@@ -450,7 +450,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
       {/* Subtle celebration when ticket wins */}
       <CelebrationEffect
-        active={Boolean(result?.won || (batchResult?.totalWonTickets ?? 0) > 0)}
+        active={Boolean(result?.won || (batchResult?.results?.some((r) => r.won) ?? false))}
       />
     </SafeAreaView>
   );
