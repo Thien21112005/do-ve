@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 11 / 33 task hoàn thành
+- **Tổng quan:** 12 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -19,7 +19,7 @@
 | T06.09 | Hook useStations | DONE | 509486d | 2026-11-14 | Hook useStations/useStation với TanStack Query, cache 24h & tests |
 | T06.10 | Component TicketInput | DONE | 48099d1 | 2026-11-14 | 6 ô số tách rời kiểu OTP, tự động nhảy ô, làm sạch ký tự khi dán |
 | T06.11 | Test TicketInput | DONE | 09b684e | 2026-11-14 | Test toàn diện TicketInput (nhập, dán làm sạch, xóa lùi, lỗi, disabled) |
-| T06.12 | Component chọn ngày | TODO |  |  |  |
+| T06.12 | Component chọn ngày | DONE | 3df0506 | 2026-11-14 | Dải chip cuộn ngang 14 ngày gần nhất, chặn ngày mai, nhãn Hôm nay & tests |
 | T06.13 | Component chọn đài | TODO |  |  |  |
 | T06.14 | Màn Dò vé: ghép form | TODO |  |  |  |
 | T06.15 | Validation inline | TODO |  |  |  |
@@ -56,6 +56,7 @@
 - 2026-11-14 | T06.09 | Tạo API client và custom hook useStations/useStation với TanStack Query cache 24h, staleTime tối ưu, test rendering và xử lý lỗi mạng.
 - 2026-11-14 | T06.10 | Xây dựng component TicketInput 6 ô OTP, bàn phím số, tự động nhảy ô tiếp theo, xóa ô trước khi bấm Backspace, làm sạch tự động khi dán chuỗi.
 - 2026-11-14 | T06.11 | Viết bộ kiểm thử toàn diện cho TicketInput với 8 ca test: render 6 ô, nhập chữ số, dán chuỗi làm sạch, xóa lùi backspace, onComplete, lỗi và disabled.
+- 2026-11-14 | T06.12 | Xây dựng component DateStrip cuộn ngang 14 ngày, chặn hoàn toàn ngày tương lai, hiển thị thứ rút gọn và tag Hôm nay, kèm unit tests.
 
 ## Vấn đề mở
 
