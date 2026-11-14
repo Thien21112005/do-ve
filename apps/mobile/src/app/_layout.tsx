@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAppFonts } from '@/hooks';
+import { AppProviders } from '@/components';
 
 // Prevent splash screen from auto hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -24,8 +25,10 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <AppProviders>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </AppProviders>
   );
 }
