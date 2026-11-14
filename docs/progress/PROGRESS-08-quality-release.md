@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 17 / 25 task hoàn thành
+- **Tổng quan:** 18 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -25,7 +25,7 @@
 | T08.15 | Icon, splash và định danh app | DONE | b625145 | 2026-11-14 | Cấu hình app.json: tên DoVe, package/bundleId com.dove.app, splash screen và adaptive icon |
 | T08.16 | Cấu hình EAS Build | DONE | 9748ddd | 2026-11-14 | Thiết lập eas.json cho 3 môi trường (development, preview xuất file APK, production xuất AAB/Store) |
 | T08.17 | Build iOS thử nghiệm (tuỳ chọn) | DONE | a5ea3f3 | 2026-11-14 | Cấu hình profile testflight trong eas.json, tài liệu hoá quy trình phân phối nội bộ qua TestFlight |
-| T08.18 | Cấu hình EAS Update (OTA) | TODO |  |  |  |
+| T08.18 | Cấu hình EAS Update (OTA) | DONE | 4645cbe | 2026-11-14 | Cài đặt expo-updates, cấu hình runtimeVersion và channels, bổ sung script deploy OTA hotfix |
 | T08.19 | Theo dõi lỗi crash (tuỳ chọn) | TODO |  |  |  |
 | T08.20 | Theo dõi ingest 7 ngày | TODO |  |  |  |
 | T08.21 | Đối chiếu 20 vé mẫu | TODO |  |  |  |
@@ -54,6 +54,7 @@
 - 2026-11-14 | T08.15 | Định danh toàn diện ứng dụng DoVe: cấu hình app.json (tên DoVe, slug dove, package/bundle com.dove.app, màu splash/adaptive icon chuẩn nhận diện #2563eb).
 - 2026-11-14 | T08.16 | Khởi tạo eas.json chuẩn xác cho 3 profile: development (Dev Client), preview (xuất trực tiếp file APK cho Android không cần tài khoản Play Store) và production (xuất App Bundle AAB/IPA). Cập nhật package.json scripts.
 - 2026-11-14 | T08.17 | Thiết lập profile testflight trong eas.json, bổ sung script build:testflight và tài liệu hoá toàn bộ quy trình cấu hình chứng chỉ Apple Developer và đẩy lên TestFlight trong docs/deploy.md.
+- 2026-11-14 | T08.18 | Tích hợp expo-updates, cấu hình appVersion runtime policy, channel preview/production, tài liệu hoá quy trình cập nhật OTA và rollback tức thì trong docs/deploy.md.
 
 ## Vấn đề mở
 
