@@ -4,6 +4,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  Alert,
   type ListRenderItemInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,13 +13,14 @@ import { useSavedTickets } from '@/store/ticketStore';
 import { useTheme } from '@/theme';
 import { Icon, TicketStatusBadge } from '@/components';
 import { formatCurrency, formatDateVN } from '@/lib/format';
+import { haptics } from '@/lib/haptics';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
 
 export default function TicketsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [tickets] = useSavedTickets();
+  const [tickets, { remove, clearAll }] = useSavedTickets();
 
   // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
@@ -28,6 +30,42 @@ export default function TicketsScreen() {
       return b.createdAt.localeCompare(a.createdAt);
     });
   }, [tickets]);
+
+  const handleDeleteTicket = (id: string, ticketNumber: string) => {
+    Alert.alert(
+      STRINGS.tickets.deleteConfirmTitle,
+      `${STRINGS.tickets.deleteConfirmMsg}\nSố vé: ${ticketNumber}`,
+      [
+        { text: STRINGS.common.cancel, style: 'cancel' },
+        {
+          text: STRINGS.common.confirm,
+          style: 'destructive',
+          onPress: async () => {
+            await remove(id);
+            haptics.light();
+          },
+        },
+      ],
+    );
+  };
+
+  const handleClearAll = () => {
+    Alert.alert(
+      STRINGS.tickets.clearAllConfirmTitle,
+      STRINGS.tickets.clearAllConfirmMsg,
+      [
+        { text: STRINGS.common.cancel, style: 'cancel' },
+        {
+          text: STRINGS.common.confirm,
+          style: 'destructive',
+          onPress: async () => {
+            await clearAll();
+            haptics.medium();
+          },
+        },
+      ],
+    );
+  };
 
   const renderItem = ({ item, index }: ListRenderItemInfo<SavedTicket>) => {
     const prevItem = index > 0 ? sortedTickets[index - 1] : null;
@@ -83,12 +121,24 @@ export default function TicketsScreen() {
               </Text>
             </View>
 
-            {/* Status Badge */}
-            <TicketStatusBadge
-              status={item.status}
-              totalPrize={item.totalPrize}
-              size="sm"
-            />
+            {/* Status Badge & Delete action */}
+            <View className="flex-row items-center">
+              <TicketStatusBadge
+                status={item.status}
+                totalPrize={item.totalPrize}
+                size="sm"
+              />
+              <TouchableOpacity
+                testID={`delete-ticket-btn-${item.id}`}
+                onPress={() => handleDeleteTicket(item.id, item.ticket)}
+                accessibilityRole="button"
+                accessibilityLabel={`Xóa vé ${item.ticket}`}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                className="ml-2.5 p-1 rounded-full"
+              >
+                <Icon name="trash" size={15} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Ticket Number & Prize Info */}
@@ -187,7 +237,7 @@ export default function TicketsScreen() {
           }}
           ListHeaderComponent={
             <View
-              className="py-2 flex-row justify-between items-center border-b mb-1"
+              className="py-2.5 flex-row justify-between items-center border-b mb-1"
               style={{ borderColor: colors.border }}
             >
               <Text
@@ -196,6 +246,23 @@ export default function TicketsScreen() {
               >
                 {STRINGS.tickets.ticketCount(sortedTickets.length)}
               </Text>
+
+              <TouchableOpacity
+                testID="clear-all-tickets-btn"
+                onPress={handleClearAll}
+                accessibilityRole="button"
+                accessibilityLabel={STRINGS.tickets.clearAll}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                className="flex-row items-center px-2 py-1 rounded-lg"
+              >
+                <Icon name="trash" size={13} color={colors.error} />
+                <Text
+                  className="text-xs font-semibold ml-1"
+                  style={{ color: colors.error }}
+                >
+                  {STRINGS.tickets.clearAll}
+                </Text>
+              </TouchableOpacity>
             </View>
           }
         />

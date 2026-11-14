@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import TicketsScreen from '../(tabs)/tickets';
-import { saveTicket, clearAllTickets } from '@/store/ticketStore';
+import { saveTicket, clearAllTickets, getTickets } from '@/store/ticketStore';
 import { useRouter } from 'expo-router';
 
 describe('TicketsScreen (Vé của tôi)', () => {
@@ -80,6 +81,92 @@ describe('TicketsScreen (Vé của tôi)', () => {
 
     // Verify winning amount
     expect(getAllByText(/2.000.000.000 đ/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('deletes an individual ticket with confirmation dialog', async () => {
+    jest.spyOn(Alert, 'alert');
+
+    const ticket = await saveTicket({
+      ticket: '112233',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+
+    const { getByTestId, queryByText } = await render(<TicketsScreen />);
+
+    const deleteBtn = getByTestId(`delete-ticket-btn-${ticket.id}`);
+    expect(deleteBtn).toBeTruthy();
+
+    fireEvent.press(deleteBtn);
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      expect.stringContaining('Xóa vé'),
+      expect.any(String),
+      expect.any(Array),
+    );
+
+    // Trigger confirmation
+    const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
+    const buttons = alertCall[2];
+    const confirmButton = buttons.find((b: any) => b.style === 'destructive');
+    await confirmButton.onPress();
+
+    // Verify ticket is deleted from store
+    await waitFor(async () => {
+      const remaining = await getTickets();
+      expect(remaining.length).toBe(0);
+    });
+
+    expect(queryByText('112233')).toBeNull();
+  });
+
+  it('clears all tickets when pressing "Xóa tất cả" and confirming', async () => {
+    jest.spyOn(Alert, 'alert');
+
+    await saveTicket({
+      ticket: '111111',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+    await saveTicket({
+      ticket: '222222',
+      station: 'BD',
+      stationName: 'Bình Dương',
+      drawDate: '2026-11-14',
+      status: 'LOST',
+      totalPrize: 0,
+    });
+
+    const { getByTestId } = await render(<TicketsScreen />);
+
+    const clearAllBtn = getByTestId('clear-all-tickets-btn');
+    expect(clearAllBtn).toBeTruthy();
+
+    fireEvent.press(clearAllBtn);
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      expect.stringContaining('Xóa tất cả'),
+      expect.any(String),
+      expect.any(Array),
+    );
+
+    const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
+    const buttons = alertCall[2];
+    const confirmButton = buttons.find((b: any) => b.style === 'destructive');
+    await confirmButton.onPress();
+
+    await waitFor(async () => {
+      const remaining = await getTickets();
+      expect(remaining.length).toBe(0);
+    });
+
+    expect(getByTestId('saved-tickets-empty')).toBeTruthy();
   });
 });
 
