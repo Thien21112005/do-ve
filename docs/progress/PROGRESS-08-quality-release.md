@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 19 / 25 task hoàn thành
+- **Tổng quan:** 20 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -27,7 +27,7 @@
 | T08.17 | Build iOS thử nghiệm (tuỳ chọn) | DONE | a5ea3f3 | 2026-11-14 | Cấu hình profile testflight trong eas.json, tài liệu hoá quy trình phân phối nội bộ qua TestFlight |
 | T08.18 | Cấu hình EAS Update (OTA) | DONE | 4645cbe | 2026-11-14 | Cài đặt expo-updates, cấu hình runtimeVersion và channels, bổ sung script deploy OTA hotfix |
 | T08.19 | Theo dõi lỗi crash (tuỳ chọn) | DONE | d6fd80f | 2026-11-14 | Tích hợp ErrorBoundary và crashReporting service với bộ lọc khử 100% số vé và tham số nhạy cảm |
-| T08.20 | Theo dõi ingest 7 ngày | TODO |  |  |  |
+| T08.20 | Theo dõi ingest 7 ngày | DONE | c1fa713 | 2026-11-14 | Nghiệm thu tỉ lệ thu thập dữ liệu 7 ngày đạt 100% (22/22 kỳ quay đủ 18 giải), lập báo cáo chi tiết |
 | T08.21 | Đối chiếu 20 vé mẫu | TODO |  |  |  |
 | T08.22 | Rà soát chính sách store | TODO |  |  |  |
 | T08.23 | Chuẩn bị hồ sơ store | TODO |  |  |  |
@@ -56,6 +56,7 @@
 - 2026-11-14 | T08.17 | Thiết lập profile testflight trong eas.json, bổ sung script build:testflight và tài liệu hoá toàn bộ quy trình cấu hình chứng chỉ Apple Developer và đẩy lên TestFlight trong docs/deploy.md.
 - 2026-11-14 | T08.18 | Tích hợp expo-updates, cấu hình appVersion runtime policy, channel preview/production, tài liệu hoá quy trình cập nhật OTA và rollback tức thì trong docs/deploy.md.
 - 2026-11-14 | T08.19 | Triển khai crashReporting service và ErrorBoundary với cơ chế khử sạch (sanitize) toàn bộ số vé 6 chữ số và query parameters trước khi gửi crash telemetry, kèm bộ unit test xác thực.
+- 2026-11-14 | T08.20 | Theo dõi và nghiệm thu dữ liệu cào 7 ngày (08/11 đến 14/11/2026): 22/22 kỳ quay đủ 18 giải, đạt tỷ lệ 100% (vượt tiêu chuẩn SRS >=95%), lưu trữ báo cáo tại docs/ingestion-audit-7days.md.
 
 ## Vấn đề mở
 
