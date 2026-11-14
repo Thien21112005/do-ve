@@ -1,8 +1,8 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 32 / 33 task hoàn thành
-- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 33 / 33 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** 2026-11-14
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -40,7 +40,7 @@
 | T06.30 | Kiểm tra phiên bản khi mở app | DONE | c63df02 | 2026-11-14 | Hook useAppConfig, AppVersionGate chặn app phiên bản cũ (FR-SYS-05) và bảo trì & tests |
 | T06.31 | Gom chuỗi tiếng Việt | DONE | 45f7a6f | 2026-11-14 | Tập trung toàn bộ chuỗi tiếng Việt vào src/lib/strings.ts, refactor screens/components & tests |
 | T06.32 | Rà soát accessibility | DONE | d0b98de | 2026-11-14 | Rà soát a11y: accessibilityLabel, roles, states, liveRegion cho TicketInput, DateStrip, ResultCard, CheckScreen & tests |
-| T06.33 | Test luồng dò vé | TODO |  |  |  |
+| T06.33 | Test luồng dò vé | DONE | 9060c13 | 2026-11-14 | Bộ test checkFlowMsw.test.tsx bao phủ toàn diện 6 ca: nhập, dò, trúng, trượt, chưa có kq, lỗi & phục hồi |
 
 ## Nhật ký
 
@@ -77,6 +77,7 @@
 - 2026-11-14 | T06.30 | Triển khai logic so sánh semver version.ts, API getAppConfig, hook useAppConfig và component AppVersionGate tích hợp vào root layout & tests.
 - 2026-11-14 | T06.31 | Gom toàn bộ chuỗi tiếng Việt cố định sang từ điển có kiểu STRINGS (lib/strings.ts), loại bỏ chuỗi rải rác trong component và tab screens & tests.
 - 2026-11-14 | T06.32 | Hoàn thiện nhãn và thuộc tính accessibility (VoiceOver/TalkBack, accessibilityRole, accessibilityHint, liveRegion assertive/polite) cho các components chính, bổ sung accessibility.test.tsx 8 ca test pass 100%.
+- 2026-11-14 | T06.33 | Hoàn thành bộ kiểm thử luồng dò vé checkFlowMsw.test.tsx chuẩn RNTL với 6 ca xanh: nhập vé, dò trúng, dò trượt, chưa có kết quả 16h30, lỗi mạng giữ nguyên input và thử lại thành công.
 
 ## Vấn đề mở
 
