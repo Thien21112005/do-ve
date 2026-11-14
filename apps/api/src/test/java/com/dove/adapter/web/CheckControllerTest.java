@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dove.adapter.persistence.StationEntity;
 import com.dove.adapter.persistence.StationRepository;
+import com.dove.adapter.web.dto.BatchCheckRequest;
 import com.dove.adapter.web.dto.CheckTicketRequest;
 import com.dove.application.CheckTicketUseCase;
 import com.dove.application.DrawRepository;
@@ -501,5 +502,90 @@ class CheckControllerTest {
         .andExpect(jsonPath("$.won").value(nullValue()))
         .andExpect(jsonPath("$.wins", hasSize(0)))
         .andExpect(jsonPath("$.totalAmount").value(0L));
+  }
+
+  @Test
+  @DisplayName("T05.13: POST /check/batch với 1 vé thành công")
+  void checkBatch_oneTicket_success() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    drawRepository.putDraw(createSrsWorkedExampleDraw());
+
+    BatchCheckRequest request = new BatchCheckRequest(List.of("654321"), "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
+        .andExpect(jsonPath("$.results", hasSize(1)))
+        .andExpect(jsonPath("$.results[0].ticket").value("654321"))
+        .andExpect(jsonPath("$.results[0].won").value(true))
+        .andExpect(jsonPath("$.totalAmount").value(2000300000L));
+  }
+
+  @Test
+  @DisplayName("T05.13: POST /check/batch với đúng 20 vé thành công và tính đúng tổng tiền")
+  void checkBatch_twentyTickets_success() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    drawRepository.putDraw(createSrsWorkedExampleDraw());
+
+    List<String> tickets = new java.util.ArrayList<>();
+    tickets.add("654321"); // Trúng 2.000.300.000
+    for (int i = 1; i < 20; i++) {
+      tickets.add(String.format("%06d", i)); // 19 vé không trúng
+    }
+
+    BatchCheckRequest request = new BatchCheckRequest(tickets, "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.results", hasSize(20)))
+        .andExpect(jsonPath("$.totalAmount").value(2000300000L));
+  }
+
+  @Test
+  @DisplayName("T05.13: POST /check/batch với 21 vé trả về 400 Bad Request")
+  void checkBatch_twentyOneTickets_returns400() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    List<String> tickets = new java.util.ArrayList<>();
+    for (int i = 0; i < 21; i++) {
+      tickets.add(String.format("%06d", i));
+    }
+
+    BatchCheckRequest request = new BatchCheckRequest(tickets, "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(400));
+  }
+
+  @Test
+  @DisplayName("T05.13: POST /check/batch với vé sai định dạng trong list trả về 400")
+  void checkBatch_invalidTicketInList_returns400() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    BatchCheckRequest request = new BatchCheckRequest(List.of("123"), "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check/batch")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(400));
   }
 }

@@ -82,4 +82,34 @@ public class CheckTicketUseCase {
     }
     return LotteryChecker.check(ticket, drawResult.get());
   }
+
+  public List<CheckOutcome> checkBatch(
+      List<TicketNumber> tickets, String stationCode, LocalDate drawDate) {
+    Objects.requireNonNull(tickets, "tickets must not be null");
+    Objects.requireNonNull(stationCode, "stationCode must not be null");
+    Objects.requireNonNull(drawDate, "drawDate must not be null");
+
+    LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
+    if (drawDate.isAfter(todayVn)) {
+      throw new InvalidDateException("Ngày dò không thể ở tương lai: " + drawDate);
+    }
+
+    if (stationRepository.findByCode(stationCode).isEmpty()) {
+      throw new StationNotFoundException(stationCode);
+    }
+
+    List<String> drawingStationCodes = stationSchedulePort.getDrawingStationCodes(drawDate);
+    if (!drawingStationCodes.contains(stationCode)) {
+      throw new StationNotDrawingException(stationCode, drawDate);
+    }
+
+    Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
+    if (drawResult.isEmpty() || !drawResult.get().isComplete()) {
+      return tickets.stream()
+          .map(t -> CheckOutcome.notAvailable(t, stationCode, drawDate, null))
+          .toList();
+    }
+    return LotteryChecker.checkMany(
+        tickets, drawResult.get(), com.dove.domain.PrizeTable.southDefault());
+  }
 }
