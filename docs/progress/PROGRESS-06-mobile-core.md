@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 30 / 33 task hoàn thành
+- **Tổng quan:** 31 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -38,7 +38,7 @@
 | T06.28 | Dò hàng loạt: nhập | DONE | 5d86c6a | 2026-11-14 | Component BatchTicketInput nhiều dòng, tách chuỗi linh hoạt, giới hạn 20 vé & tests |
 | T06.29 | Dò hàng loạt: kết quả | DONE | 18464c6 | 2026-11-14 | Gọi POST /check/batch, danh sách kết quả, tổng tiền, celebration & tests |
 | T06.30 | Kiểm tra phiên bản khi mở app | DONE | c63df02 | 2026-11-14 | Hook useAppConfig, AppVersionGate chặn app phiên bản cũ (FR-SYS-05) và bảo trì & tests |
-| T06.31 | Gom chuỗi tiếng Việt | TODO |  |  |  |
+| T06.31 | Gom chuỗi tiếng Việt | DONE | 45f7a6f | 2026-11-14 | Tập trung toàn bộ chuỗi tiếng Việt vào src/lib/strings.ts, refactor screens/components & tests |
 | T06.32 | Rà soát accessibility | TODO |  |  |  |
 | T06.33 | Test luồng dò vé | TODO |  |  |  |
 
@@ -75,6 +75,7 @@
 - 2026-11-14 | T06.28 | Xây dựng BatchTicketInput hỗ trợ nhập và dán danh sách tối đa 20 vé, tự động nhận diện định dạng phân cách và báo lỗi vượt ngưỡng & tests.
 - 2026-11-14 | T06.29 | Tích hợp hook useCheckBatchTickets và component BatchResultList hiển thị thống kê vé trúng/trượt, tổng tiền thưởng, tô nổi số đuôi khớp và hiệu ứng ăn mừng & tests.
 - 2026-11-14 | T06.30 | Triển khai logic so sánh semver version.ts, API getAppConfig, hook useAppConfig và component AppVersionGate tích hợp vào root layout & tests.
+- 2026-11-14 | T06.31 | Gom toàn bộ chuỗi tiếng Việt cố định sang từ điển có kiểu STRINGS (lib/strings.ts), loại bỏ chuỗi rải rác trong component và tab screens & tests.
 
 ## Vấn đề mở
 
