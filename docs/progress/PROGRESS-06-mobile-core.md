@@ -28,7 +28,7 @@
 | T06.18 | Component ResultCard | DONE | dde96cd | 2026-11-14 | Thẻ thắng/thua, danh sách giải, định dạng tiền vi-VN, tổng tiền, animation vào bằng Reanimated |
 | T06.19 | Tô nổi chữ số khớp | DONE | d0e740c | 2026-11-14 | Component HighlightedTicket tách chuỗi, tô nổi số khớp xanh lá và viền nổi (FR-CHK-09) & tests |
 | T06.20 | Hiệu ứng khi trúng (tuỳ chọn) | DONE | 45bfe06 | 2026-11-14 | Hiệu ứng celebration nhẹ nhàng Reanimated + haptics.success(), cấu hình bật/tắt trong settingsStore & tests |
-| T06.21 | Trạng thái chưa có kết quả | TODO |  |  |  |
+| T06.21 | Trạng thái chưa có kết quả | DONE | 7cd1ec5 | 2026-11-14 | Thẻ riêng chưa có kết quả (RESULT_NOT_AVAILABLE) thông báo 16h30, nút Dò lại & tests |
 | T06.22 | Xử lý lỗi mạng và offline | TODO |  |  |  |
 | T06.23 | Màn Kết quả: ngày và tab đài | TODO |  |  |  |
 | T06.24 | Component DrawTable | TODO |  |  |  |
@@ -65,6 +65,7 @@
 - 2026-11-14 | T06.18 | Xây dựng component ResultCard có animation vào Reanimated, hiển thị chi tiết các giải trúng, định dạng tiền chuẩn vi-VN, disclaimer FR-SYS-03 & tests.
 - 2026-11-14 | T06.19 | Phát triển HighlightedTicket và thuật toán getLongestMatchedSuffix tô nổi chữ số khớp trên vé (FR-CHK-09) kèm unit tests toàn diện.
 - 2026-11-14 | T06.20 | Xây dựng settings store (useSettings) và CelebrationEffect chúc mừng tinh tế kèm haptic rung khi vé trúng, hỗ trợ bật/tắt trong cài đặt & tests.
+- 2026-11-14 | T06.21 | Thiết kế thẻ riêng trạng thái RESULT_NOT_AVAILABLE tông màu amber, lưu ý có kết quả sau 16h30 và nút Dò lại (onCheckAgain) & tests.
 
 ## Vấn đề mở
 
