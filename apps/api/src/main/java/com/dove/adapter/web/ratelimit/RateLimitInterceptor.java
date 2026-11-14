@@ -16,6 +16,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
   private final SlidingWindowRateLimiter rateLimiter;
   private final int limitPerMinute;
 
+  @org.springframework.beans.factory.annotation.Autowired
   public RateLimitInterceptor(@Value("${dove.rate-limit.check-per-minute:60}") int limitPerMinute) {
     this.limitPerMinute = limitPerMinute;
     this.rateLimiter = new SlidingWindowRateLimiter(limitPerMinute, Duration.ofMinutes(1));
