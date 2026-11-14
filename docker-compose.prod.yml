@@ -1,0 +1,103 @@
+# ==============================================================================
+# Production Docker Compose Stack for DoVe Backend
+# Reverse Proxy (Caddy HTTPS) + Spring Boot API + PostgreSQL 16
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # Caddy: Automatic HTTPS reverse proxy with TLS certificate management
+  # ----------------------------------------------------------------------------
+  reverse-proxy:
+    image: caddy:2-alpine
+    container_name: dove-caddy-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3 QUIC
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - dove-net
+
+  # ----------------------------------------------------------------------------
+  # Backend API: Spring Boot 4 / Java 21 LTS Hexagonal Architecture
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: dove-api-prod
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-dove}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-dove}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      DOVE_RATE_LIMITER_WINDOW_SECONDS: ${DOVE_RATE_LIMITER_WINDOW_SECONDS:-60}
+      DOVE_RATE_LIMITER_MAX_REQUESTS: ${DOVE_RATE_LIMITER_MAX_REQUESTS:-60}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.25"
+          memory: 384M
+    networks:
+      - dove-net
+
+  # ----------------------------------------------------------------------------
+  # PostgreSQL 16: Isolated database with internal network only
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: dove-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dove}
+      POSTGRES_USER: ${POSTGRES_USER:-dove}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    volumes:
+      - dove_pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dove} -d ${POSTGRES_DB:-dove}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - dove-net
+
+networks:
+  dove-net:
+    name: dove-production-network
+    driver: bridge
+
+volumes:
+  dove_pgdata_prod:
+    name: dove_pgdata_prod
+  caddy_data:
+    name: dove_caddy_data
+  caddy_config:
+    name: dove_caddy_config
