@@ -52,6 +52,9 @@ export const STRINGS = {
     clearAllConfirmTitle: 'Xóa tất cả vé?',
     clearAllConfirmMsg:
       'Toàn bộ danh sách vé đã lưu trên thiết bị sẽ bị xóa. Thao tác này không thể hoàn tác.',
+    exportBtn: 'Sao lưu',
+    exportSuccess: 'Đã xuất file sao lưu thành công.',
+    exportError: 'Không thể xuất file sao lưu.',
   },
 
   check: {

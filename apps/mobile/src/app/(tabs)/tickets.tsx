@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
+import { exportTicketsToJson } from '@/store';
 import { useTheme } from '@/theme';
 import { Icon, TicketStatusBadge } from '@/components';
 import { usePendingTicketsRecheck } from '@/hooks';
@@ -69,6 +70,15 @@ export default function TicketsScreen() {
         },
       ],
     );
+  };
+
+  const handleExport = async () => {
+    const res = await exportTicketsToJson();
+    if (res.success) {
+      haptics.success();
+    } else if (res.error) {
+      Alert.alert('Sao lưu', res.error);
+    }
   };
 
   const renderItem = ({ item, index }: ListRenderItemInfo<SavedTicket>) => {
@@ -251,22 +261,41 @@ export default function TicketsScreen() {
                 {STRINGS.tickets.ticketCount(sortedTickets.length)}
               </Text>
 
-              <TouchableOpacity
-                testID="clear-all-tickets-btn"
-                onPress={handleClearAll}
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.tickets.clearAll}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                className="flex-row items-center px-2 py-1 rounded-lg"
-              >
-                <Icon name="trash" size={13} color={colors.error} />
-                <Text
-                  className="text-xs font-semibold ml-1"
-                  style={{ color: colors.error }}
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  testID="export-tickets-btn"
+                  onPress={handleExport}
+                  accessibilityRole="button"
+                  accessibilityLabel={STRINGS.tickets.exportBtn}
+                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                  className="flex-row items-center px-2 py-1 rounded-lg mr-1.5"
                 >
-                  {STRINGS.tickets.clearAll}
-                </Text>
-              </TouchableOpacity>
+                  <Icon name="upload" size={13} color={colors.primary} />
+                  <Text
+                    className="text-xs font-semibold ml-1"
+                    style={{ color: colors.primary }}
+                  >
+                    {STRINGS.tickets.exportBtn}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  testID="clear-all-tickets-btn"
+                  onPress={handleClearAll}
+                  accessibilityRole="button"
+                  accessibilityLabel={STRINGS.tickets.clearAll}
+                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                  className="flex-row items-center px-2 py-1 rounded-lg"
+                >
+                  <Icon name="trash" size={13} color={colors.error} />
+                  <Text
+                    className="text-xs font-semibold ml-1"
+                    style={{ color: colors.error }}
+                  >
+                    {STRINGS.tickets.clearAll}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           }
         />

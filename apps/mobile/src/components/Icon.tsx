@@ -19,6 +19,8 @@ import {
   Info,
   SlidersHorizontal,
   Trash2,
+  Upload,
+  Download,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react-native';
@@ -43,6 +45,8 @@ export const iconMap = {
   info: Info,
   settings: SlidersHorizontal,
   trash: Trash2,
+  upload: Upload,
+  download: Download,
 } as const;
 
 export type IconName = keyof typeof iconMap;

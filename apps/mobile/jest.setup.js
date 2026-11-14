@@ -75,3 +75,31 @@ jest.mock('react-native-reanimated', () => {
     runOnUI: (fn) => fn,
   };
 });
+
+const mockFileSystem = {
+  cacheDirectory: 'file:///mock/cache/',
+  documentDirectory: 'file:///mock/documents/',
+  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
+  readAsStringAsync: jest.fn().mockResolvedValue(''),
+  getInfoAsync: jest.fn().mockResolvedValue({ exists: true, isDirectory: false }),
+  deleteAsync: jest.fn().mockResolvedValue(undefined),
+  EncodingType: {
+    UTF8: 'utf8',
+    Base64: 'base64',
+  },
+};
+
+jest.mock('expo-file-system', () => mockFileSystem);
+jest.mock('expo-file-system/legacy', () => mockFileSystem);
+
+jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
+  shareAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('expo-document-picker', () => ({
+  getDocumentAsync: jest.fn().mockResolvedValue({
+    canceled: true,
+    assets: [],
+  }),
+}));
