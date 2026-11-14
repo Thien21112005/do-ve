@@ -1,2 +1,2 @@
-// Export common components
-export {};
+// Common UI components
+export * from './Icon';

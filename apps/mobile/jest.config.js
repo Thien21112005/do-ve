@@ -2,8 +2,10 @@ module.exports = {
   preset: 'jest-expo',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^lucide-react-native$':
+      '<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|nativewind)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|nativewind|lucide-react-native|react-native-svg))',
   ],
 };
