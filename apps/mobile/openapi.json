@@ -1,0 +1,519 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "DoVe Southern Vietnam Lottery API",
+    "description": "API tra cứu và dò vé số kiến thiết miền Nam chính xác 100%",
+    "version": "1.0.0",
+    "contact": {
+      "name": "DoVe Engineering Team"
+    },
+    "license": {
+      "name": "Apache 2.0"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/stations": {
+      "get": {
+        "tags": ["stations"],
+        "summary": "Danh sách các đài mở thưởng",
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "SOUTH"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách đài mở thưởng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StationResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stations/{code}": {
+      "get": {
+        "tags": ["stations"],
+        "summary": "Chi tiết một đài",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin chi tiết đài",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy đài",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/draws/schedule": {
+      "get": {
+        "tags": ["draws"],
+        "summary": "Lịch quay thưởng theo ngày",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách các đài quay trong ngày",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StationResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ngày không hợp lệ",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/draws": {
+      "get": {
+        "tags": ["draws"],
+        "summary": "Lấy kết quả xổ số của một kỳ",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "station",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kết quả kỳ quay",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DrawResultResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ngày không hợp lệ",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chưa có hoặc không tìm thấy kết quả",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/draws/latest": {
+      "get": {
+        "tags": ["draws"],
+        "summary": "Lấy kết quả các kỳ quay mới nhất",
+        "parameters": [
+          {
+            "name": "station",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách kết quả mới nhất",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DrawResultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/check": {
+      "post": {
+        "tags": ["check"],
+        "summary": "Dò một vé số",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kết quả dò vé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckTicketResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu vé hoặc ngày không hợp lệ",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Đài không mở thưởng vào ngày đã chọn",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất gọi API",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/check/batch": {
+      "post": {
+        "tags": ["check"],
+        "summary": "Dò hàng loạt tối đa 20 vé số",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kết quả dò hàng loạt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Danh sách vé không hợp lệ hoặc vượt quá 20 vé",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/app/config": {
+      "get": {
+        "tags": ["app"],
+        "summary": "Cấu hình ứng dụng và phiên bản tối thiểu",
+        "responses": {
+          "200": {
+            "description": "Cấu hình ứng dụng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "StationResponse": {
+        "type": "object",
+        "required": ["code", "name", "region", "drawDays"],
+        "properties": {
+          "code": { "type": "string", "example": "TPHCM" },
+          "name": { "type": "string", "example": "TP. Hồ Chí Minh" },
+          "region": { "type": "string", "example": "SOUTH" },
+          "drawDays": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["SATURDAY", "MONDAY"]
+          },
+          "liveStreamUrl": { "type": "string", "nullable": true }
+        }
+      },
+      "DrawResultResponse": {
+        "type": "object",
+        "required": ["drawDate", "stationCode", "stationName", "prizes"],
+        "properties": {
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-14"
+          },
+          "stationCode": { "type": "string", "example": "TPHCM" },
+          "stationName": { "type": "string", "example": "TP. Hồ Chí Minh" },
+          "prizes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "example": {
+              "SPECIAL": ["123456"],
+              "FIRST": ["654321"]
+            }
+          },
+          "status": { "type": "string", "example": "COMPLETED" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PrizeWinDto": {
+        "type": "object",
+        "required": ["tier", "tierName", "prizeAmount", "matchedDigits"],
+        "properties": {
+          "tier": { "type": "string", "example": "SPECIAL" },
+          "tierName": { "type": "string", "example": "Giải Đặc biệt" },
+          "prizeAmount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 2000000000
+          },
+          "matchedDigits": { "type": "string", "example": "123456" }
+        }
+      },
+      "CheckTicketRequest": {
+        "type": "object",
+        "required": ["ticket", "station", "drawDate"],
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$",
+            "example": "123456"
+          },
+          "station": { "type": "string", "example": "TPHCM" },
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-14"
+          }
+        }
+      },
+      "CheckTicketResponse": {
+        "type": "object",
+        "required": [
+          "ticket",
+          "station",
+          "stationName",
+          "drawDate",
+          "status",
+          "wins",
+          "totalPrize"
+        ],
+        "properties": {
+          "ticket": { "type": "string", "example": "123456" },
+          "station": { "type": "string", "example": "TPHCM" },
+          "stationName": { "type": "string", "example": "TP. Hồ Chí Minh" },
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-14"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["CHECKED", "RESULT_NOT_AVAILABLE"],
+            "example": "CHECKED"
+          },
+          "won": { "type": "boolean", "nullable": true, "example": true },
+          "wins": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PrizeWinDto" }
+          },
+          "totalPrize": {
+            "type": "integer",
+            "format": "int64",
+            "example": 2000000000
+          },
+          "message": { "type": "string", "nullable": true }
+        }
+      },
+      "BatchCheckRequest": {
+        "type": "object",
+        "required": ["station", "drawDate", "tickets"],
+        "properties": {
+          "station": { "type": "string", "example": "TPHCM" },
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-14"
+          },
+          "tickets": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 20,
+            "example": ["123456", "654321"]
+          }
+        }
+      },
+      "BatchCheckResponse": {
+        "type": "object",
+        "required": [
+          "station",
+          "drawDate",
+          "results",
+          "totalPrize",
+          "totalWonTickets"
+        ],
+        "properties": {
+          "station": { "type": "string", "example": "TPHCM" },
+          "drawDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-14"
+          },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CheckTicketResponse" }
+          },
+          "totalPrize": {
+            "type": "integer",
+            "format": "int64",
+            "example": 2000000000
+          },
+          "totalWonTickets": { "type": "integer", "example": 1 }
+        }
+      },
+      "AppConfigResponse": {
+        "type": "object",
+        "required": ["minSupportedVersion", "currentVersion", "maintenance"],
+        "properties": {
+          "minSupportedVersion": { "type": "string", "example": "1.0.0" },
+          "currentVersion": { "type": "string", "example": "1.0.0" },
+          "maintenance": { "type": "boolean", "example": false },
+          "message": { "type": "string", "nullable": true }
+        }
+      },
+      "ProblemDetail": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "type": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" },
+          "instance": { "type": "string" },
+          "code": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}
