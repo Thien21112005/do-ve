@@ -13,6 +13,7 @@ import com.dove.adapter.persistence.StationEntity;
 import com.dove.adapter.persistence.StationRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@DisplayName("T05.03 - GET /api/v1/stations API Specification")
+@DisplayName("T05.03 & T05.04 - Stations API Specification")
 class StationControllerTest {
 
   private StationRepository stationRepository;
@@ -75,5 +76,34 @@ class StationControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", hasSize(21)));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/stations/{code} tồn tại trả về 200 OK và thông tin đài")
+  void getStation_found_returnsStationDetails() throws Exception {
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+
+    mockMvc
+        .perform(get("/api/v1/stations/tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.code").value("tp-hcm"))
+        .andExpect(jsonPath("$.name").value("TP. Hồ Chí Minh"))
+        .andExpect(jsonPath("$.region").value("SOUTH"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/stations/{code} không tồn tại trả về 404 và code STATION_NOT_FOUND")
+  void getStation_notFound_returns404ProblemDetails() throws Exception {
+    when(stationRepository.findByCode("unknown-station")).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/api/v1/stations/unknown-station"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"))
+        .andExpect(jsonPath("$.detail").value("Không tìm thấy đài với mã: unknown-station"));
   }
 }
