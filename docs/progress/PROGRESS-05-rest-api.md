@@ -20,7 +20,7 @@
 | T05.10 | Kiểm tra đài có quay ngày đó | DONE | f05ce16 | 2026-11-14 | Reject đài không quay ngày đó bằng 422 STATION_NOT_DRAWING (BR-07) |
 | T05.11 | Chặn ngày tương lai | DONE | 30d2c3a | 2026-11-14 | Chặn drawDate > today giờ VN trả 400 INVALID_DATE, test ranh giới 00:00 VN |
 | T05.12 | Trạng thái chưa có kết quả | DONE | c21c011 | 2026-11-14 | Thiếu kết quả hoặc chưa đủ 18 số trả 200 RESULT_NOT_AVAILABLE, won=null |
-| T05.13 | POST /check/batch | TODO |  |  |  |
+| T05.13 | POST /check/batch | DONE | 20c9a4e | 2026-11-14 | POST /api/v1/check/batch tối đa 20 vé, trả danh sách + tổng tiền, test 1, 20, 21 vé |
 | T05.14 | GET /app/config | TODO |  |  |  |
 | T05.15 | Cache-Control | TODO |  |  |  |
 | T05.16 | Rate limit cho /check | TODO |  |  |  |
