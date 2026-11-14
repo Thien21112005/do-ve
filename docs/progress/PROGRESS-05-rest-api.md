@@ -1,7 +1,7 @@
 # PROGRESS 05 — REST API
 
 - **Plan:** [`plans/PLAN-05-rest-api.md`](../plans/PLAN-05-rest-api.md)
-- **Tổng quan:** 5 / 21 task hoàn thành
+- **Tổng quan:** 6 / 21 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -13,7 +13,7 @@
 | T05.03 | GET /stations | DONE | 50f794a | 2026-11-14 | Endpoint GET /api/v1/stations với lọc region (trả 21 đài SOUTH) |
 | T05.04 | GET /stations/{code} | DONE | 9ca93b3 | 2026-11-14 | GET /api/v1/stations/{code}, 404 STATION_NOT_FOUND |
 | T05.05 | GET /draws/schedule | DONE | 6bec1b2 | 2026-11-14 | GET /api/v1/draws/schedule?date=, thứ 7 trả 4 đài, 400 INVALID_DATE |
-| T05.06 | GET /draws (một kỳ) | TODO |  |  |  |
+| T05.06 | GET /draws (một kỳ) | DONE | cb94642 | 2026-11-14 | GET /api/v1/draws?date=&station=, chuẩn JSON SRS 6.2 |
 | T05.07 | GET /draws/latest | TODO |  |  |  |
 | T05.08 | POST /check: DTO và validation | TODO |  |  |  |
 | T05.09 | POST /check: nối use case | TODO |  |  |  |
