@@ -19,6 +19,8 @@ import {
   CelebrationEffect,
   OfflineBanner,
   getPastDays,
+  BatchTicketInput,
+  parseBatchTickets,
 } from '@/components';
 import { useTheme } from '@/theme';
 import { haptics } from '@/lib';
@@ -42,7 +44,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   const defaultDate = getPastDays(1)[0].dateString;
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
   const [selectedStation, setSelectedStation] = useState<string>('TPHCM');
+  const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [ticketNumber, setTicketNumber] = useState<string>('');
+  const [batchText, setBatchText] = useState<string>('');
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
   // Inline validation calculation
@@ -51,8 +55,14 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     ticketError = `Số vé phải có đủ 6 chữ số (hiện có ${ticketNumber.length}/6)`;
   }
 
+  const parsedBatch = parseBatchTickets(batchText, 20);
+
   const isFormValid =
-    ticketNumber.length === 6 &&
+    (mode === 'single'
+      ? ticketNumber.length === 6 && !ticketError
+      : parsedBatch.validTickets.length > 0 &&
+        !parsedBatch.isOverLimit &&
+        parsedBatch.invalidTokens.length === 0) &&
     Boolean(selectedStation) &&
     Boolean(selectedDate) &&
     !isLoading;
@@ -134,38 +144,101 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
             onSelectStation={setSelectedStation}
           />
 
-          {/* Section: Nhập số vé */}
-          <View className="pt-4 px-4 pb-2 items-center">
-            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 self-start">
-              3. Nhập 6 chữ số trên vé
-            </Text>
-            <TicketInput
-              value={ticketNumber}
-              onChangeText={handleTicketChange}
-              onComplete={(code) => {
-                setHasInteracted(true);
-                setTicketNumber(code);
+          {/* Mode Selector: Dò từng vé / Dò hàng loạt */}
+          <View className="px-4 pt-3 pb-1">
+            <View
+              className="flex-row rounded-xl p-1 border"
+              style={{
+                backgroundColor: colors.surfaceSubtle,
+                borderColor: colors.border,
               }}
-              disabled={isLoading}
-              hasError={Boolean(ticketError)}
-            />
-
-            {/* Inline validation message */}
-            {ticketError && (
-              <View
-                testID="ticket-validation-error"
-                className="flex-row items-center mt-2.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
+            >
+              <TouchableOpacity
+                testID="mode-single-btn"
+                onPress={() => setMode('single')}
+                className="flex-1 py-2 rounded-lg items-center justify-center"
+                style={{
+                  backgroundColor:
+                    mode === 'single' ? colors.surface : 'transparent',
+                }}
               >
-                <Icon name="alertCircle" size={16} color={colors.error} />
                 <Text
-                  className="ml-1.5 text-xs font-medium"
-                  style={{ color: colors.error }}
+                  className={`text-xs ${mode === 'single' ? 'font-bold' : 'font-medium'}`}
+                  style={{
+                    color:
+                      mode === 'single' ? colors.primary : colors.textMuted,
+                  }}
                 >
-                  {ticketError}
+                  Dò từng vé
                 </Text>
-              </View>
-            )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                testID="mode-batch-btn"
+                onPress={() => setMode('batch')}
+                className="flex-1 py-2 rounded-lg items-center justify-center"
+                style={{
+                  backgroundColor:
+                    mode === 'batch' ? colors.surface : 'transparent',
+                }}
+              >
+                <Text
+                  className={`text-xs ${mode === 'batch' ? 'font-bold' : 'font-medium'}`}
+                  style={{
+                    color: mode === 'batch' ? colors.primary : colors.textMuted,
+                  }}
+                >
+                  Dò hàng loạt (tối đa 20)
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
+
+          {/* Section: Nhập số vé */}
+          {mode === 'single' ? (
+            <View className="pt-3 px-4 pb-2 items-center">
+              <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 self-start">
+                3. Nhập 6 chữ số trên vé
+              </Text>
+              <TicketInput
+                value={ticketNumber}
+                onChangeText={handleTicketChange}
+                onComplete={(code) => {
+                  setHasInteracted(true);
+                  setTicketNumber(code);
+                }}
+                disabled={isLoading}
+                hasError={Boolean(ticketError)}
+              />
+
+              {/* Inline validation message */}
+              {ticketError && (
+                <View
+                  testID="ticket-validation-error"
+                  className="flex-row items-center mt-2.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
+                >
+                  <Icon name="alertCircle" size={16} color={colors.error} />
+                  <Text
+                    className="ml-1.5 text-xs font-medium"
+                    style={{ color: colors.error }}
+                  >
+                    {ticketError}
+                  </Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View className="pt-3 px-4 pb-2">
+              <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                3. Nhập danh sách vé cần dò
+              </Text>
+              <BatchTicketInput
+                value={batchText}
+                onChangeText={setBatchText}
+                maxTickets={20}
+              />
+            </View>
+          )}
 
           {/* Action button: Dò vé */}
           <View className="mt-8 px-5 w-full max-w-[360px] self-center">

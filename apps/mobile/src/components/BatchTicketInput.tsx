@@ -1,0 +1,187 @@
+import React, { useMemo } from 'react';
+import { View, Text, TextInput, Pressable } from 'react-native';
+import { Icon } from './Icon';
+import { useTheme } from '../theme';
+
+export interface BatchParsedResult {
+  validTickets: string[];
+  invalidTokens: string[];
+  count: number;
+  isOverLimit: boolean;
+  error: string | null;
+}
+
+export function parseBatchTickets(
+  rawText: string,
+  maxTickets: number = 20,
+): BatchParsedResult {
+  const trimmed = rawText.trim();
+  if (!trimmed) {
+    return {
+      validTickets: [],
+      invalidTokens: [],
+      count: 0,
+      isOverLimit: false,
+      error: null,
+    };
+  }
+
+  const tokens = trimmed
+    .split(/[\r\n,;\s]+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const validTickets: string[] = [];
+  const invalidTokens: string[] = [];
+
+  for (const token of tokens) {
+    if (/^\d{6}$/.test(token)) {
+      validTickets.push(token);
+    } else {
+      invalidTokens.push(token);
+    }
+  }
+
+  const count = tokens.length;
+  const isOverLimit = count > maxTickets;
+
+  let error: string | null = null;
+  if (isOverLimit) {
+    error = `Vượt quá giới hạn tối đa ${maxTickets} vé (hiện có ${count} vé)`;
+  } else if (invalidTokens.length > 0) {
+    const preview = invalidTokens.slice(0, 3).join(', ');
+    const more = invalidTokens.length > 3 ? '...' : '';
+    error = `Số vé không hợp lệ: phải gồm đúng 6 chữ số (${preview}${more})`;
+  }
+
+  return {
+    validTickets,
+    invalidTokens,
+    count,
+    isOverLimit,
+    error,
+  };
+}
+
+export interface BatchTicketInputProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  maxTickets?: number;
+  testID?: string;
+}
+
+export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
+  value,
+  onChangeText,
+  maxTickets = 20,
+  testID = 'batch-ticket-input',
+}) => {
+  const { colors } = useTheme();
+
+  const parsed = useMemo(
+    () => parseBatchTickets(value, maxTickets),
+    [value, maxTickets],
+  );
+
+  const hasError = Boolean(parsed.error);
+
+  return (
+    <View className="w-full">
+      {/* Input Box Container */}
+      <View
+        className="rounded-2xl border p-3.5"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: hasError ? colors.error : colors.border,
+          borderWidth: hasError ? 1.5 : 1,
+        }}
+      >
+        {/* Header row inside box */}
+        <View
+          className="flex-row items-center justify-between pb-2 mb-1 border-b"
+          style={{ borderColor: colors.border }}
+        >
+          <View className="flex-row items-center">
+            <Icon name="ticket" size={15} color={colors.primary} />
+            <Text
+              className="text-xs font-bold ml-1.5"
+              style={{ color: colors.textMain }}
+            >
+              Danh sách vé dò hàng loạt
+            </Text>
+          </View>
+
+          <View className="flex-row items-center">
+            {/* Ticket Counter Badge */}
+            <View
+              className="px-2 py-0.5 rounded-full mr-2"
+              style={{
+                backgroundColor: hasError
+                  ? `${colors.error}1A`
+                  : `${colors.primary}1A`,
+              }}
+            >
+              <Text
+                className="text-[11px] font-bold"
+                style={{
+                  color: hasError ? colors.error : colors.primary,
+                }}
+              >
+                {parsed.count}/{maxTickets} vé
+              </Text>
+            </View>
+
+            {/* Clear Button */}
+            {value.length > 0 && (
+              <Pressable
+                testID="batch-clear-btn"
+                accessibilityRole="button"
+                accessibilityLabel="Xóa toàn bộ"
+                onPress={() => onChangeText('')}
+                className="p-1 active:opacity-60"
+              >
+                <Icon name="x" size={16} color={colors.textMuted} />
+              </Pressable>
+            )}
+          </View>
+        </View>
+
+        {/* Text Area */}
+        <TextInput
+          testID={testID}
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="numbers-and-punctuation"
+          placeholder={`Nhập hoặc dán các dãy 6 chữ số, cách nhau bởi dấu cách, dấu phẩy hoặc xuống dòng (tối đa ${maxTickets} vé).\nVí dụ:\n123456\n654321\n098765`}
+          placeholderTextColor={colors.textMuted}
+          value={value}
+          onChangeText={onChangeText}
+          className="text-sm font-medium leading-relaxed py-1 min-h-[96px]"
+          style={{
+            color: colors.textMain,
+            fontVariant: ['tabular-nums'],
+          }}
+        />
+      </View>
+
+      {/* Error Message */}
+      {hasError && (
+        <View
+          testID="batch-input-error"
+          className="flex-row items-center mt-2 px-1"
+        >
+          <Icon name="alertCircle" size={14} color={colors.error} />
+          <Text
+            className="text-xs font-medium ml-1.5 flex-1"
+            style={{ color: colors.error }}
+          >
+            {parsed.error}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+};
