@@ -12,6 +12,43 @@ describe('Typed API Client', () => {
     expect(getApiBaseUrl()).toBe('http://localhost:8080');
   });
 
+  it('reads EXPO_PUBLIC_API_URL and strips trailing slashes', () => {
+    const originalUrl = process.env.EXPO_PUBLIC_API_URL;
+    process.env.EXPO_PUBLIC_API_URL = 'https://api.dove.app/api/v1/';
+    expect(getApiBaseUrl()).toBe('https://api.dove.app');
+    if (originalUrl === undefined) {
+      delete process.env.EXPO_PUBLIC_API_URL;
+    } else {
+      process.env.EXPO_PUBLIC_API_URL = originalUrl;
+    }
+  });
+
+  it('warns when non-development build uses localhost URL (T09.11)', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const origEnv = process.env.EXPO_PUBLIC_APP_ENV;
+    const origUrl = process.env.EXPO_PUBLIC_API_URL;
+
+    process.env.EXPO_PUBLIC_APP_ENV = 'production';
+    process.env.EXPO_PUBLIC_API_URL = 'http://localhost:8080';
+
+    expect(getApiBaseUrl()).toBe('http://localhost:8080');
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[SECURITY WARNING] Non-development build is using cleartext local API URL'),
+    );
+
+    warnSpy.mockRestore();
+    if (origEnv === undefined) {
+      delete process.env.EXPO_PUBLIC_APP_ENV;
+    } else {
+      process.env.EXPO_PUBLIC_APP_ENV = origEnv;
+    }
+    if (origUrl === undefined) {
+      delete process.env.EXPO_PUBLIC_API_URL;
+    } else {
+      process.env.EXPO_PUBLIC_API_URL = origUrl;
+    }
+  });
+
   it('performs successful GET request and parses JSON', async () => {
     const mockData = { id: 1, name: 'TPHCM' };
     globalThis.fetch = jest.fn().mockResolvedValue({

@@ -46,11 +46,23 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
 const DEFAULT_TIMEOUT_MS = 10000;
 
 export function getApiBaseUrl(): string {
+  const env = process.env.EXPO_PUBLIC_APP_ENV || 'development';
   const raw =
     process.env.EXPO_PUBLIC_API_URL ||
     process.env.EXPO_PUBLIC_API_BASE_URL ||
     'http://localhost:8080';
-  return raw.replace(/\/+$/, '').replace(/\/api\/v1\/?$/, '');
+  const cleaned = raw.replace(/\/+$/, '').replace(/\/api\/v1\/?$/, '');
+
+  if (
+    env !== 'development' &&
+    (cleaned.startsWith('http://localhost') || cleaned.startsWith('http://127.0.0.1'))
+  ) {
+    console.warn(
+      `[SECURITY WARNING] Non-development build is using cleartext local API URL: ${cleaned}. Requests from physical devices will fail.`,
+    );
+  }
+
+  return cleaned;
 }
 
 export async function request<T>(

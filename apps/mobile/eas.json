@@ -27,7 +27,8 @@
       },
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "preview"
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-preview.dove.app"
       }
     },
     "testflight": {
@@ -38,7 +39,8 @@
       },
       "channel": "testflight",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "preview"
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-preview.dove.app"
       }
     },
     "production": {
@@ -51,7 +53,8 @@
       },
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_APP_ENV": "production"
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.dove.app"
       }
     }
   },
