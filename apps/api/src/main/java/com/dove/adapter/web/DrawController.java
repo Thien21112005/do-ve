@@ -7,6 +7,9 @@ import com.dove.adapter.web.dto.StationResponse;
 import com.dove.adapter.web.error.StationNotFoundException;
 import com.dove.application.DrawRepository;
 import com.dove.domain.DrawResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -28,6 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 /** Controller for lottery draw schedules and draw results endpoints. */
 @RestController
 @RequestMapping("/api/v1/draws")
+@Tag(name = "Draws", description = "Lịch quay thưởng và kết quả xổ số kiến thiết")
 public class DrawController {
 
   private static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -68,8 +72,15 @@ public class DrawController {
   }
 
   @GetMapping("/schedule")
+  @Operation(
+      summary = "Lịch các đài quay theo ngày",
+      description =
+          "Trả về danh sách các đài có lịch mở thưởng vào ngày được chỉ định (thứ 2 - chủ nhật)")
   public ResponseEntity<List<StationResponse>> getDrawSchedule(
-      @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+      @Parameter(description = "Ngày quay (định dạng YYYY-MM-DD)")
+          @RequestParam("date")
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate date) {
     int weekday = date.getDayOfWeek().getValue();
     List<StationResponse> stations =
         stationScheduleRepository.findStationsDrawingOn(weekday).stream()
@@ -79,9 +90,16 @@ public class DrawController {
   }
 
   @GetMapping
+  @Operation(
+      summary = "Kết quả mở thưởng một kỳ quay",
+      description =
+          "Trả về bảng 18 số mở thưởng của một đài vào ngày cụ thể (có gắn header Cache-Control phù hợp)")
   public ResponseEntity<DrawResponse> getDraw(
-      @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-      @RequestParam("station") String station) {
+      @Parameter(description = "Ngày quay (định dạng YYYY-MM-DD)")
+          @RequestParam("date")
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate date,
+      @Parameter(description = "Mã đài (ví dụ: tp-hcm)") @RequestParam("station") String station) {
     if (stationRepository.findByCode(station).isEmpty()) {
       throw new StationNotFoundException(station);
     }
@@ -108,8 +126,13 @@ public class DrawController {
   }
 
   @GetMapping("/latest")
+  @Operation(
+      summary = "Kỳ quay mới nhất",
+      description = "Trả về kết quả kỳ quay mới nhất toàn hệ thống hoặc của một đài cụ thể")
   public ResponseEntity<DrawResponse> getLatestDraw(
-      @RequestParam(value = "station", required = false) String station) {
+      @Parameter(description = "Mã đài (tuỳ chọn, nếu bỏ trống lấy kỳ mới nhất toàn hệ thống)")
+          @RequestParam(value = "station", required = false)
+          String station) {
     Optional<DrawResult> drawResultOpt;
     if (station != null && !station.isBlank()) {
       if (stationRepository.findByCode(station).isEmpty()) {

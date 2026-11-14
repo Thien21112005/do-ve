@@ -4,6 +4,9 @@ import com.dove.adapter.persistence.StationEntity;
 import com.dove.adapter.persistence.StationRepository;
 import com.dove.adapter.web.dto.StationResponse;
 import com.dove.adapter.web.error.StationNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 /** Controller exposing endpoints for Southern lottery stations. */
 @RestController
 @RequestMapping("/api/v1/stations")
+@Tag(name = "Stations", description = "Quản lý và tra cứu thông tin các đài xổ số kiến thiết")
 public class StationController {
 
   private final StationRepository stationRepository;
@@ -26,8 +30,14 @@ public class StationController {
   }
 
   @GetMapping
+  @Operation(
+      summary = "Danh sách đài xổ số",
+      description =
+          "Trả về danh sách các đài xổ số, có thể lọc theo miền (mặc định miền Nam - SOUTH)")
   public ResponseEntity<List<StationResponse>> listStations(
-      @RequestParam(value = "region", required = false) String region) {
+      @Parameter(description = "Miền cần lọc (ví dụ: SOUTH)")
+          @RequestParam(value = "region", required = false)
+          String region) {
     List<StationResponse> list;
     if (region != null && !region.isBlank()) {
       list =
@@ -41,7 +51,11 @@ public class StationController {
   }
 
   @GetMapping("/{code}")
-  public ResponseEntity<StationResponse> getStation(@PathVariable("code") String code) {
+  @Operation(
+      summary = "Chi tiết một đài xổ số",
+      description = "Tra cứu thông tin chi tiết một đài theo mã (ví dụ: tp-hcm, dong-nai)")
+  public ResponseEntity<StationResponse> getStation(
+      @Parameter(description = "Mã đài (slug)") @PathVariable("code") String code) {
     StationEntity entity =
         stationRepository.findByCode(code).orElseThrow(() -> new StationNotFoundException(code));
     return ResponseEntity.ok(StationResponse.from(entity));
