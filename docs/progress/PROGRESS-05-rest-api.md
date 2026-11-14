@@ -1,14 +1,14 @@
 # PROGRESS 05 — REST API
 
 - **Plan:** [`plans/PLAN-05-rest-api.md`](../plans/PLAN-05-rest-api.md)
-- **Tổng quan:** 0 / 21 task hoàn thành
-- **Bắt đầu:** (chưa)  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 1 / 21 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T05.01 | Xử lý lỗi Problem Details | TODO |  |  |  |
+| T05.01 | Xử lý lỗi Problem Details | DONE | b0be698 | 2026-11-14 | RFC 7807 ProblemDetail @RestControllerAdvice kèm custom property 'code' |
 | T05.02 | Bảng mã lỗi nghiệp vụ | TODO |  |  |  |
 | T05.03 | GET /stations | TODO |  |  |  |
 | T05.04 | GET /stations/{code} | TODO |  |  |  |
