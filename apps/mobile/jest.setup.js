@@ -1,4 +1,22 @@
 /* global jest */
+jest.mock('expo-router', () => {
+  const routerMock = {
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    navigate: jest.fn(),
+  };
+  return {
+    __esModule: true,
+    useRouter: () => routerMock,
+    useLocalSearchParams: () => ({}),
+    usePathname: () => '/',
+    Link: ({ children }) => children,
+    Tabs: Object.assign(({ children }) => children, { Screen: () => null }),
+    Stack: Object.assign(({ children }) => children, { Screen: () => null }),
+  };
+});
+
 jest.mock('@react-native-community/netinfo', () =>
   require('@react-native-community/netinfo/jest/netinfo-mock.js'),
 );
