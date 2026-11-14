@@ -1,7 +1,7 @@
 # PROGRESS 05 — REST API
 
 - **Plan:** [`plans/PLAN-05-rest-api.md`](../plans/PLAN-05-rest-api.md)
-- **Tổng quan:** 7 / 21 task hoàn thành
+- **Tổng quan:** 8 / 21 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -15,7 +15,7 @@
 | T05.05 | GET /draws/schedule | DONE | 6bec1b2 | 2026-11-14 | GET /api/v1/draws/schedule?date=, thứ 7 trả 4 đài, 400 INVALID_DATE |
 | T05.06 | GET /draws (một kỳ) | DONE | cb94642 | 2026-11-14 | GET /api/v1/draws?date=&station=, chuẩn JSON SRS 6.2 |
 | T05.07 | GET /draws/latest | DONE | 3a3a4a2 | 2026-11-14 | GET /api/v1/draws/latest (overall & by station) |
-| T05.08 | POST /check: DTO và validation | TODO |  |  |  |
+| T05.08 | POST /check: DTO và validation | DONE | fd38f6f | 2026-11-14 | Request/Response DTOs & Bean Validation, 400 INVALID_TICKET |
 | T05.09 | POST /check: nối use case | TODO |  |  |  |
 | T05.10 | Kiểm tra đài có quay ngày đó | TODO |  |  |  |
 | T05.11 | Chặn ngày tương lai | TODO |  |  |  |
