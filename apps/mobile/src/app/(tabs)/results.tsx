@@ -158,7 +158,7 @@ export default function ResultsScreen() {
                   className="px-2.5 py-1 rounded-full"
                   style={{
                     backgroundColor:
-                      draw.status === 'FINAL'
+                      draw.status === 'FINAL' || draw.isComplete
                         ? `${colors.win}1A`
                         : `${colors.pending}1A`,
                   }}
@@ -167,10 +167,10 @@ export default function ResultsScreen() {
                     className="text-xs font-semibold"
                     style={{
                       color:
-                        draw.status === 'FINAL' ? colors.win : colors.pending,
+                        draw.status === 'FINAL' || draw.isComplete ? colors.win : colors.pending,
                     }}
                   >
-                    {draw.status === 'FINAL'
+                    {draw.status === 'FINAL' || draw.isComplete
                       ? STRINGS.results.statusFinal
                       : STRINGS.results.statusPending}
                   </Text>
