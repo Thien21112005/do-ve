@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 14 / 33 task hoàn thành
+- **Tổng quan:** 15 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -22,7 +22,7 @@
 | T06.12 | Component chọn ngày | DONE | 3df0506 | 2026-11-14 | Dải chip cuộn ngang 14 ngày gần nhất, chặn ngày mai, nhãn Hôm nay & tests |
 | T06.13 | Component chọn đài | DONE | 95e9971 | 2026-11-14 | Chip các đài theo lịch ngày đã chọn (/draws/schedule), auto-select đài & tests |
 | T06.14 | Màn Dò vé: ghép form | DONE | 19f85d3 | 2026-11-14 | Ghép form Dò vé (ngày, đài, ô nhập, nút Dò), xử lý bàn phím & safe area |
-| T06.15 | Validation inline | TODO |  |  |  |
+| T06.15 | Validation inline | DONE | 7f2bcb9 | 2026-11-14 | Thông báo lỗi tiếng Việt dưới ô nhập (FR-CHK-07), rung nhẹ expo-haptics & tests |
 | T06.16 | Gọi API dò vé | TODO |  |  |  |
 | T06.17 | Skeleton loading | TODO |  |  |  |
 | T06.18 | Component ResultCard | TODO |  |  |  |
@@ -59,6 +59,7 @@
 - 2026-11-14 | T06.12 | Xây dựng component DateStrip cuộn ngang 14 ngày, chặn hoàn toàn ngày tương lai, hiển thị thứ rút gọn và tag Hôm nay, kèm unit tests.
 - 2026-11-14 | T06.13 | Xây dựng component StationChips kết nối API /draws/schedule, tự động cập nhật danh sách đài khi đổi ngày, auto-select đài hợp lệ & tests.
 - 2026-11-14 | T06.14 | Ghép form Dò vé hoàn chỉnh gồm DateStrip, StationChips, TicketInput và nút Dò vé; tối ưu SafeAreaView & KeyboardAvoidingView chống che nút.
+- 2026-11-14 | T06.15 | Bổ sung kiểm tra hợp lệ inline tiếng Việt dưới ô nhập (FR-CHK-07), cảnh báo viền đỏ và rung phản hồi nhẹ qua expo-haptics.
 
 ## Vấn đề mở
 
