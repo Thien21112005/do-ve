@@ -1,7 +1,7 @@
 # PROGRESS 07 — Vé của tôi và trải nghiệm trên thiết bị
 
 - **Plan:** [`plans/PLAN-07-my-tickets.md`](../plans/PLAN-07-my-tickets.md)
-- **Tổng quan:** 11 / 14 task hoàn thành
+- **Tổng quan:** 12 / 14 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -19,7 +19,7 @@
 | T07.09 | Xem kết quả khi offline | DONE | 0d5d442 | 2026-11-14 | Tích hợp @tanstack/query-async-storage-persister & persistQueryClient vào AsyncStorage khóa dove.querycache.v1, lưu cache 7 ngày xem offline |
 | T07.10 | Xuất vé ra JSON | DONE | 636624e | 2026-11-14 | Dùng expo-file-system/legacy và expo-sharing để xuất file dove-tickets.json và chia sẻ ra bên ngoài |
 | T07.11 | Nhập vé từ JSON | DONE | 86a6149 | 2026-11-14 | Dùng expo-document-picker chọn file JSON, xác thực cấu trúc hợp lệ, gộp bỏ trùng và bảo toàn dữ liệu cũ khi file lỗi |
-| T07.12 | Màn Cài đặt | TODO |  |  |  |
+| T07.12 | Màn Cài đặt | DONE | 3c05ce9 | 2026-11-14 | Xây dựng màn Cài đặt (chọn theme sáng/tối/hệ thống, bật/tắt pháo hoa, rung) lưu AsyncStorage |
 | T07.13 | Nhắc dò vé (tuỳ chọn) | TODO |  |  |  |
 | T07.14 | Giải thích quyền riêng tư | TODO |  |  |  |
 
@@ -37,6 +37,7 @@
 - 2026-11-14 | T07.09 | Cài đặt query-async-storage-persister và kết nối persistence vào AppProviders giúp xem kết quả xổ số đã tra cứu khi offline không có mạng.
 - 2026-11-14 | T07.10 | Xây dựng chức năng xuất sao lưu danh sách vé đã lưu ra file dove-tickets.json bằng expo-file-system và expo-sharing.
 - 2026-11-14 | T07.11 | Triển khai nhập vé từ file sao lưu JSON bằng expo-document-picker, kiểm tra cấu trúc dữ liệu, chống trùng lặp vé.
+- 2026-11-14 | T07.12 | Xây dựng màn Cài đặt cho phép chọn chế độ theme, hiệu ứng chúc mừng và rung haptics với lưu trữ AsyncStorage dove.settings.v1.
 
 ## Vấn đề mở
 
