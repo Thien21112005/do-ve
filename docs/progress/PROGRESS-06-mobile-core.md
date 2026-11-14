@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 1 / 33 task hoàn thành
+- **Tổng quan:** 2 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -9,7 +9,7 @@
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
 | T06.01 | Cấu trúc thư mục mobile | DONE | cc48146 | 2026-11-14 | Tạo cấu trúc src/{components,hooks,api,lib,types,store,theme}, alias @/* cho TS & Jest |
-| T06.02 | Điều hướng tab | TODO |  |  |  |
+| T06.02 | Điều hướng tab | DONE | ffee60f | 2026-11-14 | Expo Router Tabs (Trang chủ, Dò vé, Kết quả, Vé của tôi, Thêm) & tests |
 | T06.03 | Design token và theme sáng/tối | TODO |  |  |  |
 | T06.04 | Font Be Vietnam Pro | TODO |  |  |  |
 | T06.05 | Bộ icon | TODO |  |  |  |
@@ -46,6 +46,7 @@
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. Ví dụ: 2026-11-15 | T01.07 | Chọn Maven thay vì Gradle vì quen hơn. -->
 - 2026-11-14 | T06.01 | Tạo khung thư mục src/{components,hooks,api,lib,types,store,theme}, cấu hình Jest moduleNameMapper alias @/*, typecheck & test pass.
+- 2026-11-14 | T06.02 | Thiết lập Expo Router Tabs gồm 5 màn (Trang chủ, Dò vé, Kết quả, Vé của tôi, Thêm), cập nhật root Stack, bổ sung unit tests đầy đủ.
 
 ## Vấn đề mở
 
