@@ -12,9 +12,11 @@ import {
   DateStrip,
   StationChips,
   TicketInput,
+  Icon,
   getPastDays,
 } from '@/components';
 import { useTheme } from '@/theme';
+import { haptics } from '@/lib';
 
 export interface CheckScreenProps {
   onCheck?: (params: {
@@ -32,14 +34,36 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
   const [selectedStation, setSelectedStation] = useState<string>('TPHCM');
   const [ticketNumber, setTicketNumber] = useState<string>('');
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+
+  // Inline validation calculation
+  let ticketError: string | null = null;
+  if (hasInteracted && ticketNumber.length > 0 && ticketNumber.length < 6) {
+    ticketError = `Số vé phải có đủ 6 chữ số (hiện có ${ticketNumber.length}/6)`;
+  }
 
   const isFormValid =
     ticketNumber.length === 6 &&
     Boolean(selectedStation) &&
     Boolean(selectedDate);
 
+  const handleTicketChange = (val: string) => {
+    setHasInteracted(true);
+    setTicketNumber(val);
+
+    // If user filled 5 digits and paused, or incomplete input
+    if (val.length === 5) {
+      haptics.warning();
+    }
+  };
+
   const handleSubmit = () => {
-    if (!isFormValid) return;
+    setHasInteracted(true);
+    if (!isFormValid) {
+      haptics.warning();
+      return;
+    }
+    haptics.light();
     onCheck?.({
       ticket: ticketNumber,
       station: selectedStation,
@@ -91,9 +115,29 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
             </Text>
             <TicketInput
               value={ticketNumber}
-              onChangeText={setTicketNumber}
-              onComplete={(code) => setTicketNumber(code)}
+              onChangeText={handleTicketChange}
+              onComplete={(code) => {
+                setHasInteracted(true);
+                setTicketNumber(code);
+              }}
+              hasError={Boolean(ticketError)}
             />
+
+            {/* Inline validation message */}
+            {ticketError && (
+              <View
+                testID="ticket-validation-error"
+                className="flex-row items-center mt-2.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
+              >
+                <Icon name="alertCircle" size={16} color={colors.error} />
+                <Text
+                  className="ml-1.5 text-xs font-medium"
+                  style={{ color: colors.error }}
+                >
+                  {ticketError}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* Action button: Dò vé */}
