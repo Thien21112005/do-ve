@@ -5,7 +5,32 @@ import {
 } from '@tanstack/react-query';
 import NetInfo from '@react-native-community/netinfo';
 import { AppState, type AppStateStatus, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import { ApiError } from '@/api';
+
+export const QUERY_STORAGE_KEY = 'dove.querycache.v1';
+export const QUERY_CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 7; // 7 days cache for offline viewing
+
+export const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+  key: QUERY_STORAGE_KEY,
+  throttleTime: 1000,
+});
+
+export function setupQueryClientPersistence(
+  client: QueryClient = queryClient,
+  persister = asyncStoragePersister,
+): [() => void, Promise<void>] {
+  const [unsubscribe, restorePromise] = persistQueryClient({
+    queryClient: client,
+    persister,
+    maxAge: QUERY_CACHE_MAX_AGE,
+    buster: '1.0.0',
+  });
+  return [unsubscribe, restorePromise];
+}
 
 export function createQueryClient(): QueryClient {
   return new QueryClient({

@@ -1,7 +1,10 @@
 import {
   createQueryClient,
   setupNetworkAndFocusManagement,
+  setupQueryClientPersistence,
+  QUERY_STORAGE_KEY,
 } from '../queryClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onlineManager, focusManager } from '@tanstack/react-query';
 import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
 import { AppState, type AppStateStatus } from 'react-native';
@@ -88,5 +91,49 @@ describe('TanStack Query & Network Configuration', () => {
 
     cleanup();
     expect(mockRemove).toHaveBeenCalled();
+  });
+
+  it('persists query cache to AsyncStorage and restores it for offline viewing', async () => {
+    await AsyncStorage.clear();
+
+    const client = createQueryClient();
+    const [unsubscribe, restorePromise] = setupQueryClientPersistence(client);
+    await restorePromise;
+
+    // Simulate successful fetch of draw results
+    const drawData = {
+      drawDate: '2026-11-14',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      status: 'FINAL',
+      prizes: [{ tier: 'SPECIAL', numbers: ['123456'] }],
+    };
+
+    client.setQueryData(['draws', '2026-11-14', 'TPHCM'], drawData);
+
+    // Wait for throttleTime (1000ms in persister)
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // Verify written into AsyncStorage
+    const rawSaved = await AsyncStorage.getItem(QUERY_STORAGE_KEY);
+    expect(rawSaved).not.toBeNull();
+    expect(rawSaved).toContain('123456');
+
+    // Create a new fresh client (e.g. app restart offline) and restore
+    const offlineClient = createQueryClient();
+    const [unsubOffline, restoreOfflinePromise] =
+      setupQueryClientPersistence(offlineClient);
+    await restoreOfflinePromise;
+
+    // Verify offline client immediately has the cached draw data
+    const cached = offlineClient.getQueryData([
+      'draws',
+      '2026-11-14',
+      'TPHCM',
+    ]);
+    expect(cached).toEqual(drawData);
+
+    unsubscribe();
+    unsubOffline();
   });
 });
