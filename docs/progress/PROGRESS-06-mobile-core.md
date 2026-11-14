@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 5 / 33 task hoàn thành
+- **Tổng quan:** 6 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -13,7 +13,7 @@
 | T06.03 | Design token và theme sáng/tối | DONE | 3b71d62 | 2026-11-14 | Design tokens đạt chuẩn WCAG AA sáng/tối, hook useTheme, unit tests contrast |
 | T06.04 | Font Be Vietnam Pro | DONE | 603ed15 | 2026-11-14 | Tải font Be Vietnam Pro với splash hold, chống nháy FOUT, unit test hook |
 | T06.05 | Bộ icon | DONE | 9ca3314 | 2026-11-14 | Cài lucide-react-native & svg, tạo wrapper Icon, hiển thị đúng ở tab bar & tests |
-| T06.06 | API client có kiểu | TODO |  |  |  |
+| T06.06 | API client có kiểu | DONE | 719c5f6 | 2026-11-14 | Wrapper fetch có kiểu, timeout, parse Problem Details thành ApiError có code |
 | T06.07 | Sinh type từ OpenAPI | TODO |  |  |  |
 | T06.08 | TanStack Query và trạng thái mạng | TODO |  |  |  |
 | T06.09 | Hook useStations | TODO |  |  |  |
@@ -50,6 +50,7 @@
 - 2026-11-14 | T06.03 | Xây dựng bộ Design Tokens (colors, radii, spacing, typography), tuân thủ nghiêm ngặt độ tương phản WCAG 2.1 AA cho cả sáng/tối, hook useTheme và test toán học độ sáng.
 - 2026-11-14 | T06.04 | Tích hợp font Be Vietnam Pro (400/500/600/700), giữ splash screen với preventAutoHideAsync và giải phóng mượt mà khi font sẵn sàng.
 - 2026-11-14 | T06.05 | Cài đặt lucide-react-native & react-native-svg, tạo wrapper Icon type-safe, cấu hình Jest mapping cjs dist, gắn icon trực quan vào 5 tabs.
+- 2026-11-14 | T06.06 | Triển khai Typed API Client hỗ trợ HTTP GET/POST/PUT/DELETE, timeout, chuẩn hóa RFC 7807 Problem Details thành ApiError có code, bao quát 6 ca test.
 
 ## Vấn đề mở
 
