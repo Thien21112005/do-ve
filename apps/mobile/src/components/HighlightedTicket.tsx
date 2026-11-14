@@ -43,12 +43,12 @@ export function computeMatchedSegments(
  */
 export function getLongestMatchedSuffix(
   ticket: string,
-  wins?: { matchedDigits?: string | null }[],
+  wins?: { matchedDigits?: string | null; matchedNumber?: string | null }[],
 ): string {
   if (!wins || wins.length === 0 || !ticket) return '';
   let longest = '';
   for (const win of wins) {
-    const digits = win.matchedDigits;
+    const digits = win.matchedDigits || win.matchedNumber;
     if (digits && ticket.endsWith(digits) && digits.length > longest.length) {
       longest = digits;
     }

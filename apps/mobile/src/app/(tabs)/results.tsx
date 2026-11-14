@@ -179,7 +179,7 @@ export default function ResultsScreen() {
 
               {/* Detailed DrawTable (T06.24) */}
               <View className="mt-3">
-                <DrawTable prizes={draw.prizes} />
+                <DrawTable prizes={draw.prizes} numbers={draw.numbers} />
               </View>
             </View>
           )}

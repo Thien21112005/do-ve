@@ -27,7 +27,7 @@ import { useTheme } from '@/theme';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 import { useSavedTickets } from '@/store/ticketStore';
-import type { SavedTicketStatus, CheckTicketResponse } from '@/types';
+import type { SavedTicketStatus } from '@/types';
 
 export interface CheckScreenProps {
   onCheckSuccess?: (result: any) => void;
@@ -76,12 +76,12 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       savedTickets.some(
         (t) =>
           t.ticket === result.ticket &&
-          t.station === result.station &&
+          (t.station === (result as any).station || t.station === (result as any).stationCode) &&
           t.drawDate === result.drawDate,
       ),
   );
 
-  const handleSaveTicket = async (ticketResult: CheckTicketResponse) => {
+  const handleSaveTicket = async (ticketResult: any) => {
     let status: SavedTicketStatus = 'LOST';
     if (ticketResult.status === 'RESULT_NOT_AVAILABLE') {
       status = 'PENDING';
@@ -89,13 +89,22 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       status = 'WON';
     }
 
+    const station = ticketResult.stationCode || ticketResult.station || selectedStation;
+    const stationName = ticketResult.stationName || station;
+    const totalPrize =
+      typeof ticketResult.totalPrize === 'number'
+        ? ticketResult.totalPrize
+        : typeof ticketResult.totalAmount === 'number'
+          ? ticketResult.totalAmount
+          : 0;
+
     await saveTicketToStore({
       ticket: ticketResult.ticket,
-      station: ticketResult.station,
-      stationName: ticketResult.stationName,
+      station,
+      stationName,
       drawDate: ticketResult.drawDate,
       status,
-      totalPrize: ticketResult.totalPrize || 0,
+      totalPrize,
       wins: ticketResult.wins || [],
     });
   };

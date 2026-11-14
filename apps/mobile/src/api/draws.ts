@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import type { StationResponse, DrawResultResponse } from '@/types';
+import type { StationResponse, DrawResponse } from '@/types';
 
 export async function fetchScheduleByDate(
   date: string,
@@ -12,16 +12,16 @@ export async function fetchScheduleByDate(
 export async function fetchDraw(
   date: string,
   station: string,
-): Promise<DrawResultResponse> {
-  return apiClient.get<DrawResultResponse>('/api/v1/draws', {
+): Promise<DrawResponse> {
+  return apiClient.get<DrawResponse>('/api/v1/draws', {
     params: { date, station },
   });
 }
 
 export async function fetchLatestDraws(
   station?: string,
-): Promise<DrawResultResponse[]> {
-  return apiClient.get<DrawResultResponse[]>('/api/v1/draws/latest', {
+): Promise<DrawResponse | DrawResponse[]> {
+  return apiClient.get<DrawResponse | DrawResponse[]>('/api/v1/draws/latest', {
     params: { station },
   });
 }

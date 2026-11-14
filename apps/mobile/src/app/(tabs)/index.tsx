@@ -257,10 +257,11 @@ export default function HomeScreen() {
             !isError &&
             draws.map((draw) => {
               const formattedDrawDate = formatDateVN(draw.drawDate);
-              const specialPrize = draw.prizes?.SPECIAL?.[0] || '------';
-              const firstPrize = draw.prizes?.FIRST?.[0] || '---';
-              const eighthPrize = draw.prizes?.EIGHTH?.[0] || '--';
-              const isFinal = draw.status === 'FINAL';
+              const drawNumbers = draw.numbers || draw.prizes;
+              const specialPrize = drawNumbers?.SPECIAL?.[0] || '------';
+              const firstPrize = drawNumbers?.FIRST?.[0] || '---';
+              const eighthPrize = drawNumbers?.EIGHTH?.[0] || '--';
+              const isFinal = draw.status === 'FINAL' || draw.isComplete;
 
               return (
                 <View

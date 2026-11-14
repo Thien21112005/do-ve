@@ -10,9 +10,10 @@ import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
 import type { BatchCheckResponse } from '../types';
+import type { UiBatchResult } from '../api/mappers';
 
 export interface BatchResultListProps {
-  batchResult: BatchCheckResponse;
+  batchResult: UiBatchResult | BatchCheckResponse;
   onCheckAgain?: () => void;
   testID?: string;
 }
@@ -24,10 +25,24 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
 }) => {
   const { colors } = useTheme();
 
-  const totalTickets = batchResult.results.length;
-  const wonTickets = batchResult.totalWonTickets;
+  const totalTickets = batchResult.results?.length || 0;
+  const wonTickets =
+    typeof (batchResult as any).totalWonTickets === 'number'
+      ? (batchResult as any).totalWonTickets
+      : (batchResult.results || []).filter((r) => r.won).length;
   const hasWon = wonTickets > 0;
   const formattedDrawDate = formatDateVN(batchResult.drawDate);
+  const stationName =
+    (batchResult as any).stationName ||
+    (batchResult as any).station ||
+    (batchResult as any).stationCode ||
+    '';
+  const totalPrize =
+    typeof (batchResult as any).totalPrize === 'number'
+      ? (batchResult as any).totalPrize
+      : typeof (batchResult as any).totalAmount === 'number'
+        ? (batchResult as any).totalAmount
+        : 0;
 
   return (
     <View testID={testID} className="w-full">
@@ -57,7 +72,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="text-xs mt-0.5"
               style={{ color: colors.textMuted }}
             >
-              Đài {batchResult.station} • Ngày {formattedDrawDate}
+              Đài {stationName} • Ngày {formattedDrawDate}
             </Text>
           </View>
           <View
@@ -100,7 +115,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                 fontVariant: ['tabular-nums'],
               }}
             >
-              {formatCurrency(batchResult.totalPrize)}
+              {formatCurrency(totalPrize)}
             </Text>
           </View>
 
@@ -207,7 +222,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                     }}
                   >
                     {isItemWon
-                      ? STRINGS.check.batchItemWonBadge(item.wins.length)
+                      ? STRINGS.check.batchItemWonBadge(item.wins ? item.wins.length : 0)
                       : isNotAvailable
                         ? STRINGS.check.batchItemPendingBadge
                         : STRINGS.check.batchItemNotWonBadge}
@@ -216,7 +231,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               </View>
 
               {/* Item Content */}
-              {isItemWon && (
+              {isItemWon && item.wins && (
                 <View className="pt-2">
                   {item.wins.map((win, winIdx) => (
                     <View
@@ -227,7 +242,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                         className="text-xs font-semibold"
                         style={{ color: colors.win }}
                       >
-                        {win.tierName}
+                        {(win as any).tierName || win.tier}
                       </Text>
                       <Text
                         className="text-xs font-bold"
@@ -236,7 +251,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                           fontVariant: ['tabular-nums'],
                         }}
                       >
-                        {formatCurrency(win.prizeAmount)}
+                        {formatCurrency((win as any).prizeAmount ?? 0)}
                       </Text>
                     </View>
                   ))}

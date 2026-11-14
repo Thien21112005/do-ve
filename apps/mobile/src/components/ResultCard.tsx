@@ -16,10 +16,11 @@ import { formatCurrency, formatDateVN } from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
 import type { CheckTicketResponse } from '@/types';
+import type { UiCheckResult } from '@/api/mappers';
 
 export interface ResultCardProps {
-  result: CheckTicketResponse;
-  onSaveTicket?: (result: CheckTicketResponse) => void;
+  result: UiCheckResult | CheckTicketResponse;
+  onSaveTicket?: (result: any) => void;
   isSaved?: boolean;
   onCheckAgain?: () => void;
   testID?: string;
@@ -57,7 +58,18 @@ export function ResultCard({
 
   const winCount = result.wins ? result.wins.length : 0;
   const formattedDate = formatDateVN(result.drawDate);
-  const longestMatched = getLongestMatchedSuffix(result.ticket, result.wins);
+  const longestMatched = getLongestMatchedSuffix(result.ticket, result.wins as any);
+  const totalPrize =
+    typeof (result as any).totalPrize === 'number'
+      ? (result as any).totalPrize
+      : typeof (result as any).totalAmount === 'number'
+        ? (result as any).totalAmount
+        : 0;
+  const stationName =
+    (result as any).stationName ||
+    (result as any).station ||
+    (result as any).stationCode ||
+    '';
 
   const cardBg = isPending
     ? colors.pendingBg
@@ -74,7 +86,7 @@ export function ResultCard({
   const a11ySummary = isPending
     ? `${STRINGS.check.resultPendingTitle}. ${STRINGS.check.resultPendingSubtitle}`
     : isWon
-      ? `${STRINGS.check.resultWonTitle}. ${STRINGS.check.resultWonCount(winCount)}. ${STRINGS.check.totalPrizeLabel} ${formatCurrency(result.totalPrize)}`
+      ? `${STRINGS.check.resultWonTitle}. ${STRINGS.check.resultWonCount(winCount)}. ${STRINGS.check.totalPrizeLabel} ${formatCurrency(totalPrize)}`
       : `${STRINGS.check.resultLostTitle}. ${STRINGS.check.resultLostSubtitle}`;
 
   return (
@@ -197,7 +209,7 @@ export function ResultCard({
             className="text-xs font-medium"
             style={{ color: colors.textMain }}
           >
-            {result.stationName}
+            {stationName}
           </Text>
           <Text className="text-xs mt-0.5" style={{ color: colors.textMuted }}>
             Ngày {formattedDate}
@@ -256,9 +268,9 @@ export function ResultCard({
                   className="text-sm font-medium"
                   style={{ color: colors.textMain }}
                 >
-                  {win.tierName}
+                  {(win as any).tierName || win.tier}
                 </Text>
-                {win.matchedDigits ? (
+                {((win as any).matchedDigits || (win as any).matchedNumber) ? (
                   <Text
                     className="text-xs font-mono ml-2 px-1.5 py-0.5 rounded"
                     style={{
@@ -266,7 +278,7 @@ export function ResultCard({
                       backgroundColor: colors.primarySubtle,
                     }}
                   >
-                    ({win.matchedDigits})
+                    ({(win as any).matchedDigits || (win as any).matchedNumber})
                   </Text>
                 ) : null}
               </View>

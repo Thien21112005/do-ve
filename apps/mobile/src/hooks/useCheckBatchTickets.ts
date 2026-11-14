@@ -1,10 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
 import { checkBatchTickets } from '../api/check';
-import type { BatchCheckRequest, BatchCheckResponse } from '../types';
+import { mapBatchResponseToUi, type UiBatchResult } from '../api/mappers';
+import type { BatchCheckRequest } from '../types';
 
 export function useCheckBatchTickets() {
-  const mutation = useMutation<BatchCheckResponse, Error, BatchCheckRequest>({
-    mutationFn: (payload: BatchCheckRequest) => checkBatchTickets(payload),
+  const mutation = useMutation<UiBatchResult, Error, BatchCheckRequest>({
+    mutationFn: async (payload: BatchCheckRequest) => {
+      const raw = await checkBatchTickets(payload);
+      return mapBatchResponseToUi(raw);
+    },
   });
 
   return {

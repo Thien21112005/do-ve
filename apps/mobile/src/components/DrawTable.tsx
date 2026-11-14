@@ -81,14 +81,17 @@ export const DRAW_TIERS: PrizeTierConfig[] = [
 
 export interface DrawTableProps {
   prizes?: Record<string, string[]> | null;
+  numbers?: Record<string, string[]> | null;
   testID?: string;
 }
 
 export const DrawTable: React.FC<DrawTableProps> = ({
   prizes,
+  numbers,
   testID = 'draw-table',
 }) => {
   const { colors } = useTheme();
+  const data = numbers || prizes;
 
   return (
     <View
@@ -100,7 +103,7 @@ export const DrawTable: React.FC<DrawTableProps> = ({
       }}
     >
       {DRAW_TIERS.map((tier, index) => {
-        const tierNumbers = prizes?.[tier.key] || [];
+        const tierNumbers = data?.[tier.key] || [];
         const isSpecial = tier.highlight;
         const isLastRow = index === DRAW_TIERS.length - 1;
         const numbersString =
