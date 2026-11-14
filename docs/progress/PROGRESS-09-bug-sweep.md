@@ -1,8 +1,8 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 0 / 72 task hoàn thành
-- **Bắt đầu:** —  |  **Hoàn thành:** —
+- **Tổng quan:** 1 / 72 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -76,7 +76,7 @@
 | T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | TODO | | | |
 | T09.67 | P2 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | TODO | | | |
 | T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | TODO | | | |
-| T09.69 | P1 | CI Mobile đỏ do ESLint | TODO | | | |
+| T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
 | T09.70 | P2 | Jest phải `--forceExit` (open handles) | TODO | | | |
 | T09.71 | P3 | Tài liệu lệch với code | TODO | | | |
 | T09.72 | P3 | Dọn rác repo | TODO | | | |
@@ -86,13 +86,13 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 0 | 10 |
-| P1 | 29 | 0 | 29 |
+| P1 | 29 | 1 | 28 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
-- [ ] `npm run lint` xanh (hiện đỏ — T09.69)
+- [x] `npm run lint` xanh (T09.69)
 - [ ] `npm run typecheck` xanh
 - [ ] `npm run test` xanh **không** cần `--forceExit` (T09.70)
 - [ ] Contract test mobile ↔ backend xanh trong CI (T09.13)
@@ -103,6 +103,7 @@
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. -->
 - 2026-11-14 | — | Quét toàn bộ mã nguồn, lập plan 72 task. Phát hiện lớn nhất: hợp đồng API mobile lệch backend/SRS (nhóm A) khiến app không dò được vé thật dù test xanh.
+- 2026-11-14 | T09.69 | CI Mobile đỏ do ESLint không nhận globals của Node trong script patch | Sửa eslint.config.js thêm globals.node cho scripts/**/*.js, patch script idempotent. Linter xanh 100%.
 
 ## Vấn đề mở
 
