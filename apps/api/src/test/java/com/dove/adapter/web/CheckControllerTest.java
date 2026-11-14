@@ -15,7 +15,10 @@ import com.dove.application.StationSchedulePort;
 import com.dove.domain.DrawResult;
 import com.dove.domain.PrizeTier;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +35,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@DisplayName(
-    "T05.09 & T05.10 - POST /api/v1/check Worked Examples & Station Drawing Schedule Specification")
+@DisplayName("T05.09 - T05.11 - POST /api/v1/check Specification")
 class CheckControllerTest {
 
+  private static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
   private TestDrawRepository drawRepository;
   private TestStationSchedulePort stationSchedulePort;
   private TestStationRepository stationRepository;
+  private Clock clock;
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
 
@@ -277,8 +281,11 @@ class CheckControllerTest {
     stationSchedulePort.setSchedule(
         LocalDate.of(2026, 11, 9), List.of("tp-hcm", "dong-thap", "ca-mau"));
 
+    // Set default clock to 2026-11-09 17:00:00 VN time (UTC+7)
+    clock = Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), VN_ZONE);
+
     CheckTicketUseCase useCase =
-        new CheckTicketUseCase(drawRepository, stationSchedulePort, stationRepository);
+        new CheckTicketUseCase(drawRepository, stationSchedulePort, stationRepository, clock);
     CheckController controller = new CheckController(useCase);
     mockMvc =
         MockMvcBuilders.standaloneSetup(controller)
@@ -343,11 +350,11 @@ class CheckControllerTest {
   @Test
   @DisplayName("Đài không quay vào ngày đã chọn trả về 422 và code STATION_NOT_DRAWING (BR-07)")
   void checkTicket_stationNotDrawingOnDate_returns422() throws Exception {
-    LocalDate tuesday = LocalDate.of(2026, 11, 10);
-    // Tuesday schedule does not include tp-hcm
-    stationSchedulePort.setSchedule(tuesday, List.of("ben-tre", "vung-tau", "bac-lieu"));
+    LocalDate sunday = LocalDate.of(2026, 11, 8);
+    // Sunday schedule does not include tp-hcm
+    stationSchedulePort.setSchedule(sunday, List.of("tien-giang", "kien-giang", "da-lat"));
 
-    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", tuesday);
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", sunday);
 
     mockMvc
         .perform(
@@ -375,5 +382,72 @@ class CheckControllerTest {
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"));
+  }
+
+  @Test
+  @DisplayName(
+      "T05.11: Ngày dò ở tương lai (drawDate > today giờ VN) trả về 400 và code INVALID_DATE")
+  void checkTicket_futureDate_returns400InvalidDate() throws Exception {
+    // Current VN date is 2026-11-09. Request with 2026-11-10 is future date.
+    LocalDate tomorrow = LocalDate.of(2026, 11, 10);
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", tomorrow);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(jsonPath("$.code").value("INVALID_DATE"));
+  }
+
+  @Test
+  @DisplayName("T05.11: Kiểm tra ranh giới 00:00 giờ VN (23:59:59 hôm nay vs 00:00:01 hôm sau)")
+  void checkTicket_midnightBoundaryTest() throws Exception {
+    LocalDate targetDate = LocalDate.of(2026, 11, 10);
+    stationSchedulePort.setSchedule(targetDate, List.of("tp-hcm"));
+
+    // Case A: 23:59:59 ngày 2026-11-09 giờ VN (UTC là 16:59:59) -> targetDate là tương lai -> 400
+    Clock clockBeforeMidnight = Clock.fixed(Instant.parse("2026-11-09T16:59:59Z"), VN_ZONE);
+    CheckTicketUseCase useCaseBefore =
+        new CheckTicketUseCase(
+            drawRepository, stationSchedulePort, stationRepository, clockBeforeMidnight);
+    MockMvc mvcBefore =
+        MockMvcBuilders.standaloneSetup(new CheckController(useCaseBefore))
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
+
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", targetDate);
+
+    mvcBefore
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("INVALID_DATE"));
+
+    // Case B: 00:00:01 ngày 2026-11-10 giờ VN (UTC là 17:00:01 ngày 09) -> targetDate là hôm nay ->
+    // hợp lệ!
+    Clock clockAfterMidnight = Clock.fixed(Instant.parse("2026-11-09T17:00:01Z"), VN_ZONE);
+    CheckTicketUseCase useCaseAfter =
+        new CheckTicketUseCase(
+            drawRepository, stationSchedulePort, stationRepository, clockAfterMidnight);
+    MockMvc mvcAfter =
+        MockMvcBuilders.standaloneSetup(new CheckController(useCaseAfter))
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
+
+    // Since draw not in repository yet, it should return 200 with RESULT_NOT_AVAILABLE, NOT 400
+    // INVALID_DATE!
+    mvcAfter
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"));
   }
 }
