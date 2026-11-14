@@ -1,9 +1,10 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDraw } from '../useDraw';
 import * as apiDraws from '@/api/draws';
-import type { DrawResultResponse } from '@/types';
+import type { DrawResponse } from '@/types';
 
 jest.mock('@/api/draws');
 
@@ -24,11 +25,10 @@ function createWrapper() {
   return Wrapper;
 }
 
-const mockDrawResult: DrawResultResponse = {
-  stationCode: 'TPHCM',
-  stationName: 'TP. Hồ Chí Minh',
+const mockDrawResult: DrawResponse = {
+  stationCode: 'tp-hcm',
   drawDate: '2026-11-14',
-  prizes: {
+  numbers: {
     SPECIAL: ['123456'],
     FIRST: ['65432'],
     SECOND: ['11223'],
@@ -39,7 +39,6 @@ const mockDrawResult: DrawResultResponse = {
     SEVENTH: ['345'],
     EIGHTH: ['67'],
   },
-  status: 'FINAL',
 };
 
 describe('useDraw hook', () => {
@@ -50,15 +49,17 @@ describe('useDraw hook', () => {
   it('fetches and returns draw result for specified date and station', async () => {
     (apiDraws.fetchDraw as jest.Mock).mockResolvedValue(mockDrawResult);
 
-    const { result } = await renderHook(() => useDraw('2026-11-14', 'TPHCM'), {
+    const { result } = await renderHook(() => useDraw('2026-11-14', 'tp-hcm'), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(result.current.draw).toEqual(mockDrawResult);
-    expect(result.current.draw?.stationCode).toBe('TPHCM');
-    expect(apiDraws.fetchDraw).toHaveBeenCalledWith('2026-11-14', 'TPHCM');
+    expect(result.current.draw?.stationCode).toBe('tp-hcm');
+    expect(result.current.draw?.stationName).toBe('TP. Hồ Chí Minh');
+    expect(result.current.draw?.isComplete).toBe(true);
+    expect(result.current.draw?.status).toBe('FINAL');
+    expect(apiDraws.fetchDraw).toHaveBeenCalledWith('2026-11-14', 'tp-hcm');
   });
 
   it('handles query error when draw is not found', async () => {

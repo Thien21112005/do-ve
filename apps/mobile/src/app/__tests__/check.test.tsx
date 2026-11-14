@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
@@ -102,7 +103,7 @@ describe('CheckScreen Form Composition', () => {
       expect(apiCheck.checkTicket).toHaveBeenCalledWith(
         expect.objectContaining({
           ticket: '987654',
-          station: 'TPHCM',
+          stationCode: 'TPHCM',
         }),
       );
       expect(onCheckSuccess).toHaveBeenCalled();

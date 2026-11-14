@@ -57,8 +57,8 @@ export function ResultCard({
   }));
 
   const winCount = result.wins ? result.wins.length : 0;
-  const formattedDate = formatDateVN(result.drawDate);
-  const longestMatched = getLongestMatchedSuffix(result.ticket, result.wins as any);
+  const formattedDate = formatDateVN(result.drawDate ?? '');
+  const longestMatched = getLongestMatchedSuffix(result.ticket ?? '', result.wins as any);
   const totalPrize =
     typeof (result as any).totalPrize === 'number'
       ? (result as any).totalPrize
@@ -199,7 +199,7 @@ export function ResultCard({
             {STRINGS.check.ticketNumberLabel}
           </Text>
           <HighlightedTicket
-            ticket={result.ticket}
+            ticket={result.ticket ?? ''}
             matchedDigits={longestMatched}
             size="md"
           />
@@ -286,7 +286,7 @@ export function ResultCard({
                 className="text-sm font-semibold"
                 style={{ color: colors.textMain }}
               >
-                {formatCurrency(win.prizeAmount)}
+                {formatCurrency(win.prizeAmount ?? 0)}
               </Text>
             </View>
           ))}
@@ -302,7 +302,7 @@ export function ResultCard({
             >
               {STRINGS.check.totalPrizeLabel}{' '}
               <Text className="text-lg font-bold" style={{ color: colors.win }}>
-                {formatCurrency(result.totalPrize)}
+                {formatCurrency(totalPrize)}
               </Text>
             </Text>
           </View>
@@ -313,7 +313,7 @@ export function ResultCard({
             className="text-sm text-center leading-relaxed"
             style={{ color: colors.textMuted }}
           >
-            {STRINGS.check.lostNotice(result.ticket)}
+            {STRINGS.check.lostNotice(result.ticket ?? '')}
           </Text>
         </View>
       )}

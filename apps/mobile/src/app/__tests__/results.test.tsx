@@ -1,9 +1,10 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ResultsScreen from '../(tabs)/results';
 import * as apiDraws from '@/api/draws';
-import type { StationResponse, DrawResultResponse } from '@/types';
+import type { StationResponse, DrawResponse } from '@/types';
 
 jest.mock('@/api/draws');
 
@@ -29,23 +30,18 @@ const mockStations: StationResponse[] = [
     code: 'TPHCM',
     name: 'TP. Hồ Chí Minh',
     region: 'SOUTH',
-    drawDays: ['SATURDAY', 'MONDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'DONG_THAP',
     name: 'Đồng Tháp',
     region: 'SOUTH',
-    drawDays: ['MONDAY'],
-    liveStreamUrl: null,
   },
 ];
 
-const mockDrawTPHCM: DrawResultResponse = {
+const mockDrawTPHCM: DrawResponse = {
   stationCode: 'TPHCM',
-  stationName: 'TP. Hồ Chí Minh',
   drawDate: '2026-11-14',
-  prizes: {
+  numbers: {
     SPECIAL: ['123456'],
     FIRST: ['65432'],
     SECOND: ['11223'],
@@ -56,14 +52,12 @@ const mockDrawTPHCM: DrawResultResponse = {
     SEVENTH: ['345'],
     EIGHTH: ['67'],
   },
-  status: 'FINAL',
 };
 
-const mockDrawDongThap: DrawResultResponse = {
+const mockDrawDongThap: DrawResponse = {
   stationCode: 'DONG_THAP',
-  stationName: 'Đồng Tháp',
   drawDate: '2026-11-14',
-  prizes: {
+  numbers: {
     SPECIAL: ['999999'],
     FIRST: ['88888'],
     SECOND: ['77777'],
@@ -74,7 +68,6 @@ const mockDrawDongThap: DrawResultResponse = {
     SEVENTH: ['222'],
     EIGHTH: ['11'],
   },
-  status: 'FINAL',
 };
 
 describe('ResultsScreen', () => {

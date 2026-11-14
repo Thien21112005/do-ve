@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { render, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HomeScreen from '../(tabs)/index';
@@ -7,42 +8,36 @@ import ResultsScreen from '../(tabs)/results';
 import TicketsScreen from '../(tabs)/tickets';
 import MoreScreen from '../(tabs)/more';
 import * as apiDraws from '@/api/draws';
-import type { DrawResultResponse, StationResponse } from '@/types';
+import type { DrawResponse, StationResponse } from '@/types';
 
 jest.mock('@/api/draws');
 
 const mockStations: StationResponse[] = [
   {
-    code: 'TPHCM',
+    code: 'tp-hcm',
     name: 'TP. Hồ Chí Minh',
     region: 'SOUTH',
-    drawDays: ['SATURDAY', 'MONDAY'],
-    liveStreamUrl: null,
   },
 ];
 
-const mockLatestDraws: DrawResultResponse[] = [
+const mockLatestDraws: DrawResponse[] = [
   {
-    stationCode: 'TPHCM',
-    stationName: 'TP. Hồ Chí Minh',
+    stationCode: 'tp-hcm',
     drawDate: '2026-11-14',
-    prizes: {
+    numbers: {
       SPECIAL: ['654321'],
       FIRST: ['12345'],
       EIGHTH: ['89'],
     },
-    status: 'FINAL',
   },
   {
-    stationCode: 'DONG_THAP',
-    stationName: 'Đồng Tháp',
+    stationCode: 'dong-thap',
     drawDate: '2026-11-14',
-    prizes: {
+    numbers: {
       SPECIAL: ['999999'],
       FIRST: ['88888'],
       EIGHTH: ['11'],
     },
-    status: 'FINAL',
   },
 ];
 

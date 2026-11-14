@@ -62,7 +62,12 @@ export async function recheckPendingTickets(
 
         if (response && Array.isArray(response.results)) {
           for (const itemResult of response.results) {
-            if (itemResult.status === 'CHECKED') {
+            if (
+              itemResult.status === 'CHECKED' ||
+              itemResult.status === 'WIN' ||
+              itemResult.status === 'LOSE' ||
+              (itemResult.status && itemResult.status !== 'RESULT_NOT_AVAILABLE')
+            ) {
               const matchedTicket = group.tickets.find(
                 (t) => t.ticket === itemResult.ticket,
               );

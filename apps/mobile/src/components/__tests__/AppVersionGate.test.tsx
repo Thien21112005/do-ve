@@ -7,21 +7,18 @@ import type { AppConfigResponse } from '@/types';
 describe('AppVersionGate Component (T06.30)', () => {
   const normalConfig: AppConfigResponse = {
     minSupportedVersion: '1.0.0',
-    currentVersion: '1.0.0',
     maintenance: false,
-    message: null,
+    message: '',
   };
 
   const outdatedConfig: AppConfigResponse = {
     minSupportedVersion: '2.0.0',
-    currentVersion: '2.0.0',
     maintenance: false,
     message: 'Phiên bản cũ đã ngừng hoạt động. Vui lòng cập nhật!',
   };
 
   const maintenanceConfig: AppConfigResponse = {
     minSupportedVersion: '1.0.0',
-    currentVersion: '1.0.0',
     maintenance: true,
     message: 'Máy chủ đang bảo trì nâng cấp từ 12h00 đến 14h00.',
   };

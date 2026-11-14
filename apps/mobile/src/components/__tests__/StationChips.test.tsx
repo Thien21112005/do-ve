@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StationChips } from '../StationChips';
@@ -29,29 +30,21 @@ const mockStationsSaturday: StationResponse[] = [
     code: 'TPHCM',
     name: 'TP. Hồ Chí Minh',
     region: 'SOUTH',
-    drawDays: ['SATURDAY', 'MONDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'LONG_AN',
     name: 'Long An',
     region: 'SOUTH',
-    drawDays: ['SATURDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'BINH_PHUOC',
     name: 'Bình Phước',
     region: 'SOUTH',
-    drawDays: ['SATURDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'HAU_GIANG',
     name: 'Hậu Giang',
     region: 'SOUTH',
-    drawDays: ['SATURDAY'],
-    liveStreamUrl: null,
   },
 ];
 
@@ -60,22 +53,16 @@ const mockStationsSunday: StationResponse[] = [
     code: 'TIEN_GIANG',
     name: 'Tiền Giang',
     region: 'SOUTH',
-    drawDays: ['SUNDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'KIEN_GIANG',
     name: 'Kiên Giang',
     region: 'SOUTH',
-    drawDays: ['SUNDAY'],
-    liveStreamUrl: null,
   },
   {
     code: 'DA_LAT',
     name: 'Đà Lạt',
     region: 'SOUTH',
-    drawDays: ['SUNDAY'],
-    liveStreamUrl: null,
   },
 ];
 

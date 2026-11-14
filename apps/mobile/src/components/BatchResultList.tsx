@@ -31,7 +31,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       ? (batchResult as any).totalWonTickets
       : (batchResult.results || []).filter((r) => r.won).length;
   const hasWon = wonTickets > 0;
-  const formattedDrawDate = formatDateVN(batchResult.drawDate);
+  const formattedDrawDate = formatDateVN(batchResult.drawDate ?? '');
   const stationName =
     (batchResult as any).stationName ||
     (batchResult as any).station ||
@@ -145,7 +145,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
           {STRINGS.check.batchTicketDetails(totalTickets)}
         </Text>
 
-        {batchResult.results.map((item, index) => {
+        {(batchResult.results || []).map((item, index) => {
           const isItemWon = item.won === true;
           const isNotAvailable = item.status === 'RESULT_NOT_AVAILABLE';
 
@@ -181,10 +181,10 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                   </Text>
                   {isItemWon && item.wins && item.wins.length > 0 ? (
                     <HighlightedTicket
-                      ticket={item.ticket}
+                      ticket={item.ticket ?? ''}
                       matchedDigits={getLongestMatchedSuffix(
-                        item.ticket,
-                        item.wins,
+                        item.ticket ?? '',
+                        item.wins as any,
                       )}
                     />
                   ) : (

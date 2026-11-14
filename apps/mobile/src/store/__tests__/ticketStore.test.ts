@@ -31,9 +31,8 @@ describe('ticketStore Service', () => {
       wins: [
         {
           tier: 'FOURTH',
-          tierName: 'Giải tư',
           prizeAmount: 2000000,
-          matchedDigits: '12345',
+          matchedNumber: '12345',
         },
       ],
     });

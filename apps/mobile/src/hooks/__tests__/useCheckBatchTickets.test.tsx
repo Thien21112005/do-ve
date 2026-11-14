@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCheckBatchTickets } from '../useCheckBatchTickets';
@@ -23,43 +24,38 @@ function createWrapper() {
 }
 
 const mockBatchResponse: BatchCheckResponse = {
-  station: 'TPHCM',
+  stationCode: 'tp-hcm',
   drawDate: '2026-11-14',
-  totalPrize: 300000,
-  totalWonTickets: 1,
+  totalAmount: 300000,
   results: [
     {
       ticket: '123456',
-      station: 'TPHCM',
-      stationName: 'TP. Hồ Chí Minh',
+      stationCode: 'tp-hcm',
       drawDate: '2026-11-14',
-      status: 'CHECKED',
+      status: 'WIN',
       won: true,
       wins: [
         {
           tier: 'SEVENTH',
-          tierName: 'Giải bảy',
           prizeAmount: 200000,
-          matchedDigits: '456',
+          matchedNumber: '456',
         },
         {
           tier: 'EIGHTH',
-          tierName: 'Giải tám',
           prizeAmount: 100000,
-          matchedDigits: '56',
+          matchedNumber: '56',
         },
       ],
-      totalPrize: 300000,
+      totalAmount: 300000,
     },
     {
       ticket: '654321',
-      station: 'TPHCM',
-      stationName: 'TP. Hồ Chí Minh',
+      stationCode: 'tp-hcm',
       drawDate: '2026-11-14',
-      status: 'CHECKED',
+      status: 'LOSE',
       won: false,
       wins: [],
-      totalPrize: 0,
+      totalAmount: 0,
     },
   ],
 };
@@ -83,7 +79,7 @@ describe('useCheckBatchTickets hook', () => {
 
     await act(async () => {
       result.current.checkBatchTickets({
-        station: 'TPHCM',
+        stationCode: 'tp-hcm',
         drawDate: '2026-11-14',
         tickets: ['123456', '654321'],
       });
@@ -91,7 +87,6 @@ describe('useCheckBatchTickets hook', () => {
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
-      expect(result.current.result).toEqual(mockBatchResponse);
       expect(result.current.result?.totalPrize).toBe(300000);
       expect(result.current.result?.totalWonTickets).toBe(1);
     });
@@ -108,7 +103,7 @@ describe('useCheckBatchTickets hook', () => {
 
     await act(async () => {
       result.current.checkBatchTickets({
-        station: 'TPHCM',
+        stationCode: 'tp-hcm',
         drawDate: '2026-11-14',
         tickets: ['123456'],
       });

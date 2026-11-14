@@ -50,6 +50,7 @@ export interface UiDrawView {
 
 export const STATION_NAMES: Record<string, string> = {
   'tp-hcm': 'TP. Hồ Chí Minh',
+  'tphcm': 'TP. Hồ Chí Minh',
   'dong-thap': 'Đồng Tháp',
   'ca-mau': 'Cà Mau',
   'ben-tre': 'Bến Tre',
@@ -67,6 +68,7 @@ export const STATION_NAMES: Record<string, string> = {
   'tien-giang': 'Tiền Giang',
   'kien-giang': 'Kiên Giang',
   'da-lat': 'Đà Lạt (Lâm Đồng)',
+  'dalat': 'Đà Lạt (Lâm Đồng)',
   'binh-phuoc': 'Bình Phước',
   'hau-giang': 'Hậu Giang',
   'long-an': 'Long An',
@@ -105,12 +107,22 @@ export function getStationName(
   stationsList?: { code?: string; name?: string }[],
 ): string {
   if (!code) return '';
-  const normalized = code.toLowerCase().trim();
+  const trimmed = code.trim();
+  const normalized = trimmed.toLowerCase();
+  const hyphenated = normalized.replace(/[_\s]/g, '-');
   if (stationsList && stationsList.length > 0) {
-    const found = stationsList.find((s) => s.code?.toLowerCase().trim() === normalized);
+    const found = stationsList.find(
+      (s) =>
+        s.code?.toLowerCase().trim() === normalized ||
+        s.code?.toLowerCase().trim().replace(/[_\s]/g, '-') === hyphenated,
+    );
     if (found?.name) return found.name;
   }
-  return STATION_NAMES[normalized] || code;
+  return (
+    STATION_NAMES[hyphenated] ||
+    STATION_NAMES[normalized] ||
+    trimmed
+  );
 }
 
 export function getTierName(tier?: string): string {
@@ -133,16 +145,22 @@ export function mapCheckResponseToUi(
 ): UiCheckResult {
   const stationCode = dto.stationCode || '';
   const stationName = getStationName(stationCode, stationsList);
-  const total = typeof dto.totalAmount === 'number' ? dto.totalAmount : 0;
+  const total =
+    typeof dto.totalAmount === 'number'
+      ? dto.totalAmount
+      : typeof (dto as any).totalPrize === 'number'
+        ? (dto as any).totalPrize
+        : 0;
 
   const wins: UiWin[] = (dto.wins || []).map((w) => {
     const tier = w.tier || '';
-    const matchedNumber = w.matchedNumber || '';
+    const matchedNumber = w.matchedNumber || (w as any).matchedDigits || '';
     return {
       tier,
-      tierName: getTierName(tier),
+      tierName: (w as any).tierName || getTierName(tier),
       matchedNumber,
-      matchedDigits: getMatchedDigits(tier, matchedNumber),
+      matchedDigits:
+        (w as any).matchedDigits || getMatchedDigits(tier, matchedNumber),
       prizeAmount: typeof w.prizeAmount === 'number' ? w.prizeAmount : 0,
     };
   });
@@ -165,9 +183,14 @@ export function mapBatchResponseToUi(
   dto: BatchCheckResponse,
   stationsList?: StationResponse[],
 ): UiBatchResult {
-  const stationCode = dto.stationCode || '';
+  const stationCode = dto.stationCode || (dto as any).station || '';
   const stationName = getStationName(stationCode, stationsList);
-  const total = typeof dto.totalAmount === 'number' ? dto.totalAmount : 0;
+  const total =
+    typeof dto.totalAmount === 'number'
+      ? dto.totalAmount
+      : typeof (dto as any).totalPrize === 'number'
+        ? (dto as any).totalPrize
+        : 0;
 
   const results: UiCheckResult[] = (dto.results || []).map((r) =>
     mapCheckResponseToUi(r, stationsList),

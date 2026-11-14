@@ -11,7 +11,7 @@ import {
   HighlightedTicket,
 } from '@/components';
 import CheckScreen from '@/app/(tabs)/check';
-import type { CheckTicketResponse } from '@/types';
+import type { UiCheckResult } from '@/api/mappers';
 
 jest.mock('@/api', () => ({
   ...jest.requireActual('@/api'),
@@ -113,21 +113,24 @@ describe('Accessibility (a11y) Verification', () => {
   });
 
   it('ResultCard announces win, loss, and pending states with accessibilityRole="summary" and assertive live region', async () => {
-    const winningResult: CheckTicketResponse = {
+    const winningResult: UiCheckResult = {
       ticket: '123456',
+      stationCode: 'TPHCM',
       station: 'TPHCM',
       stationName: 'TP. Hồ Chí Minh',
       drawDate: '2026-11-14',
-      status: 'CHECKED',
+      status: 'WIN',
       won: true,
       wins: [
         {
           tier: 'SPECIAL',
           tierName: 'Giải Đặc biệt',
           prizeAmount: 2000000000,
+          matchedNumber: '123456',
           matchedDigits: '123456',
         },
       ],
+      totalAmount: 2000000000,
       totalPrize: 2000000000,
     };
 

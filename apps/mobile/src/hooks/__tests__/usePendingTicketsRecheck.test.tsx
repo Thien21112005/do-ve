@@ -102,34 +102,29 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
 
       // Call 1: Results not available yet
       const notAvailableResponse: BatchCheckResponse = {
-        station: 'TPHCM',
+        stationCode: 'TPHCM',
         drawDate: '2026-11-14',
         results: [
           {
             ticket: '123456',
-            station: 'TPHCM',
-            stationName: 'TP. Hồ Chí Minh',
+            stationCode: 'TPHCM',
             drawDate: '2026-11-14',
             status: 'RESULT_NOT_AVAILABLE',
-            won: null,
+            won: false,
             wins: [],
-            totalPrize: 0,
-            message: 'Chưa có kết quả',
+            totalAmount: 0,
           },
           {
             ticket: '654321',
-            station: 'TPHCM',
-            stationName: 'TP. Hồ Chí Minh',
+            stationCode: 'TPHCM',
             drawDate: '2026-11-14',
             status: 'RESULT_NOT_AVAILABLE',
-            won: null,
+            won: false,
             wins: [],
-            totalPrize: 0,
-            message: 'Chưa có kết quả',
+            totalAmount: 0,
           },
         ],
-        totalWonTickets: 0,
-        totalPrize: 0,
+        totalAmount: 0,
       };
 
       (apiCheck.checkBatchTickets as jest.Mock).mockResolvedValueOnce(
@@ -145,41 +140,35 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
 
       // Call 2: Results are now available! 123456 won, 654321 lost
       const checkedResponse: BatchCheckResponse = {
-        station: 'TPHCM',
+        stationCode: 'TPHCM',
         drawDate: '2026-11-14',
         results: [
           {
             ticket: '123456',
-            station: 'TPHCM',
-            stationName: 'TP. Hồ Chí Minh',
+            stationCode: 'TPHCM',
             drawDate: '2026-11-14',
-            status: 'CHECKED',
+            status: 'WIN',
             won: true,
             wins: [
               {
                 tier: 'SPECIAL',
-                tierName: 'Giải Đặc Biệt',
                 prizeAmount: 2000000000,
-                matchedDigits: '123456',
+                matchedNumber: '123456',
               },
             ],
-            totalPrize: 2000000000,
-            message: null,
+            totalAmount: 2000000000,
           },
           {
             ticket: '654321',
-            station: 'TPHCM',
-            stationName: 'TP. Hồ Chí Minh',
+            stationCode: 'TPHCM',
             drawDate: '2026-11-14',
-            status: 'CHECKED',
+            status: 'LOSE',
             won: false,
             wins: [],
-            totalPrize: 0,
-            message: null,
+            totalAmount: 0,
           },
         ],
-        totalWonTickets: 1,
-        totalPrize: 2000000000,
+        totalAmount: 2000000000,
       };
 
       (apiCheck.checkBatchTickets as jest.Mock).mockResolvedValueOnce(

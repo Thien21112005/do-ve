@@ -1,4 +1,5 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
+import type { ReactNode } from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useStations, useStation } from '../useStations';
@@ -26,18 +27,14 @@ function createWrapper() {
 
 const mockStations: StationResponse[] = [
   {
-    code: 'TPHCM',
+    code: 'tp-hcm',
     name: 'TP. Hồ Chí Minh',
     region: 'SOUTH',
-    drawDays: ['SATURDAY', 'MONDAY'],
-    liveStreamUrl: null,
   },
   {
-    code: 'DONG_NAI',
+    code: 'dong-nai',
     name: 'Đồng Nai',
     region: 'SOUTH',
-    drawDays: ['WEDNESDAY'],
-    liveStreamUrl: null,
   },
 ];
 
@@ -79,13 +76,13 @@ describe('useStations hook', () => {
   it('fetches single station by code', async () => {
     (api.fetchStationByCode as jest.Mock).mockResolvedValue(mockStations[0]);
 
-    const { result } = await renderHook(() => useStation('TPHCM'), {
+    const { result } = await renderHook(() => useStation('tp-hcm'), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.station?.name).toBe('TP. Hồ Chí Minh');
-    expect(api.fetchStationByCode).toHaveBeenCalledWith('TPHCM');
+    expect(api.fetchStationByCode).toHaveBeenCalledWith('tp-hcm');
   });
 });

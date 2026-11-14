@@ -1,55 +1,67 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { BatchResultList } from '../BatchResultList';
-import type { BatchCheckResponse } from '@/types';
+import type { UiBatchResult } from '@/api/mappers';
 
-const mockBatchResult: BatchCheckResponse = {
+const mockBatchResult: UiBatchResult = {
+  stationCode: 'TPHCM',
   station: 'TPHCM',
+  stationName: 'TP. Hồ Chí Minh',
   drawDate: '2026-11-14',
+  totalAmount: 300000,
   totalPrize: 300000,
   totalWonTickets: 1,
+  totalTickets: 3,
   results: [
     {
       ticket: '123456',
+      stationCode: 'TPHCM',
       station: 'TPHCM',
       stationName: 'TP. Hồ Chí Minh',
       drawDate: '2026-11-14',
-      status: 'CHECKED',
+      status: 'WIN',
       won: true,
       wins: [
         {
           tier: 'SEVENTH',
           tierName: 'Giải bảy',
           prizeAmount: 200000,
+          matchedNumber: '456',
           matchedDigits: '456',
         },
         {
           tier: 'EIGHTH',
           tierName: 'Giải tám',
           prizeAmount: 100000,
+          matchedNumber: '56',
           matchedDigits: '56',
         },
       ],
+      totalAmount: 300000,
       totalPrize: 300000,
     },
     {
       ticket: '654321',
+      stationCode: 'TPHCM',
       station: 'TPHCM',
       stationName: 'TP. Hồ Chí Minh',
       drawDate: '2026-11-14',
-      status: 'CHECKED',
+      status: 'LOSE',
       won: false,
       wins: [],
+      totalAmount: 0,
       totalPrize: 0,
     },
     {
       ticket: '999888',
+      stationCode: 'TPHCM',
       station: 'TPHCM',
       stationName: 'TP. Hồ Chí Minh',
       drawDate: '2026-11-14',
       status: 'RESULT_NOT_AVAILABLE',
       won: null,
       wins: [],
+      totalAmount: 0,
       totalPrize: 0,
     },
   ],

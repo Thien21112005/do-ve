@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ResultCard } from '../ResultCard';
 import { haptics } from '@/lib/haptics';
-import type { CheckTicketResponse } from '@/types';
+import type { UiCheckResult } from '@/api/mappers';
 
 jest.mock('@/lib/haptics', () => ({
   haptics: {
@@ -15,51 +15,58 @@ jest.mock('@/lib/haptics', () => ({
 }));
 
 describe('ResultCard Component', () => {
-  const winningResult: CheckTicketResponse = {
+  const winningResult: UiCheckResult = {
     ticket: '123456',
+    stationCode: 'TPHCM',
     station: 'TPHCM',
     stationName: 'TP. Hồ Chí Minh',
     drawDate: '2026-11-14',
-    status: 'CHECKED',
+    status: 'WIN',
     won: true,
     wins: [
       {
         tier: 'SEVENTH',
         tierName: 'Giải bảy',
         prizeAmount: 200000,
+        matchedNumber: '456',
         matchedDigits: '456',
       },
       {
         tier: 'EIGHTH',
         tierName: 'Giải tám',
         prizeAmount: 100000,
+        matchedNumber: '56',
         matchedDigits: '56',
       },
     ],
+    totalAmount: 300000,
     totalPrize: 300000,
   };
 
-  const losingResult: CheckTicketResponse = {
+  const losingResult: UiCheckResult = {
     ticket: '654321',
+    stationCode: 'TPHCM',
     station: 'TPHCM',
     stationName: 'TP. Hồ Chí Minh',
     drawDate: '2026-11-14',
-    status: 'CHECKED',
+    status: 'LOSE',
     won: false,
     wins: [],
+    totalAmount: 0,
     totalPrize: 0,
   };
 
-  const notAvailableResult: CheckTicketResponse = {
+  const notAvailableResult: UiCheckResult = {
     ticket: '777888',
+    stationCode: 'TPHCM',
     station: 'TPHCM',
     stationName: 'TP. Hồ Chí Minh',
     drawDate: '2026-11-14',
     status: 'RESULT_NOT_AVAILABLE',
     won: null,
     wins: [],
+    totalAmount: 0,
     totalPrize: 0,
-    message: 'Chưa có kết quả cho kỳ quay này',
   };
 
   it('renders winning state with congratulation message, prize list, and total amount', async () => {

@@ -31,7 +31,7 @@ export function StationChips({
   useEffect(() => {
     if (autoSelectFirst && stations.length > 0) {
       const exists = stations.some((s) => s.code === selectedStation);
-      if (!exists) {
+      if (!exists && stations[0]?.code) {
         onSelectStation(stations[0].code);
       }
     }
@@ -73,11 +73,11 @@ export function StationChips({
 
           return (
             <TouchableOpacity
-              key={station.code}
-              testID={`${testID}-${station.code}`}
-              onPress={() => onSelectStation(station.code)}
+              key={station.code ?? station.name ?? 'station'}
+              testID={`${testID}-${station.code ?? 'unknown'}`}
+              onPress={() => station.code && onSelectStation(station.code)}
               accessibilityRole="button"
-              accessibilityLabel={`Đài ${station.name}`}
+              accessibilityLabel={`Đài ${station.name ?? station.code ?? ''}`}
               accessibilityState={{ selected: isSelected }}
               className="items-center justify-center py-2 px-4 rounded-xl border"
               style={{

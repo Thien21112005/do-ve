@@ -53,6 +53,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   } = useCheckBatchTickets();
 
   const [savedTickets, { save: saveTicketToStore }] = useSavedTickets();
+  const [justSaved, setJustSaved] = useState(false);
 
   // Initial state: today's date
   const defaultDate = getPastDays(1)[0].dateString;
@@ -71,15 +72,18 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
   const parsedBatch = parseBatchTickets(batchText, 20);
 
-  const isResultSaved = Boolean(
-    result &&
-      savedTickets.some(
-        (t) =>
-          t.ticket === result.ticket &&
-          (t.station === (result as any).station || t.station === (result as any).stationCode) &&
-          t.drawDate === result.drawDate,
-      ),
-  );
+  const isResultSaved =
+    justSaved ||
+    Boolean(
+      result &&
+        savedTickets.some(
+          (t) =>
+            t.ticket === result.ticket &&
+            (t.station === (result as any).station ||
+              t.station === (result as any).stationCode) &&
+            t.drawDate === result.drawDate,
+        ),
+    );
 
   const handleSaveTicket = async (ticketResult: any) => {
     let status: SavedTicketStatus = 'LOST';
@@ -89,7 +93,8 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       status = 'WON';
     }
 
-    const station = ticketResult.stationCode || ticketResult.station || selectedStation;
+    const station =
+      ticketResult.stationCode || ticketResult.station || selectedStation;
     const stationName = ticketResult.stationName || station;
     const totalPrize =
       typeof ticketResult.totalPrize === 'number'
@@ -107,6 +112,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       totalPrize,
       wins: ticketResult.wins || [],
     });
+    setJustSaved(true);
   };
 
   const activeLoading = mode === 'single' ? isLoading : isBatchLoading;
@@ -134,6 +140,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
   const handleSubmit = () => {
     setHasInteracted(true);
+    setJustSaved(false);
     if (!isFormValid) {
       haptics.warning();
       return;
