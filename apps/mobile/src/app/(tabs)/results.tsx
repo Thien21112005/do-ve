@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   DateStrip,
@@ -25,6 +31,17 @@ export default function ResultsScreen() {
     selectedStation,
   );
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
   const formattedDate = formatDateVN(selectedDate);
 
   return (
@@ -34,8 +51,18 @@ export default function ResultsScreen() {
       className="flex-1 bg-slate-50 dark:bg-slate-900"
     >
       <ScrollView
+        testID="results-scroll-view"
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         className="flex-1"
+        refreshControl={
+          <RefreshControl
+            testID="results-refresh-control"
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
       >
         {/* Offline Banner */}
         <OfflineBanner onRetry={refetch} />

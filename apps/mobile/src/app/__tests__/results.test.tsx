@@ -1,5 +1,5 @@
 import React, { type ReactNode } from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ResultsScreen from '../(tabs)/results';
 import * as apiDraws from '@/api/draws';
@@ -114,12 +114,9 @@ describe('ResultsScreen', () => {
   });
 
   it('switches station tab and loads data for the new station', async () => {
-    const { getByTestId, getAllByText } = await render(
-      <ResultsScreen />,
-      {
-        wrapper: createWrapper(),
-      },
-    );
+    const { getByTestId, getAllByText } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() =>
       expect(getByTestId('station-chips-DONG_THAP')).toBeTruthy(),
@@ -134,6 +131,31 @@ describe('ResultsScreen', () => {
         'DONG_THAP',
       );
       expect(getAllByText(/Đồng Tháp/i).length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  it('triggers pull-to-refresh on results screen and refetches draw data', async () => {
+    const { getByTestId } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('results-scroll-view')).toBeTruthy();
+    });
+
+    const scrollView = getByTestId('results-scroll-view');
+    const refreshControl = scrollView.props.refreshControl;
+    expect(refreshControl).toBeDefined();
+
+    const initialCalls = (apiDraws.fetchDraw as jest.Mock).mock.calls.length;
+    await act(async () => {
+      await refreshControl.props.onRefresh();
+    });
+
+    await waitFor(() => {
+      expect(
+        (apiDraws.fetchDraw as jest.Mock).mock.calls.length,
+      ).toBeGreaterThan(initialCalls);
     });
   });
 });
