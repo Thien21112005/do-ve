@@ -4,542 +4,469 @@
  */
 
 export interface paths {
-  '/api/v1/stations': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/admin/draws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["upsertDraw"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Danh sách các đài mở thưởng */
-    get: {
-      parameters: {
-        query?: {
-          region?: string;
+    "/api/v1/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Danh sách đài mở thưởng */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['StationResponse'][];
-          };
-        };
-      };
+        get?: never;
+        put?: never;
+        /**
+         * Dò 1 vé số
+         * @description Dò vé 6 chữ số theo đài và ngày mở thưởng. Trả về kết quả trúng thưởng chi tiết theo từng hạng giải và tổng tiền thưởng.
+         */
+        post: operations["checkTicket"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/stations/{code}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/check/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dò theo lô (tối đa 20 vé)
+         * @description Dò danh sách tối đa 20 vé số trong cùng 1 kỳ quay. Trả về kết quả từng vé và tổng tiền trúng thưởng gộp.
+         */
+        post: operations["checkBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Chi tiết một đài */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          code: string;
+    "/api/v1/stations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Thông tin chi tiết đài */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['StationResponse'];
-          };
-        };
-        /** @description Không tìm thấy đài */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-      };
+        /**
+         * Danh sách đài xổ số
+         * @description Trả về danh sách các đài xổ số, có thể lọc theo miền (mặc định miền Nam - SOUTH)
+         */
+        get: operations["listStations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/draws/schedule': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/stations/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Chi tiết một đài xổ số
+         * @description Tra cứu thông tin chi tiết một đài theo mã (ví dụ: tp-hcm, dong-nai)
+         */
+        get: operations["getStation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lịch quay thưởng theo ngày */
-    get: {
-      parameters: {
-        query: {
-          date: string;
+    "/api/v1/draws": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Danh sách các đài quay trong ngày */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['StationResponse'][];
-          };
-        };
-        /** @description Ngày không hợp lệ */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-      };
+        /**
+         * Kết quả mở thưởng một kỳ quay
+         * @description Trả về bảng 18 số mở thưởng của một đài vào ngày cụ thể (có gắn header Cache-Control phù hợp)
+         */
+        get: operations["getDraw"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/draws': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/draws/schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lịch các đài quay theo ngày
+         * @description Trả về danh sách các đài có lịch mở thưởng vào ngày được chỉ định (thứ 2 - chủ nhật)
+         */
+        get: operations["getDrawSchedule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy kết quả xổ số của một kỳ */
-    get: {
-      parameters: {
-        query: {
-          date: string;
-          station: string;
+    "/api/v1/draws/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Kết quả kỳ quay */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['DrawResultResponse'];
-          };
-        };
-        /** @description Ngày không hợp lệ */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-        /** @description Chưa có hoặc không tìm thấy kết quả */
-        404: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-      };
+        /**
+         * Kỳ quay mới nhất
+         * @description Trả về kết quả kỳ quay mới nhất toàn hệ thống hoặc của một đài cụ thể
+         */
+        get: operations["getLatestDraw"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/draws/latest': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/app/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Cấu hình ứng dụng
+         * @description Trả về phiên bản ứng dụng tối thiểu được hỗ trợ và trạng thái bảo trì của hệ thống (SRS 6.2)
+         */
+        get: operations["getConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy kết quả các kỳ quay mới nhất */
-    get: {
-      parameters: {
-        query?: {
-          station?: string;
-        };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Danh sách kết quả mới nhất */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['DrawResultResponse'][];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/check': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Dò một vé số */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['CheckTicketRequest'];
-        };
-      };
-      responses: {
-        /** @description Kết quả dò vé */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['CheckTicketResponse'];
-          };
-        };
-        /** @description Dữ liệu vé hoặc ngày không hợp lệ */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-        /** @description Đài không mở thưởng vào ngày đã chọn */
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-        /** @description Quá giới hạn tần suất gọi API */
-        429: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/check/batch': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Dò hàng loạt tối đa 20 vé số */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          'application/json': components['schemas']['BatchCheckRequest'];
-        };
-      };
-      responses: {
-        /** @description Kết quả dò hàng loạt */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['BatchCheckResponse'];
-          };
-        };
-        /** @description Danh sách vé không hợp lệ hoặc vượt quá 20 vé */
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/problem+json': components['schemas']['ProblemDetail'];
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/app/config': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Cấu hình ứng dụng và phiên bản tối thiểu */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Cấu hình ứng dụng */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            'application/json': components['schemas']['AppConfigResponse'];
-          };
-        };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    StationResponse: {
-      /** @example TPHCM */
-      code: string;
-      /** @example TP. Hồ Chí Minh */
-      name: string;
-      /** @example SOUTH */
-      region: string;
-      /**
-       * @example [
-       *       "SATURDAY",
-       *       "MONDAY"
-       *     ]
-       */
-      drawDays: string[];
-      liveStreamUrl?: string | null;
+    schemas: {
+        AdminUpsertDrawRequest: {
+            stationCode: string;
+            /** Format: date */
+            drawDate: string;
+            prizes: {
+                [key: string]: string[];
+            };
+        };
+        CheckTicketRequest: {
+            ticket: string;
+            stationCode: string;
+            /** Format: date */
+            drawDate: string;
+        };
+        CheckTicketResponse: {
+            ticket?: string;
+            stationCode?: string;
+            /** Format: date */
+            drawDate?: string;
+            status?: string;
+            won?: boolean;
+            wins?: components["schemas"]["WinResponse"][];
+            /** Format: int64 */
+            totalAmount?: number;
+        };
+        WinResponse: {
+            tier?: string;
+            matchedNumber?: string;
+            /** Format: int64 */
+            prizeAmount?: number;
+        };
+        BatchCheckRequest: {
+            tickets: string[];
+            stationCode: string;
+            /** Format: date */
+            drawDate: string;
+        };
+        BatchCheckResponse: {
+            stationCode?: string;
+            /** Format: date */
+            drawDate?: string;
+            results?: components["schemas"]["CheckTicketResponse"][];
+            /** Format: int64 */
+            totalAmount?: number;
+        };
+        StationResponse: {
+            code?: string;
+            name?: string;
+            region?: string;
+        };
+        DrawResponse: {
+            stationCode?: string;
+            /** Format: date */
+            drawDate?: string;
+            numbers?: {
+                [key: string]: string[];
+            };
+        };
+        AppConfigResponse: {
+            minSupportedVersion?: string;
+            maintenance?: boolean;
+            message?: string;
+        };
     };
-    DrawResultResponse: {
-      /**
-       * Format: date
-       * @example 2026-11-14
-       */
-      drawDate: string;
-      /** @example TPHCM */
-      stationCode: string;
-      /** @example TP. Hồ Chí Minh */
-      stationName: string;
-      /**
-       * @example {
-       *       "SPECIAL": [
-       *         "123456"
-       *       ],
-       *       "FIRST": [
-       *         "654321"
-       *       ]
-       *     }
-       */
-      prizes: {
-        [key: string]: string[];
-      };
-      /** @example COMPLETED */
-      status?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    PrizeWinDto: {
-      /** @example SPECIAL */
-      tier: string;
-      /** @example Giải Đặc biệt */
-      tierName: string;
-      /**
-       * Format: int64
-       * @example 2000000000
-       */
-      prizeAmount: number;
-      /** @example 123456 */
-      matchedDigits: string;
-    };
-    CheckTicketRequest: {
-      /** @example 123456 */
-      ticket: string;
-      /** @example TPHCM */
-      station: string;
-      /**
-       * Format: date
-       * @example 2026-11-14
-       */
-      drawDate: string;
-    };
-    CheckTicketResponse: {
-      /** @example 123456 */
-      ticket: string;
-      /** @example TPHCM */
-      station: string;
-      /** @example TP. Hồ Chí Minh */
-      stationName: string;
-      /**
-       * Format: date
-       * @example 2026-11-14
-       */
-      drawDate: string;
-      /**
-       * @example CHECKED
-       * @enum {string}
-       */
-      status: 'CHECKED' | 'RESULT_NOT_AVAILABLE';
-      /** @example true */
-      won?: boolean | null;
-      wins: components['schemas']['PrizeWinDto'][];
-      /**
-       * Format: int64
-       * @example 2000000000
-       */
-      totalPrize: number;
-      message?: string | null;
-    };
-    BatchCheckRequest: {
-      /** @example TPHCM */
-      station: string;
-      /**
-       * Format: date
-       * @example 2026-11-14
-       */
-      drawDate: string;
-      /**
-       * @example [
-       *       "123456",
-       *       "654321"
-       *     ]
-       */
-      tickets: string[];
-    };
-    BatchCheckResponse: {
-      /** @example TPHCM */
-      station: string;
-      /**
-       * Format: date
-       * @example 2026-11-14
-       */
-      drawDate: string;
-      results: components['schemas']['CheckTicketResponse'][];
-      /**
-       * Format: int64
-       * @example 2000000000
-       */
-      totalPrize: number;
-      /** @example 1 */
-      totalWonTickets: number;
-    };
-    AppConfigResponse: {
-      /** @example 1.0.0 */
-      minSupportedVersion: string;
-      /** @example 1.0.0 */
-      currentVersion: string;
-      /** @example false */
-      maintenance: boolean;
-      message?: string | null;
-    };
-    ProblemDetail: {
-      type?: string;
-      title?: string;
-      status: number;
-      detail?: string;
-      instance?: string;
-      code?: string;
-      /** Format: date-time */
-      timestamp?: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    upsertDraw: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-API-Key"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUpsertDrawRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": {
+                        [key: string]: Record<string, never>;
+                    };
+                };
+            };
+        };
+    };
+    checkTicket: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckTicketRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CheckTicketResponse"];
+                };
+            };
+        };
+    };
+    checkBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchCheckRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BatchCheckResponse"];
+                };
+            };
+        };
+    };
+    listStations: {
+        parameters: {
+            query?: {
+                /** @description Miền cần lọc (ví dụ: SOUTH) */
+                region?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StationResponse"][];
+                };
+            };
+        };
+    };
+    getStation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Mã đài (slug) */
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StationResponse"];
+                };
+            };
+        };
+    };
+    getDraw: {
+        parameters: {
+            query: {
+                /** @description Ngày quay (định dạng YYYY-MM-DD) */
+                date: string;
+                /** @description Mã đài (ví dụ: tp-hcm) */
+                station: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DrawResponse"];
+                };
+            };
+        };
+    };
+    getDrawSchedule: {
+        parameters: {
+            query: {
+                /** @description Ngày quay (định dạng YYYY-MM-DD) */
+                date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StationResponse"][];
+                };
+            };
+        };
+    };
+    getLatestDraw: {
+        parameters: {
+            query?: {
+                /** @description Mã đài (tuỳ chọn, nếu bỏ trống lấy kỳ mới nhất toàn hệ thống) */
+                station?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DrawResponse"];
+                };
+            };
+        };
+    };
+    getConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AppConfigResponse"];
+                };
+            };
+        };
+    };
+}
