@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 29 / 33 task hoàn thành
+- **Tổng quan:** 30 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -37,7 +37,7 @@
 | T06.27 | Màn Lịch quay | DONE | 552d8c9 | 2026-11-14 | Bảng 7 thứ và đài khớp chuẩn SRS 3.3, đánh dấu hôm nay, điều hướng từ tab Thêm & tests |
 | T06.28 | Dò hàng loạt: nhập | DONE | 5d86c6a | 2026-11-14 | Component BatchTicketInput nhiều dòng, tách chuỗi linh hoạt, giới hạn 20 vé & tests |
 | T06.29 | Dò hàng loạt: kết quả | DONE | 18464c6 | 2026-11-14 | Gọi POST /check/batch, danh sách kết quả, tổng tiền, celebration & tests |
-| T06.30 | Kiểm tra phiên bản khi mở app | TODO |  |  |  |
+| T06.30 | Kiểm tra phiên bản khi mở app | DONE | c63df02 | 2026-11-14 | Hook useAppConfig, AppVersionGate chặn app phiên bản cũ (FR-SYS-05) và bảo trì & tests |
 | T06.31 | Gom chuỗi tiếng Việt | TODO |  |  |  |
 | T06.32 | Rà soát accessibility | TODO |  |  |  |
 | T06.33 | Test luồng dò vé | TODO |  |  |  |
@@ -74,6 +74,7 @@
 - 2026-11-14 | T06.27 | Xây dựng màn Lịch quay thưởng (/schedule) thể hiện 21 đài theo 7 thứ trong tuần khớp chuẩn SRS 3.3, highlight thông minh hôm nay và liên kết từ màn Thêm & tests.
 - 2026-11-14 | T06.28 | Xây dựng BatchTicketInput hỗ trợ nhập và dán danh sách tối đa 20 vé, tự động nhận diện định dạng phân cách và báo lỗi vượt ngưỡng & tests.
 - 2026-11-14 | T06.29 | Tích hợp hook useCheckBatchTickets và component BatchResultList hiển thị thống kê vé trúng/trượt, tổng tiền thưởng, tô nổi số đuôi khớp và hiệu ứng ăn mừng & tests.
+- 2026-11-14 | T06.30 | Triển khai logic so sánh semver version.ts, API getAppConfig, hook useAppConfig và component AppVersionGate tích hợp vào root layout & tests.
 
 ## Vấn đề mở
 
