@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,7 +15,10 @@ import com.dove.adapter.persistence.StationScheduleRepository;
 import com.dove.application.DrawRepository;
 import com.dove.domain.DrawResult;
 import com.dove.domain.PrizeTier;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -207,5 +211,64 @@ class DrawControllerTest {
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
         .andExpect(jsonPath("$.status").value(404));
+  }
+
+  @Test
+  @DisplayName(
+      "T05.15: Kỳ quá khứ trả về header Cache-Control: public, max-age=31536000, immutable")
+  void getDraw_pastDate_returnsCacheControlImmutable() throws Exception {
+    LocalDate pastDate = LocalDate.of(2026, 11, 8);
+    Clock clockAtNov9 =
+        Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneId.of("Asia/Ho_Chi_Minh"));
+    DrawController controller =
+        new DrawController(
+            stationScheduleRepository, drawRepository, stationRepository, clockAtNov9);
+    MockMvc mvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+    DrawResult result =
+        new DrawResult("tp-hcm", pastDate, Map.of(PrizeTier.SPECIAL, List.of("654321")));
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findByStationAndDate("tp-hcm", pastDate)).thenReturn(Optional.of(result));
+
+    mvc.perform(get("/api/v1/draws").param("date", "2026-11-08").param("station", "tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"));
+  }
+
+  @Test
+  @DisplayName("T05.15: Kỳ hôm nay trả về header Cache-Control: no-cache")
+  void getDraw_todayDate_returnsCacheControlNoCache() throws Exception {
+    LocalDate todayDate = LocalDate.of(2026, 11, 9);
+    Clock clockAtNov9 =
+        Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneId.of("Asia/Ho_Chi_Minh"));
+    DrawController controller =
+        new DrawController(
+            stationScheduleRepository, drawRepository, stationRepository, clockAtNov9);
+    MockMvc mvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+    DrawResult result =
+        new DrawResult("tp-hcm", todayDate, Map.of(PrizeTier.SPECIAL, List.of("654321")));
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findByStationAndDate("tp-hcm", todayDate)).thenReturn(Optional.of(result));
+
+    mvc.perform(get("/api/v1/draws").param("date", "2026-11-09").param("station", "tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "no-cache"));
+  }
+
+  @Test
+  @DisplayName("T05.15: Kỳ mới nhất trả về header Cache-Control: no-cache")
+  void getLatestDraw_returnsCacheControlNoCache() throws Exception {
+    DrawResult result =
+        new DrawResult(
+            "tp-hcm", LocalDate.of(2026, 11, 9), Map.of(PrizeTier.SPECIAL, List.of("654321")));
+    when(drawRepository.findLatestOverall()).thenReturn(Optional.of(result));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "no-cache"));
   }
 }

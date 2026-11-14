@@ -7,10 +7,16 @@ import com.dove.adapter.web.dto.StationResponse;
 import com.dove.adapter.web.error.StationNotFoundException;
 import com.dove.application.DrawRepository;
 import com.dove.domain.DrawResult;
+import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,20 +30,41 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/v1/draws")
 public class DrawController {
 
+  private static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
   private final StationScheduleRepository stationScheduleRepository;
   private final DrawRepository drawRepository;
   private final StationRepository stationRepository;
+  private final Clock clock;
 
+  @Autowired
   public DrawController(
       StationScheduleRepository stationScheduleRepository,
       DrawRepository drawRepository,
-      StationRepository stationRepository) {
+      StationRepository stationRepository,
+      Optional<Clock> clock) {
     this.stationScheduleRepository =
         Objects.requireNonNull(
             stationScheduleRepository, "stationScheduleRepository must not be null");
     this.drawRepository = Objects.requireNonNull(drawRepository, "drawRepository must not be null");
     this.stationRepository =
         Objects.requireNonNull(stationRepository, "stationRepository must not be null");
+    this.clock = clock.orElseGet(() -> Clock.system(VN_ZONE));
+  }
+
+  public DrawController(
+      StationScheduleRepository stationScheduleRepository,
+      DrawRepository drawRepository,
+      StationRepository stationRepository) {
+    this(stationScheduleRepository, drawRepository, stationRepository, Optional.empty());
+  }
+
+  public DrawController(
+      StationScheduleRepository stationScheduleRepository,
+      DrawRepository drawRepository,
+      StationRepository stationRepository,
+      Clock clock) {
+    this(stationScheduleRepository, drawRepository, stationRepository, Optional.ofNullable(clock));
   }
 
   @GetMapping("/schedule")
@@ -66,13 +93,24 @@ public class DrawController {
                     new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Chưa có kết quả cho đài " + station + " vào ngày " + date));
-    return ResponseEntity.ok(DrawResponse.from(drawResult));
+
+    LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
+    CacheControl cacheControl;
+    if (date.isBefore(todayVn)) {
+      // Past draws are immutable and can be cached long-term
+      cacheControl = CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable();
+    } else {
+      // Today's draws might be in progress or freshly updated
+      cacheControl = CacheControl.noCache();
+    }
+
+    return ResponseEntity.ok().cacheControl(cacheControl).body(DrawResponse.from(drawResult));
   }
 
   @GetMapping("/latest")
   public ResponseEntity<DrawResponse> getLatestDraw(
       @RequestParam(value = "station", required = false) String station) {
-    java.util.Optional<DrawResult> drawResultOpt;
+    Optional<DrawResult> drawResultOpt;
     if (station != null && !station.isBlank()) {
       if (stationRepository.findByCode(station).isEmpty()) {
         throw new StationNotFoundException(station);
@@ -90,6 +128,9 @@ public class DrawController {
                     station != null
                         ? "Chưa có kết quả cho đài " + station
                         : "Chưa có kết quả nào trong hệ thống"));
-    return ResponseEntity.ok(DrawResponse.from(drawResult));
+
+    // Latest draw can change dynamically
+    CacheControl cacheControl = CacheControl.noCache();
+    return ResponseEntity.ok().cacheControl(cacheControl).body(DrawResponse.from(drawResult));
   }
 }
