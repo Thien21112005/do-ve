@@ -1,6 +1,6 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 140 / 179 task hoàn thành (78.2%)
+**Tổng:** 154 / 179 task hoàn thành (86.0%)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -12,7 +12,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 04 | [Ingestion: tự động lấy kết quả](PROGRESS-04-ingestion.md) | 23 / 23 | DONE | Ingestion tự động xskt, throttler 2s, scheduler 16:10-17:30, BackfillRunner, Micrometer metrics, admin manual API, fallback source, E2E WireMock test |
 | 05 | [REST API](PROGRESS-05-rest-api.md) | 21 / 21 | DONE | RFC 7807, stations, draws, check đơn/batch, sliding window rate limiter, clean logging, OpenAPI Swagger UI, MockMvc & E2E tests |
 | 06 | [Mobile app: dò vé và xem kết quả](PROGRESS-06-mobile-core.md) | 33 / 33 | DONE | Expo Tabs, NativeWind, TanStack Query, Be Vietnam Pro, dò đơn & hàng loạt 20 vé, DrawTable 9 giải, version gate, a11y, 158 tests |
-| 07 | [Vé của tôi và trải nghiệm trên thiết bị](PROGRESS-07-my-tickets.md) | 0 / 14 | TODO |  |
+| 07 | [Vé của tôi và trải nghiệm trên thiết bị](PROGRESS-07-my-tickets.md) | 14 / 14 | DONE | AsyncStorage ticketStore, badge đa trục, auto recheck PENDING, offline cache, backup JSON, Cài đặt theme/rung/pháo hoa, nhắc nhở 16h45, quyền riêng tư on-device |
 | 08 | [Chất lượng, đóng gói và phát hành](PROGRESS-08-quality-release.md) | 0 / 25 | TODO |  |
 
 ## Mốc
@@ -23,7 +23,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | M2 Có dữ liệu | 2026-11-13 | 2026-11-13 | Hoàn thành toàn bộ Phase 03 & 04 (Lưu trữ DB + Tự động cào kết quả WireMock E2E) |
 | M3 API dùng được | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 05 (21/21 task REST API) |
 | M4 Dò được trên app | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 06 (33/33 task Mobile Core & Tra cứu) |
-| M5 MVP |  |  |  |
+| M5 MVP | 2026-11-14 | 2026-11-14 | Hoàn thành Phase 07 (Vé của tôi & On-device Experience hoàn thiện toàn diện MVP) |
 
 ## Quyết định cần chốt (ADR)
 

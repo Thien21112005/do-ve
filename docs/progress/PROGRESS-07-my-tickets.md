@@ -1,8 +1,8 @@
 # PROGRESS 07 — Vé của tôi và trải nghiệm trên thiết bị
 
 - **Plan:** [`plans/PLAN-07-my-tickets.md`](../plans/PLAN-07-my-tickets.md)
-- **Tổng quan:** 13 / 14 task hoàn thành
-- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 14 / 14 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** 2026-11-14
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -21,7 +21,7 @@
 | T07.11 | Nhập vé từ JSON | DONE | 86a6149 | 2026-11-14 | Dùng expo-document-picker chọn file JSON, xác thực cấu trúc hợp lệ, gộp bỏ trùng và bảo toàn dữ liệu cũ khi file lỗi |
 | T07.12 | Màn Cài đặt | DONE | 3c05ce9 | 2026-11-14 | Xây dựng màn Cài đặt (chọn theme sáng/tối/hệ thống, bật/tắt pháo hoa, rung) lưu AsyncStorage |
 | T07.13 | Nhắc dò vé (tuỳ chọn) | DONE | 6fe9ff0 | 2026-11-14 | Lập lịch thông báo cục bộ expo-notifications lúc 16h45 vào các ngày có vé PENDING, quản lý quyền và đồng bộ tự động |
-| T07.14 | Giải thích quyền riêng tư | TODO |  |  |  |
+| T07.14 | Giải thích quyền riêng tư | DONE | 488aae0 | 2026-11-14 | Hiển thị thông báo quyền riêng tư lưu trữ vé trên thiết bị tại màn Vé của tôi và mục Giới thiệu (Thêm) |
 
 ## Nhật ký
 
@@ -39,6 +39,7 @@
 - 2026-11-14 | T07.11 | Triển khai nhập vé từ file sao lưu JSON bằng expo-document-picker, kiểm tra cấu trúc dữ liệu, chống trùng lặp vé.
 - 2026-11-14 | T07.12 | Xây dựng màn Cài đặt cho phép chọn chế độ theme, hiệu ứng chúc mừng và rung haptics với lưu trữ AsyncStorage dove.settings.v1.
 - 2026-11-14 | T07.13 | Tích hợp expo-notifications lập lịch nhắc nhở lúc 16h45 cho vé PENDING, bổ sung switch bật/tắt trong Cài đặt với kiểm tra cấp quyền.
+- 2026-11-14 | T07.14 | Thêm thông báo quyền riêng tư on-device minh bạch: "Vé chỉ lưu trên máy này, không gửi lên server." tại màn Vé của tôi và tab Thêm (Giới thiệu).
 
 ## Vấn đề mở
 
