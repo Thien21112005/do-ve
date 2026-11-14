@@ -41,6 +41,9 @@ jobs:
       - name: Check TypeScript types
         run: npm run typecheck
 
+      - name: Run Security Audit (fail on high/critical)
+        run: npm audit --audit-level=high
+
       - name: Run Jest tests
         run: npm test
 
