@@ -66,6 +66,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand --forceExit",
+    "build:apk": "eas build -p android --profile preview",
+    "build:prod": "eas build -p all --profile production",
     "gen:api": "openapi-typescript openapi.json -o src/types/api.d.ts",
     "format": "prettier --write ."
   },
