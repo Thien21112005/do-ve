@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 23 / 33 task hoàn thành
+- **Tổng quan:** 24 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -31,7 +31,7 @@
 | T06.21 | Trạng thái chưa có kết quả | DONE | 7cd1ec5 | 2026-11-14 | Thẻ riêng chưa có kết quả (RESULT_NOT_AVAILABLE) thông báo 16h30, nút Dò lại & tests |
 | T06.22 | Xử lý lỗi mạng và offline | DONE | f92fd75 | 2026-11-14 | Hook useNetworkStatus, OfflineBanner cảnh báo mất mạng, nút Thử lại, giữ nguyên dữ liệu form & tests |
 | T06.23 | Màn Kết quả: ngày và tab đài | DONE | f17c85b | 2026-11-14 | Màn Kết quả gồm DateStrip chọn ngày, StationChips chọn đài, hiển thị kỳ quay & tests |
-| T06.24 | Component DrawTable | TODO |  |  |  |
+| T06.24 | Component DrawTable | DONE | b539ceb | 2026-11-14 | Bảng đủ 9 giải ĐB đến G8, định dạng tabular-nums sắc nét, hỗ trợ a11y & tests |
 | T06.25 | Kéo để làm mới | TODO |  |  |  |
 | T06.26 | Trang chủ: kết quả mới nhất | TODO |  |  |  |
 | T06.27 | Màn Lịch quay | TODO |  |  |  |
@@ -68,6 +68,7 @@
 - 2026-11-14 | T06.21 | Thiết kế thẻ riêng trạng thái RESULT_NOT_AVAILABLE tông màu amber, lưu ý có kết quả sau 16h30 và nút Dò lại (onCheckAgain) & tests.
 - 2026-11-14 | T06.22 | Triển khai hook useNetworkStatus + component OfflineBanner, đảm bảo form giữ nguyên dữ liệu khi mất mạng hoặc lỗi API, bổ sung nút Thử lại & tests.
 - 2026-11-14 | T06.23 | Xây dựng màn Kết quả với DateStrip, StationChips và hook useDraw lấy kết quả mở thưởng theo ngày & đài, xử lý trạng thái rỗng và lỗi & tests.
+- 2026-11-14 | T06.24 | Xây dựng component DrawTable hiển thị trọn vẹn 9 hạng giải xổ số miền Nam từ ĐB xuống G8, định dạng số lớn nổi bật và tích hợp vào màn Kết quả & tests.
 
 ## Vấn đề mở
 
