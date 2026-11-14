@@ -3,3 +3,4 @@ export * from './client';
 export * from './stations';
 export * from './draws';
 export * from './check';
+export * from './config';

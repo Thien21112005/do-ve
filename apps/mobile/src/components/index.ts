@@ -12,3 +12,4 @@ export * from './OfflineBanner';
 export * from './DrawTable';
 export * from './BatchTicketInput';
 export * from './BatchResultList';
+export * from './AppVersionGate';
