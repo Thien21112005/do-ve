@@ -158,7 +158,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
           {/* Section: Chọn ngày mở thưởng */}
           <View className="pt-3 px-4 pb-1">
-            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <Text
+              accessibilityRole="header"
+              className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
               {STRINGS.check.stepDate}
             </Text>
           </View>
@@ -169,7 +172,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
           {/* Section: Chọn đài */}
           <View className="pt-2 px-4 pb-1">
-            <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <Text
+              accessibilityRole="header"
+              className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
+            >
               {STRINGS.check.stepStation}
             </Text>
           </View>
@@ -191,6 +197,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               <TouchableOpacity
                 testID="mode-single-btn"
                 onPress={() => setMode('single')}
+                accessibilityRole="button"
+                accessibilityLabel={STRINGS.check.modeSingle}
+                accessibilityState={{ selected: mode === 'single' }}
                 className="flex-1 py-2 rounded-lg items-center justify-center"
                 style={{
                   backgroundColor:
@@ -211,6 +220,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               <TouchableOpacity
                 testID="mode-batch-btn"
                 onPress={() => setMode('batch')}
+                accessibilityRole="button"
+                accessibilityLabel={STRINGS.check.modeBatch}
+                accessibilityState={{ selected: mode === 'batch' }}
                 className="flex-1 py-2 rounded-lg items-center justify-center"
                 style={{
                   backgroundColor:
@@ -232,7 +244,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           {/* Section: Nhập số vé */}
           {mode === 'single' ? (
             <View className="pt-3 px-4 pb-2 items-center">
-              <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 self-start">
+              <Text
+                accessibilityRole="header"
+                className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 self-start"
+              >
                 {STRINGS.check.stepTicket}
               </Text>
               <TicketInput
@@ -250,6 +265,8 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               {ticketError && (
                 <View
                   testID="ticket-validation-error"
+                  accessibilityRole="alert"
+                  accessibilityLiveRegion="assertive"
                   className="flex-row items-center mt-2.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
                 >
                   <Icon name="alertCircle" size={16} color={colors.error} />
@@ -264,7 +281,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
             </View>
           ) : (
             <View className="pt-3 px-4 pb-2">
-              <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+              <Text
+                accessibilityRole="header"
+                className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3"
+              >
                 {STRINGS.check.stepBatch}
               </Text>
               <BatchTicketInput

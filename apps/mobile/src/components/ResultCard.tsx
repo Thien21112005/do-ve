@@ -70,9 +70,19 @@ export function ResultCard({
       ? colors.winBorder
       : colors.border;
 
+  const a11ySummary = isPending
+    ? `${STRINGS.check.resultPendingTitle}. ${STRINGS.check.resultPendingSubtitle}`
+    : isWon
+      ? `${STRINGS.check.resultWonTitle}. ${STRINGS.check.resultWonCount(winCount)}. ${STRINGS.check.totalPrizeLabel} ${formatCurrency(result.totalPrize)}`
+      : `${STRINGS.check.resultLostTitle}. ${STRINGS.check.resultLostSubtitle}`;
+
   return (
     <Animated.View
       testID={testID}
+      accessible={true}
+      accessibilityRole="summary"
+      accessibilityLabel={a11ySummary}
+      accessibilityLiveRegion="assertive"
       style={[
         animatedStyle,
         {

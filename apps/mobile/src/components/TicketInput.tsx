@@ -135,6 +135,8 @@ export function TicketInput({
               autoFocus={autoFocus && index === 0}
               selectTextOnFocus
               accessibilityLabel={`Chữ số thứ ${index + 1}`}
+              accessibilityHint="Nhập chữ số từ 0 đến 9"
+              accessibilityState={{ disabled }}
             />
           </View>
         );
