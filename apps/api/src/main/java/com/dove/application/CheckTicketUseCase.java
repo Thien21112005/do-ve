@@ -77,6 +77,9 @@ public class CheckTicketUseCase {
     }
 
     Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
-    return LotteryChecker.check(ticket, drawResult.orElse(null));
+    if (drawResult.isEmpty() || !drawResult.get().isComplete()) {
+      return CheckOutcome.notAvailable(ticket, stationCode, drawDate, null);
+    }
+    return LotteryChecker.check(ticket, drawResult.get());
   }
 }

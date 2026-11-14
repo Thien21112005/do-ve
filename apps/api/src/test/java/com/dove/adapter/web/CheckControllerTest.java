@@ -1,6 +1,7 @@
 package com.dove.adapter.web;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -449,5 +450,56 @@ class CheckControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"));
+  }
+
+  @Test
+  @DisplayName(
+      "T05.12: Chưa có kết quả kỳ quay trả 200 OK, status RESULT_NOT_AVAILABLE, won null (không trả won=false)")
+  void checkTicket_drawResultNotFound_returns200ResultNotAvailable() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    // Notice: drawRepository does NOT have the draw for this station & date
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.ticket").value("654321"))
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
+        .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"))
+        .andExpect(jsonPath("$.won").value(nullValue()))
+        .andExpect(jsonPath("$.wins", hasSize(0)))
+        .andExpect(jsonPath("$.totalAmount").value(0L));
+  }
+
+  @Test
+  @DisplayName("T05.12: Kết quả chưa đủ 18 số trả 200 OK, status RESULT_NOT_AVAILABLE, won null")
+  void checkTicket_drawResultIncomplete_returns200ResultNotAvailable() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    // Incomplete draw: only EIGHTH tier present (1 number instead of 18 numbers)
+    DrawResult incompleteDraw =
+        new DrawResult("tp-hcm", drawDate, Map.of(PrizeTier.EIGHTH, List.of("21")));
+    drawRepository.putDraw(incompleteDraw);
+
+    CheckTicketRequest request = new CheckTicketRequest("654321", "tp-hcm", drawDate);
+
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.ticket").value("654321"))
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
+        .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"))
+        .andExpect(jsonPath("$.won").value(nullValue()))
+        .andExpect(jsonPath("$.wins", hasSize(0)))
+        .andExpect(jsonPath("$.totalAmount").value(0L));
   }
 }
