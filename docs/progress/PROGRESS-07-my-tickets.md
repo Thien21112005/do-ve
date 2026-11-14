@@ -1,7 +1,7 @@
 # PROGRESS 07 — Vé của tôi và trải nghiệm trên thiết bị
 
 - **Plan:** [`plans/PLAN-07-my-tickets.md`](../plans/PLAN-07-my-tickets.md)
-- **Tổng quan:** 7 / 14 task hoàn thành
+- **Tổng quan:** 8 / 14 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -15,7 +15,7 @@
 | T07.05 | Badge trạng thái | DONE | e1c4a8b | 2026-11-14 | Tạo TicketStatusBadge đa trục (icon + text + border), hiển thị Chưa có KQ / Trúng (+ tiền) / Không trúng, phân biệt rõ trong chế độ đen trắng |
 | T07.06 | Xoá vé | DONE | a02106d | 2026-11-14 | Thêm nút xóa từng vé với hộp thoại xác nhận và nút Xóa tất cả có hộp thoại cảnh báo phá hủy |
 | T07.07 | Tự dò lại vé PENDING | DONE | abf7574 | 2026-11-14 | Tạo hook usePendingTicketsRecheck gom nhóm vé PENDING theo đài & ngày quay, gọi API batch check khi mở màn hoặc app quay lại foreground |
-| T07.08 | Test tự dò lại | TODO |  |  |  |
+| T07.08 | Test tự dò lại | DONE | 187874d | 2026-11-14 | Bộ test kiểm thử luồng chuyển đổi trạng thái PENDING -> WON/LOST qua 2 lần gọi (chưa có KQ -> đã có KQ) và vòng đời AppState active |
 | T07.09 | Xem kết quả khi offline | TODO |  |  |  |
 | T07.10 | Xuất vé ra JSON | TODO |  |  |  |
 | T07.11 | Nhập vé từ JSON | TODO |  |  |  |
@@ -33,6 +33,7 @@
 - 2026-11-14 | T07.05 | Thêm component TicketStatusBadge không phụ thuộc màu đơn lẻ (kết hợp icon, nhãn chữ, viền và a11y label) hiển thị đúng trạng thái vé và tổng tiền trúng.
 - 2026-11-14 | T07.06 | Triển khai hành động xóa vé từng mục và xóa toàn bộ vé khỏi ticketStore kèm hộp thoại xác nhận Alert dialog an toàn.
 - 2026-11-14 | T07.07 | Xây dựng usePendingTicketsRecheck tự động gom nhóm vé PENDING và gọi API batch check khi mở màn hình hoặc quay lại AppState active.
+- 2026-11-14 | T07.08 | Viết bộ kiểm thử kiểm tra chuyển đổi trạng thái vé PENDING sang WON/LOST khi có KQ, xác minh luồng kích hoạt khi AppState active.
 
 ## Vấn đề mở
 
