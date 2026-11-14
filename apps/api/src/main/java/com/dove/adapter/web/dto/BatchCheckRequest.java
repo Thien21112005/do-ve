@@ -17,4 +17,17 @@ public record BatchCheckRequest(
                 @Pattern(regexp = "^\\d{6}$", message = "Vé phải gồm đúng 6 chữ số") String>
             tickets,
     @NotBlank(message = "stationCode không được để trống") String stationCode,
-    @NotNull(message = "drawDate không được để trống") LocalDate drawDate) {}
+    @NotNull(message = "drawDate không được để trống") LocalDate drawDate) {
+
+  @Override
+  public String toString() {
+    int count = tickets != null ? tickets.size() : 0;
+    return "BatchCheckRequest[ticketCount="
+        + count
+        + ", stationCode="
+        + stationCode
+        + ", drawDate="
+        + drawDate
+        + "]";
+  }
+}
