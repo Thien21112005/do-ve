@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 22 / 25 task hoàn thành
+- **Tổng quan:** 23 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -30,7 +30,7 @@
 | T08.20 | Theo dõi ingest 7 ngày | DONE | c1fa713 | 2026-11-14 | Nghiệm thu tỉ lệ thu thập dữ liệu 7 ngày đạt 100% (22/22 kỳ quay đủ 18 giải), lập báo cáo chi tiết |
 | T08.21 | Đối chiếu 20 vé mẫu | DONE | 9d7f10a | 2026-11-14 | Đối chiếu 20 vé mẫu đại diện tất cả các hạng giải và ca biên, xác nhận độ chính xác 100% |
 | T08.22 | Rà soát chính sách store | DONE | e1c0331 | 2026-11-14 | Lập ADR-005 rà soát chính sách cờ bạc Apple/Google, chuẩn bị docs/privacy-policy.md công khai |
-| T08.23 | Chuẩn bị hồ sơ store | TODO |  |  |  |
+| T08.23 | Chuẩn bị hồ sơ store | DONE | a3b707b | 2026-11-14 | Soạn thảo hồ sơ niêm yết docs/store-listing.md: tên, mô tả ASO, từ khoá, ảnh chụp màn hình, phân loại độ tuổi |
 | T08.24 | CHANGELOG và tag v0.1.0 | TODO |  |  |  |
 | T08.25 | Smoke checklist sau release | TODO |  |  |  |
 
@@ -59,6 +59,7 @@
 - 2026-11-14 | T08.20 | Theo dõi và nghiệm thu dữ liệu cào 7 ngày (08/11 đến 14/11/2026): 22/22 kỳ quay đủ 18 giải, đạt tỷ lệ 100% (vượt tiêu chuẩn SRS >=95%), lưu trữ báo cáo tại docs/ingestion-audit-7days.md.
 - 2026-11-14 | T08.21 | Kiểm thử đối chiếu thủ công 20 vé mẫu đại diện tất cả các hạng giải, ca vé trúng nhiều giải và bảo toàn số 0 đứng đầu; xác nhận độ chính xác 100%, lưu tại docs/sample-tickets-qa.md.
 - 2026-11-14 | T08.22 | Rà soát và hoàn thiện ADR-005: đánh giá quy định cờ bạc/xổ số của Apple App Store & Google Play (xác nhận DoVe thuộc nhóm Utility/Tham khảo không vi phạm), soạn thảo chính sách quyền riêng tư docs/privacy-policy.md.
+- 2026-11-14 | T08.23 | Chuẩn bị đầy đủ hồ sơ niêm yết Google Play Console & Apple App Store Connect: App Name, Subtitle, mô tả ASO 4.000 ký tự, bộ từ khoá, kích thước 5 ảnh chụp màn hình, phân loại độ tuổi IARC và thông tin hỗ trợ tại docs/store-listing.md.
 
 ## Vấn đề mở
 
