@@ -1,6 +1,7 @@
 {
-  "name": "mobile",
+  "name": "dove",
   "version": "1.0.0",
+  "description": "DoVe - Tra cuu va do ve so kien thiet mien Nam",
   "main": "expo-router/entry",
   "dependencies": {
     "@expo-google-fonts/be-vietnam-pro": "^0.4.1",
