@@ -23,7 +23,7 @@
 | T05.13 | POST /check/batch | DONE | 20c9a4e | 2026-11-14 | POST /api/v1/check/batch tối đa 20 vé, trả danh sách + tổng tiền, test 1, 20, 21 vé |
 | T05.14 | GET /app/config | DONE | 358b8df | 2026-11-14 | GET /api/v1/app/config đọc minSupportedVersion, maintenance, message từ config |
 | T05.15 | Cache-Control | DONE | dbd1808 | 2026-11-14 | Header Cache-Control: kỳ quá khứ max-age dài immutable, kỳ hôm nay & latest no-cache |
-| T05.16 | Rate limit cho /check | TODO |  |  |  |
+| T05.16 | Rate limit cho /check | DONE | c5535a9 | 2026-11-14 | Rate limit trượt theo IP (SlidingWindowRateLimiter), trả 429 RATE_LIMITED |
 | T05.17 | Log sạch số vé | TODO |  |  |  |
 | T05.18 | OpenAPI + Swagger UI | TODO |  |  |  |
 | T05.19 | MockMvc test: stations và draws | TODO |  |  |  |
