@@ -2,9 +2,20 @@ import React, { type ReactNode } from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
-import * as api from '@/api/draws';
+import * as apiDraws from '@/api/draws';
+import * as apiCheck from '@/api/check';
 
 jest.mock('@/api/draws');
+jest.mock('@/api/check');
+jest.mock('@/lib/haptics', () => ({
+  haptics: {
+    light: jest.fn(),
+    medium: jest.fn(),
+    success: jest.fn(),
+    warning: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -26,7 +37,7 @@ function createWrapper() {
 describe('CheckScreen Form Composition', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (api.fetchScheduleByDate as jest.Mock).mockResolvedValue([
+    (apiDraws.fetchScheduleByDate as jest.Mock).mockResolvedValue([
       {
         code: 'TPHCM',
         name: 'TP. Hồ Chí Minh',
@@ -50,11 +61,24 @@ describe('CheckScreen Form Composition', () => {
     expect(submitBtn.props.accessibilityState.disabled).toBe(true);
   });
 
-  it('enables submit button and calls onCheck when ticket is fully filled', async () => {
-    const onCheck = jest.fn();
-    const { getByTestId } = await render(<CheckScreen onCheck={onCheck} />, {
-      wrapper: createWrapper(),
+  it('enables submit button and calls check API when ticket is fully filled', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '987654',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: true,
+      wins: [],
+      totalPrize: 2000000000,
+      message: null,
     });
+
+    const onCheckSuccess = jest.fn();
+    const { getByTestId } = await render(
+      <CheckScreen onCheckSuccess={onCheckSuccess} />,
+      { wrapper: createWrapper() },
+    );
 
     // Wait for station chips to render
     await waitFor(() => {
@@ -72,11 +96,14 @@ describe('CheckScreen Form Composition', () => {
     const submitBtn = getByTestId('check-ticket-button');
     fireEvent.press(submitBtn);
 
-    expect(onCheck).toHaveBeenCalledWith(
-      expect.objectContaining({
-        ticket: '987654',
-        station: 'TPHCM',
-      }),
-    );
+    await waitFor(() => {
+      expect(apiCheck.checkTicket).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ticket: '987654',
+          station: 'TPHCM',
+        }),
+      );
+      expect(onCheckSuccess).toHaveBeenCalled();
+    });
   });
 });

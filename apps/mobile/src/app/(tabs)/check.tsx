@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -17,17 +18,21 @@ import {
 } from '@/components';
 import { useTheme } from '@/theme';
 import { haptics } from '@/lib';
+import { useCheckTicket } from '@/hooks';
 
 export interface CheckScreenProps {
-  onCheck?: (params: {
-    ticket: string;
-    station: string;
-    drawDate: string;
-  }) => void;
+  onCheckSuccess?: (result: any) => void;
 }
 
-export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
+export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   const { colors } = useTheme();
+  const {
+    checkTicket: submitCheck,
+    result,
+    isLoading,
+    isError,
+    error,
+  } = useCheckTicket();
 
   // Initial state: today's date
   const defaultDate = getPastDays(1)[0].dateString;
@@ -45,13 +50,13 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
   const isFormValid =
     ticketNumber.length === 6 &&
     Boolean(selectedStation) &&
-    Boolean(selectedDate);
+    Boolean(selectedDate) &&
+    !isLoading;
 
   const handleTicketChange = (val: string) => {
     setHasInteracted(true);
     setTicketNumber(val);
 
-    // If user filled 5 digits and paused, or incomplete input
     if (val.length === 5) {
       haptics.warning();
     }
@@ -63,12 +68,26 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
       haptics.warning();
       return;
     }
-    haptics.light();
-    onCheck?.({
-      ticket: ticketNumber,
-      station: selectedStation,
-      drawDate: selectedDate,
-    });
+    haptics.medium();
+
+    submitCheck(
+      {
+        ticket: ticketNumber,
+        station: selectedStation,
+        drawDate: selectedDate,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.won) {
+            haptics.success();
+          }
+          onCheckSuccess?.(data);
+        },
+        onError: () => {
+          haptics.error();
+        },
+      },
+    );
   };
 
   return (
@@ -82,7 +101,7 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
       >
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
           className="flex-1"
         >
           {/* Section: Chọn ngày mở thưởng */}
@@ -120,6 +139,7 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
                 setHasInteracted(true);
                 setTicketNumber(code);
               }}
+              disabled={isLoading}
               hasError={Boolean(ticketError)}
             />
 
@@ -149,7 +169,7 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
               accessibilityRole="button"
               accessibilityLabel="Dò kết quả vé số"
               accessibilityState={{ disabled: !isFormValid }}
-              className="py-3.5 px-6 rounded-xl items-center justify-center shadow-sm"
+              className="py-3.5 px-6 rounded-xl items-center justify-center shadow-sm flex-row"
               style={{
                 backgroundColor: isFormValid
                   ? colors.primary
@@ -157,16 +177,72 @@ export default function CheckScreen({ onCheck }: CheckScreenProps = {}) {
                 opacity: isFormValid ? 1 : 0.6,
               }}
             >
+              {isLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color="#ffffff"
+                  className="mr-2"
+                />
+              )}
               <Text
                 className="text-base font-bold"
                 style={{
                   color: isFormValid ? '#ffffff' : colors.textMuted,
                 }}
               >
-                Dò vé ngay
+                {isLoading ? 'Đang dò vé...' : 'Dò vé ngay'}
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* API Error Notification */}
+          {isError && (
+            <View
+              testID="api-error-banner"
+              className="mt-4 mx-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
+            >
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: colors.error }}
+              >
+                {error?.detail || error?.message || 'Có lỗi xảy ra khi dò vé'}
+              </Text>
+            </View>
+          )}
+
+          {/* API Result Placeholder (Trúng / Trượt) */}
+          {result && (
+            <View
+              testID="check-result-section"
+              className="mt-6 mx-5 p-4 rounded-xl border"
+              style={{
+                backgroundColor: result.won ? colors.winBg : colors.surface,
+                borderColor: result.won ? colors.winBorder : colors.border,
+              }}
+            >
+              <Text
+                className="text-base font-bold mb-1"
+                style={{
+                  color: result.won ? colors.win : colors.textMain,
+                }}
+              >
+                {result.won
+                  ? 'Chúc mừng bạn đã trúng thưởng!'
+                  : 'Rất tiếc, vé không trúng giải'}
+              </Text>
+              <Text className="text-sm" style={{ color: colors.textMuted }}>
+                Số vé: {result.ticket} • {result.stationName}
+              </Text>
+              {result.totalPrize > 0 && (
+                <Text
+                  className="text-lg font-bold mt-2"
+                  style={{ color: colors.win }}
+                >
+                  Tổng thưởng: {result.totalPrize.toLocaleString('vi-VN')} đ
+                </Text>
+              )}
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
