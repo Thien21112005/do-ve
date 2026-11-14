@@ -6,3 +6,4 @@ export * from './DateStrip';
 export * from './StationChips';
 export * from './ResultSkeleton';
 export * from './ResultCard';
+export * from './HighlightedTicket';

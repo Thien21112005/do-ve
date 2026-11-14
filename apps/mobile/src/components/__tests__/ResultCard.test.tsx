@@ -52,7 +52,9 @@ describe('ResultCard Component', () => {
     expect(getByText('Giải tám')).toBeTruthy();
     expect(getByText('100.000 đ')).toBeTruthy();
     expect(getByText('300.000 đ')).toBeTruthy();
-    expect(getByText('123456')).toBeTruthy();
+    expect(getByTestId('ticket-segment-matched')).toBeTruthy();
+    expect(getByText('456')).toBeTruthy();
+    expect(getByText('123')).toBeTruthy();
     expect(getByText(/TP. Hồ Chí Minh/)).toBeTruthy();
     expect(getByText(/14\/11\/2026/)).toBeTruthy();
   });

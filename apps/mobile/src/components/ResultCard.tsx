@@ -8,6 +8,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '@/theme';
 import { Icon } from './Icon';
+import {
+  HighlightedTicket,
+  getLongestMatchedSuffix,
+} from './HighlightedTicket';
 import { formatCurrency, formatDateVN } from '@/lib/format';
 import type { CheckTicketResponse } from '@/types';
 
@@ -48,6 +52,7 @@ export function ResultCard({
 
   const winCount = result.wins ? result.wins.length : 0;
   const formattedDate = formatDateVN(result.drawDate);
+  const longestMatched = getLongestMatchedSuffix(result.ticket, result.wins);
 
   return (
     <Animated.View
@@ -115,15 +120,14 @@ export function ResultCard({
         style={{ backgroundColor: colors.surfaceSubtle }}
       >
         <View>
-          <Text className="text-xs" style={{ color: colors.textMuted }}>
+          <Text className="text-xs mb-0.5" style={{ color: colors.textMuted }}>
             Số vé dò
           </Text>
-          <Text
-            className="text-xl font-bold tracking-widest mt-0.5"
-            style={{ color: colors.textMain }}
-          >
-            {result.ticket}
-          </Text>
+          <HighlightedTicket
+            ticket={result.ticket}
+            matchedDigits={longestMatched}
+            size="md"
+          />
         </View>
         <View className="items-end">
           <Text
