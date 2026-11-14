@@ -26,7 +26,7 @@
 | T06.16 | Gọi API dò vé | DONE | f3012b0 | 2026-11-14 | Mutation POST /check, trạng thái loading, haptic phản hồi, kết quả thật & tests |
 | T06.17 | Skeleton loading | DONE | c69d0d6 | 2026-11-14 | Component ResultSkeleton nhấp nháy Reanimated giả lập kết quả đang tải, cấu hình mock Jest & tests |
 | T06.18 | Component ResultCard | DONE | dde96cd | 2026-11-14 | Thẻ thắng/thua, danh sách giải, định dạng tiền vi-VN, tổng tiền, animation vào bằng Reanimated |
-| T06.19 | Tô nổi chữ số khớp | TODO |  |  |  |
+| T06.19 | Tô nổi chữ số khớp | DONE | d0e740c | 2026-11-14 | Component HighlightedTicket tách chuỗi, tô nổi số khớp xanh lá và viền nổi (FR-CHK-09) & tests |
 | T06.20 | Hiệu ứng khi trúng (tuỳ chọn) | TODO |  |  |  |
 | T06.21 | Trạng thái chưa có kết quả | TODO |  |  |  |
 | T06.22 | Xử lý lỗi mạng và offline | TODO |  |  |  |
@@ -63,6 +63,7 @@
 - 2026-11-14 | T06.16 | Nối API checkTicket và useCheckTicket mutation vào form, xử lý loading spinner, haptic feedback và hiển thị dữ liệu dò vé thực tế.
 - 2026-11-14 | T06.17 | Xây dựng component ResultSkeleton nhấp nháy mượt mà với react-native-reanimated, cấu hình mock Jest reanimated/worklets an toàn & tests.
 - 2026-11-14 | T06.18 | Xây dựng component ResultCard có animation vào Reanimated, hiển thị chi tiết các giải trúng, định dạng tiền chuẩn vi-VN, disclaimer FR-SYS-03 & tests.
+- 2026-11-14 | T06.19 | Phát triển HighlightedTicket và thuật toán getLongestMatchedSuffix tô nổi chữ số khớp trên vé (FR-CHK-09) kèm unit tests toàn diện.
 
 ## Vấn đề mở
 
