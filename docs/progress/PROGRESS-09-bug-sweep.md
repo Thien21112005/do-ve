@@ -19,7 +19,7 @@
 | T09.09 | P1 | Trạng thái kỳ quay (FINAL/đang chờ) không có trong API | DONE | 7b95574 | 2026-11-14 | Tự động tính toán tính hoàn chỉnh của kỳ quay (isComplete & FINAL/PENDING) |
 | T09.10 | P0 | Mã đài mặc định `'TPHCM'` không tồn tại | DONE | de3b47b | 2026-11-14 | Bỏ mặc định 'TPHCM' sai, disable nút Dò khi chưa có đài hợp lệ |
 | T09.11 | P0 | `EXPO_PUBLIC_API_URL` chưa cấu hình cho bản build | DONE | e04a76c | 2026-11-14 | Cấu hình API URL cho eas.json và thêm cảnh báo cleartext localhost |
-| T09.12 | P0 | Cập nhật toàn bộ mock/MSW test theo hợp đồng thật | TODO | | | |
+| T09.12 | P0 | Cập nhật toàn bộ mock/MSW test theo hợp đồng thật | DONE | 137e302 | 2026-11-14 | Cập nhật 15 file test và components, npm run typecheck và npm run test 50/50 suites xanh 100% |
 | T09.13 | P1 | Chặn hợp đồng lệch trong CI | TODO | | | |
 | T09.14 | P1 | Đổi `buster` của cache offline khi đổi hợp đồng | TODO | | | |
 | T09.15 | P1 | Hàm `todayVN()` dùng chung | TODO | | | |
@@ -85,7 +85,7 @@
 
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
-| P0 | 10 | 9 | 1 |
+| P0 | 10 | 10 | 0 |
 | P1 | 29 | 2 | 27 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
@@ -93,7 +93,7 @@
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
 - [x] `npm run lint` xanh (T09.69)
-- [ ] `npm run typecheck` xanh
+- [x] `npm run typecheck` xanh
 - [ ] `npm run test` xanh **không** cần `--forceExit` (T09.70)
 - [ ] Contract test mobile ↔ backend xanh trong CI (T09.13)
 - [ ] `./mvnw spotless:check` + `./mvnw test` xanh, 0 skip (T09.72)
@@ -114,6 +114,7 @@
 - 2026-11-14 | T09.10 | Mã đài mặc định 'TPHCM' không tồn tại trên backend | Bỏ mặc định cứng, disable nút Dò khi chưa có đài hợp lệ được chọn.
 - 2026-11-14 | T09.11 | Thiếu cấu hình EXPO_PUBLIC_API_URL cho build preview/prod | Cấu hình HTTPS URL vào eas.json cho các profile và thêm cảnh báo bảo mật khi build non-dev dùng localhost.
 - 2026-11-14 | T09.57 | API key admin có nguy cơ dùng default yếu ở prod | Bắt buộc DOVE_ADMIN_API_KEY không default ở prod yml & docker-compose, chặn app startup nếu key rỗng/demo/< 32 ký tự.
+- 2026-11-14 | T09.12 | Toàn bộ 15 file test mock sai contract khiến tsc báo 66 lỗi | Thay thế mock types theo schema OpenAPI thật, sửa StationChips/ResultCard/BatchResultList, toàn bộ 50 test suites (226 tests) và typecheck xanh 100%.
 
 ## Vấn đề mở
 
