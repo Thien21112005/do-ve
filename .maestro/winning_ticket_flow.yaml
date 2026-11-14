@@ -1,0 +1,33 @@
+appId: com.dove.app
+---
+- launchApp:
+    clearState: true
+
+# 1. Xác nhận màn hình Dò vé số hiển thị đầy đủ các bước
+- assertVisible: "Dò vé số"
+- assertVisible: "1. Chọn ngày mở thưởng"
+- assertVisible: "2. Chọn đài quay"
+- assertVisible: "3. Nhập 6 chữ số trên vé"
+
+# 2. Nhập số vé trúng thưởng (dãy 6 chữ số bảo toàn số 0 đầu)
+- tapOn:
+    id: "ticket-input"
+- inputText: "012345"
+
+# 3. Bấm nút dò vé
+- tapOn:
+    id: "check-ticket-button"
+
+# 4. Kiểm tra thẻ kết quả trúng thưởng hiển thị
+- extendedWaitUntil:
+    visible:
+      id: "result-card"
+    timeout: 10000
+
+- assertVisible: "Chúc mừng bạn đã trúng thưởng!"
+- assertVisible: "TRÚNG"
+
+# 5. Lưu vé vào kho lưu trữ thiết bị
+- tapOn:
+    id: "result-card-save-btn"
+- assertVisible: "Đã lưu vé"
