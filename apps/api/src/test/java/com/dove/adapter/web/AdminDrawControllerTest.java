@@ -1,5 +1,7 @@
 package com.dove.adapter.web;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -123,5 +125,67 @@ class AdminDrawControllerTest {
         .andExpect(jsonPath("$.totalNumbers").value(18));
 
     verify(drawRepository).save(any(DrawResult.class), eq("ADMIN_MANUAL"));
+  }
+
+  @Test
+  @DisplayName("5. Profile prod từ chối khởi động nếu thiếu hoặc rỗng API Key")
+  void prodProfile_missingOrBlankApiKey_throwsIllegalStateException() {
+    assertThatThrownBy(() -> new AdminDrawController(drawRepository, "", "prod"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("DOVE_ADMIN_API_KEY must be configured in production profile");
+
+    assertThatThrownBy(() -> new AdminDrawController(drawRepository, "   ", "prod,metrics"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("DOVE_ADMIN_API_KEY must be configured in production profile");
+  }
+
+  @Test
+  @DisplayName("6. Profile prod từ chối khởi động nếu dùng key demo/mặc định")
+  void prodProfile_insecureDefaultApiKey_throwsIllegalStateException() {
+    assertThatThrownBy(
+            () -> new AdminDrawController(drawRepository, "dove-admin-secret-key", "prod"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("must not use default/demo insecure values");
+
+    assertThatThrownBy(
+            () ->
+                new AdminDrawController(
+                    drawRepository, "dove-admin-secret-key-change-in-production", "production"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("must not use default/demo insecure values");
+
+    assertThatThrownBy(
+            () ->
+                new AdminDrawController(
+                    drawRepository, "dove-local-admin-secret-key-change-in-production", "prod"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("must not use default/demo insecure values");
+  }
+
+  @Test
+  @DisplayName("7. Profile prod từ chối khởi động nếu API Key < 32 ký tự")
+  void prodProfile_shortApiKey_throwsIllegalStateException() {
+    assertThatThrownBy(
+            () -> new AdminDrawController(drawRepository, "short-key-less-than-32-chars", "prod"))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("must be at least 32 characters long in production profile");
+  }
+
+  @Test
+  @DisplayName("8. Profile prod chấp nhận API Key mạnh >= 32 ký tự")
+  void prodProfile_strongApiKey_succeeds() {
+    String strongKey = "a-very-strong-production-admin-api-key-2026-secure";
+    assertThatCode(() -> new AdminDrawController(drawRepository, strongKey, "prod"))
+        .doesNotThrowAnyException();
+  }
+
+  @Test
+  @DisplayName("9. Profile dev hoặc test cho phép key ngắn hơn phục vụ phát triển nhanh")
+  void nonProdProfile_allowsConvenientKeys() {
+    assertThatCode(() -> new AdminDrawController(drawRepository, "dev-key", "dev"))
+        .doesNotThrowAnyException();
+
+    assertThatCode(() -> new AdminDrawController(drawRepository, API_KEY, "test"))
+        .doesNotThrowAnyException();
   }
 }

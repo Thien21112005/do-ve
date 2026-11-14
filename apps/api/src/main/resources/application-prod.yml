@@ -22,3 +22,7 @@ management:
     health:
       show-details: never
 
+dove:
+  admin:
+    api-key: ${DOVE_ADMIN_API_KEY}
+

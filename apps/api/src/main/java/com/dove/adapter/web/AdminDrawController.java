@@ -7,9 +7,11 @@ import com.dove.domain.InvalidDrawResultException;
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +30,51 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/v1/admin")
 public class AdminDrawController {
 
+  private static final Set<String> INSECURE_DEFAULT_KEYS =
+      Set.of(
+          "dove-admin-secret-key",
+          "dove-admin-secret-key-change-in-production",
+          "dove-local-admin-secret-key-change-in-production");
+
   private final DrawRepository drawRepository;
   private final String configuredApiKey;
 
   public AdminDrawController(
       DrawRepository drawRepository,
-      @Value("${dove.admin.api-key:dove-admin-secret-key}") String configuredApiKey) {
+      @Value("${dove.admin.api-key:dove-admin-secret-key}") String configuredApiKey,
+      @Value("${spring.profiles.active:}") String activeProfiles) {
     this.drawRepository = Objects.requireNonNull(drawRepository, "drawRepository must not be null");
     this.configuredApiKey =
         Objects.requireNonNull(configuredApiKey, "configuredApiKey must not be null");
+    validateApiKey(this.configuredApiKey, activeProfiles);
+  }
+
+  public AdminDrawController(DrawRepository drawRepository, String configuredApiKey) {
+    this(drawRepository, configuredApiKey, "");
+  }
+
+  public static void validateApiKey(String configuredApiKey, String activeProfiles) {
+    boolean isProd =
+        activeProfiles != null
+            && Arrays.stream(activeProfiles.split(","))
+                .map(String::trim)
+                .anyMatch(p -> p.equalsIgnoreCase("prod") || p.equalsIgnoreCase("production"));
+
+    if (isProd) {
+      if (configuredApiKey == null || configuredApiKey.isBlank()) {
+        throw new IllegalStateException(
+            "DOVE_ADMIN_API_KEY must be configured in production profile.");
+      }
+      String trimmedKey = configuredApiKey.trim();
+      if (INSECURE_DEFAULT_KEYS.contains(trimmedKey)) {
+        throw new IllegalStateException(
+            "DOVE_ADMIN_API_KEY must not use default/demo insecure values in production profile.");
+      }
+      if (trimmedKey.length() < 32) {
+        throw new IllegalStateException(
+            "DOVE_ADMIN_API_KEY must be at least 32 characters long in production profile.");
+      }
+    }
   }
 
   @PutMapping("/draws")
