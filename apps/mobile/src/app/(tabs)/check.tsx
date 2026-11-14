@@ -21,10 +21,11 @@ import {
   getPastDays,
   BatchTicketInput,
   parseBatchTickets,
+  BatchResultList,
 } from '@/components';
 import { useTheme } from '@/theme';
 import { haptics } from '@/lib';
-import { useCheckTicket } from '@/hooks';
+import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 
 export interface CheckScreenProps {
   onCheckSuccess?: (result: any) => void;
@@ -39,6 +40,15 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     isError,
     error,
   } = useCheckTicket();
+
+  const {
+    checkBatchTickets: submitBatchCheck,
+    result: batchResult,
+    isLoading: isBatchLoading,
+    isError: isBatchError,
+    error: batchError,
+    reset: resetBatch,
+  } = useCheckBatchTickets();
 
   // Initial state: today's date
   const defaultDate = getPastDays(1)[0].dateString;
@@ -57,6 +67,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
 
   const parsedBatch = parseBatchTickets(batchText, 20);
 
+  const activeLoading = mode === 'single' ? isLoading : isBatchLoading;
+  const activeError = mode === 'single' ? isError : isBatchError;
+  const activeErrorObj = mode === 'single' ? error : batchError;
+
   const isFormValid =
     (mode === 'single'
       ? ticketNumber.length === 6 && !ticketError
@@ -65,7 +79,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
         parsedBatch.invalidTokens.length === 0) &&
     Boolean(selectedStation) &&
     Boolean(selectedDate) &&
-    !isLoading;
+    !activeLoading;
 
   const handleTicketChange = (val: string) => {
     setHasInteracted(true);
@@ -84,24 +98,45 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     }
     haptics.medium();
 
-    submitCheck(
-      {
-        ticket: ticketNumber,
-        station: selectedStation,
-        drawDate: selectedDate,
-      },
-      {
-        onSuccess: (data) => {
-          if (data.won) {
-            haptics.success();
-          }
-          onCheckSuccess?.(data);
+    if (mode === 'single') {
+      submitCheck(
+        {
+          ticket: ticketNumber,
+          station: selectedStation,
+          drawDate: selectedDate,
         },
-        onError: () => {
-          haptics.error();
+        {
+          onSuccess: (data) => {
+            if (data.won) {
+              haptics.success();
+            }
+            onCheckSuccess?.(data);
+          },
+          onError: () => {
+            haptics.error();
+          },
         },
-      },
-    );
+      );
+    } else {
+      submitBatchCheck(
+        {
+          station: selectedStation,
+          drawDate: selectedDate,
+          tickets: parsedBatch.validTickets,
+        },
+        {
+          onSuccess: (data) => {
+            if (data.totalWonTickets > 0) {
+              haptics.success();
+            }
+            onCheckSuccess?.(data);
+          },
+          onError: () => {
+            haptics.error();
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -247,7 +282,11 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               disabled={!isFormValid}
               onPress={handleSubmit}
               accessibilityRole="button"
-              accessibilityLabel="Dò kết quả vé số"
+              accessibilityLabel={
+                mode === 'single'
+                  ? 'Dò kết quả vé số'
+                  : 'Dò kết quả danh sách vé'
+              }
               accessibilityState={{ disabled: !isFormValid }}
               className="py-3.5 px-6 rounded-xl items-center justify-center shadow-sm flex-row"
               style={{
@@ -257,7 +296,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                 opacity: isFormValid ? 1 : 0.6,
               }}
             >
-              {isLoading && (
+              {activeLoading && (
                 <ActivityIndicator
                   size="small"
                   color="#ffffff"
@@ -270,13 +309,17 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                   color: isFormValid ? '#ffffff' : colors.textMuted,
                 }}
               >
-                {isLoading ? 'Đang dò vé...' : 'Dò vé ngay'}
+                {activeLoading
+                  ? 'Đang dò vé...'
+                  : mode === 'single'
+                    ? 'Dò vé ngay'
+                    : `Dò hàng loạt (${parsedBatch.validTickets.length} vé)`}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* API Error Notification */}
-          {isError && (
+          {activeError && (
             <View
               testID="api-error-banner"
               className="mt-4 mx-5 p-4 rounded-xl border flex-row items-center justify-between"
@@ -290,7 +333,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                   className="text-sm font-semibold"
                   style={{ color: colors.error }}
                 >
-                  {error?.detail || error?.message || 'Có lỗi xảy ra khi dò vé'}
+                  {(activeErrorObj as any)?.detail ||
+                    activeErrorObj?.message ||
+                    'Có lỗi xảy ra khi dò vé'}
                 </Text>
                 <Text
                   className="text-xs mt-0.5"
@@ -322,21 +367,36 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           )}
 
           {/* Loading Skeleton */}
-          {isLoading && <ResultSkeleton testID="check-loading-skeleton" />}
+          {activeLoading && <ResultSkeleton testID="check-loading-skeleton" />}
 
-          {/* API Result Card */}
-          {result && !isLoading && (
+          {/* Single Result Card */}
+          {mode === 'single' && result && !isLoading && (
             <ResultCard
               result={result}
               testID="check-result-section"
               onCheckAgain={handleSubmit}
             />
           )}
+
+          {/* Batch Result List */}
+          {mode === 'batch' && batchResult && !isBatchLoading && (
+            <View testID="batch-results-section" className="mt-4 px-4">
+              <BatchResultList
+                batchResult={batchResult}
+                onCheckAgain={() => {
+                  resetBatch();
+                  setBatchText('');
+                }}
+              />
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
 
       {/* Subtle celebration when ticket wins */}
-      <CelebrationEffect active={Boolean(result?.won)} />
+      <CelebrationEffect
+        active={Boolean(result?.won || (batchResult?.totalWonTickets ?? 0) > 0)}
+      />
     </SafeAreaView>
   );
 }

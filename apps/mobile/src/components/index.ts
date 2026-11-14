@@ -11,3 +11,4 @@ export * from './CelebrationEffect';
 export * from './OfflineBanner';
 export * from './DrawTable';
 export * from './BatchTicketInput';
+export * from './BatchResultList';

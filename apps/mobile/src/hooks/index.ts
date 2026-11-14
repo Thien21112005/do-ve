@@ -6,3 +6,4 @@ export * from './useCheckTicket';
 export * from './useNetworkStatus';
 export * from './useDraw';
 export * from './useLatestDraws';
+export * from './useCheckBatchTickets';
