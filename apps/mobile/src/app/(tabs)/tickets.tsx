@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
 import { useTheme } from '@/theme';
 import { Icon, TicketStatusBadge } from '@/components';
+import { usePendingTicketsRecheck } from '@/hooks';
 import { formatCurrency, formatDateVN } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
 import { STRINGS } from '@/lib/strings';
@@ -21,6 +22,9 @@ export default function TicketsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const [tickets, { remove, clearAll }] = useSavedTickets();
+
+  // Auto recheck PENDING tickets on mount & foreground
+  usePendingTicketsRecheck();
 
   // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
