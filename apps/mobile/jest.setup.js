@@ -19,6 +19,8 @@ jest.mock('react-native-reanimated', () => {
     withSequence: (...anims) => anims[0],
     withDelay: (_delay, anim) => anim,
     Easing: {
+      in: (fn) => fn,
+      out: (fn) => fn,
       inOut: (fn) => fn,
       ease: (t) => t,
       linear: (t) => t,

@@ -14,6 +14,8 @@ import {
   StationChips,
   TicketInput,
   Icon,
+  ResultSkeleton,
+  ResultCard,
   getPastDays,
 } from '@/components';
 import { useTheme } from '@/theme';
@@ -210,38 +212,12 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
             </View>
           )}
 
-          {/* API Result Placeholder (Trúng / Trượt) */}
-          {result && (
-            <View
-              testID="check-result-section"
-              className="mt-6 mx-5 p-4 rounded-xl border"
-              style={{
-                backgroundColor: result.won ? colors.winBg : colors.surface,
-                borderColor: result.won ? colors.winBorder : colors.border,
-              }}
-            >
-              <Text
-                className="text-base font-bold mb-1"
-                style={{
-                  color: result.won ? colors.win : colors.textMain,
-                }}
-              >
-                {result.won
-                  ? 'Chúc mừng bạn đã trúng thưởng!'
-                  : 'Rất tiếc, vé không trúng giải'}
-              </Text>
-              <Text className="text-sm" style={{ color: colors.textMuted }}>
-                Số vé: {result.ticket} • {result.stationName}
-              </Text>
-              {result.totalPrize > 0 && (
-                <Text
-                  className="text-lg font-bold mt-2"
-                  style={{ color: colors.win }}
-                >
-                  Tổng thưởng: {result.totalPrize.toLocaleString('vi-VN')} đ
-                </Text>
-              )}
-            </View>
+          {/* Loading Skeleton */}
+          {isLoading && <ResultSkeleton testID="check-loading-skeleton" />}
+
+          {/* API Result Card */}
+          {result && !isLoading && (
+            <ResultCard result={result} testID="check-result-section" />
           )}
         </ScrollView>
       </KeyboardAvoidingView>

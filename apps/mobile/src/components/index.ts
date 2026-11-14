@@ -5,3 +5,4 @@ export * from './TicketInput';
 export * from './DateStrip';
 export * from './StationChips';
 export * from './ResultSkeleton';
+export * from './ResultCard';
