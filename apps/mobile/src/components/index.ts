@@ -8,3 +8,4 @@ export * from './ResultSkeleton';
 export * from './ResultCard';
 export * from './HighlightedTicket';
 export * from './CelebrationEffect';
+export * from './OfflineBanner';

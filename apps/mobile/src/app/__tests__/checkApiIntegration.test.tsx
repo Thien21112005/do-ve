@@ -158,6 +158,9 @@ describe('CheckScreen API Integration', () => {
     await waitFor(() => {
       expect(getByTestId('api-error-banner')).toBeTruthy();
       expect(getByText('Đài không mở thưởng vào ngày đã chọn')).toBeTruthy();
+      expect(getByTestId('api-error-retry-btn')).toBeTruthy();
+      expect(getByTestId('ticket-input-digit-0').props.value).toBe('1');
+      expect(getByTestId('ticket-input-digit-5').props.value).toBe('6');
     });
   });
 });

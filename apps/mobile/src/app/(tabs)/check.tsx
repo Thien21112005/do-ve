@@ -17,6 +17,7 @@ import {
   ResultSkeleton,
   ResultCard,
   CelebrationEffect,
+  OfflineBanner,
   getPastDays,
 } from '@/components';
 import { useTheme } from '@/theme';
@@ -107,6 +108,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
           className="flex-1"
         >
+          {/* Offline indicator banner */}
+          <OfflineBanner onRetry={handleSubmit} />
+
           {/* Section: Chọn ngày mở thưởng */}
           <View className="pt-3 px-4 pb-1">
             <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
@@ -202,14 +206,45 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           {isError && (
             <View
               testID="api-error-banner"
-              className="mt-4 mx-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60"
+              className="mt-4 mx-5 p-4 rounded-xl border flex-row items-center justify-between"
+              style={{
+                backgroundColor: colors.errorBg,
+                borderColor: colors.error,
+              }}
             >
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: colors.error }}
+              <View className="flex-1 mr-2">
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: colors.error }}
+                >
+                  {error?.detail || error?.message || 'Có lỗi xảy ra khi dò vé'}
+                </Text>
+                <Text
+                  className="text-xs mt-0.5"
+                  style={{ color: colors.textMuted }}
+                >
+                  Dữ liệu vé đã nhập được giữ nguyên.
+                </Text>
+              </View>
+              <TouchableOpacity
+                testID="api-error-retry-btn"
+                onPress={handleSubmit}
+                className="px-3 py-1.5 rounded-lg border flex-row items-center"
+                style={{
+                  borderColor: colors.error,
+                  backgroundColor: `${colors.error}15`,
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Thử lại"
               >
-                {error?.detail || error?.message || 'Có lỗi xảy ra khi dò vé'}
-              </Text>
+                <Icon name="refresh" size={14} color={colors.error} />
+                <Text
+                  className="ml-1 text-xs font-semibold"
+                  style={{ color: colors.error }}
+                >
+                  Thử lại
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
 
