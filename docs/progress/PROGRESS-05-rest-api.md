@@ -27,7 +27,7 @@
 | T05.17 | Log sạch số vé | DONE | 990855e | 2026-11-14 | Masking toString và sanitization đảm bảo không rò rỉ số vé trong log (NFR-06) |
 | T05.18 | OpenAPI + Swagger UI | DONE | 5666d44 | 2026-11-14 | Tích hợp springdoc-openapi-starter-webmvc-ui 2.8.5, OpenAPI config, @Tag, @Operation |
 | T05.19 | MockMvc test: stations và draws | DONE | 63b03f8 | 2026-11-14 | Bộ test MockMvc toàn diện cho cả 5 endpoint đọc (stations, draws, schedule) |
-| T05.20 | MockMvc test: check | TODO |  |  |  |
+| T05.20 | MockMvc test: check | DONE | afc69ef | 2026-11-14 | Test các ca mục 3.4 (Đặc biệt, Phụ đặc biệt, Khuyến khích, trượt) & tất cả mã lỗi |
 | T05.21 | Test tích hợp end-to-end API | TODO |  |  |  |
 
 ## Nhật ký
