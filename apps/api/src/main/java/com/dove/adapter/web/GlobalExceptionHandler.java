@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -26,6 +27,26 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ProblemDetail handleMethodArgumentTypeMismatch(
+      MethodArgumentTypeMismatchException ex, WebRequest request) {
+    String paramName = ex.getName();
+    String code = "INVALID_REQUEST";
+    String detail = "Tham số '" + paramName + "' không hợp lệ: " + ex.getValue();
+
+    if ("date".equalsIgnoreCase(paramName) || "drawDate".equalsIgnoreCase(paramName)) {
+      code = ErrorCode.INVALID_DATE.name();
+      detail = "Ngày sai định dạng: " + ex.getValue();
+    }
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+    problemDetail.setTitle("Bad Request");
+    problemDetail.setProperty("code", code);
+    problemDetail.setProperty("timestamp", Instant.now());
+    enrichInstance(problemDetail, request);
+    return problemDetail;
+  }
 
   @ExceptionHandler(BusinessException.class)
   public ProblemDetail handleBusinessException(BusinessException ex, WebRequest request) {
