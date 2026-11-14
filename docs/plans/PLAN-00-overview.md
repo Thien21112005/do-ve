@@ -15,6 +15,15 @@ Tài liệu gốc: [`SRS.md`](../SRS.md). Tổng cộng **179 task** chia **8 ph
 | 07 | Vé của tôi và trải nghiệm trên thiết bị | 14 | [PLAN-07](PLAN-07-my-tickets.md) | [PROGRESS-07](../progress/PROGRESS-07-my-tickets.md) |
 | 08 | Chất lượng, đóng gói và phát hành | 25 | [PLAN-08](PLAN-08-quality-release.md) | [PROGRESS-08](../progress/PROGRESS-08-quality-release.md) |
 
+### Sau v0.1.0
+
+| Phase | Nội dung | Số task | Plan | Progress |
+|---|---|---|---|---|
+| 09 | Quét lỗi toàn dự án (hợp đồng API, ngày giờ, lưu vé, bảo mật backend) | 72 | [PLAN-09](PLAN-09-bug-sweep.md) | [PROGRESS-09](../progress/PROGRESS-09-bug-sweep.md) |
+| 10 | Cải thiện giao diện mobile (Impeccable) | 62 | [PLAN-10](PLAN-10-ui-redesign.md) | [PROGRESS-10](../progress/PROGRESS-10-ui-redesign.md) |
+
+Làm nhóm A của Phase 09 trước Phase 10 (UI đang render dữ liệu theo hợp đồng API sai).
+
 ## Thứ tự phụ thuộc
 
 ```

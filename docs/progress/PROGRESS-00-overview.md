@@ -15,6 +15,13 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 07 | [Vé của tôi và trải nghiệm trên thiết bị](PROGRESS-07-my-tickets.md) | 14 / 14 | DONE | AsyncStorage ticketStore, badge đa trục, auto recheck PENDING, offline cache, backup JSON, Cài đặt theme/rung/pháo hoa, nhắc nhở 16h45, quyền riêng tư on-device |
 | 08 | [Chất lượng, đóng gói và phát hành](PROGRESS-08-quality-release.md) | 25 / 25 | DONE | E2E Maestro, Dockerfile & Compose Caddy SSL, Logging MDC, Security headers, OWASP CI, Backup DB, About screen, VPS deploy, EAS Build/Update, Crash reporting, Ingest 7 days, 20 sample tickets, ADR-005, Store listing, CHANGELOG & tag v0.1.0, Smoke checklist |
 
+### Sau v0.1.0
+
+| Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 0 / 72 | TODO | 10 P0 · 29 P1 · 30 P2 · 3 P3 — ưu tiên nhóm A (hợp đồng API) và T09.57 (admin key) |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 0 / 62 | TODO | Baseline Nielsen 21/40, audit native 10/20; cần chốt hướng thị giác T10.02 |
+
 ## Mốc
 
 | Mốc | Ngày dự kiến | Ngày thực tế | Ghi chú |
