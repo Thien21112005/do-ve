@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 15 / 25 task hoàn thành
+- **Tổng quan:** 16 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -23,7 +23,7 @@
 | T08.13 | Màn Giới thiệu và miễn trừ | DONE | c7df3ff | 2026-11-14 | Màn Giới thiệu & Miễn trừ trách nhiệm, nguồn dữ liệu 21 đài, cam kết bảo mật vé trên máy, liên hệ |
 | T08.14 | Chọn hosting và deploy backend | DONE | c0c90b7 | 2026-11-14 | Quyết định kiến trúc VPS Linux + Docker Compose + Caddy SSL và hướng dẫn triển khai từng bước |
 | T08.15 | Icon, splash và định danh app | DONE | b625145 | 2026-11-14 | Cấu hình app.json: tên DoVe, package/bundleId com.dove.app, splash screen và adaptive icon |
-| T08.16 | Cấu hình EAS Build | TODO |  |  |  |
+| T08.16 | Cấu hình EAS Build | DONE | 9748ddd | 2026-11-14 | Thiết lập eas.json cho 3 môi trường (development, preview xuất file APK, production xuất AAB/Store) |
 | T08.17 | Build iOS thử nghiệm (tuỳ chọn) | TODO |  |  |  |
 | T08.18 | Cấu hình EAS Update (OTA) | TODO |  |  |  |
 | T08.19 | Theo dõi lỗi crash (tuỳ chọn) | TODO |  |  |  |
@@ -52,6 +52,7 @@
 - 2026-11-14 | T08.13 | Xây dựng màn About (Giới thiệu & Miễn trừ trách nhiệm, nguồn dữ liệu, cam kết quyền riêng tư, thông tin phiên bản), kết nối điều hướng từ tab Thêm và hoàn thành bộ test Jest.
 - 2026-11-14 | T08.14 | Đánh giá so sánh PaaS/Cloud/VPS, chốt quyết định hạ tầng VPS Linux + Docker Compose + Caddy SSL (<$10/tháng, <30ms) và tài liệu hoá 7 bước deploy sản xuất trong docs/deploy.md.
 - 2026-11-14 | T08.15 | Định danh toàn diện ứng dụng DoVe: cấu hình app.json (tên DoVe, slug dove, package/bundle com.dove.app, màu splash/adaptive icon chuẩn nhận diện #2563eb).
+- 2026-11-14 | T08.16 | Khởi tạo eas.json chuẩn xác cho 3 profile: development (Dev Client), preview (xuất trực tiếp file APK cho Android không cần tài khoản Play Store) và production (xuất App Bundle AAB/IPA). Cập nhật package.json scripts.
 
 ## Vấn đề mở
 
