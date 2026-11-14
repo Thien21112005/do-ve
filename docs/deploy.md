@@ -224,4 +224,37 @@ npx eas credentials
 - Thêm tester vào nhóm **Internal Testing** (tối đa 100 người trong tổ chức Apple Developer, không cần qua kiểm duyệt Apple Review).
 - Tester nhận email mời hoặc thông báo trong app **TestFlight** trên iPhone/iPad và cài đặt ứng dụng thử nghiệm ngay lập tức.
 
+---
+
+## ⚡ 8. Cấu Hình & Triển Khai Bản Vá Nhanh Qua OTA (EAS Update)
+
+### 8.1. Cơ chế hoạt động của EAS Update trong DoVe
+- **Cơ chế:** Cho phép đẩy các bản sửa lỗi giao diện, cập nhật chuỗi văn bản, sửa lỗi logic TypeScript/React Native trực tiếp tới thiết bị người dùng mà không cần nộp lại bản build mới lên Google Play hay Apple App Store.
+- **Runtime Version Policy:** Sử dụng chính sách `appVersion` (`1.0.0`). Các bản vá chỉ áp dụng cho những máy đang chạy cùng phiên bản binary `1.0.0`. Khi có thay đổi native code (native module, quyền hệ thống mới), ta nâng `version` trong `app.json` và build binary mới để tránh crash.
+- **Kênh phân phối (Channels):**
+  - `preview`: Nhận bản cập nhật thử nghiệm nội bộ ngay khi test trên máy dev.
+  - `production`: Phân phối rộng rãi tới 100% người dùng thực tế.
+
+### 8.2. Các lệnh phát hành bản vá OTA
+```bash
+cd apps/mobile
+
+# Đẩy bản vá lên kênh thử nghiệm (preview)
+npm run update:preview -- --message "Fix UI badge alignment in results screen"
+
+# Đẩy bản vá nóng (hotfix) lên môi trường sản xuất (production)
+npm run update:prod -- --message "Hotfix: Correct draw date fallback display"
+```
+
+### 8.3. Khôi phục khẩn cấp (Rollback)
+Nếu bản cập nhật gặp sự cố trên môi trường sản xuất, có thể rollback ngay lập tức mà không cần deploy code mới:
+```bash
+# Xem danh sách các bản cập nhật gần nhất
+npx eas update:list --channel production
+
+# Re-publish bản cập nhật ổn định trước đó
+npx eas update:re-publish --group <STABLE_UPDATE_GROUP_ID>
+```
+
+
 
