@@ -1,7 +1,7 @@
 # PROGRESS 07 — Vé của tôi và trải nghiệm trên thiết bị
 
 - **Plan:** [`plans/PLAN-07-my-tickets.md`](../plans/PLAN-07-my-tickets.md)
-- **Tổng quan:** 5 / 14 task hoàn thành
+- **Tổng quan:** 6 / 14 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -13,7 +13,8 @@
 | T07.03 | Nút Lưu vé | DONE | a6f312f | 2026-11-14 | Tích hợp nút lưu vé trên ResultCard vào ticketStore, xác định trạng thái WON/LOST/PENDING, haptics nhẹ, tự động phản ứng isSaved |
 | T07.04 | Màn Vé của tôi | DONE | ca9619f | 2026-11-14 | Màn Vé của tôi (FlatList sắp xếp mới nhất, nhóm theo kỳ quay, trạng thái rỗng thân thiện, định dạng 6 chữ số) |
 | T07.05 | Badge trạng thái | DONE | e1c4a8b | 2026-11-14 | Tạo TicketStatusBadge đa trục (icon + text + border), hiển thị Chưa có KQ / Trúng (+ tiền) / Không trúng, phân biệt rõ trong chế độ đen trắng |
-| T07.06 | Xoá vé | TODO |  |  |  |
+| T07.06 | Xoá vé | DONE | a02106d | 2026-11-14 | Thêm nút xóa từng vé với hộp thoại xác nhận và nút Xóa tất cả có hộp thoại cảnh báo phá hủy |
+| T07.07 | Tự dò lại vé PENDING | TODO |  |  |  |
 | T07.07 | Tự dò lại vé PENDING | TODO |  |  |  |
 | T07.08 | Test tự dò lại | TODO |  |  |  |
 | T07.09 | Xem kết quả khi offline | TODO |  |  |  |
@@ -31,6 +32,7 @@
 - 2026-11-14 | T07.03 | Thêm hành động lưu vé trên ResultCard với haptics nhẹ, xác định trạng thái WON/LOST/PENDING và lưu trữ vào ticketStore phản ứng qua useSavedTickets.
 - 2026-11-14 | T07.04 | Xây dựng màn Vé của tôi: FlatList sắp xếp theo ngày/thời gian tạo mới nhất, gom nhóm theo ngày mở thưởng, trạng thái rỗng có nút điều hướng Dò vé ngay.
 - 2026-11-14 | T07.05 | Thêm component TicketStatusBadge không phụ thuộc màu đơn lẻ (kết hợp icon, nhãn chữ, viền và a11y label) hiển thị đúng trạng thái vé và tổng tiền trúng.
+- 2026-11-14 | T07.06 | Triển khai hành động xóa vé từng mục và xóa toàn bộ vé khỏi ticketStore kèm hộp thoại xác nhận Alert dialog an toàn.
 
 ## Vấn đề mở
 
