@@ -46,9 +46,11 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
 const DEFAULT_TIMEOUT_MS = 10000;
 
 export function getApiBaseUrl(): string {
-  return (
-    process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:8080'
-  ).replace(/\/+$/, '');
+  const raw =
+    process.env.EXPO_PUBLIC_API_URL ||
+    process.env.EXPO_PUBLIC_API_BASE_URL ||
+    'http://localhost:8080';
+  return raw.replace(/\/+$/, '').replace(/\/api\/v1\/?$/, '');
 }
 
 export async function request<T>(
