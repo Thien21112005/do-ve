@@ -79,7 +79,7 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(getByText(/Bình Dương/)).toBeTruthy();
 
     // Verify winning amount
-    expect(getByText(/2.000.000.000 đ/)).toBeTruthy();
+    expect(getAllByText(/2.000.000.000 đ/).length).toBeGreaterThanOrEqual(1);
   });
 });
 

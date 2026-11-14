@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
 import { useTheme } from '@/theme';
-import { Icon } from '@/components';
+import { Icon, TicketStatusBadge } from '@/components';
 import { formatCurrency, formatDateVN } from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
@@ -84,44 +84,11 @@ export default function TicketsScreen() {
             </View>
 
             {/* Status Badge */}
-            <View
-              className="flex-row items-center px-2.5 py-1 rounded-full"
-              style={{
-                backgroundColor: isPending
-                  ? `${colors.pending}20`
-                  : isWon
-                    ? `${colors.win}20`
-                    : colors.surfaceSubtle,
-              }}
-            >
-              <Icon
-                name={isPending ? 'clock' : isWon ? 'trophy' : 'info'}
-                size={12}
-                color={
-                  isPending
-                    ? colors.pending
-                    : isWon
-                      ? colors.win
-                      : colors.textMuted
-                }
-              />
-              <Text
-                className="text-xs font-semibold ml-1.5"
-                style={{
-                  color: isPending
-                    ? colors.pending
-                    : isWon
-                      ? colors.win
-                      : colors.textMuted,
-                }}
-              >
-                {isPending
-                  ? STRINGS.tickets.statusPending
-                  : isWon
-                    ? STRINGS.tickets.statusWon
-                    : STRINGS.tickets.statusLost}
-              </Text>
-            </View>
+            <TicketStatusBadge
+              status={item.status}
+              totalPrize={item.totalPrize}
+              size="sm"
+            />
           </View>
 
           {/* Ticket Number & Prize Info */}
