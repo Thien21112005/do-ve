@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 6 / 33 task hoàn thành
+- **Tổng quan:** 7 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -14,7 +14,7 @@
 | T06.04 | Font Be Vietnam Pro | DONE | 603ed15 | 2026-11-14 | Tải font Be Vietnam Pro với splash hold, chống nháy FOUT, unit test hook |
 | T06.05 | Bộ icon | DONE | 9ca3314 | 2026-11-14 | Cài lucide-react-native & svg, tạo wrapper Icon, hiển thị đúng ở tab bar & tests |
 | T06.06 | API client có kiểu | DONE | 719c5f6 | 2026-11-14 | Wrapper fetch có kiểu, timeout, parse Problem Details thành ApiError có code |
-| T06.07 | Sinh type từ OpenAPI | TODO |  |  |  |
+| T06.07 | Sinh type từ OpenAPI | DONE | 3f1e5b0 | 2026-11-14 | Thêm openapi.json, script gen:api với openapi-typescript sinh types/api.d.ts & tests |
 | T06.08 | TanStack Query và trạng thái mạng | TODO |  |  |  |
 | T06.09 | Hook useStations | TODO |  |  |  |
 | T06.10 | Component TicketInput | TODO |  |  |  |
@@ -51,6 +51,7 @@
 - 2026-11-14 | T06.04 | Tích hợp font Be Vietnam Pro (400/500/600/700), giữ splash screen với preventAutoHideAsync và giải phóng mượt mà khi font sẵn sàng.
 - 2026-11-14 | T06.05 | Cài đặt lucide-react-native & react-native-svg, tạo wrapper Icon type-safe, cấu hình Jest mapping cjs dist, gắn icon trực quan vào 5 tabs.
 - 2026-11-14 | T06.06 | Triển khai Typed API Client hỗ trợ HTTP GET/POST/PUT/DELETE, timeout, chuẩn hóa RFC 7807 Problem Details thành ApiError có code, bao quát 6 ca test.
+- 2026-11-14 | T06.07 | Thêm openapi.json đồng bộ OpenAPI spec Backend, cấu hình npm run gen:api với openapi-typescript tự động sinh types/api.d.ts type-safe 100%.
 
 ## Vấn đề mở
 
