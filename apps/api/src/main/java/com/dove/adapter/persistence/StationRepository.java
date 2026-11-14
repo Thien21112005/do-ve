@@ -11,4 +11,6 @@ public interface StationRepository extends JpaRepository<StationEntity, Long> {
   Optional<StationEntity> findByCode(String code);
 
   List<StationEntity> findByRegion(String region);
+
+  List<StationEntity> findByRegionIgnoreCase(String region);
 }
