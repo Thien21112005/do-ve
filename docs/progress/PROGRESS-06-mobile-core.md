@@ -1,7 +1,7 @@
 # PROGRESS 06 — Mobile app: dò vé và xem kết quả
 
 - **Plan:** [`plans/PLAN-06-mobile-core.md`](../plans/PLAN-06-mobile-core.md)
-- **Tổng quan:** 26 / 33 task hoàn thành
+- **Tổng quan:** 27 / 33 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -34,7 +34,7 @@
 | T06.24 | Component DrawTable | DONE | b539ceb | 2026-11-14 | Bảng đủ 9 giải ĐB đến G8, định dạng tabular-nums sắc nét, hỗ trợ a11y & tests |
 | T06.25 | Kéo để làm mới | DONE | 8ee13a6 | 2026-11-14 | Tích hợp RefreshControl kéo để tải lại dữ liệu kỳ quay & tests |
 | T06.26 | Trang chủ: kết quả mới nhất | DONE | b9ada5f | 2026-11-14 | Gọi /draws/latest, thẻ kỳ mới nhất, giải ĐB nổi bật, dò nhanh & tests |
-| T06.27 | Màn Lịch quay | TODO |  |  |  |
+| T06.27 | Màn Lịch quay | DONE | 552d8c9 | 2026-11-14 | Bảng 7 thứ và đài khớp chuẩn SRS 3.3, đánh dấu hôm nay, điều hướng từ tab Thêm & tests |
 | T06.28 | Dò hàng loạt: nhập | TODO |  |  |  |
 | T06.29 | Dò hàng loạt: kết quả | TODO |  |  |  |
 | T06.30 | Kiểm tra phiên bản khi mở app | TODO |  |  |  |
@@ -71,6 +71,7 @@
 - 2026-11-14 | T06.24 | Xây dựng component DrawTable hiển thị trọn vẹn 9 hạng giải xổ số miền Nam từ ĐB xuống G8, định dạng số lớn nổi bật và tích hợp vào màn Kết quả & tests.
 - 2026-11-14 | T06.25 | Bổ sung RefreshControl hỗ trợ kéo để làm mới (pull-to-refresh) dữ liệu kết quả trên ScrollView, gọi refetch và hiển thị spinner đúng chuẩn & tests.
 - 2026-11-14 | T06.26 | Phát triển hook useLatestDraws và hoàn thiện Trang chủ với thẻ Dò vé nhanh, danh sách kỳ quay mới nhất, pull-to-refresh và cấu hình mock Jest expo-router & tests.
+- 2026-11-14 | T06.27 | Xây dựng màn Lịch quay thưởng (/schedule) thể hiện 21 đài theo 7 thứ trong tuần khớp chuẩn SRS 3.3, highlight thông minh hôm nay và liên kết từ màn Thêm & tests.
 
 ## Vấn đề mở
 
