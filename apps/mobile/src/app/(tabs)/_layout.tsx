@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
+import { STRINGS } from '@/lib/strings';
 
 export default function TabLayout() {
   const { colors } = useTheme();
@@ -26,8 +27,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Trang chủ',
-          headerTitle: 'DoVe',
+          title: STRINGS.tabs.home,
+          headerTitle: STRINGS.common.appName,
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="home"
@@ -40,8 +41,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="check"
         options={{
-          title: 'Dò vé',
-          headerTitle: 'Dò vé số',
+          title: STRINGS.tabs.check,
+          headerTitle: STRINGS.check.screenTitle,
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="ticket"
@@ -54,8 +55,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="results"
         options={{
-          title: 'Kết quả',
-          headerTitle: 'Kết quả xổ số',
+          title: STRINGS.tabs.results,
+          headerTitle: STRINGS.results.screenTitle,
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="trophy"
@@ -68,7 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="tickets"
         options={{
-          title: 'Vé của tôi',
+          title: STRINGS.tabs.tickets,
           headerTitle: 'Vé đã lưu',
           tabBarIcon: ({ color, size }) => (
             <Icon
@@ -82,7 +83,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: 'Thêm',
+          title: STRINGS.tabs.more,
           headerTitle: 'Thêm & Cài đặt',
           tabBarIcon: ({ color, size }) => (
             <Icon
@@ -96,3 +97,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+

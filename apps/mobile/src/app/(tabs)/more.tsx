@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
+import { STRINGS } from '@/lib/strings';
+import { CURRENT_APP_VERSION } from '@/lib/version';
 
 export default function MoreScreen() {
   const { colors } = useTheme();
@@ -12,22 +14,22 @@ export default function MoreScreen() {
   const menuItems = [
     {
       testID: 'more-menu-schedule',
-      title: 'Lịch quay thưởng',
-      subtitle: 'Lịch mở thưởng 21 đài miền Nam theo thứ trong tuần',
+      title: STRINGS.more.scheduleTitle,
+      subtitle: STRINGS.more.scheduleDesc,
       icon: 'calendar' as const,
       onPress: () => router.push('/schedule'),
     },
     {
       testID: 'more-menu-settings',
-      title: 'Cài đặt',
-      subtitle: 'Giao diện sáng/tối, hiệu ứng chúc mừng',
+      title: STRINGS.more.settingsTitle,
+      subtitle: STRINGS.more.settingsDesc,
       icon: 'settings' as const,
       onPress: () => {},
     },
     {
       testID: 'more-menu-about',
-      title: 'Giới thiệu & Miễn trừ trách nhiệm',
-      subtitle: 'Quy chế tham khảo, bản quyền và thông tin phiên bản',
+      title: STRINGS.more.aboutTitle,
+      subtitle: STRINGS.more.aboutDesc,
       icon: 'info' as const,
       onPress: () => {},
     },
@@ -47,10 +49,10 @@ export default function MoreScreen() {
           className="text-2xl font-bold mb-1"
           style={{ color: colors.textMain }}
         >
-          Thêm
+          {STRINGS.more.screenTitle}
         </Text>
         <Text className="text-xs mb-5" style={{ color: colors.textMuted }}>
-          Lịch quay số, Giới thiệu và Cài đặt ứng dụng
+          {STRINGS.more.subtitle}
         </Text>
 
         <View
@@ -104,18 +106,17 @@ export default function MoreScreen() {
             className="text-[11px] text-center leading-relaxed"
             style={{ color: colors.textMuted }}
           >
-            DoVe là ứng dụng tra cứu kết quả xổ số kiến thiết phi lợi nhuận. Mọi
-            thông tin kết quả chỉ mang tính chất tham khảo, vui lòng đối chiếu
-            vé giấy tại các đại lý chính thức.
+            {STRINGS.more.copyright}
           </Text>
           <Text
             className="text-[11px] mt-2 font-medium"
             style={{ color: colors.textMuted }}
           >
-            Phiên bản 1.0.0
+            {STRINGS.more.versionPrefix} {CURRENT_APP_VERSION}
           </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+

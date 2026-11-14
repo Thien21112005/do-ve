@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../theme';
+import { STRINGS } from '../lib/strings';
 
 export interface PrizeTierConfig {
   key: string;
@@ -14,20 +15,68 @@ export interface PrizeTierConfig {
 export const DRAW_TIERS: PrizeTierConfig[] = [
   {
     key: 'SPECIAL',
-    name: 'Đặc biệt',
-    shortName: 'ĐB',
+    name: STRINGS.results.prizes.special,
+    shortName: STRINGS.results.prizes.specialShort,
     digits: 6,
     count: 1,
     highlight: true,
   },
-  { key: 'FIRST', name: 'Giải nhất', shortName: 'G1', digits: 5, count: 1 },
-  { key: 'SECOND', name: 'Giải nhì', shortName: 'G2', digits: 5, count: 1 },
-  { key: 'THIRD', name: 'Giải ba', shortName: 'G3', digits: 5, count: 2 },
-  { key: 'FOURTH', name: 'Giải tư', shortName: 'G4', digits: 5, count: 7 },
-  { key: 'FIFTH', name: 'Giải năm', shortName: 'G5', digits: 4, count: 1 },
-  { key: 'SIXTH', name: 'Giải sáu', shortName: 'G6', digits: 4, count: 3 },
-  { key: 'SEVENTH', name: 'Giải bảy', shortName: 'G7', digits: 3, count: 1 },
-  { key: 'EIGHTH', name: 'Giải tám', shortName: 'G8', digits: 2, count: 1 },
+  {
+    key: 'FIRST',
+    name: STRINGS.results.prizes.first,
+    shortName: STRINGS.results.prizes.firstShort,
+    digits: 5,
+    count: 1,
+  },
+  {
+    key: 'SECOND',
+    name: STRINGS.results.prizes.second,
+    shortName: STRINGS.results.prizes.secondShort,
+    digits: 5,
+    count: 1,
+  },
+  {
+    key: 'THIRD',
+    name: STRINGS.results.prizes.third,
+    shortName: STRINGS.results.prizes.thirdShort,
+    digits: 5,
+    count: 2,
+  },
+  {
+    key: 'FOURTH',
+    name: STRINGS.results.prizes.fourth,
+    shortName: STRINGS.results.prizes.fourthShort,
+    digits: 5,
+    count: 7,
+  },
+  {
+    key: 'FIFTH',
+    name: STRINGS.results.prizes.fifth,
+    shortName: STRINGS.results.prizes.fifthShort,
+    digits: 4,
+    count: 1,
+  },
+  {
+    key: 'SIXTH',
+    name: STRINGS.results.prizes.sixth,
+    shortName: STRINGS.results.prizes.sixthShort,
+    digits: 4,
+    count: 3,
+  },
+  {
+    key: 'SEVENTH',
+    name: STRINGS.results.prizes.seventh,
+    shortName: STRINGS.results.prizes.seventhShort,
+    digits: 3,
+    count: 1,
+  },
+  {
+    key: 'EIGHTH',
+    name: STRINGS.results.prizes.eighth,
+    shortName: STRINGS.results.prizes.eighthShort,
+    digits: 2,
+    count: 1,
+  },
 ];
 
 export interface DrawTableProps {
@@ -55,7 +104,9 @@ export const DrawTable: React.FC<DrawTableProps> = ({
         const isSpecial = tier.highlight;
         const isLastRow = index === DRAW_TIERS.length - 1;
         const numbersString =
-          tierNumbers.length > 0 ? tierNumbers.join(', ') : 'Chưa có';
+          tierNumbers.length > 0
+            ? tierNumbers.join(', ')
+            : STRINGS.results.noDataYet;
 
         return (
           <View

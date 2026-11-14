@@ -13,6 +13,7 @@ import { Icon, OfflineBanner } from '@/components';
 import { useLatestDraws } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
+import { STRINGS } from '@/lib/strings';
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -70,7 +71,7 @@ export default function HomeScreen() {
                     className="text-2xl font-black tracking-tight"
                     style={{ color: colors.textMain }}
                   >
-                    DoVe
+                    {STRINGS.common.appName}
                   </Text>
                   <View
                     className="ml-2 px-2 py-0.5 rounded-full"
@@ -80,7 +81,7 @@ export default function HomeScreen() {
                       className="text-[10px] font-bold tracking-wide"
                       style={{ color: colors.primary }}
                     >
-                      MIỀN NAM
+                      {STRINGS.common.regionName}
                     </Text>
                   </View>
                 </View>
@@ -88,7 +89,7 @@ export default function HomeScreen() {
                   className="text-xs font-medium"
                   style={{ color: colors.textMuted }}
                 >
-                  Xổ số kiến thiết 21 đài
+                  {STRINGS.common.tagline}
                 </Text>
               </View>
             </View>
@@ -121,26 +122,25 @@ export default function HomeScreen() {
                 className="text-base font-bold"
                 style={{ color: colors.textMain }}
               >
-                Dò vé nhanh
+                {STRINGS.home.quickCheckTitle}
               </Text>
             </View>
             <Text
               className="text-xs leading-relaxed mb-3.5"
               style={{ color: colors.textMuted }}
             >
-              Nhập 6 chữ số trên vé để tra cứu chính xác giải thưởng từ Đặc biệt
-              đến Giải tám.
+              {STRINGS.home.quickCheckDesc}
             </Text>
             <Pressable
               testID="home-quick-check-btn"
               accessibilityRole="button"
-              accessibilityLabel="Dò vé ngay"
+              accessibilityLabel={STRINGS.home.quickCheckBtn}
               onPress={() => router.push('/(tabs)/check')}
               className="py-3 px-4 rounded-xl flex-row items-center justify-center active:opacity-80"
               style={{ backgroundColor: colors.primary }}
             >
               <Text className="text-white font-bold text-sm mr-1.5">
-                Dò vé ngay
+                {STRINGS.home.quickCheckBtn}
               </Text>
               <Icon name="chevronRight" size={16} color="#FFFFFF" />
             </Pressable>
@@ -159,7 +159,7 @@ export default function HomeScreen() {
                 className="text-base font-bold"
                 style={{ color: colors.textMain }}
               >
-                Kỳ quay mới nhất
+                {STRINGS.home.latestDrawsTitle}
               </Text>
             </View>
             <Pressable
@@ -170,7 +170,7 @@ export default function HomeScreen() {
                 className="text-xs font-semibold mr-0.5"
                 style={{ color: colors.primary }}
               >
-                Xem tất cả
+                {STRINGS.home.viewAll}
               </Text>
               <Icon name="chevronRight" size={14} color={colors.primary} />
             </Pressable>
@@ -191,7 +191,7 @@ export default function HomeScreen() {
                 className="text-xs mt-2.5 font-medium"
                 style={{ color: colors.textMuted }}
               >
-                Đang tải kết quả mới nhất...
+                {STRINGS.home.loadingLatest}
               </Text>
             </View>
           )}
@@ -210,7 +210,7 @@ export default function HomeScreen() {
                 className="text-sm font-semibold mt-2 text-center"
                 style={{ color: colors.textMain }}
               >
-                Không thể tải kết quả mới nhất
+                {STRINGS.home.errorLatest}
               </Text>
               <Pressable
                 onPress={() => refetch()}
@@ -221,7 +221,7 @@ export default function HomeScreen() {
                   className="text-xs font-bold"
                   style={{ color: colors.primary }}
                 >
-                  Thử lại
+                  {STRINGS.common.retry}
                 </Text>
               </Pressable>
             </View>
@@ -241,14 +241,13 @@ export default function HomeScreen() {
                 className="text-sm font-semibold mt-2 text-center"
                 style={{ color: colors.textMain }}
               >
-                Chưa có kết quả mở thưởng
+                {STRINGS.home.emptyLatestTitle}
               </Text>
               <Text
                 className="text-xs mt-1 text-center"
                 style={{ color: colors.textMuted }}
               >
-                Kết quả các đài miền Nam thường được cập nhật từ 16h15 đến
-                16h35.
+                {STRINGS.home.emptyLatestDesc}
               </Text>
             </View>
           )}
@@ -289,7 +288,7 @@ export default function HomeScreen() {
                         className="text-xs mt-0.5"
                         style={{ color: colors.textMuted }}
                       >
-                        Kỳ quay ngày {formattedDrawDate}
+                        {STRINGS.results.drawDatePrefix} {formattedDrawDate}
                       </Text>
                     </View>
                     <View
@@ -306,7 +305,9 @@ export default function HomeScreen() {
                           color: isFinal ? colors.win : colors.pending,
                         }}
                       >
-                        {isFinal ? 'ĐÃ CÔNG BỐ' : 'ĐANG CHỜ'}
+                        {isFinal
+                          ? STRINGS.results.statusFinal
+                          : STRINGS.results.statusPending}
                       </Text>
                     </View>
                   </View>
@@ -323,7 +324,7 @@ export default function HomeScreen() {
                       className="text-[11px] font-bold uppercase tracking-wider mb-1"
                       style={{ color: colors.primary }}
                     >
-                      Giải Đặc Biệt
+                      {STRINGS.home.specialPrizeBanner}
                     </Text>
                     <Text
                       className="text-2xl font-black tracking-widest"
@@ -343,7 +344,7 @@ export default function HomeScreen() {
                         className="text-xs font-medium"
                         style={{ color: colors.textMuted }}
                       >
-                        Giải Nhất
+                        {STRINGS.home.firstPrizeLabel}
                       </Text>
                       <Text
                         className="text-sm font-bold"
@@ -360,7 +361,7 @@ export default function HomeScreen() {
                         className="text-xs font-medium"
                         style={{ color: colors.textMuted }}
                       >
-                        Giải Tám
+                        {STRINGS.home.eighthPrizeLabel}
                       </Text>
                       <Text
                         className="text-sm font-bold"
@@ -384,7 +385,7 @@ export default function HomeScreen() {
                       className="text-xs font-semibold mr-1"
                       style={{ color: colors.primary }}
                     >
-                      Xem toàn bộ bảng giải
+                      {STRINGS.home.viewFullTable}
                     </Text>
                     <Icon
                       name="chevronRight"

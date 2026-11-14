@@ -13,6 +13,7 @@ import {
   getLongestMatchedSuffix,
 } from './HighlightedTicket';
 import { formatCurrency, formatDateVN } from '@/lib/format';
+import { STRINGS } from '@/lib/strings';
 import type { CheckTicketResponse } from '@/types';
 
 export interface ResultCardProps {
@@ -121,17 +122,17 @@ export function ResultCard({
               }}
             >
               {isPending
-                ? 'Chưa có kết quả'
+                ? STRINGS.check.resultPendingTitle
                 : isWon
-                  ? 'Chúc mừng bạn đã trúng thưởng!'
-                  : 'Rất tiếc, vé không trúng giải'}
+                  ? STRINGS.check.resultWonTitle
+                  : STRINGS.check.resultLostTitle}
             </Text>
             <Text className="text-xs" style={{ color: colors.textMuted }}>
               {isPending
-                ? 'Chưa có kết quả, thường có sau 16h30'
+                ? STRINGS.check.resultPendingSubtitle
                 : isWon
-                  ? `Trúng ${winCount} giải`
-                  : 'Chúc bạn may mắn lần sau'}
+                  ? STRINGS.check.resultWonCount(winCount)
+                  : STRINGS.check.resultLostSubtitle}
             </Text>
           </View>
         </View>
@@ -145,7 +146,7 @@ export function ResultCard({
               className="text-xs font-semibold"
               style={{ color: colors.win }}
             >
-              TRÚNG
+              {STRINGS.check.resultWonBadge}
             </Text>
           </View>
         )}
@@ -159,7 +160,7 @@ export function ResultCard({
               className="text-xs font-semibold"
               style={{ color: colors.pending }}
             >
-              CHỜ QUAY
+              {STRINGS.check.resultPendingBadge}
             </Text>
           </View>
         )}
@@ -172,7 +173,7 @@ export function ResultCard({
       >
         <View>
           <Text className="text-xs mb-0.5" style={{ color: colors.textMuted }}>
-            Số vé dò
+            {STRINGS.check.ticketNumberLabel}
           </Text>
           <HighlightedTicket
             ticket={result.ticket}
@@ -200,8 +201,7 @@ export function ResultCard({
             className="text-sm leading-relaxed"
             style={{ color: colors.textMain }}
           >
-            Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết
-            miền Nam thường có sau 16h30 hàng ngày.
+            {STRINGS.check.pendingNotice}
           </Text>
 
           {/* Dò lại button */}
@@ -222,7 +222,7 @@ export function ResultCard({
                 className="text-sm font-semibold ml-2"
                 style={{ color: colors.pending }}
               >
-                Dò lại
+                {STRINGS.check.checkAgain}
               </Text>
             </TouchableOpacity>
           )}
@@ -233,7 +233,7 @@ export function ResultCard({
             className="text-xs font-semibold uppercase tracking-wider mb-1"
             style={{ color: colors.textMuted }}
           >
-            Chi tiết giải trúng
+            {STRINGS.check.prizeDetails}
           </Text>
           {result.wins.map((win, idx) => (
             <View
@@ -277,7 +277,7 @@ export function ResultCard({
               className="text-base font-bold"
               style={{ color: colors.textMain }}
             >
-              Tổng thưởng:{' '}
+              {STRINGS.check.totalPrizeLabel}{' '}
               <Text className="text-lg font-bold" style={{ color: colors.win }}>
                 {formatCurrency(result.totalPrize)}
               </Text>
@@ -290,8 +290,7 @@ export function ResultCard({
             className="text-sm text-center leading-relaxed"
             style={{ color: colors.textMuted }}
           >
-            Vé số {result.ticket} không trùng với các bộ số mở thưởng kỳ quay
-            này.
+            {STRINGS.check.lostNotice(result.ticket)}
           </Text>
         </View>
       )}
@@ -307,7 +306,9 @@ export function ResultCard({
             backgroundColor: isSaved ? `${colors.win}10` : colors.surface,
           }}
           accessibilityRole="button"
-          accessibilityLabel={isSaved ? 'Đã lưu vé' : 'Lưu vé vào danh sách'}
+          accessibilityLabel={
+            isSaved ? STRINGS.check.savedTicket : STRINGS.check.saveTicket
+          }
         >
           <Icon
             name={isSaved ? 'check' : 'bookmark'}
@@ -319,10 +320,10 @@ export function ResultCard({
             style={{ color: isSaved ? colors.win : colors.textMain }}
           >
             {isSaved
-              ? 'Đã lưu vé'
+              ? STRINGS.check.savedTicket
               : isPending
-                ? 'Lưu vé để tự động dò sau'
-                : 'Lưu vé này'}
+                ? STRINGS.check.savePendingTicket
+                : STRINGS.check.saveTicket}
           </Text>
         </Pressable>
       )}
@@ -332,8 +333,7 @@ export function ResultCard({
         className="text-[11px] text-center mt-3 leading-4 italic"
         style={{ color: colors.textMuted }}
       >
-        Kết quả chỉ mang tính tham khảo, vui lòng đối chiếu với tờ vé giấy tại
-        đại lý xổ số.
+        {STRINGS.check.disclaimer}
       </Text>
     </Animated.View>
   );

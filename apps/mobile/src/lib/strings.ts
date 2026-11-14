@@ -1,0 +1,213 @@
+/**
+ * Centralized Vietnamese localization strings for DoVe Mobile App
+ * Adheres to Vietnamese standard lottery terminology (XSKT Miền Nam).
+ */
+
+export const STRINGS = {
+  common: {
+    appName: 'DoVe',
+    regionName: 'MIỀN NAM',
+    tagline: 'Xổ số kiến thiết 21 đài',
+    retry: 'Thử lại',
+    loading: 'Đang tải...',
+    close: 'Đóng',
+    cancel: 'Hủy',
+    confirm: 'Xác nhận',
+    offlineTitle: 'Không có kết nối mạng',
+    offlineMessage: 'Không có kết nối mạng. Vui lòng kiểm tra lại.',
+    networkError: 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+    unknownError: 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+  },
+
+  tabs: {
+    home: 'Trang chủ',
+    check: 'Dò vé',
+    results: 'Kết quả',
+    tickets: 'Vé của tôi',
+    more: 'Thêm',
+  },
+
+  tickets: {
+    screenTitle: 'Vé của tôi',
+    headerTitle: 'Vé đã lưu',
+    subtitle: 'Lưu trữ và theo dõi các vé số đã dò',
+    emptyTitle: 'Chưa có vé nào được lưu',
+    emptyDesc: 'Khi dò vé, bạn có thể bấm nút "Lưu vé này" để theo dõi kết quả tại đây.',
+  },
+
+  check: {
+    screenTitle: 'Dò vé số',
+    stepDate: '1. Chọn ngày mở thưởng',
+    stepStation: '2. Chọn đài quay',
+    stepTicket: '3. Nhập 6 chữ số trên vé',
+    stepBatch: '3. Nhập danh sách vé cần dò',
+    modeSingle: 'Dò từng vé',
+    modeBatch: 'Dò hàng loạt (tối đa 20)',
+    ticketPlaceholder: 'Nhập số vé 6 chữ số',
+    validationIncomplete: (len: number) =>
+      `Số vé phải có đủ 6 chữ số (hiện có ${len}/6)`,
+    validationEmpty: 'Vui lòng nhập số vé',
+    btnCheck: 'Dò vé ngay',
+    btnChecking: 'Đang dò vé...',
+    btnCheckBatch: (count: number) => `Dò hàng loạt (${count} vé)`,
+    accessibilityCheckBtnSingle: 'Dò kết quả vé số',
+    accessibilityCheckBtnBatch: 'Dò kết quả danh sách vé',
+    dataPreservedNotice: 'Dữ liệu vé đã nhập được giữ nguyên.',
+    resultWonTitle: 'Chúc mừng bạn đã trúng thưởng!',
+    resultLostTitle: 'Rất tiếc, vé không trúng giải',
+    resultPendingTitle: 'Chưa có kết quả',
+    resultWonBadge: 'TRÚNG',
+    resultPendingBadge: 'CHỜ QUAY',
+    resultWonCount: (count: number) => `Trúng ${count} giải`,
+    resultLostSubtitle: 'Chúc bạn may mắn lần sau',
+    resultPendingSubtitle: 'Chưa có kết quả, thường có sau 16h30',
+    prizeDetails: 'Chi tiết giải trúng',
+    matchedPrefix: 'Khớp',
+    matchedSuffix: 'số cuối',
+    totalPrizeLabel: 'Tổng thưởng:',
+    checkAgain: 'Dò lại',
+    ticketNumberLabel: 'Số vé dò',
+    disclaimer:
+      'Kết quả chỉ mang tính tham khảo, vui lòng đối chiếu với tờ vé giấy tại đại lý xổ số.',
+    pendingNotice:
+      'Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết miền Nam thường có sau 16h30 hàng ngày.',
+    lostNotice: (ticket: string) =>
+      `Vé số ${ticket} không trùng với các bộ số mở thưởng kỳ quay này.`,
+    saveTicket: 'Lưu vé này',
+    savedTicket: 'Đã lưu vé',
+    savePendingTicket: 'Lưu vé để tự động dò sau',
+
+    // Batch check
+    batchInputTitle: 'Danh sách vé dò hàng loạt',
+    batchPlaceholder: (max: number) =>
+      `Nhập hoặc dán các dãy 6 chữ số, cách nhau bởi dấu cách, dấu phẩy hoặc xuống dòng (tối đa ${max} vé).\nVí dụ:\n123456\n654321\n098765`,
+    batchCounter: (count: number, max: number) => `${count}/${max} vé`,
+    batchPasteBtn: 'Dán từ bộ nhớ tạm',
+    batchClearBtn: 'Xóa tất cả',
+    batchClearA11y: 'Xóa toàn bộ',
+    batchErrorOverLimit: (max: number, count?: number) =>
+      `Vượt quá giới hạn tối đa ${max} vé${count !== undefined ? ` (hiện có ${count} vé)` : ''}`,
+    batchErrorInvalidTokens: (preview: string) =>
+      `Số vé không hợp lệ: phải gồm đúng 6 chữ số (${preview})`,
+    batchResultSummary: (total: number) => `Kết quả dò ${total} vé`,
+    batchResultTitle: 'Kết quả dò hàng loạt',
+    batchWonCount: (count: number) => `${count} vé trúng`,
+    batchLostCount: (count: number) => `${count} không trúng`,
+    batchNotWon: 'Không trúng',
+    batchTotalPrize: 'Tổng tiền thưởng',
+    batchCheckedCountLabel: 'Số lượng kiểm tra',
+    batchTicketDetails: (count: number) => `Chi tiết từng vé (${count})`,
+    batchItemWonBadge: (count: number) => `TRÚNG ${count} GIẢI`,
+    batchItemNotWonBadge: 'KHÔNG TRÚNG',
+    batchItemPendingBadge: 'CHƯA CÓ KẾT QUẢ',
+    batchItemNotWonNotice: 'Không trúng giải nào trong kỳ mở thưởng này.',
+    batchItemPendingNotice:
+      'Chưa có kết quả mở thưởng (thường có sau 16h30).',
+    batchCheckAgain: 'Dò danh sách khác',
+  },
+
+  results: {
+    screenTitle: 'Kết quả xổ số',
+    dateLabel: 'Chọn ngày mở thưởng',
+    stationLabel: 'Đài mở thưởng',
+    loading: 'Đang tải kết quả...',
+    emptyTitle: 'Chưa có kết quả mở thưởng',
+    emptyMessage: (date: string) =>
+      `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có sau 16h30 hàng ngày.`,
+    statusFinal: 'ĐÃ CÔNG BỐ',
+    statusPending: 'ĐANG CHỜ',
+    drawDatePrefix: 'Kỳ quay ngày',
+    noDataYet: 'Chưa có',
+    prizes: {
+      special: 'Đặc biệt',
+      specialShort: 'ĐB',
+      first: 'Giải nhất',
+      firstShort: 'G1',
+      second: 'Giải nhì',
+      secondShort: 'G2',
+      third: 'Giải ba',
+      thirdShort: 'G3',
+      fourth: 'Giải tư',
+      fourthShort: 'G4',
+      fifth: 'Giải năm',
+      fifthShort: 'G5',
+      sixth: 'Giải sáu',
+      sixthShort: 'G6',
+      seventh: 'Giải bảy',
+      seventhShort: 'G7',
+      eighth: 'Giải tám',
+      eighthShort: 'G8',
+    },
+  },
+
+  home: {
+    quickCheckTitle: 'Dò vé nhanh',
+    quickCheckDesc:
+      'Nhập 6 chữ số trên vé để tra cứu chính xác giải thưởng từ Đặc biệt đến Giải tám.',
+    quickCheckBtn: 'Dò vé ngay',
+    latestDrawsTitle: 'Kỳ quay mới nhất',
+    viewAll: 'Xem tất cả',
+    loadingLatest: 'Đang tải kết quả mới nhất...',
+    errorLatest: 'Không thể tải kết quả mới nhất',
+    emptyLatest: 'Chưa có kết quả kỳ quay nào',
+    emptyLatestTitle: 'Chưa có kết quả mở thưởng',
+    emptyLatestDesc:
+      'Kết quả các đài miền Nam thường được cập nhật từ 16h15 đến 16h35.',
+    specialPrizeLabel: 'Đặc biệt',
+    specialPrizeBanner: 'Giải Đặc Biệt',
+    firstPrizeLabel: 'Giải Nhất',
+    eighthPrizeLabel: 'Giải Tám',
+    viewFullTable: 'Xem toàn bộ bảng giải',
+  },
+
+  schedule: {
+    screenTitle: 'Lịch quay thưởng',
+    subtitle: 'Xổ số kiến thiết 21 tỉnh thành miền Nam (16h15 hàng ngày)',
+    todayTag: 'Hôm nay',
+    weekdays: {
+      monday: 'Thứ Hai',
+      tuesday: 'Thứ Ba',
+      wednesday: 'Thứ Tư',
+      thursday: 'Thứ Năm',
+      friday: 'Thứ Sáu',
+      saturday: 'Thứ Bảy',
+      sunday: 'Chủ Nhật',
+    },
+    shortWeekdays: {
+      monday: 'T2',
+      tuesday: 'T3',
+      wednesday: 'T4',
+      thursday: 'T5',
+      friday: 'T6',
+      saturday: 'T7',
+      sunday: 'CN',
+    },
+  },
+
+  more: {
+    screenTitle: 'Thêm',
+    subtitle: 'Lịch quay số, Giới thiệu và Cài đặt ứng dụng',
+    scheduleTitle: 'Lịch quay thưởng',
+    scheduleDesc: 'Lịch mở thưởng 21 đài miền Nam theo thứ trong tuần',
+    settingsTitle: 'Cài đặt',
+    settingsDesc: 'Giao diện sáng/tối, hiệu ứng chúc mừng',
+    aboutTitle: 'Giới thiệu & Miễn trừ trách nhiệm',
+    aboutDesc: 'Quy chế tham khảo, bản quyền và thông tin phiên bản',
+    versionPrefix: 'Phiên bản',
+    copyright: '© 2026 DoVe. Ứng dụng tra cứu xổ số kiến thiết miền Nam.',
+  },
+
+  gate: {
+    maintenanceTitle: 'Hệ thống đang bảo trì',
+    maintenanceDefaultMsg:
+      'Hệ thống đang tạm ngừng dịch vụ để nâng cấp máy chủ. Quý khách vui lòng thử lại sau ít phút.',
+    maintenanceRetryBtn: 'Thử lại kết nối',
+    updateTitle: 'Cần cập nhật ứng dụng',
+    updateCurrentVersion: (version: string) => `Phiên bản hiện tại: ${version}`,
+    updateMinVersion: (minVersion: string) =>
+      `Phiên bản tối thiểu yêu cầu: ${minVersion}`,
+    updateRequiredMsg:
+      'Phiên bản DoVe bạn đang sử dụng đã quá cũ và không còn được hỗ trợ. Vui lòng cập nhật lên phiên bản mới nhất để tiếp tục tra cứu kết quả.',
+    updateBtn: 'Cập nhật ngay',
+  },
+};

@@ -17,6 +17,7 @@ import {
 import { useDraw } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
+import { STRINGS } from '@/lib/strings';
 
 export default function ResultsScreen() {
   const { colors } = useTheme();
@@ -70,7 +71,7 @@ export default function ResultsScreen() {
         {/* Section: Chọn ngày mở thưởng */}
         <View className="pt-3 px-4 pb-1">
           <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Chọn ngày mở thưởng
+            {STRINGS.results.dateLabel}
           </Text>
         </View>
         <DateStrip
@@ -83,7 +84,7 @@ export default function ResultsScreen() {
         {/* Section: Chọn đài quay */}
         <View className="pt-2 px-4 pb-1">
           <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            Đài mở thưởng
+            {STRINGS.results.stationLabel}
           </Text>
         </View>
         <StationChips
@@ -101,7 +102,7 @@ export default function ResultsScreen() {
                 className="mt-3 text-sm"
                 style={{ color: colors.textMuted }}
               >
-                Đang tải kết quả...
+                {STRINGS.results.loading}
               </Text>
             </View>
           ) : isError || !draw ? (
@@ -117,15 +118,13 @@ export default function ResultsScreen() {
                 className="text-base font-bold mt-2.5 text-center"
                 style={{ color: colors.textMain }}
               >
-                Chưa có kết quả mở thưởng
+                {STRINGS.results.emptyTitle}
               </Text>
               <Text
                 className="text-xs text-center mt-1 leading-5"
                 style={{ color: colors.textMuted }}
               >
-                Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào
-                ngày {formattedDate}. Kết quả miền Nam thường có sau 16h30 hàng
-                ngày.
+                {STRINGS.results.emptyMessage(formattedDate)}
               </Text>
             </View>
           ) : (
@@ -152,7 +151,7 @@ export default function ResultsScreen() {
                     className="text-xs mt-0.5"
                     style={{ color: colors.textMuted }}
                   >
-                    Kỳ quay ngày {formattedDate}
+                    {STRINGS.results.drawDatePrefix} {formattedDate}
                   </Text>
                 </View>
                 <View
@@ -171,7 +170,9 @@ export default function ResultsScreen() {
                         draw.status === 'FINAL' ? colors.win : colors.pending,
                     }}
                   >
-                    {draw.status === 'FINAL' ? 'ĐÃ CÔNG BỐ' : 'ĐANG CHỜ'}
+                    {draw.status === 'FINAL'
+                      ? STRINGS.results.statusFinal
+                      : STRINGS.results.statusPending}
                   </Text>
                 </View>
               </View>

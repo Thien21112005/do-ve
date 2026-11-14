@@ -24,7 +24,7 @@ import {
   BatchResultList,
 } from '@/components';
 import { useTheme } from '@/theme';
-import { haptics } from '@/lib';
+import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 
 export interface CheckScreenProps {
@@ -62,7 +62,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   // Inline validation calculation
   let ticketError: string | null = null;
   if (hasInteracted && ticketNumber.length > 0 && ticketNumber.length < 6) {
-    ticketError = `Số vé phải có đủ 6 chữ số (hiện có ${ticketNumber.length}/6)`;
+    ticketError = STRINGS.check.validationIncomplete(ticketNumber.length);
   }
 
   const parsedBatch = parseBatchTickets(batchText, 20);
@@ -159,7 +159,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           {/* Section: Chọn ngày mở thưởng */}
           <View className="pt-3 px-4 pb-1">
             <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              1. Chọn ngày mở thưởng
+              {STRINGS.check.stepDate}
             </Text>
           </View>
           <DateStrip
@@ -170,7 +170,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           {/* Section: Chọn đài */}
           <View className="pt-2 px-4 pb-1">
             <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              2. Chọn đài quay
+              {STRINGS.check.stepStation}
             </Text>
           </View>
           <StationChips
@@ -204,7 +204,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                       mode === 'single' ? colors.primary : colors.textMuted,
                   }}
                 >
-                  Dò từng vé
+                  {STRINGS.check.modeSingle}
                 </Text>
               </TouchableOpacity>
 
@@ -223,7 +223,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                     color: mode === 'batch' ? colors.primary : colors.textMuted,
                   }}
                 >
-                  Dò hàng loạt (tối đa 20)
+                  {STRINGS.check.modeBatch}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -233,7 +233,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           {mode === 'single' ? (
             <View className="pt-3 px-4 pb-2 items-center">
               <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 self-start">
-                3. Nhập 6 chữ số trên vé
+                {STRINGS.check.stepTicket}
               </Text>
               <TicketInput
                 value={ticketNumber}
@@ -265,7 +265,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           ) : (
             <View className="pt-3 px-4 pb-2">
               <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-                3. Nhập danh sách vé cần dò
+                {STRINGS.check.stepBatch}
               </Text>
               <BatchTicketInput
                 value={batchText}
@@ -284,8 +284,8 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               accessibilityRole="button"
               accessibilityLabel={
                 mode === 'single'
-                  ? 'Dò kết quả vé số'
-                  : 'Dò kết quả danh sách vé'
+                  ? STRINGS.check.accessibilityCheckBtnSingle
+                  : STRINGS.check.accessibilityCheckBtnBatch
               }
               accessibilityState={{ disabled: !isFormValid }}
               className="py-3.5 px-6 rounded-xl items-center justify-center shadow-sm flex-row"
@@ -310,10 +310,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                 }}
               >
                 {activeLoading
-                  ? 'Đang dò vé...'
+                  ? STRINGS.check.btnChecking
                   : mode === 'single'
-                    ? 'Dò vé ngay'
-                    : `Dò hàng loạt (${parsedBatch.validTickets.length} vé)`}
+                    ? STRINGS.check.btnCheck
+                    : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}
               </Text>
             </TouchableOpacity>
           </View>
@@ -335,13 +335,13 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                 >
                   {(activeErrorObj as any)?.detail ||
                     activeErrorObj?.message ||
-                    'Có lỗi xảy ra khi dò vé'}
+                    STRINGS.common.unknownError}
                 </Text>
                 <Text
                   className="text-xs mt-0.5"
                   style={{ color: colors.textMuted }}
                 >
-                  Dữ liệu vé đã nhập được giữ nguyên.
+                  {STRINGS.check.dataPreservedNotice}
                 </Text>
               </View>
               <TouchableOpacity
@@ -353,14 +353,14 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                   backgroundColor: `${colors.error}15`,
                 }}
                 accessibilityRole="button"
-                accessibilityLabel="Thử lại"
+                accessibilityLabel={STRINGS.common.retry}
               >
                 <Icon name="refresh" size={14} color={colors.error} />
                 <Text
                   className="ml-1 text-xs font-semibold"
                   style={{ color: colors.error }}
                 >
-                  Thử lại
+                  {STRINGS.common.retry}
                 </Text>
               </TouchableOpacity>
             </View>

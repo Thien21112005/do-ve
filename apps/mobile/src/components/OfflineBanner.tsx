@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/theme';
 import { Icon } from './Icon';
 import { useNetworkStatus } from '@/hooks';
+import { STRINGS } from '@/lib';
 
 export interface OfflineBannerProps {
   isOffline?: boolean;
@@ -14,7 +15,7 @@ export interface OfflineBannerProps {
 export function OfflineBanner({
   isOffline,
   onRetry,
-  message = 'Không có kết nối mạng. Vui lòng kiểm tra lại.',
+  message = STRINGS.common.offlineMessage,
   testID = 'offline-banner',
 }: OfflineBannerProps) {
   const { colors } = useTheme();
@@ -60,17 +61,18 @@ export function OfflineBanner({
             backgroundColor: `${colors.pending}15`,
           }}
           accessibilityRole="button"
-          accessibilityLabel="Thử kết nối lại"
+          accessibilityLabel={STRINGS.common.retry}
         >
           <Icon name="refresh" size={13} color={colors.pending} />
           <Text
             className="ml-1 text-xs font-semibold"
             style={{ color: colors.pending }}
           >
-            Thử lại
+            {STRINGS.common.retry}
           </Text>
         </TouchableOpacity>
       )}
     </View>
   );
 }
+

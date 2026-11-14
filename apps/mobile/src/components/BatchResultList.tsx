@@ -8,6 +8,7 @@ import {
 import { CelebrationEffect } from './CelebrationEffect';
 import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
+import { STRINGS } from '../lib/strings';
 import type { BatchCheckResponse } from '../types';
 
 export interface BatchResultListProps {
@@ -50,7 +51,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="text-base font-bold"
               style={{ color: colors.textMain }}
             >
-              Kết quả dò hàng loạt
+              {STRINGS.check.batchResultTitle}
             </Text>
             <Text
               className="text-xs mt-0.5"
@@ -76,7 +77,9 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="text-xs font-bold ml-1"
               style={{ color: hasWon ? colors.win : colors.textMuted }}
             >
-              {hasWon ? `${wonTickets} vé trúng` : 'Không trúng'}
+              {hasWon
+                ? STRINGS.check.batchWonCount(wonTickets)
+                : STRINGS.check.batchNotWon}
             </Text>
           </View>
         </View>
@@ -88,7 +91,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="text-xs font-medium"
               style={{ color: colors.textMuted }}
             >
-              Tổng tiền thưởng
+              {STRINGS.check.batchTotalPrize}
             </Text>
             <Text
               className={`text-2xl font-black mt-0.5 ${hasWon ? '' : ''}`}
@@ -106,7 +109,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="text-xs font-medium"
               style={{ color: colors.textMuted }}
             >
-              Số lượng kiểm tra
+              {STRINGS.check.batchCheckedCountLabel}
             </Text>
             <Text
               className="text-base font-bold mt-0.5"
@@ -124,7 +127,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
           className="text-sm font-bold mb-2.5 px-1"
           style={{ color: colors.textMain }}
         >
-          Chi tiết từng vé ({totalTickets})
+          {STRINGS.check.batchTicketDetails(totalTickets)}
         </Text>
 
         {batchResult.results.map((item, index) => {
@@ -204,10 +207,10 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                     }}
                   >
                     {isItemWon
-                      ? `TRÚNG ${item.wins.length} GIẢI`
+                      ? STRINGS.check.batchItemWonBadge(item.wins.length)
                       : isNotAvailable
-                        ? 'CHƯA CÓ KẾT QUẢ'
-                        : 'KHÔNG TRÚNG'}
+                        ? STRINGS.check.batchItemPendingBadge
+                        : STRINGS.check.batchItemNotWonBadge}
                   </Text>
                 </View>
               </View>
@@ -243,7 +246,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               {!isItemWon && !isNotAvailable && (
                 <View className="pt-2">
                   <Text className="text-xs" style={{ color: colors.textMuted }}>
-                    Không trúng giải nào trong kỳ mở thưởng này.
+                    {STRINGS.check.batchItemNotWonNotice}
                   </Text>
                 </View>
               )}
@@ -254,7 +257,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                     className="text-xs font-medium"
                     style={{ color: colors.pending }}
                   >
-                    Chưa có kết quả mở thưởng (thường có sau 16h30).
+                    {STRINGS.check.batchItemPendingNotice}
                   </Text>
                 </View>
               )}
@@ -269,7 +272,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
           <Pressable
             testID="batch-check-again-btn"
             accessibilityRole="button"
-            accessibilityLabel="Dò lại danh sách khác"
+            accessibilityLabel={STRINGS.check.batchCheckAgain}
             onPress={onCheckAgain}
             className="py-3.5 px-5 rounded-xl border flex-row items-center justify-center active:opacity-70"
             style={{
@@ -282,7 +285,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               className="ml-2 text-sm font-bold"
               style={{ color: colors.textMain }}
             >
-              Dò danh sách khác
+              {STRINGS.check.batchCheckAgain}
             </Text>
           </Pressable>
         </View>
@@ -294,8 +297,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
           className="text-[11px] text-center leading-relaxed"
           style={{ color: colors.textMuted }}
         >
-          Kết quả chỉ mang tính chất tham khảo, vui lòng đối chiếu vé giấy tại
-          các đại lý vé số chính thức (FR-SYS-03).
+          {STRINGS.check.disclaimer}
         </Text>
       </View>
     </View>

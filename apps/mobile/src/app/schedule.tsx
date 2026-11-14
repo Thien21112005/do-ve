@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
+import { STRINGS } from '@/lib/strings';
 
 export interface ScheduledStation {
   code: string;
@@ -20,8 +21,8 @@ export interface DaySchedule {
 export const WEEKLY_SCHEDULE: DaySchedule[] = [
   {
     dayOfWeek: 1,
-    dayName: 'Thứ Hai',
-    shortName: 'T2',
+    dayName: STRINGS.schedule.weekdays.monday,
+    shortName: STRINGS.schedule.shortWeekdays.monday,
     stations: [
       { code: 'tp-hcm', name: 'TP. Hồ Chí Minh' },
       { code: 'dong-thap', name: 'Đồng Tháp' },
@@ -30,8 +31,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 2,
-    dayName: 'Thứ Ba',
-    shortName: 'T3',
+    dayName: STRINGS.schedule.weekdays.tuesday,
+    shortName: STRINGS.schedule.shortWeekdays.tuesday,
     stations: [
       { code: 'ben-tre', name: 'Bến Tre' },
       { code: 'vung-tau', name: 'Vũng Tàu' },
@@ -40,8 +41,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 3,
-    dayName: 'Thứ Tư',
-    shortName: 'T4',
+    dayName: STRINGS.schedule.weekdays.wednesday,
+    shortName: STRINGS.schedule.shortWeekdays.wednesday,
     stations: [
       { code: 'dong-nai', name: 'Đồng Nai' },
       { code: 'can-tho', name: 'Cần Thơ' },
@@ -50,8 +51,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 4,
-    dayName: 'Thứ Năm',
-    shortName: 'T5',
+    dayName: STRINGS.schedule.weekdays.thursday,
+    shortName: STRINGS.schedule.shortWeekdays.thursday,
     stations: [
       { code: 'tay-ninh', name: 'Tây Ninh' },
       { code: 'an-giang', name: 'An Giang' },
@@ -60,8 +61,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 5,
-    dayName: 'Thứ Sáu',
-    shortName: 'T6',
+    dayName: STRINGS.schedule.weekdays.friday,
+    shortName: STRINGS.schedule.shortWeekdays.friday,
     stations: [
       { code: 'vinh-long', name: 'Vĩnh Long' },
       { code: 'binh-duong', name: 'Bình Dương' },
@@ -70,8 +71,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 6,
-    dayName: 'Thứ Bảy',
-    shortName: 'T7',
+    dayName: STRINGS.schedule.weekdays.saturday,
+    shortName: STRINGS.schedule.shortWeekdays.saturday,
     stations: [
       { code: 'tp-hcm', name: 'TP. Hồ Chí Minh' },
       { code: 'long-an', name: 'Long An' },
@@ -81,8 +82,8 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
   {
     dayOfWeek: 7,
-    dayName: 'Chủ Nhật',
-    shortName: 'CN',
+    dayName: STRINGS.schedule.weekdays.sunday,
+    shortName: STRINGS.schedule.shortWeekdays.sunday,
     stations: [
       { code: 'tien-giang', name: 'Tiền Giang' },
       { code: 'kien-giang', name: 'Kiên Giang' },
@@ -90,6 +91,7 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
     ],
   },
 ];
+
 
 function getTodayWeekday(): number {
   const day = new Date().getDay(); // 0 = Sunday, 1 = Monday ... 6 = Saturday
@@ -130,10 +132,10 @@ export default function ScheduleScreen() {
             className="text-lg font-bold"
             style={{ color: colors.textMain }}
           >
-            Lịch quay thưởng
+            {STRINGS.schedule.screenTitle}
           </Text>
           <Text className="text-xs" style={{ color: colors.textMuted }}>
-            Xổ số kiến thiết 21 đài miền Nam
+            {STRINGS.schedule.subtitle}
           </Text>
         </View>
       </View>

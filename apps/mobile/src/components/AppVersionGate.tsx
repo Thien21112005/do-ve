@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from './Icon';
 import { useTheme } from '../theme';
 import { isVersionOutdated, CURRENT_APP_VERSION } from '../lib/version';
+import { STRINGS } from '../lib/strings';
 import type { AppConfigResponse } from '../types';
 
 export interface AppVersionGateProps {
@@ -42,28 +43,29 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
           className="text-xl font-bold text-center mb-2"
           style={{ color: colors.textMain }}
         >
-          Hệ thống đang bảo trì
+          {STRINGS.gate.maintenanceTitle}
         </Text>
 
         <Text
           className="text-sm text-center leading-relaxed mb-6 px-4"
           style={{ color: colors.textMuted }}
         >
-          {config.message ||
-            'Hệ thống đang tạm ngừng dịch vụ để nâng cấp máy chủ. Quý khách vui lòng thử lại sau ít phút.'}
+          {config.message || STRINGS.gate.maintenanceDefaultMsg}
         </Text>
 
         {onRetry && (
           <Pressable
             testID="maintenance-retry-btn"
             accessibilityRole="button"
-            accessibilityLabel="Thử lại kết nối"
+            accessibilityLabel={STRINGS.gate.maintenanceRetryBtn}
             onPress={onRetry}
             className="py-3 px-6 rounded-xl flex-row items-center active:opacity-80"
             style={{ backgroundColor: colors.primary }}
           >
             <Icon name="refresh" size={16} color="#FFFFFF" />
-            <Text className="text-white font-bold text-sm ml-2">Thử lại</Text>
+            <Text className="text-white font-bold text-sm ml-2">
+              {STRINGS.common.retry}
+            </Text>
           </Pressable>
         )}
       </SafeAreaView>
@@ -101,7 +103,7 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
           className="text-xl font-bold text-center mb-1"
           style={{ color: colors.textMain }}
         >
-          Cần cập nhật ứng dụng
+          {STRINGS.gate.updateTitle}
         </Text>
 
         <Text
@@ -116,20 +118,19 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
           className="text-sm text-center leading-relaxed mb-6 px-4"
           style={{ color: colors.textMuted }}
         >
-          {config.message ||
-            'Phiên bản bạn đang sử dụng không còn được hỗ trợ. Vui lòng cập nhật phiên bản mới nhất để tiếp tục sử dụng đầy đủ các tính năng.'}
+          {config.message || STRINGS.gate.updateRequiredMsg}
         </Text>
 
         <Pressable
           testID="update-app-btn"
           accessibilityRole="button"
-          accessibilityLabel="Cập nhật ứng dụng ngay"
+          accessibilityLabel={STRINGS.gate.updateBtn}
           onPress={handleUpdate}
           className="py-3 px-6 rounded-xl flex-row items-center active:opacity-80 shadow-sm"
           style={{ backgroundColor: colors.primary }}
         >
           <Text className="text-white font-bold text-sm mr-1">
-            Cập nhật ngay
+            {STRINGS.gate.updateBtn}
           </Text>
           <Icon name="chevronRight" size={16} color="#FFFFFF" />
         </Pressable>
@@ -140,3 +141,4 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
   // Case 3: Normal operating condition
   return <>{children}</>;
 };
+

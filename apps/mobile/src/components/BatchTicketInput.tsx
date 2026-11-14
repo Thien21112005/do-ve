@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TextInput, Pressable } from 'react-native';
 import { Icon } from './Icon';
 import { useTheme } from '../theme';
+import { STRINGS } from '../lib/strings';
 
 export interface BatchParsedResult {
   validTickets: string[];
@@ -47,11 +48,11 @@ export function parseBatchTickets(
 
   let error: string | null = null;
   if (isOverLimit) {
-    error = `Vượt quá giới hạn tối đa ${maxTickets} vé (hiện có ${count} vé)`;
+    error = STRINGS.check.batchErrorOverLimit(maxTickets, count);
   } else if (invalidTokens.length > 0) {
     const preview = invalidTokens.slice(0, 3).join(', ');
     const more = invalidTokens.length > 3 ? '...' : '';
-    error = `Số vé không hợp lệ: phải gồm đúng 6 chữ số (${preview}${more})`;
+    error = STRINGS.check.batchErrorInvalidTokens(`${preview}${more}`);
   }
 
   return {
@@ -107,7 +108,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
               className="text-xs font-bold ml-1.5"
               style={{ color: colors.textMain }}
             >
-              Danh sách vé dò hàng loạt
+              {STRINGS.check.batchInputTitle}
             </Text>
           </View>
 
@@ -127,7 +128,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
                   color: hasError ? colors.error : colors.primary,
                 }}
               >
-                {parsed.count}/{maxTickets} vé
+                {STRINGS.check.batchCounter(parsed.count, maxTickets)}
               </Text>
             </View>
 
@@ -136,7 +137,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
               <Pressable
                 testID="batch-clear-btn"
                 accessibilityRole="button"
-                accessibilityLabel="Xóa toàn bộ"
+                accessibilityLabel={STRINGS.check.batchClearA11y}
                 onPress={() => onChangeText('')}
                 className="p-1 active:opacity-60"
               >
@@ -155,7 +156,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="numbers-and-punctuation"
-          placeholder={`Nhập hoặc dán các dãy 6 chữ số, cách nhau bởi dấu cách, dấu phẩy hoặc xuống dòng (tối đa ${maxTickets} vé).\nVí dụ:\n123456\n654321\n098765`}
+          placeholder={STRINGS.check.batchPlaceholder(maxTickets)}
           placeholderTextColor={colors.textMuted}
           value={value}
           onChangeText={onChangeText}
@@ -185,3 +186,4 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
     </View>
   );
 };
+
