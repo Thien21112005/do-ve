@@ -26,6 +26,7 @@ describe('SettingsScreen (Cài đặt)', () => {
     expect(getByTestId('settings-theme-dark')).toBeTruthy();
     expect(getByTestId('settings-celebration-switch')).toBeTruthy();
     expect(getByTestId('settings-haptics-switch')).toBeTruthy();
+    expect(getByTestId('settings-reminder-switch')).toBeTruthy();
   });
 
   it('changes theme mode and persists to AsyncStorage immediately', async () => {
@@ -71,6 +72,24 @@ describe('SettingsScreen (Cài đặt)', () => {
     await waitFor(async () => {
       const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
       expect(JSON.parse(stored!).hapticsEnabled).toBe(false);
+    });
+  });
+
+  it('toggles reminder switch when permission is granted and persists to AsyncStorage', async () => {
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    const switchBtn = getByTestId('settings-reminder-switch');
+    expect(getSettings().reminderEnabled).toBe(false);
+
+    fireEvent.press(switchBtn);
+
+    await waitFor(() => {
+      expect(getSettings().reminderEnabled).toBe(true);
+    });
+
+    await waitFor(async () => {
+      const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
+      expect(JSON.parse(stored!).reminderEnabled).toBe(true);
     });
   });
 

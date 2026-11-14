@@ -2,7 +2,7 @@ import '../global.css';
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useAppFonts, useAppConfig } from '@/hooks';
+import { useAppFonts, useAppConfig, usePendingTicketsReminder } from '@/hooks';
 import { AppProviders, AppVersionGate } from '@/components';
 
 // Prevent splash screen from auto hiding before fonts are loaded
@@ -12,6 +12,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 function AppContent() {
   const { config, refetch } = useAppConfig();
+  usePendingTicketsReminder();
 
   return (
     <AppVersionGate config={config} onRetry={refetch}>

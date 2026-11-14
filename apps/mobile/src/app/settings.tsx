@@ -1,16 +1,33 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, Switch } from 'react-native';
+import { View, Text, Pressable, ScrollView, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { useSettings } from '@/store/settings';
 import { STRINGS } from '@/lib/strings';
+import { requestNotificationPermission } from '@/services/reminderNotification';
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const [settings, updateSettings] = useSettings();
+
+  const handleToggleReminder = async (targetValue: boolean) => {
+    if (targetValue) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert(
+          STRINGS.settings.reminderPermissionDeniedTitle,
+          STRINGS.settings.reminderPermissionDeniedMsg,
+        );
+        return;
+      }
+      updateSettings({ reminderEnabled: true });
+    } else {
+      updateSettings({ reminderEnabled: false });
+    }
+  };
 
   const themeOptions: {
     mode: 'system' | 'light' | 'dark';
@@ -205,7 +222,11 @@ export default function SettingsScreen() {
             onPress={() =>
               updateSettings({ hapticsEnabled: !settings.hapticsEnabled })
             }
-            className="p-4 flex-row items-center justify-between active:opacity-80"
+            className="p-4 flex-row items-center border-b justify-between active:opacity-80"
+            style={{
+              borderColor: colors.border,
+              borderBottomWidth: 1,
+            }}
           >
             <View className="flex-1 mr-3">
               <Text
@@ -226,6 +247,39 @@ export default function SettingsScreen() {
               onValueChange={(val) =>
                 updateSettings({ hapticsEnabled: val })
               }
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor="#FFFFFF"
+            />
+          </Pressable>
+
+          {/* Reminder toggle */}
+          <Pressable
+            testID="settings-reminder-switch"
+            accessibilityRole="switch"
+            accessibilityState={{ checked: settings.reminderEnabled }}
+            accessibilityLabel={STRINGS.settings.reminderTitle}
+            onPress={() =>
+              handleToggleReminder(!settings.reminderEnabled)
+            }
+            className="p-4 flex-row items-center justify-between active:opacity-80"
+          >
+            <View className="flex-1 mr-3">
+              <Text
+                className="text-base font-semibold mb-0.5"
+                style={{ color: colors.textMain }}
+              >
+                {STRINGS.settings.reminderTitle}
+              </Text>
+              <Text
+                className="text-xs leading-relaxed"
+                style={{ color: colors.textMuted }}
+              >
+                {STRINGS.settings.reminderDesc}
+              </Text>
+            </View>
+            <Switch
+              value={settings.reminderEnabled}
+              onValueChange={(val) => handleToggleReminder(val)}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />

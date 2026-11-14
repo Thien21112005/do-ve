@@ -237,6 +237,10 @@ export const STRINGS = {
     celebrationDesc: 'Bắn pháo hoa rực rỡ khi phát hiện vé trúng',
     hapticsTitle: 'Phản hồi xúc giác (rung)',
     hapticsDesc: 'Rung nhẹ khi chạm phím và kiểm tra số',
+    reminderTitle: 'Nhắc dò vé PENDING (16h45)',
+    reminderDesc: 'Thông báo cục bộ lúc 16h45 vào các ngày bạn có vé đang chờ kết quả',
+    reminderPermissionDeniedTitle: 'Chưa cấp quyền thông báo',
+    reminderPermissionDeniedMsg: 'Vui lòng cho phép quyền thông báo trong cài đặt thiết bị để nhận lời nhắc dò vé.',
   },
 
   gate: {

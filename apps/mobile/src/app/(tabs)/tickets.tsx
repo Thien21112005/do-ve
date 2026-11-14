@@ -213,6 +213,19 @@ export default function TicketsScreen() {
       className="flex-1 bg-slate-50 dark:bg-slate-900"
       testID="tickets-screen"
     >
+      {/* Screen Header */}
+      <View className="px-4 pt-4 pb-2">
+        <Text
+          className="text-2xl font-bold mb-1"
+          style={{ color: colors.textMain }}
+        >
+          {STRINGS.tickets.screenTitle}
+        </Text>
+        <Text className="text-xs mb-1" style={{ color: colors.textMuted }}>
+          {STRINGS.tickets.subtitle}
+        </Text>
+      </View>
+
       {sortedTickets.length === 0 ? (
         <View
           testID="saved-tickets-empty"

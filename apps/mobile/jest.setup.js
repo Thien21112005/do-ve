@@ -103,3 +103,21 @@ jest.mock('expo-document-picker', () => ({
     assets: [],
   }),
 }));
+
+const mockNotifications = {
+  scheduleNotificationAsync: jest.fn().mockResolvedValue('notif-id-123'),
+  cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(undefined),
+  cancelAllScheduledNotificationsAsync: jest.fn().mockResolvedValue(undefined),
+  getAllScheduledNotificationsAsync: jest.fn().mockResolvedValue([]),
+  getPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
+  requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
+  setNotificationHandler: jest.fn(),
+  SchedulableTriggerInputTypes: {
+    DATE: 'date',
+    CALENDAR: 'calendar',
+    TIME_INTERVAL: 'timeInterval',
+  },
+};
+
+jest.mock('expo-notifications', () => mockNotifications);
+

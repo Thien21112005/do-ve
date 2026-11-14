@@ -9,3 +9,4 @@ export * from './useLatestDraws';
 export * from './useCheckBatchTickets';
 export * from './useAppConfig';
 export * from './usePendingTicketsRecheck';
+export * from './usePendingTicketsReminder';

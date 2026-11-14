@@ -7,12 +7,14 @@ export interface AppSettings {
   celebrationEnabled: boolean;
   hapticsEnabled: boolean;
   themeMode: 'system' | 'light' | 'dark';
+  reminderEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   celebrationEnabled: true,
   hapticsEnabled: true,
   themeMode: 'system',
+  reminderEnabled: false,
 };
 
 let currentSettings: AppSettings = { ...DEFAULT_SETTINGS };

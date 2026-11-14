@@ -2,6 +2,7 @@ import { colors } from '../colors';
 import { radii, spacing, typography } from '../tokens';
 import { useTheme } from '../theme';
 import * as ReactNative from 'react-native';
+import { renderHook } from '@testing-library/react-native';
 
 // Helper to calculate relative luminance according to WCAG 2.1
 function getLuminance(hex: string): number {
@@ -102,18 +103,18 @@ describe('Design Tokens & Theme', () => {
       jest.restoreAllMocks();
     });
 
-    it('returns light theme when colorScheme is light or null', () => {
+    it('returns light theme when colorScheme is light or null', async () => {
       jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue('light');
-      const theme = useTheme();
-      expect(theme.isDark).toBe(false);
-      expect(theme.colors.surface).toBe(colors.light.surface);
+      const { result } = await renderHook(() => useTheme());
+      expect(result.current.isDark).toBe(false);
+      expect(result.current.colors.surface).toBe(colors.light.surface);
     });
 
-    it('returns dark theme when colorScheme is dark', () => {
+    it('returns dark theme when colorScheme is dark', async () => {
       jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue('dark');
-      const theme = useTheme();
-      expect(theme.isDark).toBe(true);
-      expect(theme.colors.surface).toBe(colors.dark.surface);
+      const { result } = await renderHook(() => useTheme());
+      expect(result.current.isDark).toBe(true);
+      expect(result.current.colors.surface).toBe(colors.dark.surface);
     });
   });
 });
