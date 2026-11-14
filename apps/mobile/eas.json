@@ -30,6 +30,17 @@
         "EXPO_PUBLIC_APP_ENV": "preview"
       }
     },
+    "testflight": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false
+      },
+      "channel": "testflight",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "preview"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "android": {

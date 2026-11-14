@@ -183,3 +183,45 @@ EXPO_PUBLIC_APP_ENV=production
 ```
 Ứng dụng di động khi build qua EAS hoặc chạy Expo Go sẽ tự động kết nối tới API sản xuất qua đường truyền mã hoá TLS 1.3 an toàn.
 
+---
+
+## 🍏 7. Quy Trình Build & Phân Phối iOS Qua TestFlight
+
+### 7.1. Điều kiện tiên quyết
+- **Tài khoản Apple Developer Program** ($99/năm) có quyền App Manager hoặc Admin.
+- **Tạo ứng dụng trên App Store Connect:**
+  - Tên ứng dụng: `DoVe` (hoặc `DoVe - Dò Vé Số Kiến Thiết`)
+  - Ngôn ngữ chính: Tiếng Việt
+  - Bundle ID: `com.dove.app` (khớp chính xác với cấu hình trong `app.json`)
+  - SKU: `dove-app-ios`
+- Đã đăng nhập tài khoản Expo CLI: `npx eas login`.
+
+### 7.2. Quản lý chứng chỉ tự động với EAS Credentials
+EAS hỗ trợ tự động tạo và quản lý Certificate (Phân phối) và Provisioning Profile thông qua Apple App Store Connect API:
+```bash
+cd apps/mobile
+npx eas credentials
+# Chọn iOS -> Production/Distribution -> Chọn để EAS tự động sinh chứng chỉ
+```
+
+### 7.3. Thực hiện Build và Đẩy lên TestFlight
+1. **Lệnh build gói IPA cho TestFlight:**
+   ```bash
+   npm run build:testflight
+   # Hoặc: npx eas build --platform ios --profile testflight
+   ```
+2. **Tự động submit lên App Store Connect / TestFlight:**
+   ```bash
+   npx eas submit --platform ios --latest
+   ```
+   *Lưu ý:* EAS có thể tự động submit ngay sau khi build xong nếu truyền thêm cờ `--auto-submit`:
+   ```bash
+   npx eas build --platform ios --profile testflight --auto-submit
+   ```
+
+### 7.4. Phân phối cho nhóm Tester nội bộ (Internal Testing)
+- Sau khi bản build được Apple xử lý (thường từ 10 - 20 phút), truy cập [App Store Connect](https://appstoreconnect.apple.com/) > **TestFlight**.
+- Thêm tester vào nhóm **Internal Testing** (tối đa 100 người trong tổ chức Apple Developer, không cần qua kiểm duyệt Apple Review).
+- Tester nhận email mời hoặc thông báo trong app **TestFlight** trên iPhone/iPad và cài đặt ứng dụng thử nghiệm ngay lập tức.
+
+
