@@ -1,14 +1,14 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 1 / 72 task hoàn thành
+- **Tổng quan:** 2 / 72 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
 | ID | Mức | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|---|
-| T09.01 | P0 | Test hợp đồng tái hiện lỗi | TODO | | | |
+| T09.01 | P0 | Test hợp đồng tái hiện lỗi | DONE | bdbf1f5 | 2026-11-14 | Viết 6 test với payload thật tái hiện trọn vẹn lỗi lệch hợp đồng |
 | T09.02 | P0 | Sinh lại OpenAPI từ backend | TODO | | | |
 | T09.03 | P0 | Gửi `stationCode` trong request dò vé | TODO | | | |
 | T09.04 | P0 | Lớp ánh xạ response (adapter) phía mobile | TODO | | | |
@@ -85,7 +85,7 @@
 
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
-| P0 | 10 | 0 | 10 |
+| P0 | 10 | 1 | 9 |
 | P1 | 29 | 1 | 28 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
@@ -104,6 +104,7 @@
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. -->
 - 2026-11-14 | — | Quét toàn bộ mã nguồn, lập plan 72 task. Phát hiện lớn nhất: hợp đồng API mobile lệch backend/SRS (nhóm A) khiến app không dò được vé thật dù test xanh.
 - 2026-11-14 | T09.69 | CI Mobile đỏ do ESLint không nhận globals của Node trong script patch | Sửa eslint.config.js thêm globals.node cho scripts/**/*.js, patch script idempotent. Linter xanh 100%.
+- 2026-11-14 | T09.01 | Hợp đồng API mobile lệch hoàn toàn với backend | Viết 6 test contract drift và bộ fixtures backend thật, chứng minh toàn bộ điểm lệch.
 
 ## Vấn đề mở
 
