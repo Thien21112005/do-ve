@@ -1,8 +1,8 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 24 / 25 task hoàn thành
-- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 25 / 25 task hoàn thành (100% — Milestone M6 Released)
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** 2026-11-14
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -32,8 +32,7 @@
 | T08.22 | Rà soát chính sách store | DONE | e1c0331 | 2026-11-14 | Lập ADR-005 rà soát chính sách cờ bạc Apple/Google, chuẩn bị docs/privacy-policy.md công khai |
 | T08.23 | Chuẩn bị hồ sơ store | DONE | a3b707b | 2026-11-14 | Soạn thảo hồ sơ niêm yết docs/store-listing.md: tên, mô tả ASO, từ khoá, ảnh chụp màn hình, phân loại độ tuổi |
 | T08.24 | CHANGELOG và tag v0.1.0 | DONE | a00cc22 | 2026-11-14 | Biên soạn CHANGELOG.md chuẩn hóa theo 8 Phase phát triển, tạo git release tag v0.1.0 |
-| T08.25 | Smoke checklist sau release | TODO |  |  |  |
-| T08.25 | Smoke checklist sau release | TODO |  |  |  |
+| T08.25 | Smoke checklist sau release | DONE | 0a8e842 | 2026-11-14 | Xây dựng danh sách 10 tiêu chí kiểm tra khói (Smoke Test) sau release trong docs/deploy.md |
 
 ## Nhật ký
 
@@ -62,6 +61,7 @@
 - 2026-11-14 | T08.22 | Rà soát và hoàn thiện ADR-005: đánh giá quy định cờ bạc/xổ số của Apple App Store & Google Play (xác nhận DoVe thuộc nhóm Utility/Tham khảo không vi phạm), soạn thảo chính sách quyền riêng tư docs/privacy-policy.md.
 - 2026-11-14 | T08.23 | Chuẩn bị đầy đủ hồ sơ niêm yết Google Play Console & Apple App Store Connect: App Name, Subtitle, mô tả ASO 4.000 ký tự, bộ từ khoá, kích thước 5 ảnh chụp màn hình, phân loại độ tuổi IARC và thông tin hỗ trợ tại docs/store-listing.md.
 - 2026-11-14 | T08.24 | Khởi tạo CHANGELOG.md chuẩn theo Keep a Changelog và Conventional Commits tổng kết tính năng, bảo mật và kiểm thử qua 8 Phase; tạo git release tag v0.1.0 chính thức.
+- 2026-11-14 | T08.25 | Xây dựng danh sách kiểm tra khói 10 mục (Post-Release Smoke Checklist) bao phủ toàn diện sức khoẻ Actuator, SSL TLS 1.3, DB pool, Flyway, cấu hình app, ingest kết quả và OTA update; chính thức nghiệm thu hoàn thành 100% Phase 08 và Milestone M6.
 
 ## Vấn đề mở
 
