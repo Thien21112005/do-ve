@@ -12,6 +12,11 @@ spring:
 server:
   forward-headers-strategy: native
 
+logging:
+  structured:
+    format:
+      console: ecs
+
 management:
   endpoint:
     health:
