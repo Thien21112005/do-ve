@@ -1,14 +1,14 @@
 # PROGRESS 07 — Vé của tôi và trải nghiệm trên thiết bị
 
 - **Plan:** [`plans/PLAN-07-my-tickets.md`](../plans/PLAN-07-my-tickets.md)
-- **Tổng quan:** 0 / 14 task hoàn thành
-- **Bắt đầu:** (chưa)  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 1 / 14 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T07.01 | Service lưu vé AsyncStorage | TODO |  |  |  |
+| T07.01 | Service lưu vé AsyncStorage | DONE | 441fa6e | 2026-11-14 | Cài @react-native-async-storage/async-storage, tạo ticketStore schema v1 bọc try/catch & hook useSavedTickets |
 | T07.02 | Test ticketStore | TODO |  |  |  |
 | T07.03 | Nút Lưu vé | TODO |  |  |  |
 | T07.04 | Màn Vé của tôi | TODO |  |  |  |
@@ -26,6 +26,7 @@
 ## Nhật ký
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. Ví dụ: 2026-11-15 | T01.07 | Chọn Maven thay vì Gradle vì quen hơn. -->
+- 2026-11-14 | T07.01 | Triển khai module ticketStore với AsyncStorage lưu khoá dove.tickets.v1, schema versioning, xử lý lỗi an toàn và hook useSavedTickets phản ứng.
 
 ## Vấn đề mở
 
