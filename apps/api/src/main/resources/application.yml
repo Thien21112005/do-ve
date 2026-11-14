@@ -46,3 +46,7 @@ dove:
     read-timeout-ms: ${DOVE_INGESTION_READ_TIMEOUT_MS:10000}
     xskt:
       base-url: "${DOVE_XSKT_BASE_URL:https://xskt.com.vn}"
+  app:
+    min-supported-version: "${DOVE_APP_MIN_SUPPORTED_VERSION:1.0.0}"
+    maintenance: ${DOVE_APP_MAINTENANCE:false}
+    message: "${DOVE_APP_MESSAGE:}"
