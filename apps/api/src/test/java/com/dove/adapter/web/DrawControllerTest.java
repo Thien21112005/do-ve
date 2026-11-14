@@ -9,9 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dove.adapter.persistence.StationEntity;
+import com.dove.adapter.persistence.StationRepository;
 import com.dove.adapter.persistence.StationScheduleRepository;
 import com.dove.application.DrawRepository;
+import com.dove.domain.DrawResult;
+import com.dove.domain.PrizeTier;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,18 +25,21 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@DisplayName("T05.05 - GET /api/v1/draws/schedule API Specification")
+@DisplayName("T05.05 & T05.06 - Draws API Specification")
 class DrawControllerTest {
 
   private StationScheduleRepository stationScheduleRepository;
   private DrawRepository drawRepository;
+  private StationRepository stationRepository;
   private MockMvc mockMvc;
 
   @BeforeEach
   void setUp() {
     stationScheduleRepository = mock(StationScheduleRepository.class);
     drawRepository = mock(DrawRepository.class);
-    DrawController controller = new DrawController(stationScheduleRepository, drawRepository);
+    stationRepository = mock(StationRepository.class);
+    DrawController controller =
+        new DrawController(stationScheduleRepository, drawRepository, stationRepository);
     mockMvc =
         MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new GlobalExceptionHandler())
@@ -70,5 +79,69 @@ class DrawControllerTest {
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
         .andExpect(jsonPath("$.status").value(400))
         .andExpect(jsonPath("$.code").value("INVALID_DATE"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws?date=2026-11-09&station=tp-hcm trả về 200 OK đúng JSON mục 6.2")
+  void getDraw_found_returns200AndNumbers() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    Map<PrizeTier, List<String>> prizeMap =
+        Map.of(
+            PrizeTier.SPECIAL, List.of("654321"),
+            PrizeTier.FIRST, List.of("99999"),
+            PrizeTier.SECOND, List.of("11111"),
+            PrizeTier.THIRD, List.of("22222", "33333"),
+            PrizeTier.FOURTH,
+                List.of("44444", "55555", "66666", "77777", "88888", "12345", "23456"),
+            PrizeTier.FIFTH, List.of("1234"),
+            PrizeTier.SIXTH, List.of("2345", "3456", "4567"),
+            PrizeTier.SEVENTH, List.of("321"),
+            PrizeTier.EIGHTH, List.of("21"));
+    DrawResult drawResult = new DrawResult("tp-hcm", drawDate, prizeMap);
+
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findByStationAndDate("tp-hcm", drawDate))
+        .thenReturn(Optional.of(drawResult));
+
+    mockMvc
+        .perform(get("/api/v1/draws").param("date", "2026-11-09").param("station", "tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
+        .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("654321"))
+        .andExpect(jsonPath("$.numbers.FIRST[0]").value("99999"))
+        .andExpect(jsonPath("$.numbers.SEVENTH[0]").value("321"))
+        .andExpect(jsonPath("$.numbers.EIGHTH[0]").value("21"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws với đài không tồn tại trả về 404 và code STATION_NOT_FOUND")
+  void getDraw_unknownStation_returns404StationNotFound() throws Exception {
+    when(stationRepository.findByCode("unknown-station")).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(
+            get("/api/v1/draws").param("date", "2026-11-09").param("station", "unknown-station"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws với kỳ chưa có kết quả trả về 404 Not Found")
+  void getDraw_notAvailable_returns404NotFound() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 9);
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findByStationAndDate("tp-hcm", drawDate)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/api/v1/draws").param("date", "2026-11-09").param("station", "tp-hcm"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404));
   }
 }
