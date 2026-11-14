@@ -1,8 +1,8 @@
 # PROGRESS 05 — REST API
 
 - **Plan:** [`plans/PLAN-05-rest-api.md`](../plans/PLAN-05-rest-api.md)
-- **Tổng quan:** 10 / 21 task hoàn thành
-- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 21 / 21 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** 2026-11-14
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -28,11 +28,12 @@
 | T05.18 | OpenAPI + Swagger UI | DONE | 5666d44 | 2026-11-14 | Tích hợp springdoc-openapi-starter-webmvc-ui 2.8.5, OpenAPI config, @Tag, @Operation |
 | T05.19 | MockMvc test: stations và draws | DONE | 63b03f8 | 2026-11-14 | Bộ test MockMvc toàn diện cho cả 5 endpoint đọc (stations, draws, schedule) |
 | T05.20 | MockMvc test: check | DONE | afc69ef | 2026-11-14 | Test các ca mục 3.4 (Đặc biệt, Phụ đặc biệt, Khuyến khích, trượt) & tất cả mã lỗi |
-| T05.21 | Test tích hợp end-to-end API | TODO |  |  |  |
+| T05.21 | Test tích hợp end-to-end API | DONE | 694dcaa | 2026-11-14 | Test tích hợp end-to-end API với Spring Boot context thực, seed data, test GET /stations, /draws và POST /check |
 
 ## Nhật ký
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. Ví dụ: 2026-11-15 | T01.07 | Chọn Maven thay vì Gradle vì quen hơn. -->
+- 2026-11-14 | T05.21 | Hoàn thành bộ test end-to-end integration test cho các endpoint API, khép lại Phase 05 REST API với 21/21 task hoàn thành.
 
 ## Vấn đề mở
 
