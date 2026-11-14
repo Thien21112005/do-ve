@@ -1,14 +1,14 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 0 / 25 task hoàn thành
-- **Bắt đầu:** (chưa)  |  **Hoàn thành:** (chưa)
+- **Tổng quan:** 1 / 25 task hoàn thành
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T08.01 | E2E Maestro: luồng dò trúng | TODO |  |  |  |
+| T08.01 | E2E Maestro: luồng dò trúng | DONE | ba16d27 | 2026-11-14 | Xây dựng flow Maestro kiểm thử E2E luồng dò vé trúng, hiển thị kết quả và lưu vé |
 | T08.02 | E2E: không trúng, chưa có KQ, nhập sai | TODO |  |  |  |
 | T08.03 | Hướng dẫn chạy E2E cục bộ | TODO |  |  |  |
 | T08.04 | Đo hiệu năng app | TODO |  |  |  |
@@ -37,6 +37,7 @@
 ## Nhật ký
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. Ví dụ: 2026-11-15 | T01.07 | Chọn Maven thay vì Gradle vì quen hơn. -->
+- 2026-11-14 | T08.01 | Tạo luồng Maestro winning_ticket_flow.yaml xác thực toàn diện hành vi dò vé trúng, kiểm tra thẻ kết quả và lưu vé.
 
 ## Vấn đề mở
 
