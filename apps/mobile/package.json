@@ -57,7 +57,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "jest --runInBand --forceExit",
+    "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand --forceExit",
     "gen:api": "openapi-typescript openapi.json -o src/types/api.d.ts",
     "format": "prettier --write ."
   },

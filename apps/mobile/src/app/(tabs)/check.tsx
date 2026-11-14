@@ -16,6 +16,7 @@ import {
   Icon,
   ResultSkeleton,
   ResultCard,
+  CelebrationEffect,
   getPastDays,
 } from '@/components';
 import { useTheme } from '@/theme';
@@ -221,6 +222,9 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Subtle celebration when ticket wins */}
+      <CelebrationEffect active={Boolean(result?.won)} />
     </SafeAreaView>
   );
 }
