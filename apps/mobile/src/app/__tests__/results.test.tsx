@@ -90,9 +90,12 @@ describe('ResultsScreen', () => {
   });
 
   it('renders date strip, station chips, and loads initial station draw result', async () => {
-    const { getByTestId, getAllByText } = await render(<ResultsScreen />, {
-      wrapper: createWrapper(),
-    });
+    const { getByTestId, getAllByText, getByText } = await render(
+      <ResultsScreen />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     expect(getByTestId('results-screen')).toBeTruthy();
     expect(getByTestId('date-strip')).toBeTruthy();
@@ -105,13 +108,18 @@ describe('ResultsScreen', () => {
     await waitFor(() => {
       expect(getAllByText(/TP. Hồ Chí Minh/i).length).toBeGreaterThanOrEqual(2);
       expect(getByTestId('results-draw-container')).toBeTruthy();
+      expect(getByTestId('draw-table')).toBeTruthy();
+      expect(getByText('123456')).toBeTruthy();
     });
   });
 
   it('switches station tab and loads data for the new station', async () => {
-    const { getByTestId, getAllByText } = await render(<ResultsScreen />, {
-      wrapper: createWrapper(),
-    });
+    const { getByTestId, getAllByText } = await render(
+      <ResultsScreen />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() =>
       expect(getByTestId('station-chips-DONG_THAP')).toBeTruthy(),

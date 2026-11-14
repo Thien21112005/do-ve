@@ -9,3 +9,4 @@ export * from './ResultCard';
 export * from './HighlightedTicket';
 export * from './CelebrationEffect';
 export * from './OfflineBanner';
+export * from './DrawTable';

@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DateStrip, StationChips, OfflineBanner, Icon } from '@/components';
+import {
+  DateStrip,
+  StationChips,
+  OfflineBanner,
+  Icon,
+  DrawTable,
+} from '@/components';
 import { useDraw } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
@@ -143,20 +149,9 @@ export default function ResultsScreen() {
                 </View>
               </View>
 
-              {/* Quick summary placeholder - Detailed DrawTable in T06.24 */}
+              {/* Detailed DrawTable (T06.24) */}
               <View className="mt-3">
-                <Text
-                  className="text-xs font-medium uppercase tracking-wider mb-2"
-                  style={{ color: colors.textMuted }}
-                >
-                  Giải đặc biệt
-                </Text>
-                <Text
-                  className="text-2xl font-bold tracking-widest text-center py-2"
-                  style={{ color: colors.primary }}
-                >
-                  {draw.prizes?.SPECIAL?.[0] || '------'}
-                </Text>
+                <DrawTable prizes={draw.prizes} />
               </View>
             </View>
           )}
