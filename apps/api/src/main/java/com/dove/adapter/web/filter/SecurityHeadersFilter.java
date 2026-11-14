@@ -27,7 +27,16 @@ public class SecurityHeadersFilter extends OncePerRequestFilter {
     response.setHeader("X-Frame-Options", "DENY");
     response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     response.setHeader("X-XSS-Protection", "1; mode=block");
-    response.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none';");
+
+    String uri = request.getRequestURI();
+    if (uri != null && (uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs"))) {
+      response.setHeader(
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none';");
+    } else {
+      response.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none';");
+    }
+
     response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
 
     filterChain.doFilter(request, response);

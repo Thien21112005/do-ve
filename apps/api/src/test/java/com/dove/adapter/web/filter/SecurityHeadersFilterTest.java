@@ -38,4 +38,20 @@ class SecurityHeadersFilterTest {
     assertThat(response.getHeader("Strict-Transport-Security"))
         .isEqualTo("max-age=31536000; includeSubDomains; preload");
   }
+
+  @Test
+  @DisplayName(
+      "Should permit script, style, and connect-src for Swagger UI documentation endpoints")
+  void shouldAllowSwaggerUiResources() throws ServletException, IOException {
+    MockHttpServletRequest request = new MockHttpServletRequest("GET", "/swagger-ui/index.html");
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    FilterChain chain = (req, res) -> {};
+
+    filter.doFilter(request, response, chain);
+
+    assertThat(response.getHeader("Content-Security-Policy"))
+        .contains("script-src 'self' 'unsafe-inline'")
+        .contains("style-src 'self' 'unsafe-inline'")
+        .contains("connect-src 'self'");
+  }
 }
