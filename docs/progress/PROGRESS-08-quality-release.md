@@ -1,7 +1,7 @@
 # PROGRESS 08 — Chất lượng, đóng gói và phát hành
 
 - **Plan:** [`plans/PLAN-08-quality-release.md`](../plans/PLAN-08-quality-release.md)
-- **Tổng quan:** 5 / 25 task hoàn thành
+- **Tổng quan:** 6 / 25 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** (chưa)
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -13,7 +13,7 @@
 | T08.03 | Hướng dẫn chạy E2E cục bộ | DONE | c140666 | 2026-11-14 | Soạn thảo docs/testing.md: ma trận kiểm thử, dựng backend, seed dữ liệu và lệnh Maestro |
 | T08.04 | Đo hiệu năng app | DONE | ef7f143 | 2026-11-14 | Đo lường hiệu năng cold start 1.24s (<2.5s), 60 FPS cuộn danh sách, ghi nhận vào docs/testing.md |
 | T08.05 | Dockerfile backend | DONE | 41dcb53 | 2026-11-14 | Xây dựng multi-stage Dockerfile cho Spring Boot 4/Java 21, user non-root dove, healthcheck Actuator |
-| T08.06 | Compose production | TODO |  |  |  |
+| T08.06 | Compose production | DONE | b5ca895 | 2026-11-14 | Xây dựng docker-compose.prod.yml (Caddy HTTPS proxy, API Spring Boot, Postgres 16, network nội bộ) |
 | T08.07 | Tài liệu biến môi trường | TODO |  |  |  |
 | T08.08 | Log JSON có correlation id | TODO |  |  |  |
 | T08.09 | Metric cơ bản | TODO |  |  |  |
@@ -42,6 +42,7 @@
 - 2026-11-14 | T08.03 | Biên soạn tài liệu docs/testing.md hướng dẫn chuẩn quy trình khởi chạy hạ tầng, seed dữ liệu mẫu và chạy bộ test E2E Maestro.
 - 2026-11-14 | T08.04 | Đo lường hiệu năng trên máy Android tầm trung: khởi động lạnh 1,24s (< 2,5s), cuộn 60 FPS mượt mà, ghi số liệu chi tiết vào docs/testing.md.
 - 2026-11-14 | T08.05 | Tạo multi-stage Dockerfile cho backend API: cache Maven dependencies, build artifact nhẹ, chạy non-root user dove, cấu hình JVM container và healthcheck Actuator.
+- 2026-11-14 | T08.06 | Tạo docker-compose.prod.yml với Caddy tự động cấp SSL/HTTPS, cấu hình bảo mật header, mạng nội bộ dove-net và volume persistent.
 
 ## Vấn đề mở
 
