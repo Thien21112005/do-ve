@@ -25,7 +25,7 @@
 | T05.15 | Cache-Control | DONE | dbd1808 | 2026-11-14 | Header Cache-Control: kỳ quá khứ max-age dài immutable, kỳ hôm nay & latest no-cache |
 | T05.16 | Rate limit cho /check | DONE | c5535a9 | 2026-11-14 | Rate limit trượt theo IP (SlidingWindowRateLimiter), trả 429 RATE_LIMITED |
 | T05.17 | Log sạch số vé | DONE | 990855e | 2026-11-14 | Masking toString và sanitization đảm bảo không rò rỉ số vé trong log (NFR-06) |
-| T05.18 | OpenAPI + Swagger UI | TODO |  |  |  |
+| T05.18 | OpenAPI + Swagger UI | DONE | 5666d44 | 2026-11-14 | Tích hợp springdoc-openapi-starter-webmvc-ui 2.8.5, OpenAPI config, @Tag, @Operation |
 | T05.19 | MockMvc test: stations và draws | TODO |  |  |  |
 | T05.20 | MockMvc test: check | TODO |  |  |  |
 | T05.21 | Test tích hợp end-to-end API | TODO |  |  |  |
