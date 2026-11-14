@@ -1,10 +1,28 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { render } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HomeScreen from '../(tabs)/index';
 import CheckScreen from '../(tabs)/check';
 import ResultsScreen from '../(tabs)/results';
 import TicketsScreen from '../(tabs)/tickets';
 import MoreScreen from '../(tabs)/more';
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: Infinity,
+      },
+    },
+  });
+
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  Wrapper.displayName = 'TabsTestQueryWrapper';
+  return Wrapper;
+}
 
 describe('Tab Screens', () => {
   it('renders HomeScreen correctly', async () => {
@@ -14,11 +32,12 @@ describe('Tab Screens', () => {
   });
 
   it('renders CheckScreen correctly', async () => {
-    const { getByText } = await render(<CheckScreen />);
-    expect(getByText('Dò vé')).toBeTruthy();
-    expect(
-      getByText('Nhập số vé hoặc quét để dò kết quả nhanh chóng'),
-    ).toBeTruthy();
+    const { getByText } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+    expect(getByText('1. Chọn ngày mở thưởng')).toBeTruthy();
+    expect(getByText('2. Chọn đài quay')).toBeTruthy();
+    expect(getByText('3. Nhập 6 chữ số trên vé')).toBeTruthy();
   });
 
   it('renders ResultsScreen correctly', async () => {
