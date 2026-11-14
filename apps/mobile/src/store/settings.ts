@@ -1,4 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
+
+export const SETTINGS_STORAGE_KEY = 'dove.settings.v1';
 
 export interface AppSettings {
   celebrationEnabled: boolean;
@@ -13,20 +16,53 @@ const DEFAULT_SETTINGS: AppSettings = {
 };
 
 let currentSettings: AppSettings = { ...DEFAULT_SETTINGS };
+let isInitialized = false;
 const listeners = new Set<(settings: AppSettings) => void>();
 
+function notifyListeners() {
+  listeners.forEach((listener) => listener(currentSettings));
+}
+
+export async function loadSettings(): Promise<AppSettings> {
+  try {
+    const raw = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      currentSettings = { ...DEFAULT_SETTINGS, ...parsed };
+    }
+  } catch {
+    // Keep defaults on read error
+  } finally {
+    isInitialized = true;
+    notifyListeners();
+  }
+  return currentSettings;
+}
+
 export function getSettings(): AppSettings {
+  if (!isInitialized) {
+    // Trigger initial background load once
+    loadSettings().catch(() => {});
+  }
   return currentSettings;
 }
 
 export function updateSettings(partial: Partial<AppSettings>): void {
   currentSettings = { ...currentSettings, ...partial };
-  listeners.forEach((listener) => listener(currentSettings));
+  notifyListeners();
+  AsyncStorage.setItem(
+    SETTINGS_STORAGE_KEY,
+    JSON.stringify(currentSettings),
+  ).catch(() => {});
 }
 
 export function resetSettings(): void {
   currentSettings = { ...DEFAULT_SETTINGS };
-  listeners.forEach((listener) => listener(currentSettings));
+  notifyListeners();
+  AsyncStorage.setItem(
+    SETTINGS_STORAGE_KEY,
+    JSON.stringify(currentSettings),
+  ).catch(() => {});
 }
 
 export function subscribeSettings(

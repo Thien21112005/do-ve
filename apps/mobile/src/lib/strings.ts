@@ -222,6 +222,23 @@ export const STRINGS = {
     copyright: '© 2026 DoVe. Ứng dụng tra cứu xổ số kiến thiết miền Nam.',
   },
 
+  settings: {
+    screenTitle: 'Cài đặt',
+    appearanceSection: 'GIAO DIỆN & HIỂN THỊ',
+    themeModeTitle: 'Chế độ hiển thị',
+    themeSystem: 'Theo hệ thống',
+    themeLight: 'Giao diện sáng',
+    themeDark: 'Giao diện tối',
+    themeSystemDesc: 'Tự động đồng bộ với cài đặt hệ điều hành của máy',
+    themeLightDesc: 'Tông màu sáng, nền trắng thanh thoát',
+    themeDarkDesc: 'Tông màu tối, dịu mắt và tiết kiệm pin',
+    experienceSection: 'TRẢI NGHIỆM',
+    celebrationTitle: 'Hiệu ứng khi trúng thưởng',
+    celebrationDesc: 'Bắn pháo hoa rực rỡ khi phát hiện vé trúng',
+    hapticsTitle: 'Phản hồi xúc giác (rung)',
+    hapticsDesc: 'Rung nhẹ khi chạm phím và kiểm tra số',
+  },
+
   gate: {
     maintenanceTitle: 'Hệ thống đang bảo trì',
     maintenanceDefaultMsg:

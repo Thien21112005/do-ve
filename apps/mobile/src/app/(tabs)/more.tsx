@@ -24,7 +24,7 @@ export default function MoreScreen() {
       title: STRINGS.more.settingsTitle,
       subtitle: STRINGS.more.settingsDesc,
       icon: 'settings' as const,
-      onPress: () => {},
+      onPress: () => router.push('/settings'),
     },
     {
       testID: 'more-menu-about',
