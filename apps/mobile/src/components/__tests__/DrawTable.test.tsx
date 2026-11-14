@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { DrawTable, DRAW_TIERS } from '../DrawTable';
+import { REAL_DRAW_PAYLOAD } from '@/api/__fixtures__/realBackendPayloads';
 
 const mockPrizes: Record<string, string[]> = {
   SPECIAL: ['654321'],
@@ -53,6 +54,19 @@ describe('DrawTable', () => {
     expect(getByText('34568')).toBeTruthy();
     expect(getByText('45671')).toBeTruthy();
     expect(getByText('45677')).toBeTruthy();
+  });
+
+  it('renders accurately when passed numbers property from real backend fixture (T09.08)', async () => {
+    const { getByText } = await render(
+      <DrawTable numbers={REAL_DRAW_PAYLOAD.numbers} />,
+    );
+
+    expect(getByText('482915')).toBeTruthy();
+    expect(getByText('73924')).toBeTruthy();
+    expect(getByText('81057')).toBeTruthy();
+    expect(getByText('62481')).toBeTruthy();
+    expect(getByText('90135')).toBeTruthy();
+    expect(getByText('15')).toBeTruthy();
   });
 
   it('renders placeholder dash when prizes are empty or undefined', async () => {
