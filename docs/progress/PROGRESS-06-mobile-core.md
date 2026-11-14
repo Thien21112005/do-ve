@@ -25,7 +25,7 @@
 | T06.15 | Validation inline | DONE | 7f2bcb9 | 2026-11-14 | Thông báo lỗi tiếng Việt dưới ô nhập (FR-CHK-07), rung nhẹ expo-haptics & tests |
 | T06.16 | Gọi API dò vé | DONE | f3012b0 | 2026-11-14 | Mutation POST /check, trạng thái loading, haptic phản hồi, kết quả thật & tests |
 | T06.17 | Skeleton loading | DONE | c69d0d6 | 2026-11-14 | Component ResultSkeleton nhấp nháy Reanimated giả lập kết quả đang tải, cấu hình mock Jest & tests |
-| T06.18 | Component ResultCard | TODO |  |  |  |
+| T06.18 | Component ResultCard | DONE | dde96cd | 2026-11-14 | Thẻ thắng/thua, danh sách giải, định dạng tiền vi-VN, tổng tiền, animation vào bằng Reanimated |
 | T06.19 | Tô nổi chữ số khớp | TODO |  |  |  |
 | T06.20 | Hiệu ứng khi trúng (tuỳ chọn) | TODO |  |  |  |
 | T06.21 | Trạng thái chưa có kết quả | TODO |  |  |  |
@@ -62,6 +62,7 @@
 - 2026-11-14 | T06.15 | Bổ sung kiểm tra hợp lệ inline tiếng Việt dưới ô nhập (FR-CHK-07), cảnh báo viền đỏ và rung phản hồi nhẹ qua expo-haptics.
 - 2026-11-14 | T06.16 | Nối API checkTicket và useCheckTicket mutation vào form, xử lý loading spinner, haptic feedback và hiển thị dữ liệu dò vé thực tế.
 - 2026-11-14 | T06.17 | Xây dựng component ResultSkeleton nhấp nháy mượt mà với react-native-reanimated, cấu hình mock Jest reanimated/worklets an toàn & tests.
+- 2026-11-14 | T06.18 | Xây dựng component ResultCard có animation vào Reanimated, hiển thị chi tiết các giải trúng, định dạng tiền chuẩn vi-VN, disclaimer FR-SYS-03 & tests.
 
 ## Vấn đề mở
 
