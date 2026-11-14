@@ -64,7 +64,7 @@
 | T09.54 | P1 | Crash report không đi đâu cả | TODO | | | |
 | T09.55 | P2 | ErrorBoundary "Thử lại" lặp crash, không theo theme | TODO | | | |
 | T09.56 | P2 | Phiên bản app hard-code 3 nơi | TODO | | | |
-| T09.57 | P0 | API key admin mặc định công khai trong production | TODO | | | |
+| T09.57 | P0 | API key admin mặc định công khai trong production | DONE | ae9277f | 2026-11-14 | Bắt buộc DOVE_ADMIN_API_KEY ở prod, fail-fast nếu < 32 ký tự hoặc dùng key demo |
 | T09.58 | P1 | "Upsert" admin thực ra chỉ insert → 500 khi sửa kỳ đã có | TODO | | | |
 | T09.59 | P1 | Rate limit dò vé bị vượt bằng header giả | TODO | | | |
 | T09.60 | P1 | Map rate limiter phình vô hạn | TODO | | | |
@@ -85,7 +85,7 @@
 
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
-| P0 | 10 | 8 | 2 |
+| P0 | 10 | 9 | 1 |
 | P1 | 29 | 2 | 27 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
@@ -113,6 +113,7 @@
 - 2026-11-14 | T09.09 | Trạng thái kỳ quay thiếu trong API | Tự suy ra tính hoàn chỉnh của kỳ quay (isComplete khi đủ 18 số) và gán FINAL/PENDING.
 - 2026-11-14 | T09.10 | Mã đài mặc định 'TPHCM' không tồn tại trên backend | Bỏ mặc định cứng, disable nút Dò khi chưa có đài hợp lệ được chọn.
 - 2026-11-14 | T09.11 | Thiếu cấu hình EXPO_PUBLIC_API_URL cho build preview/prod | Cấu hình HTTPS URL vào eas.json cho các profile và thêm cảnh báo bảo mật khi build non-dev dùng localhost.
+- 2026-11-14 | T09.57 | API key admin có nguy cơ dùng default yếu ở prod | Bắt buộc DOVE_ADMIN_API_KEY không default ở prod yml & docker-compose, chặn app startup nếu key rỗng/demo/< 32 ký tự.
 
 ## Vấn đề mở
 
