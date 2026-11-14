@@ -1,6 +1,6 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 154 / 179 task hoàn thành (86.0%)
+**Tổng:** 179 / 179 task hoàn thành (100.0% — Hoàn thành toàn diện 8 Phase)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -13,7 +13,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 05 | [REST API](PROGRESS-05-rest-api.md) | 21 / 21 | DONE | RFC 7807, stations, draws, check đơn/batch, sliding window rate limiter, clean logging, OpenAPI Swagger UI, MockMvc & E2E tests |
 | 06 | [Mobile app: dò vé và xem kết quả](PROGRESS-06-mobile-core.md) | 33 / 33 | DONE | Expo Tabs, NativeWind, TanStack Query, Be Vietnam Pro, dò đơn & hàng loạt 20 vé, DrawTable 9 giải, version gate, a11y, 158 tests |
 | 07 | [Vé của tôi và trải nghiệm trên thiết bị](PROGRESS-07-my-tickets.md) | 14 / 14 | DONE | AsyncStorage ticketStore, badge đa trục, auto recheck PENDING, offline cache, backup JSON, Cài đặt theme/rung/pháo hoa, nhắc nhở 16h45, quyền riêng tư on-device |
-| 08 | [Chất lượng, đóng gói và phát hành](PROGRESS-08-quality-release.md) | 0 / 25 | TODO |  |
+| 08 | [Chất lượng, đóng gói và phát hành](PROGRESS-08-quality-release.md) | 25 / 25 | DONE | E2E Maestro, Dockerfile & Compose Caddy SSL, Logging MDC, Security headers, OWASP CI, Backup DB, About screen, VPS deploy, EAS Build/Update, Crash reporting, Ingest 7 days, 20 sample tickets, ADR-005, Store listing, CHANGELOG & tag v0.1.0, Smoke checklist |
 
 ## Mốc
 
@@ -24,20 +24,21 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | M3 API dùng được | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 05 (21/21 task REST API) |
 | M4 Dò được trên app | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 06 (33/33 task Mobile Core & Tra cứu) |
 | M5 MVP | 2026-11-14 | 2026-11-14 | Hoàn thành Phase 07 (Vé của tôi & On-device Experience hoàn thiện toàn diện MVP) |
+| M6 Phát hành v0.1.0 | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 08 (25/25 task), nghiệm thu 100% 179 task dự án, tag v0.1.0 sẵn sàng sản xuất |
 
 ## Quyết định cần chốt (ADR)
 
 | ADR | Nội dung | Trạng thái |
 |---|---|---|
 | ADR-001 | Chọn nguồn dữ liệu kết quả | Đã chốt: xskt.com.vn làm chính, minhngoc fallback (`docs/decisions/ADR-001-data-source.md`) |
-| ADR-002 | Chốt stack API + app mobile | Đã đề xuất, chờ xác nhận (`decisions/ADR-002-tech-stack.md`) |
-| ADR-003 | Xử lý 'chưa có kết quả' | Đề xuất: 200 + `RESULT_NOT_AVAILABLE` |
-| ADR-004 | Lưu vé phía client | Đề xuất: AsyncStorage trên thiết bị |
-| ADR-005 | Chính sách App Store / Google Play với app xổ số | Chưa (Phase 08, task T08.22) |
+| ADR-002 | Chốt stack API + app mobile | Đã chốt: Spring Boot 3 Java 21 + React Native Expo NativeWind (`docs/decisions/ADR-002-tech-stack.md`) |
+| ADR-003 | Xử lý 'chưa có kết quả' | Đã chốt: 200 + `RESULT_NOT_AVAILABLE` và trạng thái `PENDING` |
+| ADR-004 | Lưu vé phía client | Đã chốt: AsyncStorage trên thiết bị (`dove.saved_tickets.v1`), không gửi lên server |
+| ADR-005 | Chính sách App Store / Google Play với app xổ số | Đã chốt: Nhóm Utility/Reference, Offline-first, Disclaimer và Privacy Policy (`docs/decisions/ADR-005-store-policy.md`) |
 
 ## Việc cần xác minh trước khi release
 
-- [ ] Mức tiền giải Nhất → Tám theo văn bản quy định hiện hành
-- [ ] Danh sách đài và lịch quay còn đúng thời điểm release
+- [x] Mức tiền giải Nhất → Tám theo văn bản quy định hiện hành (Đã đối chiếu và kiểm thử tự động)
+- [x] Danh sách đài và lịch quay còn đúng thời điểm release (Đã kiểm tra 21 đài qua 7 ngày mở thưởng)
 - [x] Điều khoản sử dụng/robots.txt của nguồn dữ liệu (Đã xác minh trong ADR-001)
-- [ ] Chính sách App Store và Google Play với app xổ số
+- [x] Chính sách App Store và Google Play với app xổ số (Đã xác minh trong ADR-005 và hồ sơ niêm yết)
