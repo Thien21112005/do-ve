@@ -100,7 +100,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
     problemDetail.setTitle("Bad Request");
-    problemDetail.setProperty("code", "INVALID_REQUEST");
+
+    String code = "INVALID_REQUEST";
+    boolean hasTicketError =
+        ex.getBindingResult().getFieldErrors().stream()
+            .anyMatch(err -> "ticket".equalsIgnoreCase(err.getField()));
+    boolean hasDateError =
+        ex.getBindingResult().getFieldErrors().stream()
+            .anyMatch(
+                err ->
+                    "drawDate".equalsIgnoreCase(err.getField())
+                        || "date".equalsIgnoreCase(err.getField()));
+
+    if (hasTicketError) {
+      code = ErrorCode.INVALID_TICKET.name();
+    } else if (hasDateError) {
+      code = ErrorCode.INVALID_DATE.name();
+    }
+
+    problemDetail.setProperty("code", code);
     problemDetail.setProperty("timestamp", Instant.now());
     enrichInstance(problemDetail, request);
 
