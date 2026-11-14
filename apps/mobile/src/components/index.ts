@@ -14,3 +14,4 @@ export * from './BatchTicketInput';
 export * from './BatchResultList';
 export * from './AppVersionGate';
 export * from './TicketStatusBadge';
+export * from './ErrorBoundary';

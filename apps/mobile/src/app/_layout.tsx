@@ -3,7 +3,10 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAppFonts, useAppConfig, usePendingTicketsReminder } from '@/hooks';
-import { AppProviders, AppVersionGate } from '@/components';
+import { AppProviders, AppVersionGate, ErrorBoundary } from '@/components';
+import { initCrashReporting } from '@/services/crashReporting';
+
+initCrashReporting();
 
 // Prevent splash screen from auto hiding before fonts are loaded
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -41,8 +44,10 @@ export default function RootLayout() {
   }
 
   return (
-    <AppProviders>
-      <AppContent />
-    </AppProviders>
+    <ErrorBoundary>
+      <AppProviders>
+        <AppContent />
+      </AppProviders>
+    </ErrorBoundary>
   );
 }
