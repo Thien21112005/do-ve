@@ -28,6 +28,7 @@ export default function RootLayout() {
     <AppProviders>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="schedule" options={{ headerShown: false }} />
       </Stack>
     </AppProviders>
   );
