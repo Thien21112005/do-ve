@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
-import { exportTicketsToJson } from '@/store';
+import { exportTicketsToJson, importTicketsFromJson } from '@/store';
 import { useTheme } from '@/theme';
 import { Icon, TicketStatusBadge } from '@/components';
 import { usePendingTicketsRecheck } from '@/hooks';
@@ -78,6 +78,19 @@ export default function TicketsScreen() {
       haptics.success();
     } else if (res.error) {
       Alert.alert('Sao lưu', res.error);
+    }
+  };
+
+  const handleImport = async () => {
+    const res = await importTicketsFromJson();
+    if (res.success) {
+      haptics.success();
+      Alert.alert(
+        'Khôi phục',
+        STRINGS.tickets.importSuccess(res.importedCount),
+      );
+    } else if (res.error) {
+      Alert.alert('Khôi phục', res.error);
     }
   };
 
@@ -237,6 +250,26 @@ export default function TicketsScreen() {
               {STRINGS.tickets.emptyAction}
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            testID="empty-import-btn"
+            onPress={handleImport}
+            accessibilityRole="button"
+            accessibilityLabel={STRINGS.tickets.importBtn}
+            className="mt-3 px-5 py-2.5 rounded-xl border flex-row items-center"
+            style={{
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+            }}
+          >
+            <Icon name="download" size={16} color={colors.textMain} />
+            <Text
+              className="text-xs font-semibold ml-1.5"
+              style={{ color: colors.textMain }}
+            >
+              Nhập vé từ file sao lưu
+            </Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -276,6 +309,23 @@ export default function TicketsScreen() {
                     style={{ color: colors.primary }}
                   >
                     {STRINGS.tickets.exportBtn}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  testID="import-tickets-btn"
+                  onPress={handleImport}
+                  accessibilityRole="button"
+                  accessibilityLabel={STRINGS.tickets.importBtn}
+                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
+                  className="flex-row items-center px-2 py-1 rounded-lg mr-1.5"
+                >
+                  <Icon name="download" size={13} color={colors.primary} />
+                  <Text
+                    className="text-xs font-semibold ml-1"
+                    style={{ color: colors.primary }}
+                  >
+                    {STRINGS.tickets.importBtn}
                   </Text>
                 </TouchableOpacity>
 

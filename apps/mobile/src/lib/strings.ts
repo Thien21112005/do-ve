@@ -55,6 +55,9 @@ export const STRINGS = {
     exportBtn: 'Sao lưu',
     exportSuccess: 'Đã xuất file sao lưu thành công.',
     exportError: 'Không thể xuất file sao lưu.',
+    importBtn: 'Khôi phục',
+    importSuccess: (count: number) => `Đã khôi phục thành công ${count} vé.`,
+    importError: 'Không thể nhập file sao lưu.',
   },
 
   check: {
