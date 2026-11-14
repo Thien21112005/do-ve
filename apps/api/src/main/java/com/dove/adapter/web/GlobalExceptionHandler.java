@@ -1,5 +1,8 @@
 package com.dove.adapter.web;
 
+import com.dove.adapter.web.error.BusinessException;
+import com.dove.adapter.web.error.ErrorCode;
+import com.dove.domain.InvalidTicketException;
 import java.net.URI;
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -23,6 +26,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+  @ExceptionHandler(BusinessException.class)
+  public ProblemDetail handleBusinessException(BusinessException ex, WebRequest request) {
+    ErrorCode errorCode = ex.getErrorCode();
+    ProblemDetail problemDetail =
+        ProblemDetail.forStatusAndDetail(errorCode.getHttpStatus(), ex.getMessage());
+    problemDetail.setTitle(errorCode.getHttpStatus().getReasonPhrase());
+    problemDetail.setProperty("code", errorCode.name());
+    problemDetail.setProperty("timestamp", Instant.now());
+    enrichInstance(problemDetail, request);
+    return problemDetail;
+  }
+
+  @ExceptionHandler(InvalidTicketException.class)
+  public ProblemDetail handleInvalidTicketException(InvalidTicketException ex, WebRequest request) {
+    ProblemDetail problemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    problemDetail.setTitle(HttpStatus.BAD_REQUEST.getReasonPhrase());
+    problemDetail.setProperty("code", ErrorCode.INVALID_TICKET.name());
+    problemDetail.setProperty("timestamp", Instant.now());
+    enrichInstance(problemDetail, request);
+    return problemDetail;
+  }
 
   @ExceptionHandler(ResponseStatusException.class)
   public ProblemDetail handleResponseStatusException(
