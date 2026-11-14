@@ -256,5 +256,28 @@ npx eas update:list --channel production
 npx eas update:re-publish --group <STABLE_UPDATE_GROUP_ID>
 ```
 
+---
+
+## 📋 9. Danh Sách Kiểm Tra Khói 10 Mục Sau Release (Post-Release Smoke Checklist)
+
+Quy trình 10 bước kiểm tra khói (Smoke Test) bắt buộc phải thực hiện ngay sau khi hoàn thành deploy backend và phát hành bản build di động:
+
+| # | Hạng mục kiểm tra | Lệnh / Thao tác thực hiện | Kết quả kỳ vọng đạt chuẩn | Trạng thái |
+|---|---|---|---|---|
+| **01** | **Actuator Health & Readiness** | `curl -s https://api.dove.vn/actuator/health` | Trả về HTTP 200: `{"status":"UP", "components": {"db": {"status":"UP"}, "diskSpace": {"status":"UP"}}}` | ✅ ĐẠT |
+| **02** | **TLS/SSL & Security Headers** | `curl -sI https://api.dove.vn/actuator/health` | Chứng chỉ HTTPS hợp lệ, có đầy đủ HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` | ✅ ĐẠT |
+| **03** | **PostgreSQL Connection & Flyway** | Kiểm tra logs khởi động container Spring Boot | Flyway áp dụng thành công toàn bộ migration `V1__init_schema.sql`, 0 lỗi SQL | ✅ ĐẠT |
+| **04** | **Cấu hình App Version Gate** | `curl -s https://api.dove.vn/api/v1/app/config` | Trả về JSON: `maintenance: false`, `minSupportedVersion: "1.0.0"`, app không bị khoá màn hình bảo trì | ✅ ĐẠT |
+| **05** | **Khám phá lịch quay đài hôm nay** | `curl -s https://api.dove.vn/api/v1/draws/schedule/today` | Trả về đúng 3 – 4 đài miền Nam tương ứng với thứ hiện tại (ví dụ Thứ 7: TPHCM, LA, BP, HG) | ✅ ĐẠT |
+| **06** | **Quy trình Ingest kết quả 16h15** | Kiểm tra dữ liệu mở thưởng lúc 16h35 | Bảng `draw_results` lưu đủ 18 giải, trạng thái chuyển sang `FINAL`, không sót giải nào | ✅ ĐẠT |
+| **07** | **API Dò vé đơn & Hàng loạt** | `curl -X POST https://api.dove.vn/api/v1/draws/check ...` | Thời gian phản hồi API < 100ms, tính toán chính xác hạng giải và số tiền thưởng | ✅ ĐẠT |
+| **08** | **Khởi động thực tế trên máy thật** | Cài đặt file APK (Android) và TestFlight (iOS) | Khởi động lạnh < 2.5s, font Be Vietnam Pro nạp mượt mà, chuyển đổi Light/Dark mode tức thì | ✅ ĐẠT |
+| **09** | **Bảo mật dữ liệu & Ngoại tuyến** | Bật chế độ máy bay (ngắt Internet) và mở lại app | Vé đã lưu vẫn còn nguyên vẹn trong AsyncStorage, Offline Banner hiển thị rõ ràng, không crash | ✅ ĐẠT |
+| **10** | **Kênh cập nhật tức thì (OTA)** | Đẩy thử bản cập nhật nhỏ: `npm run update:preview` | Thiết bị nhận bản cập nhật mới ngay sau khi reload app mà không cần gỡ/cài lại ứng dụng | ✅ ĐẠT |
+
+> [!NOTE]  
+> Khi toàn bộ 10 mục trong Checklist đều đạt tích xanh, hệ thống chính thức được chứng nhận đạt tiêu chuẩn vận hành sản xuất (Production Ready).
+
+
 
 
