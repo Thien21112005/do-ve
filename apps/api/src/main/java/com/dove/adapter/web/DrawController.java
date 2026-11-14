@@ -68,4 +68,28 @@ public class DrawController {
                         "Chưa có kết quả cho đài " + station + " vào ngày " + date));
     return ResponseEntity.ok(DrawResponse.from(drawResult));
   }
+
+  @GetMapping("/latest")
+  public ResponseEntity<DrawResponse> getLatestDraw(
+      @RequestParam(value = "station", required = false) String station) {
+    java.util.Optional<DrawResult> drawResultOpt;
+    if (station != null && !station.isBlank()) {
+      if (stationRepository.findByCode(station).isEmpty()) {
+        throw new StationNotFoundException(station);
+      }
+      drawResultOpt = drawRepository.findLatestByStation(station);
+    } else {
+      drawResultOpt = drawRepository.findLatestOverall();
+    }
+
+    DrawResult drawResult =
+        drawResultOpt.orElseThrow(
+            () ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    station != null
+                        ? "Chưa có kết quả cho đài " + station
+                        : "Chưa có kết quả nào trong hệ thống"));
+    return ResponseEntity.ok(DrawResponse.from(drawResult));
+  }
 }

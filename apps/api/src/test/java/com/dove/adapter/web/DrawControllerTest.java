@@ -25,7 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@DisplayName("T05.05 & T05.06 - Draws API Specification")
+@DisplayName("T05.05 - T05.07 - Draws API Specification")
 class DrawControllerTest {
 
   private StationScheduleRepository stationScheduleRepository;
@@ -140,6 +140,70 @@ class DrawControllerTest {
 
     mockMvc
         .perform(get("/api/v1/draws").param("date", "2026-11-09").param("station", "tp-hcm"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404));
+  }
+
+  @Test
+  @DisplayName(
+      "GET /api/v1/draws/latest không truyền station trả về kỳ quay mới nhất toàn hệ thống")
+  void getLatestDraw_overall_returnsLatestDraw() throws Exception {
+    LocalDate latestDate = LocalDate.of(2026, 11, 10);
+    DrawResult latestResult =
+        new DrawResult("dong-nai", latestDate, Map.of(PrizeTier.SPECIAL, List.of("123456")));
+
+    when(drawRepository.findLatestOverall()).thenReturn(Optional.of(latestResult));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.stationCode").value("dong-nai"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-10"))
+        .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("123456"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws/latest?station=tp-hcm trả về kỳ quay mới nhất của đài đó")
+  void getLatestDraw_byStation_returnsLatestDrawForStation() throws Exception {
+    LocalDate latestDate = LocalDate.of(2026, 11, 9);
+    DrawResult latestResult =
+        new DrawResult("tp-hcm", latestDate, Map.of(PrizeTier.SPECIAL, List.of("654321")));
+
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findLatestByStation("tp-hcm")).thenReturn(Optional.of(latestResult));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest").param("station", "tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-09"));
+  }
+
+  @Test
+  @DisplayName(
+      "GET /api/v1/draws/latest với đài không tồn tại trả về 404 và code STATION_NOT_FOUND")
+  void getLatestDraw_unknownStation_returns404() throws Exception {
+    when(stationRepository.findByCode("unknown-station")).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest").param("station", "unknown-station"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws/latest khi hệ thống chưa có dữ liệu trả về 404 Not Found")
+  void getLatestDraw_emptyDb_returns404() throws Exception {
+    when(drawRepository.findLatestOverall()).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest"))
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
         .andExpect(jsonPath("$.status").value(404));
