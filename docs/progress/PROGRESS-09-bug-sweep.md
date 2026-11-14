@@ -1,7 +1,7 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 9 / 72 task hoàn thành
+- **Tổng quan:** 10 / 72 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -18,7 +18,7 @@
 | T09.08 | P0 | DrawTable đọc `numbers` thay vì `prizes` | DONE | 23a750a | 2026-11-14 | Cập nhật DrawTable hỗ trợ numbers và test với fixture 18 số |
 | T09.09 | P1 | Trạng thái kỳ quay (FINAL/đang chờ) không có trong API | DONE | 7b95574 | 2026-11-14 | Tự động tính toán tính hoàn chỉnh của kỳ quay (isComplete & FINAL/PENDING) |
 | T09.10 | P0 | Mã đài mặc định `'TPHCM'` không tồn tại | DONE | de3b47b | 2026-11-14 | Bỏ mặc định 'TPHCM' sai, disable nút Dò khi chưa có đài hợp lệ |
-| T09.11 | P0 | `EXPO_PUBLIC_API_URL` chưa cấu hình cho bản build | TODO | | | |
+| T09.11 | P0 | `EXPO_PUBLIC_API_URL` chưa cấu hình cho bản build | DONE | e04a76c | 2026-11-14 | Cấu hình API URL cho eas.json và thêm cảnh báo cleartext localhost |
 | T09.12 | P0 | Cập nhật toàn bộ mock/MSW test theo hợp đồng thật | TODO | | | |
 | T09.13 | P1 | Chặn hợp đồng lệch trong CI | TODO | | | |
 | T09.14 | P1 | Đổi `buster` của cache offline khi đổi hợp đồng | TODO | | | |
@@ -85,7 +85,7 @@
 
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
-| P0 | 10 | 7 | 3 |
+| P0 | 10 | 8 | 2 |
 | P1 | 29 | 2 | 27 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
@@ -112,6 +112,7 @@
 - 2026-11-14 | T09.08 | DrawTable đọc prizes thay vì numbers | Cập nhật DrawTable nhận cả numbers và prizes, test khớp 18 số với fixture thật.
 - 2026-11-14 | T09.09 | Trạng thái kỳ quay thiếu trong API | Tự suy ra tính hoàn chỉnh của kỳ quay (isComplete khi đủ 18 số) và gán FINAL/PENDING.
 - 2026-11-14 | T09.10 | Mã đài mặc định 'TPHCM' không tồn tại trên backend | Bỏ mặc định cứng, disable nút Dò khi chưa có đài hợp lệ được chọn.
+- 2026-11-14 | T09.11 | Thiếu cấu hình EXPO_PUBLIC_API_URL cho build preview/prod | Cấu hình HTTPS URL vào eas.json cho các profile và thêm cảnh báo bảo mật khi build non-dev dùng localhost.
 
 ## Vấn đề mở
 
