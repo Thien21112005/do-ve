@@ -143,3 +143,17 @@ Tuân thủ chỉ tiêu phi chức năng **NFR-02** (Thời gian mở app khởi
   - Trạng thái vừa mở app: ~82 MB RAM.
   - Sau khi dò 20 vé hàng loạt và lưu trữ 50 vé: ~104 MB RAM (không xảy ra hiện tượng rò rỉ bộ nhớ - memory leak).
 
+---
+
+## 🎟️ 4. Kết Quả Nghiệm Thu Đối Chiếu 20 Vé Mẫu Thủ Công (Manual QA)
+
+Chi tiết bảng đối chiếu 20 vé mẫu đại diện tất cả các hạng giải (từ Đặc biệt đến Giải Tám, phụ đặc biệt, khuyến khích và không trúng) được lưu trữ tại:
+👉 [`docs/sample-tickets-qa.md`](sample-tickets-qa.md)
+
+- **Tỷ lệ khớp:** **20 / 20 vé (100.0%)** so với kết quả đối chiếu chính thức.
+- **Xác thực các ca biên (Edge cases):**
+  - Vé có số 0 đứng đầu (`012345`, `000089`) không bị mất số 0.
+  - Phân biệt chính xác Phụ Đặc biệt (sai số đầu) vs Khuyến khích (sai 1 trong 5 số còn lại).
+  - Tự động cộng dồn chính xác khi 1 vé trúng nhiều giải thưởng.
+
+
