@@ -57,7 +57,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   // Initial state: today's date
   const defaultDate = getPastDays(1)[0].dateString;
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
-  const [selectedStation, setSelectedStation] = useState<string>('TPHCM');
+  const [selectedStation, setSelectedStation] = useState<string>('');
   const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [ticketNumber, setTicketNumber] = useState<string>('');
   const [batchText, setBatchText] = useState<string>('');
