@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
@@ -31,7 +31,13 @@ export default function MoreScreen() {
       title: STRINGS.more.aboutTitle,
       subtitle: STRINGS.more.aboutDesc,
       icon: 'info' as const,
-      onPress: () => {},
+      onPress: () => {
+        Alert.alert(
+          STRINGS.more.aboutDialogTitle,
+          STRINGS.more.aboutDialogMessage,
+          [{ text: STRINGS.common.confirm }],
+        );
+      },
     },
   ];
 
@@ -100,8 +106,21 @@ export default function MoreScreen() {
           })}
         </View>
 
-        {/* Disclaimer Note */}
+        {/* Privacy & Disclaimer Note */}
         <View className="mt-8 px-2 items-center">
+          <View
+            testID="more-privacy-notice"
+            className="flex-row items-center justify-center py-2 px-3 rounded-xl mb-3"
+            style={{ backgroundColor: `${colors.border}30` }}
+          >
+            <Icon name="info" size={13} color={colors.textMuted} />
+            <Text
+              className="text-[11px] font-medium ml-1.5"
+              style={{ color: colors.textMuted }}
+            >
+              {STRINGS.more.privacyNotice}
+            </Text>
+          </View>
           <Text
             className="text-[11px] text-center leading-relaxed"
             style={{ color: colors.textMuted }}

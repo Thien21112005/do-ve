@@ -17,6 +17,10 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(getByTestId('saved-tickets-empty')).toBeTruthy();
     expect(getByText('Chưa có vé nào được lưu')).toBeTruthy();
     expect(getByTestId('tickets-empty-check-btn')).toBeTruthy();
+    expect(getByTestId('tickets-privacy-notice')).toBeTruthy();
+    expect(
+      getByText('Vé chỉ lưu trên máy này, không gửi lên server.'),
+    ).toBeTruthy();
   });
 
   it('navigates to check tab when pressing "Dò vé ngay" from empty state', async () => {

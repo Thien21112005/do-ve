@@ -137,10 +137,14 @@ describe('Tab Screens', () => {
   });
 
   it('renders MoreScreen correctly', async () => {
-    const { getByText } = await render(<MoreScreen />);
+    const { getByText, getByTestId } = await render(<MoreScreen />);
     expect(getByText('Thêm')).toBeTruthy();
     expect(
       getByText('Lịch quay số, Giới thiệu và Cài đặt ứng dụng'),
+    ).toBeTruthy();
+    expect(getByTestId('more-privacy-notice')).toBeTruthy();
+    expect(
+      getByText('Vé chỉ lưu trên máy này, không gửi lên server.'),
     ).toBeTruthy();
   });
 });

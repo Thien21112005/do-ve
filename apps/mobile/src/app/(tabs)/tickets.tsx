@@ -283,6 +283,21 @@ export default function TicketsScreen() {
               Nhập vé từ file sao lưu
             </Text>
           </TouchableOpacity>
+
+          {/* On-device Privacy Notice */}
+          <View
+            testID="tickets-privacy-notice"
+            className="flex-row items-center justify-center mt-6 px-4 py-2 rounded-xl"
+            style={{ backgroundColor: `${colors.border}30` }}
+          >
+            <Icon name="info" size={13} color={colors.textMuted} />
+            <Text
+              className="text-[11px] font-medium ml-1.5"
+              style={{ color: colors.textMuted }}
+            >
+              {STRINGS.tickets.privacyNotice}
+            </Text>
+          </View>
         </View>
       ) : (
         <FlatList
@@ -359,6 +374,21 @@ export default function TicketsScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
+            </View>
+          }
+          ListFooterComponent={
+            <View
+              testID="tickets-privacy-notice"
+              className="flex-row items-center justify-center mt-6 py-2 px-4 rounded-xl"
+              style={{ backgroundColor: `${colors.border}30` }}
+            >
+              <Icon name="info" size={13} color={colors.textMuted} />
+              <Text
+                className="text-[11px] font-medium ml-1.5"
+                style={{ color: colors.textMuted }}
+              >
+                {STRINGS.tickets.privacyNotice}
+              </Text>
             </View>
           }
         />
