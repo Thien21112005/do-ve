@@ -56,7 +56,7 @@ export async function getTickets(): Promise<SavedTicket[]> {
     isInitialized = true;
     notifyListeners();
     return [];
-  } catch (error) {
+  } catch {
     // Graceful fallback on corrupt data or storage error
     cachedTickets = [];
     isInitialized = true;
@@ -116,7 +116,7 @@ export async function saveTicket(
     cachedTickets = updatedList;
     notifyListeners();
     return newTicket;
-  } catch (error) {
+  } catch {
     // If storage write fails, still update in-memory and return
     cachedTickets = [newTicket, ...cachedTickets.filter((t) => t.id !== id)];
     notifyListeners();
@@ -141,7 +141,7 @@ export async function removeTicket(id: string): Promise<boolean> {
     cachedTickets = updatedList;
     notifyListeners();
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -159,7 +159,7 @@ export async function clearAllTickets(): Promise<boolean> {
     cachedTickets = [];
     notifyListeners();
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -193,7 +193,7 @@ export async function updateTicket(
     cachedTickets = updatedList;
     notifyListeners();
     return updatedItem;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -243,3 +243,4 @@ export function useSavedTickets(): [
     },
   ];
 }
+

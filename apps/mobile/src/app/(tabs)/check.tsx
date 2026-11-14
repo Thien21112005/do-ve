@@ -26,6 +26,8 @@ import {
 import { useTheme } from '@/theme';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
+import { useSavedTickets } from '@/store/ticketStore';
+import type { SavedTicketStatus, CheckTicketResponse } from '@/types';
 
 export interface CheckScreenProps {
   onCheckSuccess?: (result: any) => void;
@@ -50,6 +52,8 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     reset: resetBatch,
   } = useCheckBatchTickets();
 
+  const [savedTickets, { save: saveTicketToStore }] = useSavedTickets();
+
   // Initial state: today's date
   const defaultDate = getPastDays(1)[0].dateString;
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
@@ -66,6 +70,35 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   }
 
   const parsedBatch = parseBatchTickets(batchText, 20);
+
+  const isResultSaved = Boolean(
+    result &&
+      savedTickets.some(
+        (t) =>
+          t.ticket === result.ticket &&
+          t.station === result.station &&
+          t.drawDate === result.drawDate,
+      ),
+  );
+
+  const handleSaveTicket = async (ticketResult: CheckTicketResponse) => {
+    let status: SavedTicketStatus = 'LOST';
+    if (ticketResult.status === 'RESULT_NOT_AVAILABLE') {
+      status = 'PENDING';
+    } else if (ticketResult.won) {
+      status = 'WON';
+    }
+
+    await saveTicketToStore({
+      ticket: ticketResult.ticket,
+      station: ticketResult.station,
+      stationName: ticketResult.stationName,
+      drawDate: ticketResult.drawDate,
+      status,
+      totalPrize: ticketResult.totalPrize || 0,
+      wins: ticketResult.wins || [],
+    });
+  };
 
   const activeLoading = mode === 'single' ? isLoading : isBatchLoading;
   const activeError = mode === 'single' ? isError : isBatchError;
@@ -395,6 +428,8 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
               result={result}
               testID="check-result-section"
               onCheckAgain={handleSubmit}
+              onSaveTicket={handleSaveTicket}
+              isSaved={isResultSaved}
             />
           )}
 

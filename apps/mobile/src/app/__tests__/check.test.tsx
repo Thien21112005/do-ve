@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
 import * as apiDraws from '@/api/draws';
 import * as apiCheck from '@/api/check';
+import { getTickets, clearAllTickets } from '@/store/ticketStore';
 
 jest.mock('@/api/draws');
 jest.mock('@/api/check');
@@ -35,8 +36,9 @@ function createWrapper() {
 }
 
 describe('CheckScreen Form Composition', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+    await clearAllTickets();
     (apiDraws.fetchScheduleByDate as jest.Mock).mockResolvedValue([
       {
         code: 'TPHCM',
@@ -105,5 +107,58 @@ describe('CheckScreen Form Composition', () => {
       );
       expect(onCheckSuccess).toHaveBeenCalled();
     });
+  });
+
+  it('saves ticket into ticketStore when pressing save button on ResultCard', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '012345',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: true,
+      wins: [
+        {
+          tier: 'SPECIAL',
+          tierName: 'Giải Đặc Biệt',
+          prizeAmount: 2000000000,
+          matchedDigits: '012345',
+        },
+      ],
+      totalPrize: 2000000000,
+      message: null,
+    });
+
+    const { getByTestId, findByTestId, findByText } = await render(
+      <CheckScreen />,
+      { wrapper: createWrapper() },
+    );
+
+    // Fill ticket 012345
+    await findByTestId('station-chips-TPHCM');
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '012345');
+
+    const submitBtn = await findByTestId('check-ticket-button');
+    fireEvent.press(submitBtn);
+
+    // Save button should appear
+    const saveBtn = await findByTestId('result-card-save-btn');
+    expect(saveBtn).toBeTruthy();
+
+    // Press save button
+    fireEvent.press(saveBtn);
+
+    // Verify ticket is saved in ticketStore
+    await waitFor(async () => {
+      const saved = await getTickets();
+      expect(saved.length).toBe(1);
+      expect(saved[0].ticket).toBe('012345');
+      expect(saved[0].station).toBe('TPHCM');
+      expect(saved[0].status).toBe('WON');
+      expect(saved[0].totalPrize).toBe(2000000000);
+    });
+
+    // Button should now display "Đã lưu vé"
+    expect(await findByText('Đã lưu vé')).toBeTruthy();
   });
 });

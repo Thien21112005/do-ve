@@ -8,7 +8,6 @@ import {
   getTicketById,
   TICKETS_STORAGE_KEY,
 } from '../ticketStore';
-import type { SavedTicket } from '@/types';
 
 describe('ticketStore Service', () => {
   beforeEach(async () => {
@@ -187,3 +186,4 @@ describe('ticketStore Service', () => {
     expect(saved.ticket).toBe('999999');
   });
 });
+

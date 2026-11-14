@@ -14,6 +14,7 @@ import {
 } from './HighlightedTicket';
 import { formatCurrency, formatDateVN } from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
+import { haptics } from '@/lib/haptics';
 import type { CheckTicketResponse } from '@/types';
 
 export interface ResultCardProps {
@@ -309,7 +310,10 @@ export function ResultCard({
       {onSaveTicket && (
         <Pressable
           testID="result-card-save-btn"
-          onPress={() => onSaveTicket(result)}
+          onPress={() => {
+            haptics.light();
+            onSaveTicket(result);
+          }}
           className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center space-x-2 border"
           style={{
             borderColor: isSaved ? colors.win : colors.border,

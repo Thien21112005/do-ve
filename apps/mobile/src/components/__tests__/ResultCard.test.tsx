@@ -1,7 +1,18 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ResultCard } from '../ResultCard';
+import { haptics } from '@/lib/haptics';
 import type { CheckTicketResponse } from '@/types';
+
+jest.mock('@/lib/haptics', () => ({
+  haptics: {
+    light: jest.fn(),
+    medium: jest.fn(),
+    success: jest.fn(),
+    warning: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 describe('ResultCard Component', () => {
   const winningResult: CheckTicketResponse = {
@@ -82,7 +93,7 @@ describe('ResultCard Component', () => {
     expect(queryByText('Trúng 2 giải')).toBeNull();
   });
 
-  it('fires onSaveTicket callback when save button is pressed', async () => {
+  it('fires onSaveTicket callback and triggers haptics.light when save button is pressed', async () => {
     const onSave = jest.fn();
     const { getByTestId } = await render(
       <ResultCard result={winningResult} onSaveTicket={onSave} />,
@@ -91,6 +102,7 @@ describe('ResultCard Component', () => {
     const saveBtn = getByTestId('result-card-save-btn');
     fireEvent.press(saveBtn);
 
+    expect(haptics.light).toHaveBeenCalled();
     expect(onSave).toHaveBeenCalledWith(winningResult);
   });
 
