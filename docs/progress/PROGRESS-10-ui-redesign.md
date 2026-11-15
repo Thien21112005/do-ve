@@ -28,7 +28,7 @@
 | T10.18 | Bố cục Home mới: "hôm nay quay đài nào, đã có kết quả chưa" | DONE | f8d97cf | 2026-11-15 | Tái cấu trúc Home: thanh trạng thái hôm nay, card dò nhanh tích hợp đài trong ngày & kết quả inline, lối tắt vé đã lưu |
 | T10.19 | Thẻ kết quả đài trên Home gọn hơn | DONE | 5ab142d | 2026-11-15 | Bỏ card lồng card, số ĐB ticketMd màu đỏ son special (#B91C1C), dòng phụ G1/G8, cả thẻ bấm được mở Kết quả đài |
 | T10.20 | Trạng thái đang quay (live) trên Home | DONE | 671709f | 2026-11-15 | Cửa sổ 16h10–16h40 hiện Đang quay với chấm pulse dot nhấp nháy nhẹ (tôn trọng Reduce Motion), auto-refetch 60s |
-| T10.21 | Skeleton đúng hình dạng cho Home | TODO | | | |
+| T10.21 | Skeleton đúng hình dạng cho Home | DONE | da48a08 | 2026-11-15 | Tạo primitive Skeleton & HomeDrawsSkeleton mô phỏng chuẩn xác 3 thẻ kết quả, triệt tiêu layout shift |
 | T10.22 | Ô nhập 6 số kiểu "tờ vé" | TODO | | | |
 | T10.23 | Ô nhập co giãn theo cỡ chữ hệ thống | TODO | | | |
 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | TODO | | | |
@@ -102,6 +102,7 @@
 - 2026-11-15 | T10.18 | Bố cục Home mới | Tái thiết kế màn hình Trang chủ: (1) Thanh trạng thái ngày hôm nay (home-today-status) hiển thị thứ, ngày, số đài và trạng thái quay live; (2) Card dò vé nhanh inline (home-ticket-input, home-quick-check-btn, home-quick-check-result) dò trực tiếp không cần chuyển tab; (3) Lối tắt Vé của tôi (home-my-tickets-shortcut); (4) 8 unit tests xanh 100%.
 - 2026-11-15 | T10.19 | Thẻ kết quả đài trên Home gọn hơn | Tối ưu thẻ kết quả đài Trang chủ: (1) Bỏ card-lồng-card, số Đặc biệt cỡ ticketMd (24px tabular) dùng màu đỏ son special (#B91C1C) chuẩn Hướng A; (2) Dòng phụ G1/G8 tinh giản trên nền surfaceSubtle; (3) Badge trạng thái chữ thường/title case; (4) Cả thẻ bấm được (TouchableOpacity) mở ngay tab Kết quả đúng đài và ngày; (5) Unit tests xanh 100%.
 - 2026-11-15 | T10.20 | Trạng thái đang quay (live) trên Home | Triển khai trạng thái quay thưởng live: (1) Hàm isLiveDrawingVN() kiểm tra chính xác khung 16h10–16h40 VN; (2) Animated pulse dot nhấp nháy êm dịu, tự động dừng khi bật Reduce Motion (AccessibilityInfo); (3) Tự động refetch kết quả mỗi 60s khi màn hình đang focus (useFocusEffect); (4) Unit tests xanh 100%.
+- 2026-11-15 | T10.21 | Skeleton đúng hình dạng cho Home | Triển khai primitive Skeleton và HomeDrawsSkeleton: (1) Component Skeleton hỗ trợ width, height, borderRadius và animation pulse mờ tỏ tôn trọng Reduce Motion; (2) HomeDrawsSkeleton mô phỏng trung thực hình dáng 3 thẻ kết quả đài (tiêu đề, badge, ô ĐB, dòng phụ G1/G8) thay thế ActivityIndicator, triệt tiêu hiện tượng giật nhảy layout (layout shift); (3) Hoàn tất 100% Nhóm C (4/4 tasks); (4) Unit tests xanh 100%.
 
 ## Vấn đề mở
 
