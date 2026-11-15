@@ -1,5 +1,11 @@
 /**
- * Semantic version comparison utility
+ * Semantic version comparison utility & native runtime version resolver (T09.56)
+ * Reads version and build number directly from native Expo configuration.
+ */
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+/**
  * Returns 1 if v1 > v2, -1 if v1 < v2, and 0 if v1 === v2
  */
 export function compareVersions(v1: string, v2: string): number {
@@ -11,7 +17,6 @@ export function compareVersions(v1: string, v2: string): number {
   for (let i = 0; i < maxLength; i++) {
     const num1 = parts1[i] || 0;
     const num2 = parts2[i] || 0;
-
     if (num1 > num2) return 1;
     if (num1 < num2) return -1;
   }
@@ -30,5 +35,32 @@ export function isVersionOutdated(
   return compareVersions(currentVersion, minSupportedVersion) < 0;
 }
 
-export const CURRENT_APP_VERSION = '1.0.0';
+/**
+ * Read app version dynamically from native Expo config (T09.56)
+ */
+export function getAppVersion(): string {
+  return (
+    Constants.expoConfig?.version ||
+    (Constants.manifest as any)?.version ||
+    '1.0.0'
+  );
+}
 
+/**
+ * Read native build number dynamically from Expo config (T09.56)
+ */
+export function getBuildNumber(): string {
+  const iosBuild = Constants.expoConfig?.ios?.buildNumber;
+  const androidCode = Constants.expoConfig?.android?.versionCode;
+
+  if (Platform.OS === 'ios' && iosBuild) {
+    return String(iosBuild);
+  }
+  if (Platform.OS === 'android' && androidCode !== undefined) {
+    return String(androidCode);
+  }
+  return String(androidCode ?? iosBuild ?? '1');
+}
+
+export const CURRENT_APP_VERSION = getAppVersion();
+export const CURRENT_BUILD_NUMBER = getBuildNumber();

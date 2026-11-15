@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
-import { CURRENT_APP_VERSION } from '@/lib/version';
+import { CURRENT_APP_VERSION, CURRENT_BUILD_NUMBER } from '@/lib/version';
 
 export default function AboutScreen() {
   const { colors } = useTheme();
@@ -86,7 +86,8 @@ export default function AboutScreen() {
               className="text-xs font-bold"
               style={{ color: colors.primary }}
             >
-              {STRINGS.about.versionLabel} {CURRENT_APP_VERSION} (Build 1)
+              {STRINGS.about.versionLabel} {CURRENT_APP_VERSION} (Build{' '}
+              {CURRENT_BUILD_NUMBER})
             </Text>
           </View>
         </View>

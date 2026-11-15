@@ -1,4 +1,12 @@
-import { compareVersions, isVersionOutdated } from '../version';
+import {
+  compareVersions,
+  isVersionOutdated,
+  getAppVersion,
+  getBuildNumber,
+  CURRENT_APP_VERSION,
+  CURRENT_BUILD_NUMBER,
+} from '../version';
+import Constants from 'expo-constants';
 
 describe('Version comparison utilities', () => {
   describe('compareVersions', () => {
@@ -37,6 +45,19 @@ describe('Version comparison utilities', () => {
       expect(isVersionOutdated('1.0.0', '1.0.1')).toBe(true);
       expect(isVersionOutdated('1.0.0', '1.1.0')).toBe(true);
       expect(isVersionOutdated('1.2.0', '2.0.0')).toBe(true);
+    });
+  });
+
+  describe('Native config version reading (T09.56)', () => {
+    it('reads app version from native Expo config', () => {
+      expect(getAppVersion()).toBe('1.0.0');
+      expect(CURRENT_APP_VERSION).toBeTruthy();
+    });
+
+    it('reads build number dynamically from platform config', () => {
+      const build = getBuildNumber();
+      expect(build).toBeTruthy();
+      expect(CURRENT_BUILD_NUMBER).toBe(build);
     });
   });
 });

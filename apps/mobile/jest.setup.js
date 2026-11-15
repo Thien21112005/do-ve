@@ -110,6 +110,21 @@ jest.mock('expo-splash-screen', () => ({
   hideAsync: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      version: '1.0.0',
+      android: {
+        versionCode: 1,
+      },
+      ios: {
+        buildNumber: '1',
+      },
+    },
+  },
+}));
+
 const mockNotifications = {
   scheduleNotificationAsync: jest.fn().mockResolvedValue('notif-id-123'),
   cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(undefined),
