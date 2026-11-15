@@ -21,6 +21,9 @@ import {
   Trash2,
   Upload,
   Download,
+  Table2,
+  ListOrdered,
+  ScanSearch,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react-native';
@@ -47,6 +50,9 @@ export const iconMap = {
   trash: Trash2,
   upload: Upload,
   download: Download,
+  table: Table2,
+  listOrdered: ListOrdered,
+  scanSearch: ScanSearch,
 } as const;
 
 export type IconName = keyof typeof iconMap;

@@ -18,7 +18,7 @@ describe('Icon component', () => {
     }
   });
 
-  it('contains expected icons in iconMap', () => {
+  it('contains expected icons in iconMap including new tab icons (T10.13)', () => {
     expect(iconMap.home).toBeDefined();
     expect(iconMap.ticket).toBeDefined();
     expect(iconMap.trophy).toBeDefined();
@@ -27,5 +27,8 @@ describe('Icon component', () => {
     expect(iconMap.search).toBeDefined();
     expect(iconMap.checkCircle).toBeDefined();
     expect(iconMap.clock).toBeDefined();
+    expect(iconMap.table).toBeDefined();
+    expect(iconMap.listOrdered).toBeDefined();
+    expect(iconMap.scanSearch).toBeDefined();
   });
 });

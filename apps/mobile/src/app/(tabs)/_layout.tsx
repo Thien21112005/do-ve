@@ -18,6 +18,10 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
         },
+        tabBarLabelStyle: {
+          fontFamily: 'BeVietnamPro-Medium',
+          fontSize: 12,
+        },
         headerStyle: {
           backgroundColor: colors.surface,
         },
@@ -34,11 +38,12 @@ export default function TabLayout() {
         options={{
           title: STRINGS.tabs.home,
           headerTitle: STRINGS.common.appName,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <Icon
               name="home"
               color={color ? String(color) : undefined}
               size={size}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -48,11 +53,12 @@ export default function TabLayout() {
         options={{
           title: STRINGS.tabs.check,
           headerTitle: STRINGS.check.screenTitle,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <Icon
               name="ticket"
               color={color ? String(color) : undefined}
               size={size}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -62,11 +68,12 @@ export default function TabLayout() {
         options={{
           title: STRINGS.tabs.results,
           headerTitle: STRINGS.results.screenTitle,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <Icon
-              name="trophy"
+              name="table"
               color={color ? String(color) : undefined}
               size={size}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -76,11 +83,12 @@ export default function TabLayout() {
         options={{
           title: STRINGS.tabs.tickets,
           headerTitle: STRINGS.tabs.tickets,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <Icon
               name="bookmark"
               color={color ? String(color) : undefined}
               size={size}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
@@ -90,11 +98,12 @@ export default function TabLayout() {
         options={{
           title: STRINGS.tabs.more,
           headerTitle: STRINGS.tabs.more,
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <Icon
               name="more"
               color={color ? String(color) : undefined}
               size={size}
+              strokeWidth={focused ? 2.5 : 2}
             />
           ),
         }}
