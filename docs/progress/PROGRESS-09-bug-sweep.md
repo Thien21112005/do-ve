@@ -1,7 +1,7 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 15 / 72 task hoàn thành
+- **Tổng quan:** 16 / 72 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -20,7 +20,7 @@
 | T09.10 | P0 | Mã đài mặc định `'TPHCM'` không tồn tại | DONE | de3b47b | 2026-11-14 | Bỏ mặc định 'TPHCM' sai, disable nút Dò khi chưa có đài hợp lệ |
 | T09.11 | P0 | `EXPO_PUBLIC_API_URL` chưa cấu hình cho bản build | DONE | e04a76c | 2026-11-14 | Cấu hình API URL cho eas.json và thêm cảnh báo cleartext localhost |
 | T09.12 | P0 | Cập nhật toàn bộ mock/MSW test theo hợp đồng thật | DONE | 137e302 | 2026-11-14 | Cập nhật 15 file test và components, npm run typecheck và npm run test 50/50 suites xanh 100% |
-| T09.13 | P1 | Chặn hợp đồng lệch trong CI | TODO | | | |
+| T09.13 | P1 | Chặn hợp đồng lệch trong CI | DONE | 0585f37 | 2026-11-15 | Thiết lập workflow contract-drift.yml xuất OpenAPI spec từ live Spring context và so khớp với api.d.ts mobile |
 | T09.14 | P1 | Đổi `buster` của cache offline khi đổi hợp đồng | DONE | 6d53b43 | 2026-11-15 | Bust cache AsyncStorage qua CURRENT_APP_VERSION-API_SCHEMA_VERSION khi đổi DTO schema |
 | T09.15 | P1 | Hàm `todayVN()` dùng chung | TODO | | | |
 | T09.16 | P1 | Home & Kết quả lệch ngày từ 0h–7h sáng | TODO | | | |
@@ -86,7 +86,7 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 5 | 24 |
+| P1 | 29 | 6 | 23 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
 
@@ -95,7 +95,7 @@
 - [x] `npm run lint` xanh (T09.69)
 - [x] `npm run typecheck` xanh
 - [ ] `npm run test` xanh **không** cần `--forceExit` (T09.70)
-- [ ] Contract test mobile ↔ backend xanh trong CI (T09.13)
+- [x] Contract test mobile ↔ backend xanh trong CI (T09.13)
 - [ ] `./mvnw spotless:check` + `./mvnw test` xanh, 0 skip (T09.72)
 - [ ] Dò thử 3 vé thật (trúng / không trúng / chờ) trên máy thật trỏ vào backend thật
 
@@ -118,6 +118,7 @@
 - 2026-11-15 | T09.07 | Mobile phải lookup thủ công stationName từ code | Bổ sung stationName vào DrawResponse, CheckTicketResponse, BatchCheckResponse trên backend, tự động enrich qua stationRepository, export lại OpenAPI và cập nhật mappers.ts.
 - 2026-11-15 | T09.06 | Màn Home chỉ hiển thị 1 đài do /draws/latest trả single draw | Cài đặt endpoint GET /api/v1/draws/latest-day trả danh sách kết quả tất cả các đài trong ngày mở thưởng gần nhất; mobile gọi fetchLatestDayDraws() hiển thị trọn vẹn 3-4 đài.
 - 2026-11-15 | T09.14 | Cache AsyncStorage cũ khôi phục schema cũ gây sai sót | Đổi query cache buster thành `${CURRENT_APP_VERSION}-${API_SCHEMA_VERSION}`, tự động dọn dẹp cache cũ khi đổi phiên bản schema.
+- 2026-11-15 | T09.13 | Không có cơ chế tự động chặn lệch hợp đồng giữa backend và mobile | Thêm workflow CI contract-drift.yml tự động build Spring Boot test context, export OpenAPI spec, sinh api.d.ts và kiểm tra git diff --exit-code.
 
 ## Vấn đề mở
 
