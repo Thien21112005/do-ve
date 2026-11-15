@@ -136,4 +136,12 @@ describe('ScheduleScreen', () => {
       expect(getAllByText('Đồng Tháp Mới').length).toBe(7);
     });
   });
+
+  it('displays correct draw time and holiday notice without false claims (T09.32)', async () => {
+    const { getByText, queryByText, getAllByText } = await renderScheduleScreen();
+
+    expect(queryByText(/không nghỉ Tết/i)).toBeNull();
+    expect(getAllByText(/16h15 – 16h35/).length).toBeGreaterThanOrEqual(1);
+    expect(getByText(/Tết Nguyên Đán/i)).toBeTruthy();
+  });
 });

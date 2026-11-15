@@ -85,14 +85,13 @@ export default function ScheduleScreen() {
               className="text-xs font-bold"
               style={{ color: colors.primary }}
             >
-              Giờ mở thưởng: 16h10 – 16h35 hàng ngày
+              {STRINGS.schedule.drawTimeTitle}
             </Text>
             <Text
               className="text-[11px] mt-0.5 leading-snug"
               style={{ color: colors.textMuted }}
             >
-              Miền Nam mở thưởng liên tục tất cả các ngày trong năm, không nghỉ
-              Tết.
+              {STRINGS.schedule.holidayNotice}
             </Text>
           </View>
         </View>

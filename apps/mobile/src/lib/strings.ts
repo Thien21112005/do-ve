@@ -85,7 +85,7 @@ export const STRINGS = {
     resultPendingBadge: 'CHỜ QUAY',
     resultWonCount: (count: number) => `Trúng ${count} giải`,
     resultLostSubtitle: 'Chúc bạn may mắn lần sau',
-    resultPendingSubtitle: 'Chưa có kết quả, thường có sau 16h30',
+    resultPendingSubtitle: 'Chưa có kết quả, thường có sau 16h35',
     prizeDetails: 'Chi tiết giải trúng',
     matchedPrefix: 'Khớp',
     matchedSuffix: 'số cuối',
@@ -95,7 +95,7 @@ export const STRINGS = {
     disclaimer:
       'Kết quả chỉ mang tính tham khảo, vui lòng đối chiếu với tờ vé giấy tại đại lý xổ số.',
     pendingNotice:
-      'Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết miền Nam thường có sau 16h30 hàng ngày.',
+      'Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết miền Nam thường có từ 16h15 đến 16h35 hàng ngày.',
     lostNotice: (ticket: string) =>
       `Vé số ${ticket} không trùng với các bộ số mở thưởng kỳ quay này.`,
     saveTicket: 'Lưu vé này',
@@ -129,7 +129,7 @@ export const STRINGS = {
     batchItemPendingBadge: 'CHƯA CÓ KẾT QUẢ',
     batchItemNotWonNotice: 'Không trúng giải nào trong kỳ mở thưởng này.',
     batchItemPendingNotice:
-      'Chưa có kết quả mở thưởng (thường có sau 16h30).',
+      'Chưa có kết quả mở thưởng (thường có sau 16h35).',
     batchCheckAgain: 'Dò danh sách khác',
   },
 
@@ -140,7 +140,7 @@ export const STRINGS = {
     loading: 'Đang tải kết quả...',
     emptyTitle: 'Chưa có kết quả mở thưởng',
     emptyMessage: (date: string) =>
-      `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có sau 16h30 hàng ngày.`,
+      `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có từ 16h15 đến 16h35 hàng ngày.`,
     statusFinal: 'ĐÃ CÔNG BỐ',
     statusPending: 'ĐANG CHỜ',
     drawDatePrefix: 'Kỳ quay ngày',
@@ -189,7 +189,10 @@ export const STRINGS = {
 
   schedule: {
     screenTitle: 'Lịch quay thưởng',
-    subtitle: 'Xổ số kiến thiết 21 tỉnh thành miền Nam (16h15 hàng ngày)',
+    subtitle: 'Xổ số kiến thiết 21 tỉnh thành miền Nam (16h15 – 16h35 hàng ngày)',
+    drawTimeTitle: 'Giờ mở thưởng: 16h15 – 16h35 hàng ngày',
+    holidayNotice:
+      'XSKT miền Nam mở thưởng hàng ngày, tạm nghỉ các ngày Tết Nguyên Đán theo quy định của Hội đồng XSKT Miền Nam.',
     todayTag: 'Hôm nay',
     weekdays: {
       monday: 'Thứ Hai',
