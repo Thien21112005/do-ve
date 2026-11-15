@@ -73,7 +73,7 @@
     "build:prod": "eas build -p all --profile production",
     "update:preview": "eas update --channel preview",
     "update:prod": "eas update --channel production",
-    "gen:api": "openapi-typescript openapi.json -o src/types/api.d.ts",
+    "gen:api": "openapi-typescript ../../docs/openapi.json -o src/types/api.d.ts",
     "format": "prettier --write .",
     "postinstall": "node scripts/patch-expo-notifications.js"
   },

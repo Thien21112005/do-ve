@@ -39,9 +39,6 @@ class ExportOpenApiSpecTest {
             .getResponse()
             .getContentAsString();
 
-    Path mobilePath = Paths.get("../mobile/openapi.json").toAbsolutePath().normalize();
-    Files.writeString(mobilePath, openApiJson);
-
     Path docsPath = Paths.get("../../docs/openapi.json").toAbsolutePath().normalize();
     Files.createDirectories(docsPath.getParent());
     Files.writeString(docsPath, openApiJson);

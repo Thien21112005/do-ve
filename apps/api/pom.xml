@@ -152,6 +152,12 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>@{argLine} -Xmx512m</argLine>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*Tests.java</include>
+						<include>**/*TestCase.java</include>
+						<include>**/*IntegrationTest.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<plugin>

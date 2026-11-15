@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
-      - 'apps/mobile/openapi.json'
       - 'apps/mobile/src/types/api.d.ts'
       - 'docs/openapi.json'
       - '.github/workflows/contract-drift.yml'
@@ -13,7 +12,6 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
-      - 'apps/mobile/openapi.json'
       - 'apps/mobile/src/types/api.d.ts'
       - 'docs/openapi.json'
       - '.github/workflows/contract-drift.yml'
@@ -58,7 +56,7 @@ jobs:
 
       - name: Fail if Mobile OpenAPI or Types Drifted
         run: |
-          git diff --exit-code apps/mobile/openapi.json docs/openapi.json apps/mobile/src/types/api.d.ts || {
+          git diff --exit-code docs/openapi.json apps/mobile/src/types/api.d.ts || {
             echo "::error::API contract drift detected! Mobile OpenAPI spec or TypeScript types do not match the backend Spring Boot endpoints."
             echo "Please run 'mvn test -Dtest=ExportOpenApiSpecTest' and 'npm run gen:api' in apps/mobile, then commit the generated files."
             exit 1
