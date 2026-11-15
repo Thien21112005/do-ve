@@ -137,6 +137,63 @@ export async function saveTicket(
 }
 
 /**
+ * Save or update multiple tickets in a single storage write (T09.40).
+ */
+export async function saveManyTickets(
+  newTickets: (Omit<SavedTicket, 'id' | 'createdAt'> & {
+    id?: string;
+    createdAt?: string;
+  })[],
+): Promise<SavedTicket[]> {
+  if (newTickets.length === 0) return [];
+
+  return enqueueWrite(async () => {
+    const currentList = await getTickets();
+    const updatedMap = new Map(currentList.map((t) => [t.id, t]));
+    const resultList: SavedTicket[] = [];
+
+    for (const input of newTickets) {
+      const id =
+        input.id ||
+        generateTicketId(input.station, input.drawDate, input.ticket);
+      const createdAt = input.createdAt || new Date().toISOString();
+      const ticketItem: SavedTicket = {
+        ...input,
+        id,
+        createdAt,
+      };
+
+      updatedMap.set(id, ticketItem);
+      resultList.push(ticketItem);
+    }
+
+    const updatedList: SavedTicket[] = [];
+    // Prepend newly added tickets not in currentList
+    for (const item of resultList) {
+      if (!currentList.some((t) => t.id === item.id)) {
+        updatedList.push(item);
+      }
+    }
+
+    // Retain existing tickets (updated in place)
+    for (const existing of currentList) {
+      const updated = updatedMap.get(existing.id);
+      updatedList.push(updated || existing);
+    }
+
+    const payload: TicketStorageEnvelope = {
+      version: CURRENT_SCHEMA_VERSION,
+      tickets: updatedList,
+    };
+
+    await AsyncStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(payload));
+    cachedTickets = updatedList;
+    notifyListeners();
+    return resultList;
+  });
+}
+
+/**
  * Remove a ticket by ID.
  */
 export async function removeTicket(id: string): Promise<boolean> {

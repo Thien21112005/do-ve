@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { exportTicketsToJson, importTicketsFromJson } from '../ticketBackup';
 import { saveTicket, clearAllTickets, getTickets } from '../ticketStore';
 
@@ -253,6 +254,65 @@ describe('ticketBackup (Export & Import Tickets JSON - T07.10 & T07.11)', () => 
       const all = await getTickets();
       expect(all).toHaveLength(1);
       expect(all[0].ticket).toBe('555555');
+    });
+
+    it('imports multiple tickets in a single write operation (T09.40)', async () => {
+      const setItemSpy = jest.spyOn(AsyncStorage, 'setItem');
+
+      const batchPayload = {
+        version: 1,
+        appName: 'DoVe',
+        tickets: [
+          {
+            ticket: '100001',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+          },
+          {
+            ticket: '100002',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+          },
+          {
+            ticket: '100003',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+          },
+          {
+            ticket: '100004',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+          },
+          {
+            ticket: '100005',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+          },
+        ],
+      };
+
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValueOnce({
+        canceled: false,
+        assets: [{ uri: 'file:///mock/dove-tickets.json' }],
+      });
+      (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
+        JSON.stringify(batchPayload),
+      );
+
+      const result = await importTicketsFromJson();
+      expect(result.success).toBe(true);
+      expect(result.importedCount).toBe(5);
+
+      // Must write to AsyncStorage only ONCE, not 5 times (T09.40)
+      expect(setItemSpy).toHaveBeenCalledTimes(1);
+
+      const all = await getTickets();
+      expect(all).toHaveLength(5);
     });
   });
 });

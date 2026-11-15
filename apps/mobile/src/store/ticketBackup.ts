@@ -1,7 +1,12 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { getTickets, saveTicket, generateTicketId } from './ticketStore';
+import {
+  getTickets,
+  saveTicket,
+  saveManyTickets,
+  generateTicketId,
+} from './ticketStore';
 import type { SavedTicket } from '@/types';
 
 export const BACKUP_FILE_NAME = 'dove-tickets.json';
@@ -231,6 +236,7 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
 
     const currentList = await getTickets();
     const existingMap = new Map(currentList.map((t) => [t.id, t]));
+    const toSaveList: SavedTicket[] = [];
 
     let newCount = 0;
     let updatedCount = 0;
@@ -261,17 +267,22 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
 
       if (existing) {
         if (shouldReplaceExistingTicket(existing, candidate)) {
-          await saveTicket(candidate);
+          toSaveList.push(candidate);
           existingMap.set(id, candidate);
           updatedCount++;
         } else {
           skippedCount++;
         }
       } else {
-        await saveTicket(candidate);
+        toSaveList.push(candidate);
         existingMap.set(id, candidate);
         newCount++;
       }
+    }
+
+    // Save all valid tickets in a single batch write (T09.40)
+    if (toSaveList.length > 0) {
+      await saveManyTickets(toSaveList);
     }
 
     const totalProcessed = newCount + updatedCount + skippedCount;
