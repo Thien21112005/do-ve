@@ -2,15 +2,18 @@ import React from 'react';
 import type { ReactNode } from 'react';
 import { render, waitFor, act, fireEvent } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import HomeScreen from '../(tabs)/index';
 import CheckScreen from '../(tabs)/check';
 import ResultsScreen from '../(tabs)/results';
 import TicketsScreen from '../(tabs)/tickets';
 import MoreScreen from '../(tabs)/more';
 import * as apiDraws from '@/api/draws';
+import * as apiCheck from '@/api/check';
 import type { DrawResponse, StationResponse } from '@/types';
 
 jest.mock('@/api/draws');
+jest.mock('@/api/check');
 
 const mockStations: StationResponse[] = [
   {
@@ -65,6 +68,35 @@ describe('Tab Screens', () => {
     (apiDraws.fetchDraw as jest.Mock).mockResolvedValue(mockLatestDraws[0]);
     (apiDraws.fetchLatestDraws as jest.Mock).mockResolvedValue(mockLatestDraws);
     (apiDraws.fetchLatestDayDraws as jest.Mock).mockResolvedValue(mockLatestDraws);
+    (apiCheck.checkBatchTickets as jest.Mock).mockResolvedValue({
+      stationCode: 'tp-hcm',
+      station: 'tp-hcm',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      results: [],
+      totalAmount: 0,
+      totalPrize: 0,
+      totalWonTickets: 0,
+      totalTickets: 0,
+    });
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '654321',
+      stationCode: 'tp-hcm',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'DRAWN',
+      won: true,
+      wins: [
+        {
+          tier: 'SPECIAL',
+          tierName: 'Đặc biệt',
+          prizeAmount: 2000000000,
+          matchedNumber: '654321',
+          matchedDigits: '654321',
+        },
+      ],
+      totalAmount: 2000000000,
+    });
   });
 
   it('renders HomeScreen with latest draws and quick check card', async () => {
@@ -73,6 +105,7 @@ describe('Tab Screens', () => {
     });
 
     expect(getByText('DoVe')).toBeTruthy();
+    expect(getByTestId('home-today-status')).toBeTruthy();
     expect(getByText('Dò vé nhanh')).toBeTruthy();
     expect(getByTestId('home-quick-check-btn')).toBeTruthy();
 
@@ -107,6 +140,63 @@ describe('Tab Screens', () => {
       expect(
         (apiDraws.fetchLatestDayDraws as jest.Mock).mock.calls.length,
       ).toBeGreaterThan(initialCalls);
+    });
+  });
+
+  it('allows checking a ticket directly on HomeScreen without switching tabs (T10.18)', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '654321',
+      stationCode: 'tp-hcm',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'DRAWN',
+      won: true,
+      wins: [
+        {
+          tier: 'SPECIAL',
+          tierName: 'Đặc biệt',
+          prizeAmount: 2000000000,
+          matchedNumber: '654321',
+          matchedDigits: '654321',
+        },
+      ],
+      totalAmount: 2000000000,
+    });
+
+    const rendered = await render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(rendered.getByTestId('home-today-status')).toBeTruthy();
+      expect(rendered.getByTestId('home-my-tickets-shortcut')).toBeTruthy();
+      expect(rendered.getByTestId('home-ticket-input')).toBeTruthy();
+    });
+
+    // Input 6 digits into the home ticket input
+    const ticketInput = rendered.getByTestId('home-ticket-input');
+    fireEvent.changeText(ticketInput, '654321');
+
+    // Wait for the button to become enabled
+    await waitFor(() => {
+      const checkBtn = rendered.getByTestId('home-quick-check-btn');
+      expect(checkBtn.props.accessibilityState.disabled).toBe(false);
+    });
+
+    // Press quick check button
+    const checkBtn = rendered.getByTestId('home-quick-check-btn');
+    fireEvent.press(checkBtn);
+
+    // Check that inline result appears without switching tabs
+    await waitFor(() => {
+      expect(apiCheck.checkTicket).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ticket: '654321',
+        }),
+      );
+      expect(rendered.getByTestId('home-quick-check-result')).toBeTruthy();
+      expect(rendered.getByText('TRÚNG THƯỞNG')).toBeTruthy();
+      expect(rendered.getByTestId('home-save-ticket-btn')).toBeTruthy();
     });
   });
 
@@ -145,7 +235,6 @@ describe('Tab Screens', () => {
   });
 
   it('deep links Home cards to station results with station and date params (T09.34)', async () => {
-    const { useRouter } = require('expo-router');
     const router = useRouter();
     const { getAllByText, getByText } = await render(<HomeScreen />, {
       wrapper: createWrapper(),
