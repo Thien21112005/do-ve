@@ -24,6 +24,7 @@ import {
   BatchResultList,
 } from '@/components';
 import { useTheme } from '@/theme';
+import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 import { useSavedTickets } from '@/store/ticketStore';
@@ -35,6 +36,7 @@ export interface CheckScreenProps {
 
 export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   const { colors } = useTheme();
+  const queryClient = useQueryClient();
   const {
     checkTicket: submitCheck,
     result,
@@ -79,6 +81,12 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
       resetBatch();
     }
   }, [batchText, selectedStation, selectedDate, resetBatch]);
+
+  // Retry offline: refetch background data (schedule, stations) instead of submitting check form (T09.21)
+  const handleOfflineRetry = () => {
+    queryClient.invalidateQueries({ queryKey: ['schedule'] });
+    queryClient.invalidateQueries({ queryKey: ['stations'] });
+  };
 
   // Inline validation calculation
   let ticketError: string | null = null;
@@ -219,7 +227,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           className="flex-1"
         >
           {/* Offline indicator banner */}
-          <OfflineBanner onRetry={handleSubmit} />
+          <OfflineBanner onRetry={handleOfflineRetry} />
 
           {/* Section: Chọn ngày mở thưởng */}
           <View className="pt-3 px-4 pb-1">

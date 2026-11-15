@@ -6,6 +6,8 @@ import CheckScreen from '../(tabs)/check';
 import * as apiDraws from '@/api/draws';
 import * as apiCheck from '@/api/check';
 import { getTickets, clearAllTickets } from '@/store/ticketStore';
+import NetInfo from '@react-native-community/netinfo';
+import { haptics } from '@/lib/haptics';
 
 jest.mock('@/api/draws');
 jest.mock('@/api/check');
@@ -198,5 +200,23 @@ describe('CheckScreen Form Composition', () => {
     await waitFor(() => {
       expect(queryByTestId('check-result-section')).toBeNull();
     });
+  });
+
+  it('offline banner retry does not trigger submitCheck or warning haptics (T09.21)', async () => {
+    (NetInfo.useNetInfo as jest.Mock).mockReturnValue({
+      isConnected: false,
+      isInternetReachable: false,
+      type: 'none',
+    });
+
+    const { findByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    const retryBtn = await findByTestId('offline-banner-retry-btn');
+    fireEvent.press(retryBtn);
+
+    expect(apiCheck.checkTicket).not.toHaveBeenCalled();
+    expect(haptics.warning).not.toHaveBeenCalled();
   });
 });
