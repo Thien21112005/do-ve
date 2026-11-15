@@ -3,7 +3,6 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import {
   getTickets,
-  saveTicket,
   saveManyTickets,
   generateTicketId,
 } from './ticketStore';
@@ -64,7 +63,7 @@ export function isValidSavedTicket(raw: any): boolean {
   if (typeof raw.drawDate !== 'string' || !VALID_DATE_REGEX.test(raw.drawDate)) {
     return false;
   }
-  const [year, month, day] = raw.drawDate.split('-').map(Number);
+  const [, month, day] = raw.drawDate.split('-').map(Number);
   if (month < 1 || month > 12 || day < 1 || day > 31) {
     return false;
   }
