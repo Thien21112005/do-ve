@@ -41,6 +41,26 @@ describe('ticketBackup (Export & Import Tickets JSON - T07.10 & T07.11)', () => 
       expect(result.exportedCount).toBe(0);
       expect(result.error).toContain('không có vé');
     });
+
+    it('returns error when Sharing is not available on device (T09.41)', async () => {
+      await saveTicket({
+        ticket: '012345',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'WON',
+        totalPrize: 2000000000,
+      });
+
+      (Sharing.isAvailableAsync as jest.Mock).mockResolvedValueOnce(false);
+
+      const result = await exportTicketsToJson();
+
+      expect(result.success).toBe(false);
+      expect(result.exportedCount).toBe(0);
+      expect(result.error).toBe('Thiết bị không hỗ trợ chia sẻ file sao lưu.');
+      expect(Sharing.shareAsync).not.toHaveBeenCalled();
+    });
   });
 
   describe('importTicketsFromJson (T07.11)', () => {

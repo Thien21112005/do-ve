@@ -159,13 +159,19 @@ export async function exportTicketsToJson(): Promise<ExportResult> {
     });
 
     const isAvailable = await Sharing.isAvailableAsync();
-    if (isAvailable) {
-      await Sharing.shareAsync(filePath, {
-        mimeType: 'application/json',
-        dialogTitle: 'Lưu hoặc chia sẻ vé đã lưu',
-        UTI: 'public.json',
-      });
+    if (!isAvailable) {
+      return {
+        success: false,
+        exportedCount: 0,
+        error: 'Thiết bị không hỗ trợ chia sẻ file sao lưu.',
+      };
     }
+
+    await Sharing.shareAsync(filePath, {
+      mimeType: 'application/json',
+      dialogTitle: 'Lưu hoặc chia sẻ vé đã lưu',
+      UTI: 'public.json',
+    });
 
     return {
       success: true,
