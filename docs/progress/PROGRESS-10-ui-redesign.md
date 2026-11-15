@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 7 / 62 task hoàn thành
+- **Tổng quan:** 8 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -14,7 +14,7 @@
 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | DONE | 275ad75 | 2026-11-15 | Khai báo CSS variables trong global.css cho :root và .dark, ánh xạ token sang Tailwind theme.extend.colors, bỏ palette brand/lottery |
 | T10.05 | Cho NativeWind theo cài đặt theme của app | DONE | bf80900 | 2026-11-15 | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts (đồng bộ T09.47) |
 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | DONE | 57d26d4 | 2026-11-15 | Cấu hình fontFamily BeVietnamPro (regular/medium/semibold/bold) trong tailwind.config.js & tokens.ts, xoá triệt để font-black & font-mono |
-| T10.07 | Thang chữ (type scale) và quy tắc số | TODO | | | |
+| T10.07 | Thang chữ (type scale) và quy tắc số | DONE | 074cc5f | 2026-11-15 | Định nghĩa typeScale trong tokens.ts (6 bậc + ticketLg/ticketMd), tạo component <Text variant=...>, thay toàn bộ text-[10px]/[11px] thành text-xs |
 | T10.08 | Token spacing, radius, elevation có kỷ luật | TODO | | | |
 | T10.09 | Bộ primitive component | TODO | | | |
 | T10.10 | Ghi DESIGN.md bằng `/impeccable document` | TODO | | | |
@@ -95,6 +95,7 @@
 - 2026-11-15 | T10.03 | Bảng màu semantic mới có test contrast | Viết lại src/theme/colors.ts theo Hướng A, bổ sung các token tint/onPrimary/surfaceSunken, viết test kiểm tra độ tương phản WCAG AAA (> 7:1) cho text chính và AA (> 4.5:1) cho text phụ/nút ở cả 2 theme.
 - 2026-11-15 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | Khai báo toàn bộ token màu thành biến CSS trong global.css cho :root và .dark, tích hợp vào theme.extend.colors của tailwind.config.js, xoá palette brand/lottery cũ.
 - 2026-11-15 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | Định nghĩa fontFamily trong tailwind.config.js và tokens.ts, xoá bỏ hoàn toàn font-black (không load) và font-mono/Courier, áp dụng fontVariant tabular-nums cho toàn bộ số vé.
+- 2026-11-15 | T10.07 | Thang chữ type scale và component Text | Bổ sung typeScale 6 bậc + ticketLg/ticketMd trong tokens.ts, tạo component <Text variant=...>, thay toàn bộ font size < 12px (text-[10px]/[11px]) thành text-xs chuẩn a11y.
 
 ## Vấn đề mở
 
