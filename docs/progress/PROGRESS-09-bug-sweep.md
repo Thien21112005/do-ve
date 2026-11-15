@@ -41,7 +41,7 @@
 | T09.31 | P1 | Lịch quay hard-code lệch nguồn dữ liệu | DONE | 81a9421 | 2026-11-15 | Hook useWeeklySchedule nạp lịch đài từ API cho 7 ngày, tự động fallback mảng tĩnh khi offline |
 | T09.32 | P1 | Thông tin sai trên màn Lịch quay | DONE | 27a149e | 2026-11-15 | Thống nhất khung giờ mở thưởng 16h15-16h35 và sửa thông tin nghỉ Tết Nguyên Đán chuẩn xác |
 | T09.33 | P2 | Bấm đài ở Lịch quay mở Kết quả sai | DONE | 5f85602 | 2026-11-15 | Truyền params station khi bấm đài ở Lịch quay, ResultsScreen đồng bộ qua useLocalSearchParams, gỡ wrapper che a11y |
-| T09.34 | P2 | Nút trên Home không truyền ngữ cảnh | TODO | | | |
+| T09.34 | P2 | Nút trên Home không truyền ngữ cảnh | DONE | 6854ee7 | 2026-11-15 | Truyền params station và date khi bấm Xem toàn bộ bảng giải hoặc Xem tất cả trên Home |
 | T09.35 | P1 | Ghi đè đồng thời làm mất vé (race condition) | TODO | | | |
 | T09.36 | P1 | Báo "đã lưu" dù ghi AsyncStorage thất bại | TODO | | | |
 | T09.37 | P2 | `getTickets()` phát sự kiện mỗi lần đọc | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 11 | 18 |
-| P2 | 30 | 3 | 27 |
+| P2 | 30 | 4 | 26 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -138,6 +138,7 @@
 - 2026-11-15 | T09.31 | Lịch quay hard-code mảng cứng lệch với database backend | Tạo hook useWeeklySchedule nạp song song 7 ngày từ /draws/schedule, kết hợp WEEKLY_SCHEDULE làm fallback an toàn khi mất kết nối mạng.
 - 2026-11-15 | T09.32 | Thông tin sai "không nghỉ Tết" và giờ quay mở thưởng mâu thuẫn | Đính chính lịch nghỉ Tết Nguyên Đán, chuẩn hoá toàn bộ chuỗi thông tin giờ mở thưởng thành 16h15-16h35 hàng ngày trong strings.ts và schedule.tsx.
 - 2026-11-15 | T09.33 | Bấm đài ở Lịch quay mở màn Kết quả không đúng đài và thẻ cha che a11y | Gỡ accessible trên View cha để các nút đài được screen reader nhận diện độc lập, truyền params station khi navigate sang Kết quả và đồng bộ qua useLocalSearchParams.
+- 2026-11-15 | T09.34 | Nút trên Home không truyền ngữ cảnh đài và ngày khi mở tab Kết quả | Bổ sung params station và date khi người dùng bấm "Xem toàn bộ bảng giải" hoặc "Xem tất cả", điều hướng chính xác kỳ quay tương ứng trên ResultsScreen. Hoàn thành toàn bộ Nhóm D (6/6 tasks).
 
 ## Vấn đề mở
 
