@@ -1,10 +1,15 @@
 /**
  * Crash Reporting Service for DoVe Mobile
  * Strictly enforces privacy: No ticket numbers, lottery selections, or PII are ever sent.
+ * Persists up to 20 sanitized crash reports in AsyncStorage for diagnostic recovery (T09.54).
  */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TICKET_REGEX = /\b\d{6}\b/g;
 const NUMBERS_PARAM_REGEX = /([?&]numbers=)([^&]+)/gi;
+
+export const CRASH_STORAGE_KEY = 'dove.crashreports.v1';
+export const MAX_STORED_CRASH_REPORTS = 20;
 
 /**
  * Sanitizes any string to scrub 6-digit ticket numbers and query parameters
@@ -26,9 +31,67 @@ export interface SanitizedErrorPayload {
 
 let isInitialized = false;
 let crashSink: ((payload: SanitizedErrorPayload) => void) | null = null;
+let writeQueue = Promise.resolve();
+
+function enqueueCrashWrite<T>(op: () => Promise<T>): Promise<T> {
+  const next = writeQueue.then(op, op);
+  writeQueue = next.then(
+    () => {},
+    () => {},
+  );
+  return next;
+}
 
 /**
- * Set a custom crash sink (e.g. Sentry client or local telemetry logger)
+ * Retrieve stored crash reports from local AsyncStorage (T09.54)
+ */
+export async function getStoredCrashReports(): Promise<SanitizedErrorPayload[]> {
+  try {
+    const raw = await AsyncStorage.getItem(CRASH_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Clear stored crash reports (T09.54)
+ */
+export async function clearStoredCrashReports(): Promise<void> {
+  await enqueueCrashWrite(async () => {
+    try {
+      await AsyncStorage.removeItem(CRASH_STORAGE_KEY);
+    } catch {
+      // Ignore removal errors
+    }
+  });
+}
+
+/**
+ * Persist a sanitized crash report into local storage (T09.54).
+ * Caps storage at MAX_STORED_CRASH_REPORTS (20).
+ */
+export async function persistCrashReport(
+  payload: SanitizedErrorPayload,
+): Promise<void> {
+  await enqueueCrashWrite(async () => {
+    try {
+      const existing = await getStoredCrashReports();
+      const updated = [payload, ...existing].slice(
+        0,
+        MAX_STORED_CRASH_REPORTS,
+      );
+      await AsyncStorage.setItem(CRASH_STORAGE_KEY, JSON.stringify(updated));
+    } catch {
+      // Ignore write errors to prevent recursive crash loops
+    }
+  });
+}
+
+/**
+ * Set a custom crash sink (e.g. Sentry client or telemetry logger)
  */
 export function setCrashSink(
   sink: ((payload: SanitizedErrorPayload) => void) | null,
@@ -37,14 +100,26 @@ export function setCrashSink(
 }
 
 /**
- * Initialize crash reporting with data sanitization guards
+ * Initialize crash reporting with data sanitization guards and local persistence (T09.54)
  */
 export function initCrashReporting(): void {
   if (isInitialized) return;
   isInitialized = true;
 
-  // In production with Sentry, Sentry.init({...}) would be called here
-  // with beforeSend hook enforcing sanitizeText() on all messages and breadcrumbs.
+  if (!crashSink) {
+    setCrashSink((payload) => {
+      persistCrashReport(payload).catch(() => {});
+    });
+  }
+}
+
+/**
+ * Reset internal state for test isolation
+ */
+export function _resetCrashReportingForTesting(): void {
+  isInitialized = false;
+  crashSink = null;
+  writeQueue = Promise.resolve();
 }
 
 /**
@@ -91,6 +166,8 @@ export function recordCrash(
     } catch {
       // Ignore sink errors to prevent recursive crash
     }
+  } else {
+    persistCrashReport(payload).catch(() => {});
   }
 
   return payload;

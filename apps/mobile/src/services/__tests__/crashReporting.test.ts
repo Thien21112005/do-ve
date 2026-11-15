@@ -2,8 +2,15 @@ import {
   sanitizeText,
   recordCrash,
   setCrashSink,
+  initCrashReporting,
+  getStoredCrashReports,
+  clearStoredCrashReports,
+  _resetCrashReportingForTesting,
+  CRASH_STORAGE_KEY,
+  MAX_STORED_CRASH_REPORTS,
   type SanitizedErrorPayload,
 } from '../crashReporting';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 describe('crashReporting Service', () => {
   beforeEach(() => {
@@ -59,6 +66,51 @@ describe('crashReporting Service', () => {
         'User typed [REDACTED_TICKET]',
       );
       expect((captured!.context as Record<string, unknown>).attempts).toBe(3);
+    });
+  });
+
+  describe('AsyncStorage Crash Persistence (T09.54)', () => {
+    beforeEach(async () => {
+      await AsyncStorage.clear();
+      _resetCrashReportingForTesting();
+    });
+
+    it('persists sanitized crash reports up to limit of 20', async () => {
+      initCrashReporting();
+
+      // Record 25 crashes
+      for (let i = 1; i <= 25; i++) {
+        recordCrash(new Error(`Test crash ${i} with secret ticket 123456`));
+      }
+
+      // Allow async write queue to settle
+      await new Promise((r) => setTimeout(r, 100));
+
+      const reports = await getStoredCrashReports();
+      expect(reports.length).toBe(MAX_STORED_CRASH_REPORTS);
+      expect(reports.length).toBe(20);
+
+      // Latest crash is at the top
+      expect(reports[0].message).toContain('Test crash 25');
+      // Secret ticket numbers are sanitized
+      expect(reports[0].message).toContain('[REDACTED_TICKET]');
+      expect(reports[0].message).not.toContain('123456');
+
+      // Oldest retained crash should be #6 (1-5 evicted)
+      expect(reports[19].message).toContain('Test crash 6');
+    });
+
+    it('clears stored crash reports', async () => {
+      initCrashReporting();
+      recordCrash(new Error('Crash to be deleted'));
+      await new Promise((r) => setTimeout(r, 50));
+
+      let reports = await getStoredCrashReports();
+      expect(reports.length).toBeGreaterThan(0);
+
+      await clearStoredCrashReports();
+      reports = await getStoredCrashReports();
+      expect(reports).toEqual([]);
     });
   });
 });
