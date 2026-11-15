@@ -1,7 +1,7 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 20 / 72 task hoàn thành
+- **Tổng quan:** 21 / 72 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -26,7 +26,7 @@
 | T09.16 | P1 | Home & Kết quả lệch ngày từ 0h–7h sáng | DONE | 6ca06b4 | 2026-11-15 | Dùng todayVN() cho todayStr ở Home và initial selectedDate ở Results, khắc phục lệch ngày từ 0h-7h |
 | T09.17 | P2 | DateStrip/Schedule/Reminder dùng giờ thiết bị | DONE | 441ac52 | 2026-11-15 | DateStrip tính getPastDays theo todayVN, ScheduleScreen dùng weekdayVN, ReminderNotification nhắc lúc 09:45 UTC (16:45 VN) |
 | T09.18 | P1 | Ô nhập 6 số dồn chữ số khi xoá/nhập giữa chừng | DONE | b7f7c8d | 2026-11-15 | Giữ vị trí chữ số ổn định trong TicketInput qua mảng 6 ô, không dồn chữ số khi xoá ở giữa |
-| T09.19 | P2 | Chỉ báo focus sai | TODO | | | |
+| T09.19 | P2 | Chỉ báo focus sai | DONE | 7df568c | 2026-11-15 | Theo dõi focusedIndex thực tế qua onFocus/onBlur của TextInput thay vì suy đoán từ độ dài chuỗi |
 | T09.20 | P1 | Kết quả cũ vẫn hiển thị sau khi đổi ngày/đài/số | TODO | | | |
 | T09.21 | P1 | Nút "Thử lại" ở banner offline lại submit form | TODO | | | |
 | T09.22 | P1 | Hiệu ứng trúng thưởng bị render 2 lần + haptic 2–3 lần | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 9 | 20 |
-| P2 | 30 | 1 | 29 |
+| P2 | 30 | 2 | 28 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -123,6 +123,7 @@
 - 2026-11-15 | T09.16 | Home & Kết quả bị lùi lại 1 ngày từ 0h00-6h59 sáng giờ VN | Dùng `todayVN()` thay cho `new Date().toISOString().split('T')[0]` ở Home (todayStr) và Results (initial selectedDate), test giả lập đồng hồ 03:00 sáng VN xanh.
 - 2026-11-15 | T09.17 | DateStrip, Schedule, Reminder dùng giờ thiết bị lệch giờ quay VN | Cập nhật getPastDays theo todayVN, ScheduleScreen dùng weekdayVN, ReminderNotification nhắc cố định lúc 09:45 UTC (16:45 giờ mở thưởng VN).
 - 2026-11-15 | T09.18 | Ô nhập 6 số bị dồn các chữ số về bên trái khi xoá/nhập ở giữa | Thiết kế lại TicketInput cố định 6 ô số độc lập, không dồn chữ số, render khoảng trắng ở ô trống trung gian.
+- 2026-11-15 | T09.19 | Chỉ báo focus viền ô nhập bị sai khi suy đoán từ độ dài chuỗi | Theo dõi state `focusedIndex` thực tế của TextInput qua sự kiện `onFocus` và `onBlur`.
 
 ## Vấn đề mở
 
