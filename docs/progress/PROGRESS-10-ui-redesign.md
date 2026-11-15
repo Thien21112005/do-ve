@@ -12,7 +12,7 @@
 | T10.02 | Chốt hướng thị giác (cần người dùng duyệt) | TODO | | | |
 | T10.03 | Bảng màu semantic mới (light + dark) có kiểm contrast | TODO | | | |
 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | TODO | | | |
-| T10.05 | Cho NativeWind theo cài đặt theme của app | TODO | | | |
+| T10.05 | Cho NativeWind theo cài đặt theme của app | DONE | bf80900 | 2026-11-15 | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts (đồng bộ T09.47) |
 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | TODO | | | |
 | T10.07 | Thang chữ (type scale) và quy tắc số | TODO | | | |
 | T10.08 | Token spacing, radius, elevation có kỷ luật | TODO | | | |
@@ -89,6 +89,7 @@
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. -->
 - 2026-11-14 | — | Critique + audit native bằng skill impeccable, lập plan 62 task. Phát hiện lớn nhất: font Be Vietnam Pro chưa từng được áp dụng; theme NativeWind không theo cài đặt; icon app là icon mặc định của Expo.
 - 2026-11-15 | T10.60 | Haptic tinh tế, tôn trọng cài đặt (đồng bộ T09.46) | Bổ sung canTriggerHaptics() trong haptics.ts đọc getSettings().hapticsEnabled, bổ sung haptics.selection.
+- 2026-11-15 | T10.05 | Cho NativeWind theo cài đặt theme của app (đồng bộ T09.47) | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts, gọi colorScheme.set theo themeMode của app.
 
 ## Vấn đề mở
 

@@ -54,7 +54,7 @@
 | T09.44 | P2 | Quyền thông báo bị thu hồi nhưng công tắc vẫn bật | DONE | 6bb8020 | 2026-11-15 | Tự động kiểm tra quyền thông báo khi mount và khi app active; tự tắt và cảnh báo mở Cài đặt nếu quyền bị thu hồi |
 | T09.45 | P2 | Tự dò lại chỉ chạy khi mở tab Vé của tôi | DONE | fdb247d | 2026-11-15 | Đưa usePendingTicketsRecheck lên layout gốc với throttle 2 phút, thêm pull-to-refresh thủ công cho danh sách vé |
 | T09.46 | P1 | Tắt "Phản hồi xúc giác" không có tác dụng | DONE | 3fe955f | 2026-11-15 | Bọc toàn bộ các hàm haptics kiểm tra settings.hapticsEnabled, bổ sung haptics.selection |
-| T09.47 | P1 | Ép theme sáng/tối cho ra UI lẫn lộn | TODO | | | |
+| T09.47 | P1 | Ép theme sáng/tối cho ra UI lẫn lộn | DONE | 2026-11-15 | bf80900 | Đồng bộ NativeWind colorScheme theo themeMode của app (≈ T10.05) |
 | T09.48 | P2 | Nháy theme khi mở app | TODO | | | |
 | T09.49 | P2 | `getSnapshot` của useSyncExternalStore có side-effect | TODO | | | |
 | T09.50 | P2 | Công tắc trong Cài đặt có thể đảo 2 lần & đọc 2 lần | TODO | | | |
@@ -151,6 +151,7 @@
 - 2026-11-15 | T09.44 | Quyền thông báo bị thu hồi từ cài đặt máy nhưng công tắc trong app vẫn bật | Bổ sung hasNotificationPermission, đồng bộ quyền khi mount và khi AppState active, tự động tắt switch và hiển thị Alert với nút Mở Cài đặt hệ thống.
 - 2026-11-15 | T09.45 | Tự dò lại chỉ chạy khi mở tab Vé của tôi khiến vé chờ ở Home/Results không bao giờ được cập nhật | Đưa usePendingTicketsRecheck lên _layout.tsx cấp ứng dụng với throttle 2 phút chống spam API, bổ sung RefreshControl kéo để tải lại thủ công trên màn Vé. Hoàn thành toàn bộ Nhóm E (11/11 tasks).
 - 2026-11-15 | T09.46 | Tắt "Phản hồi xúc giác" trong Cài đặt nhưng haptics vẫn rung khắp app | Bổ sung canTriggerHaptics() trong haptics.ts đọc getSettings().hapticsEnabled, bổ sung haptics.selection, vô hiệu hoá rung trên toàn bộ app khi setting tắt (đồng bộ T10.60).
+- 2026-11-15 | T09.47 | Ép theme sáng/tối cho ra UI lẫn lộn giữa useTheme và class dark: của NativeWind | Xây dựng syncNativeWindTheme và NativeWindThemeSync trong AppProviders, gọi colorScheme.set theo themeMode của app để toàn bộ class dark: hoạt động đúng theo cài đặt người dùng (đồng bộ T10.05).
 
 ## Vấn đề mở
 
