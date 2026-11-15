@@ -37,7 +37,7 @@
 | T09.27 | P2 | Dò hàng loạt hiển thị mã đài thay tên đài | DONE | 5766c73 | 2026-11-15 | Dùng getStationName ánh xạ mã đài sang tên đầy đủ tiếng Việt trong BatchResultList |
 | T09.28 | P2 | `onCheckSuccess?: (result: any)` và prop lạ trên screen | DONE | 64ea836 | 2026-11-15 | Xoá bỏ test-only prop onCheckSuccess trên CheckScreen, chuyển sang test theo hành vi rendering |
 | T09.29 | P1 | Kết quả nháy "Chưa có kết quả" khi chưa chọn đài | DONE | 34c4903 | 2026-11-15 | Dùng useSchedule nhận biết trạng thái đang tải đài và chờ auto-select, hiển thị loading thay vì nháy empty state |
-| T09.30 | P1 | Gộp lỗi mạng với "chưa có dữ liệu" | TODO | | | |
+| T09.30 | P1 | Gộp lỗi mạng với "chưa có dữ liệu" | DONE | 6a38f78 | 2026-11-15 | Tách biệt trạng thái lỗi kết nối với trạng thái chưa có kết quả (404), bổ sung nút Thử lại cho StationChips và ResultsScreen |
 | T09.31 | P1 | Lịch quay hard-code lệch nguồn dữ liệu | TODO | | | |
 | T09.32 | P1 | Thông tin sai trên màn Lịch quay | TODO | | | |
 | T09.33 | P2 | Bấm đài ở Lịch quay mở Kết quả sai | TODO | | | |
@@ -134,6 +134,7 @@
 - 2026-11-15 | T09.27 | Màn kết quả dò hàng loạt hiển thị mã đài thô (tphcm) thay vì tên đài chuẩn | Áp dụng getStationName cho thuộc tính đài trong BatchResultList, chuẩn hoá tên đài hiển thị tiếng Việt có dấu.
 - 2026-11-15 | T09.28 | CheckScreen nhận prop test-only onCheckSuccess?: (result: any) trái chuẩn Expo Router | Xoá bỏ interface CheckScreenProps và callback onCheckSuccess, chuyển toàn bộ test sang kiểm tra hành vi UI hiển thị ResultCard. Hoàn thành toàn bộ Nhóm C (11/11 tasks).
 - 2026-11-15 | T09.29 | Màn Kết quả nháy flash "Chưa có kết quả" trước khi StationChips auto-select | Sử dụng useSchedule kiểm tra trạng thái nạp đài; chỉ hiển thị trạng thái rỗng khi đài đã được chọn và query kết thúc không có dữ liệu, tránh nháy giao diện.
+- 2026-11-15 | T09.30 | Lỗi mất mạng bị gộp nhầm thành "Không có đài mở thưởng" hoặc "Chưa có kết quả" | Tách riêng nhánh isError trong StationChips và ResultsScreen, hiển thị thông báo lỗi mạng kèm nút "Thử lại" chuyên biệt, không để 404 và lỗi mạng hiển thị giống nhau.
 
 ## Vấn đề mở
 
