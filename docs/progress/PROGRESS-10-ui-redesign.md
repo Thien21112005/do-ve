@@ -67,7 +67,7 @@
 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | TODO | | | |
 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | TODO | | | |
 | T10.59 | Motion có hệ thống | TODO | | | |
-| T10.60 | Haptic tinh tế, tôn trọng cài đặt | TODO | | | |
+| T10.60 | Haptic tinh tế, tôn trọng cài đặt | DONE | 3fe955f | 2026-11-15 | Bọc haptics helper kiểm tra settings.hapticsEnabled, bổ sung haptics.selection (đồng bộ T09.46) |
 | T10.61 | Hỗ trợ màn hình lớn tối thiểu | TODO | | | |
 | T10.62 | Chụp ảnh đối chiếu & `/impeccable polish` | TODO | | | |
 
@@ -88,6 +88,7 @@
 
 <!-- Ghi ngắn: ngày, task, vấn đề gặp phải, quyết định. -->
 - 2026-11-14 | — | Critique + audit native bằng skill impeccable, lập plan 62 task. Phát hiện lớn nhất: font Be Vietnam Pro chưa từng được áp dụng; theme NativeWind không theo cài đặt; icon app là icon mặc định của Expo.
+- 2026-11-15 | T10.60 | Haptic tinh tế, tôn trọng cài đặt (đồng bộ T09.46) | Bổ sung canTriggerHaptics() trong haptics.ts đọc getSettings().hapticsEnabled, bổ sung haptics.selection.
 
 ## Vấn đề mở
 
