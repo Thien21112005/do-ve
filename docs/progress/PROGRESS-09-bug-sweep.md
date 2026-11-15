@@ -67,7 +67,7 @@
 | T09.57 | P0 | API key admin mặc định công khai trong production | DONE | ae9277f | 2026-11-14 | Bắt buộc DOVE_ADMIN_API_KEY ở prod, fail-fast nếu < 32 ký tự hoặc dùng key demo |
 | T09.58 | P1 | "Upsert" admin thực ra chỉ insert → 500 khi sửa kỳ đã có | DONE | 08a45f6 | 2026-11-15 | Cập nhật JpaDrawRepositoryAdapter thành upsert thật, tái sử dụng PrizeNumberEntity và lưu updated_at |
 | T09.59 | P1 | Rate limit dò vé bị vượt bằng header giả | DONE | 504144c | 2026-11-15 | Dùng request.getRemoteAddr() sau forward-headers-strategy: native thay vì lấy đầu X-Forwarded-For |
-| T09.60 | P1 | Map rate limiter phình vô hạn | TODO | | | |
+| T09.60 | P1 | Map rate limiter phình vô hạn | DONE | 830e06a | 2026-11-15 | Dọn dẹp entry hết hạn theo định kỳ @Scheduled và dọn cơ hội khi vượt ngưỡng maxTrackedClients |
 | T09.61 | P2 | Biến môi trường rate limit trong compose không có tác dụng | TODO | | | |
 | T09.62 | P2 | Nguồn xskt trả trang của ngày khác bị cache sai ngày | TODO | | | |
 | T09.63 | P2 | 404 của `/draws` không phân biệt "đài không quay hôm đó" và "chưa có kết quả" | TODO | | | |
@@ -86,7 +86,7 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 19 | 10 |
+| P1 | 29 | 20 | 9 |
 | P2 | 30 | 10 | 20 |
 | P3 | 3 | 0 | 3 |
 
@@ -163,6 +163,7 @@
 - 2026-11-15 | T09.56 | Phiên bản app hard-code 3 nơi | Đọc version và build number động từ Constants.expoConfig thay vì hard-code '1.0.0' và 'Build 1'. Hoàn thành toàn bộ Nhóm G (6/6 tasks).
 - 2026-11-15 | T09.58 | "Upsert" admin thực ra chỉ insert gây lỗi 500 khi sửa kỳ đã có | Biến JpaDrawRepositoryAdapter.save thành upsert thật: tái sử dụng và cập nhật in-place PrizeNumberEntity theo tier:position (tránh vi phạm unique constraint), cập nhật source và updated_at.
 - 2026-11-15 | T09.59 | Rate limit dò vé bị vượt bằng header giả X-Forwarded-For | Dùng request.getRemoteAddr() kết hợp server.forward-headers-strategy: native, loại bỏ việc tin cậy trực tiếp phần tử đầu của header X-Forwarded-For từ phía client.
+- 2026-11-15 | T09.60 | Map rate limiter phình vô hạn | Thêm evictExpired() dọn dẹp entry hết hạn theo định kỳ @Scheduled và dọn cơ hội khi vượt ngưỡng maxTrackedClients, bổ sung @EnableScheduling.
 
 ## Vấn đề mở
 
