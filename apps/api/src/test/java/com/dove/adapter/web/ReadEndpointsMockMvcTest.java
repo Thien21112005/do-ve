@@ -382,6 +382,26 @@ class ReadEndpointsMockMvcTest {
     }
 
     @Override
+    public List<DrawResult> findByDrawDate(LocalDate drawDate) {
+      if (drawDate == null) {
+        return List.of();
+      }
+      return storage.values().stream()
+          .filter(d -> d.drawDate().equals(drawDate))
+          .sorted((a, b) -> a.stationCode().compareTo(b.stationCode()))
+          .toList();
+    }
+
+    @Override
+    public List<DrawResult> findLatestDayDraws() {
+      return storage.values().stream()
+          .map(DrawResult::drawDate)
+          .max(LocalDate::compareTo)
+          .map(this::findByDrawDate)
+          .orElseGet(List::of);
+    }
+
+    @Override
     public DrawResult save(DrawResult drawResult, String source) {
       put(drawResult);
       return drawResult;
@@ -520,5 +540,28 @@ class ReadEndpointsMockMvcTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.stationCode").value("dong-thap"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-08"));
+  }
+
+  @Test
+  @DisplayName("Endpoint 6: GET /api/v1/draws/latest-day")
+  void testEndpoint6_getLatestDayDraws() throws Exception {
+    LocalDate date1 = LocalDate.of(2026, 11, 8);
+    LocalDate date2 = LocalDate.of(2026, 11, 9);
+    drawRepository.put(
+        new DrawResult("dong-thap", date1, Map.of(PrizeTier.SPECIAL, List.of("111111"))));
+    drawRepository.put(
+        new DrawResult("tp-hcm", date2, Map.of(PrizeTier.SPECIAL, List.of("654321"))));
+    drawRepository.put(
+        new DrawResult("ca-mau", date2, Map.of(PrizeTier.SPECIAL, List.of("222222"))));
+
+    // Latest day should return 2 stations on 2026-11-09
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].stationCode").value("ca-mau"))
+        .andExpect(jsonPath("$[0].stationName").value("Cà Mau"))
+        .andExpect(jsonPath("$[1].stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$[1].stationName").value("TP. Hồ Chí Minh"));
   }
 }

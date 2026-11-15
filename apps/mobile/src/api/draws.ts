@@ -25,3 +25,11 @@ export async function fetchLatestDraws(
     params: { station },
   });
 }
+
+export async function fetchLatestDayDraws(
+  date?: string,
+): Promise<DrawResponse[]> {
+  return apiClient.get<DrawResponse[]>('/api/v1/draws/latest-day', {
+    params: date ? { date } : undefined,
+  });
+}

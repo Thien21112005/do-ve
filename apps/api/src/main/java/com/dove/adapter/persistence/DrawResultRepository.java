@@ -27,5 +27,13 @@ public interface DrawResultRepository extends JpaRepository<DrawResultEntity, Lo
           + " ORDER BY d.drawDate DESC LIMIT 1")
   Optional<DrawResultEntity> findLatestOverall();
 
+  @Query("SELECT MAX(d.drawDate) FROM DrawResultEntity d")
+  Optional<LocalDate> findLatestDrawDate();
+
+  @Query(
+      "SELECT DISTINCT d FROM DrawResultEntity d JOIN FETCH d.station s LEFT JOIN FETCH d.prizeNumbers p"
+          + " WHERE d.drawDate = :drawDate ORDER BY s.code ASC")
+  List<DrawResultEntity> findByDrawDateWithPrizes(@Param("drawDate") LocalDate drawDate);
+
   List<DrawResultEntity> findByDrawDate(LocalDate drawDate);
 }

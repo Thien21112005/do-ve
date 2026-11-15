@@ -160,6 +160,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/draws/latest-day": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kết quả các đài của ngày mở thưởng mới nhất
+         * @description Trả về danh sách kết quả mở thưởng của tất cả các đài trong ngày quay gần nhất (hoặc ngày chỉ định nếu có param date)
+         */
+        get: operations["getLatestDayDraws"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/app/config": {
         parameters: {
             query?: never;
@@ -448,6 +468,29 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["DrawResponse"];
+                };
+            };
+        };
+    };
+    getLatestDayDraws: {
+        parameters: {
+            query?: {
+                /** @description Ngày quay tuỳ chọn (YYYY-MM-DD); nếu bỏ trống lấy ngày mới nhất có kết quả */
+                date?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DrawResponse"][];
                 };
             };
         };

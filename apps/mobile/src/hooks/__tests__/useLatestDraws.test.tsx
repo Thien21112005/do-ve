@@ -51,7 +51,7 @@ describe('useLatestDraws hook', () => {
   });
 
   it('fetches and returns latest draws', async () => {
-    (apiDraws.fetchLatestDraws as jest.Mock).mockResolvedValue(mockDraws);
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockResolvedValue(mockDraws);
 
     const { result } = await renderHook(() => useLatestDraws(), {
       wrapper: createWrapper(),
@@ -65,6 +65,20 @@ describe('useLatestDraws hook', () => {
     expect(result.current.draws[1].stationCode).toBe('dong-thap');
   });
 
+  it('fetches specific station latest draw when station param is provided', async () => {
+    (apiDraws.fetchLatestDraws as jest.Mock).mockResolvedValue(mockDraws[0]);
+
+    const { result } = await renderHook(() => useLatestDraws('tp-hcm'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(apiDraws.fetchLatestDraws).toHaveBeenCalledWith('tp-hcm');
+    expect(result.current.draws).toHaveLength(1);
+    expect(result.current.draws[0].stationCode).toBe('tp-hcm');
+  });
+
   it('handles single object response from backend without crashing (T09.05)', async () => {
     const singleDraw = {
       stationCode: 'tp-hcm',
@@ -74,7 +88,7 @@ describe('useLatestDraws hook', () => {
         FIRST: ['73924'],
       },
     };
-    (apiDraws.fetchLatestDraws as jest.Mock).mockResolvedValue(singleDraw);
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockResolvedValue(singleDraw);
 
     const { result } = await renderHook(() => useLatestDraws(), {
       wrapper: createWrapper(),
@@ -90,7 +104,7 @@ describe('useLatestDraws hook', () => {
   });
 
   it('handles query error when fetching fails', async () => {
-    (apiDraws.fetchLatestDraws as jest.Mock).mockRejectedValue(
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockRejectedValue(
       new Error('Network error'),
     );
 

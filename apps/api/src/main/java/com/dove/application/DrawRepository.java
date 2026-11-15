@@ -35,6 +35,25 @@ public interface DrawRepository {
   Optional<DrawResult> findLatestOverall();
 
   /**
+   * Finds all draw results for a given draw date.
+   *
+   * @param drawDate the draw date
+   * @return list of draw results on that date
+   */
+  default java.util.List<DrawResult> findByDrawDate(LocalDate drawDate) {
+    return java.util.List.of();
+  }
+
+  /**
+   * Finds all draw results for the most recent draw date in the database.
+   *
+   * @return list of draw results on the latest draw date, or empty list if no draws exist
+   */
+  default java.util.List<DrawResult> findLatestDayDraws() {
+    return java.util.List.of();
+  }
+
+  /**
    * Saves a draw result.
    *
    * @param drawResult the domain model

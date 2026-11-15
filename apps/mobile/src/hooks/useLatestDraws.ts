@@ -1,12 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchLatestDraws } from '../api/draws';
+import { fetchLatestDraws, fetchLatestDayDraws } from '../api/draws';
 import { mapDrawResponseToUi, type UiDrawView } from '../api/mappers';
 
 export function useLatestDraws(station?: string) {
   const query = useQuery<UiDrawView[], Error>({
     queryKey: ['draws', 'latest', station || 'all'],
     queryFn: async () => {
-      const data = await fetchLatestDraws(station);
+      if (station) {
+        const data = await fetchLatestDraws(station);
+        if (!data) return [];
+        const list = Array.isArray(data) ? data : [data];
+        return list.map((d) => mapDrawResponseToUi(d));
+      }
+      const data = await fetchLatestDayDraws();
       if (!data) return [];
       const list = Array.isArray(data) ? data : [data];
       return list.map((d) => mapDrawResponseToUi(d));

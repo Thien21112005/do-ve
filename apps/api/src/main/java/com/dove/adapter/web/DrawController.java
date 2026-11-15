@@ -164,6 +164,38 @@ public class DrawController {
         .body(DrawResponse.from(drawResult, stationName));
   }
 
+  @GetMapping("/latest-day")
+  @Operation(
+      summary = "Kết quả các đài của ngày mở thưởng mới nhất",
+      description =
+          "Trả về danh sách kết quả mở thưởng của tất cả các đài trong ngày quay gần nhất (hoặc ngày chỉ định nếu có param date)")
+  public ResponseEntity<List<DrawResponse>> getLatestDayDraws(
+      @Parameter(
+              description =
+                  "Ngày quay tuỳ chọn (YYYY-MM-DD); nếu bỏ trống lấy ngày mới nhất có kết quả")
+          @RequestParam(value = "date", required = false)
+          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+          LocalDate date) {
+    List<DrawResult> draws;
+    if (date != null) {
+      draws = drawRepository.findByDrawDate(date);
+    } else {
+      draws = drawRepository.findLatestDayDraws();
+    }
+
+    LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
+    boolean allPast = draws.stream().allMatch(d -> d.drawDate().isBefore(todayVn));
+    CacheControl cacheControl =
+        (!draws.isEmpty() && allPast)
+            ? CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable()
+            : CacheControl.noCache();
+
+    List<DrawResponse> responses =
+        draws.stream().map(d -> DrawResponse.from(d, resolveStationName(d.stationCode()))).toList();
+
+    return ResponseEntity.ok().cacheControl(cacheControl).body(responses);
+  }
+
   private String resolveStationName(String stationCode) {
     if (stationRepository != null && stationCode != null) {
       return stationRepository

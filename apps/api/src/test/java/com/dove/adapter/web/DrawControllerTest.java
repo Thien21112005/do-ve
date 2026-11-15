@@ -273,4 +273,61 @@ class DrawControllerTest {
         .andExpect(status().isOk())
         .andExpect(header().string("Cache-Control", "no-cache"));
   }
+
+  @Test
+  @DisplayName(
+      "T09.06: GET /api/v1/draws/latest-day trả danh sách kết quả các đài của ngày gần nhất")
+  void getLatestDayDraws_returnsAllStationsForLatestDay() throws Exception {
+    LocalDate drawDate = LocalDate.of(2026, 11, 7);
+    DrawResult tphcm =
+        new DrawResult("tp-hcm", drawDate, Map.of(PrizeTier.SPECIAL, List.of("123456")));
+    DrawResult longAn =
+        new DrawResult("long-an", drawDate, Map.of(PrizeTier.SPECIAL, List.of("654321")));
+
+    when(drawRepository.findLatestDayDraws()).thenReturn(List.of(tphcm, longAn));
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(stationRepository.findByCode("long-an"))
+        .thenReturn(Optional.of(new StationEntity("long-an", "Long An", "SOUTH")));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$[0].stationName").value("TP. Hồ Chí Minh"))
+        .andExpect(jsonPath("$[1].stationCode").value("long-an"))
+        .andExpect(jsonPath("$[1].stationName").value("Long An"));
+  }
+
+  @Test
+  @DisplayName("T09.06: GET /api/v1/draws/latest-day với date cụ thể trả kết quả của ngày đó")
+  void getLatestDayDraws_withDateParam_returnsDrawsForDate() throws Exception {
+    LocalDate specificDate = LocalDate.of(2026, 11, 2);
+    DrawResult tphcm =
+        new DrawResult("tp-hcm", specificDate, Map.of(PrizeTier.SPECIAL, List.of("999999")));
+
+    when(drawRepository.findByDrawDate(specificDate)).thenReturn(List.of(tphcm));
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day").param("date", "2026-11-02"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)))
+        .andExpect(jsonPath("$[0].stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$[0].stationName").value("TP. Hồ Chí Minh"));
+  }
+
+  @Test
+  @DisplayName("T09.06: GET /api/v1/draws/latest-day khi chưa có kết quả trả về mảng rỗng")
+  void getLatestDayDraws_whenEmpty_returnsEmptyList() throws Exception {
+    when(drawRepository.findLatestDayDraws()).thenReturn(List.of());
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
 }

@@ -44,6 +44,26 @@ public class JpaDrawRepositoryAdapter implements DrawRepository {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public java.util.List<DrawResult> findByDrawDate(LocalDate drawDate) {
+    if (drawDate == null) {
+      return java.util.List.of();
+    }
+    return drawResultRepository.findByDrawDateWithPrizes(drawDate).stream()
+        .map(DrawResultMapper::toDomain)
+        .toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public java.util.List<DrawResult> findLatestDayDraws() {
+    return drawResultRepository
+        .findLatestDrawDate()
+        .map(this::findByDrawDate)
+        .orElseGet(java.util.List::of);
+  }
+
+  @Override
   @Transactional
   public DrawResult save(DrawResult drawResult, String source) {
     Objects.requireNonNull(drawResult, "drawResult không được null");
