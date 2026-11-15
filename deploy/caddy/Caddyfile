@@ -7,6 +7,10 @@
     # Encode responses using modern compression algorithms
     encode zstd gzip
 
+    # Block internal API documentation paths from public exposure in production (T09.67)
+    @docs path /swagger-ui* /v3/api-docs*
+    respond @docs "Not Found" 404
+
     # Reverse proxy upstream to Spring Boot backend container
     reverse_proxy api:8080 {
         header_up X-Forwarded-Proto {scheme}
@@ -24,9 +28,6 @@
 
         # Referrer Policy
         Referrer-Policy "strict-origin-when-cross-origin"
-
-        # Cross-Site Scripting protection
-        X-XSS-Protection "1; mode=block"
 
         # Content Security Policy for API
         Content-Security-Policy "default-src 'none'; frame-ancestors 'none';"

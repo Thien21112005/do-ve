@@ -26,3 +26,9 @@ dove:
   admin:
     api-key: ${DOVE_ADMIN_API_KEY}
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
