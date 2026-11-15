@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, act } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SettingsStore from '@/store/settings';
 import * as Hooks from '@/hooks';
