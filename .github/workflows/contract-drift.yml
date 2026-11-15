@@ -1,0 +1,65 @@
+name: Contract Drift Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'apps/mobile/openapi.json'
+      - 'apps/mobile/src/types/api.d.ts'
+      - 'docs/openapi.json'
+      - '.github/workflows/contract-drift.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/api/**'
+      - 'apps/mobile/openapi.json'
+      - 'apps/mobile/src/types/api.d.ts'
+      - 'docs/openapi.json'
+      - '.github/workflows/contract-drift.yml'
+
+jobs:
+  check-contract-drift:
+    name: Verify Mobile Types Match Backend OpenAPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x apps/api/mvnw
+
+      - name: Export OpenAPI Spec from Backend Spring Boot Context
+        working-directory: apps/api
+        run: ./mvnw -B test -Dtest=ExportOpenApiSpecTest
+
+      - name: Install Mobile Dependencies
+        working-directory: apps/mobile
+        run: npm ci
+
+      - name: Regenerate Mobile API Types
+        working-directory: apps/mobile
+        run: npm run gen:api
+
+      - name: Fail if Mobile OpenAPI or Types Drifted
+        run: |
+          git diff --exit-code apps/mobile/openapi.json docs/openapi.json apps/mobile/src/types/api.d.ts || {
+            echo "::error::API contract drift detected! Mobile OpenAPI spec or TypeScript types do not match the backend Spring Boot endpoints."
+            echo "Please run 'mvn test -Dtest=ExportOpenApiSpecTest' and 'npm run gen:api' in apps/mobile, then commit the generated files."
+            exit 1
+          }
