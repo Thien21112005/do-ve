@@ -70,7 +70,7 @@
 | T09.60 | P1 | Map rate limiter phình vô hạn | DONE | 830e06a | 2026-11-15 | Dọn dẹp entry hết hạn theo định kỳ @Scheduled và dọn cơ hội khi vượt ngưỡng maxTrackedClients |
 | T09.61 | P2 | Biến môi trường rate limit trong compose không có tác dụng | DONE | 78c7f51 | 2026-11-15 | Đổi DOVE_RATE_LIMITER_* thành DOVE_RATE_LIMIT_CHECK_PER_MINUTE trong docker-compose.prod.yml |
 | T09.62 | P2 | Nguồn xskt trả trang của ngày khác bị cache sai ngày | DONE | bb784a5 | 2026-11-15 | Bỏ qua và không cache kết quả nếu HTML trả về ngày khác với ngày được yêu cầu, giới hạn cache 30 ngày |
-| T09.63 | P2 | 404 của `/draws` không phân biệt "đài không quay hôm đó" và "chưa có kết quả" | TODO | | | |
+| T09.63 | P2 | 404 của `/draws` không phân biệt "đài không quay hôm đó" và "chưa có kết quả" | DONE | bc38b4e | 2026-11-15 | Phân biệt STATION_NOT_DRAWING (422) và RESULT_NOT_AVAILABLE (404) chuẩn ErrorCode enum |
 | T09.64 | P2 | Cache-Control 365 ngày `immutable` cho kỳ đã qua | TODO | | | |
 | T09.65 | P2 | Lỗi body JSON sai / thiếu tham số không có `code` | TODO | | | |
 | T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
-| P2 | 30 | 12 | 18 |
+| P2 | 30 | 13 | 17 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -166,6 +166,7 @@
 - 2026-11-15 | T09.60 | Map rate limiter phình vô hạn | Thêm evictExpired() dọn dẹp entry hết hạn theo định kỳ @Scheduled và dọn cơ hội khi vượt ngưỡng maxTrackedClients, bổ sung @EnableScheduling.
 - 2026-11-15 | T09.61 | Biến môi trường rate limit trong compose không có tác dụng | Chuẩn hoá DOVE_RATE_LIMIT_CHECK_PER_MINUTE trong docker-compose.prod.yml và .env.example khớp với thuộc tính Spring Boot.
 - 2026-11-15 | T09.62 | Nguồn xskt trả trang của ngày khác bị cache sai ngày | Bỏ qua và không cache kết quả nếu ngày trích xuất từ HTML khác ngày yêu cầu; giới hạn kích thước dateCache 30 ngày.
+- 2026-11-15 | T09.63 | 404 của /draws không phân biệt đài không quay và chưa có kết quả | Thêm ErrorCode.RESULT_NOT_AVAILABLE (404) và ResultNotAvailableException; kiểm tra lịch quay trước khi tìm kết quả, trả STATION_NOT_DRAWING (422) nếu đài không quay hôm đó.
 
 ## Vấn đề mở
 
