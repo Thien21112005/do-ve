@@ -1,17 +1,67 @@
-import React from 'react';
-import { View, Text, Pressable, ScrollView, Switch, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  Switch,
+  Alert,
+  AppState,
+  Linking,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { useSettings } from '@/store/settings';
 import { STRINGS } from '@/lib/strings';
-import { requestNotificationPermission } from '@/services/reminderNotification';
+import {
+  requestNotificationPermission,
+  hasNotificationPermission,
+} from '@/services/reminderNotification';
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const router = useRouter();
   const [settings, updateSettings] = useSettings();
+
+  // Synchronize reminder setting with actual OS permission on mount and foreground return (T09.44)
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifyPermission = async () => {
+      if (!settings.reminderEnabled) return;
+      const granted = await hasNotificationPermission();
+      if (!isMounted) return;
+      if (!granted) {
+        updateSettings({ reminderEnabled: false });
+        Alert.alert(
+          STRINGS.settings.reminderPermissionRevokedTitle,
+          STRINGS.settings.reminderPermissionRevokedMsg,
+          [
+            { text: STRINGS.settings.close, style: 'cancel' },
+            {
+              text: STRINGS.settings.openSettings,
+              onPress: () => Linking.openSettings().catch(() => {}),
+            },
+          ],
+        );
+      }
+    };
+
+    verifyPermission();
+
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        verifyPermission();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, [settings.reminderEnabled, updateSettings]);
 
   const handleToggleReminder = async (targetValue: boolean) => {
     if (targetValue) {
@@ -20,6 +70,13 @@ export default function SettingsScreen() {
         Alert.alert(
           STRINGS.settings.reminderPermissionDeniedTitle,
           STRINGS.settings.reminderPermissionDeniedMsg,
+          [
+            { text: STRINGS.settings.close, style: 'cancel' },
+            {
+              text: STRINGS.settings.openSettings,
+              onPress: () => Linking.openSettings().catch(() => {}),
+            },
+          ],
         );
         return;
       }

@@ -68,6 +68,18 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 }
 
+/**
+ * Check whether notification permission is currently granted without requesting (T09.44)
+ */
+export async function hasNotificationPermission(): Promise<boolean> {
+  try {
+    const current = await Notifications.getPermissionsAsync();
+    return current.granted || current.status === 'granted';
+  } catch {
+    return false;
+  }
+}
+
 export function calculateReminderTime(drawDate: string): Date {
   const parts = drawDate.split('-').map(Number);
   const year = parts[0] ?? new Date().getFullYear();

@@ -253,7 +253,13 @@ export const STRINGS = {
     reminderTitle: 'Nhắc dò vé PENDING (16h45)',
     reminderDesc: 'Thông báo cục bộ lúc 16h45 vào các ngày bạn có vé đang chờ kết quả',
     reminderPermissionDeniedTitle: 'Chưa cấp quyền thông báo',
-    reminderPermissionDeniedMsg: 'Vui lòng cho phép quyền thông báo trong cài đặt thiết bị để nhận lời nhắc dò vé.',
+    reminderPermissionDeniedMsg:
+      'Vui lòng cho phép quyền thông báo trong cài đặt thiết bị để nhận lời nhắc dò vé.',
+    reminderPermissionRevokedTitle: 'Quyền thông báo đã tắt',
+    reminderPermissionRevokedMsg:
+      'Quyền thông báo của DoVe đã bị tắt trong cài đặt thiết bị. Nhắc nhở dò vé đã được tự động tắt.',
+    openSettings: 'Mở Cài đặt',
+    close: 'Đóng',
   },
 
   about: {

@@ -1,17 +1,20 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { Alert, AppState } from 'react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SettingsScreen from '../settings';
 import {
   getSettings,
+  updateSettings,
   resetSettings,
   SETTINGS_STORAGE_KEY,
 } from '@/store/settings';
+import * as reminderNotification from '@/services/reminderNotification';
 import { useRouter } from 'expo-router';
 
 describe('SettingsScreen (Cài đặt)', () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
     resetSettings();
     await AsyncStorage.clear();
   });
@@ -91,6 +94,60 @@ describe('SettingsScreen (Cài đặt)', () => {
       const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
       expect(JSON.parse(stored!).reminderEnabled).toBe(true);
     });
+  });
+
+  it('automatically turns off reminder switch and alerts user if permission is revoked on mount (T09.44)', async () => {
+    updateSettings({ reminderEnabled: true });
+    expect(getSettings().reminderEnabled).toBe(true);
+
+    jest.spyOn(reminderNotification, 'hasNotificationPermission').mockResolvedValueOnce(false);
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    await render(<SettingsScreen />);
+
+    await waitFor(() => {
+      expect(getSettings().reminderEnabled).toBe(false);
+    });
+
+    expect(alertSpy).toHaveBeenCalledWith(
+      expect.stringContaining('thông báo'),
+      expect.any(String),
+      expect.arrayContaining([
+        expect.objectContaining({ text: expect.stringMatching(/Mở Cài đặt|Cài đặt/i) }),
+      ]),
+    );
+  });
+
+  it('checks permission and disables switch when app returns to foreground (T09.44)', async () => {
+    updateSettings({ reminderEnabled: true });
+
+    let appStateCallback: ((state: string) => void) | undefined;
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((event: any, cb: any) => {
+      if (event === 'change') {
+        appStateCallback = cb;
+      }
+      return { remove: jest.fn() } as any;
+    });
+
+    jest.spyOn(reminderNotification, 'hasNotificationPermission')
+      .mockResolvedValueOnce(true) // Initial mount check
+      .mockResolvedValueOnce(false); // When coming back from OS settings
+
+    const alertSpy = jest.spyOn(Alert, 'alert');
+
+    await render(<SettingsScreen />);
+    expect(getSettings().reminderEnabled).toBe(true);
+
+    // Simulate coming back to foreground
+    await act(async () => {
+      appStateCallback?.('active');
+    });
+
+    await waitFor(() => {
+      expect(getSettings().reminderEnabled).toBe(false);
+    });
+
+    expect(alertSpy).toHaveBeenCalled();
   });
 
   it('navigates back when pressing header back button', async () => {

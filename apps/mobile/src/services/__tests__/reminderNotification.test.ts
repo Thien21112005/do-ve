@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import {
   requestNotificationPermission,
+  hasNotificationPermission,
   calculateReminderTime,
   syncPendingReminders,
   cancelAllPendingReminders,
@@ -56,6 +57,28 @@ describe('reminderNotification service', () => {
 
       const granted = await requestNotificationPermission();
       expect(granted).toBe(false);
+    });
+  });
+
+  describe('hasNotificationPermission (T09.44)', () => {
+    it('returns true if permission is granted', async () => {
+      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({
+        status: 'granted',
+        granted: true,
+      });
+      const hasPermission = await hasNotificationPermission();
+      expect(hasPermission).toBe(true);
+      expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
+    });
+
+    it('returns false if permission is denied without requesting', async () => {
+      (Notifications.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({
+        status: 'denied',
+        granted: false,
+      });
+      const hasPermission = await hasNotificationPermission();
+      expect(hasPermission).toBe(false);
+      expect(Notifications.requestPermissionsAsync).not.toHaveBeenCalled();
     });
   });
 
