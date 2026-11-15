@@ -80,7 +80,7 @@ export function TicketStatusBadge({
         color={badgeConfig.iconColor}
       />
       <Text
-        className={`font-semibold ml-1.5 ${isSmall ? 'text-[11px]' : 'text-xs'}`}
+        className="font-semibold ml-1.5 text-xs"
         style={{ color: badgeConfig.textColor }}
       >
         {badgeConfig.label}

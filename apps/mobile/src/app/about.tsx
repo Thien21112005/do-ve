@@ -211,7 +211,7 @@ export default function AboutScreen() {
 
         {/* Footer */}
         <Text
-          className="text-[11px] text-center leading-relaxed px-4"
+          className="text-xs text-center leading-relaxed px-4"
           style={{ color: colors.textMuted }}
         >
           {STRINGS.about.copyright}

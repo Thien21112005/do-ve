@@ -79,7 +79,7 @@ export default function HomeScreen() {
                     style={{ backgroundColor: `${colors.primary}15` }}
                   >
                     <Text
-                      className="text-[10px] font-bold tracking-wide"
+                      className="text-xs font-bold tracking-wide"
                       style={{ color: colors.primary }}
                     >
                       {STRINGS.common.regionName}
@@ -328,7 +328,7 @@ export default function HomeScreen() {
                     }}
                   >
                     <Text
-                      className="text-[11px] font-bold uppercase tracking-wider mb-1"
+                      className="text-xs font-bold uppercase tracking-wider mb-1"
                       style={{ color: colors.primary }}
                     >
                       {STRINGS.home.specialPrizeBanner}

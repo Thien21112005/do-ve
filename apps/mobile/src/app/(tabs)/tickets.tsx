@@ -181,7 +181,7 @@ export default function TicketsScreen() {
           <View className="mt-3 flex-row items-center justify-between">
             <View>
               <Text
-                className="text-[11px] font-medium"
+                className="text-xs font-medium"
                 style={{ color: colors.textMuted }}
               >
                 Số vé
@@ -197,7 +197,7 @@ export default function TicketsScreen() {
             {isWon && (
               <View className="items-end">
                 <Text
-                  className="text-[11px] font-medium"
+                  className="text-xs font-medium"
                   style={{ color: colors.win }}
                 >
                   {STRINGS.tickets.totalPrizePrefix}
@@ -301,7 +301,7 @@ export default function TicketsScreen() {
           >
             <Icon name="info" size={13} color={colors.textMuted} />
             <Text
-              className="text-[11px] font-medium ml-1.5"
+              className="text-xs font-medium ml-1.5"
               style={{ color: colors.textMuted }}
             >
               {STRINGS.tickets.privacyNotice}
@@ -402,7 +402,7 @@ export default function TicketsScreen() {
             >
               <Icon name="info" size={13} color={colors.textMuted} />
               <Text
-                className="text-[11px] font-medium ml-1.5"
+                className="text-xs font-medium ml-1.5"
                 style={{ color: colors.textMuted }}
               >
                 {STRINGS.tickets.privacyNotice}

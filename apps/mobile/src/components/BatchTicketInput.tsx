@@ -141,7 +141,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
               }}
             >
               <Text
-                className="text-[11px] font-bold"
+                className="text-xs font-bold"
                 style={{
                   color: hasError ? colors.error : colors.primary,
                 }}

@@ -88,7 +88,7 @@ export default function ScheduleScreen() {
               {STRINGS.schedule.drawTimeTitle}
             </Text>
             <Text
-              className="text-[11px] mt-0.5 leading-snug"
+              className="text-xs mt-0.5 leading-snug"
               style={{ color: colors.textMuted }}
             >
               {STRINGS.schedule.holidayNotice}
@@ -149,7 +149,7 @@ export default function ScheduleScreen() {
                     style={{ backgroundColor: `${colors.primary}1A` }}
                   >
                     <Text
-                      className="text-[11px] font-bold tracking-wide"
+                      className="text-xs font-bold tracking-wide"
                       style={{ color: colors.primary }}
                     >
                       HÔM NAY

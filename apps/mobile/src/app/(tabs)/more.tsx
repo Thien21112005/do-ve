@@ -109,20 +109,20 @@ export default function MoreScreen() {
           >
             <Icon name="info" size={13} color={colors.textMuted} />
             <Text
-              className="text-[11px] font-medium ml-1.5"
+              className="text-xs font-medium ml-1.5"
               style={{ color: colors.textMuted }}
             >
               {STRINGS.more.privacyNotice}
             </Text>
           </View>
           <Text
-            className="text-[11px] text-center leading-relaxed"
+            className="text-xs text-center leading-relaxed"
             style={{ color: colors.textMuted }}
           >
             {STRINGS.more.copyright}
           </Text>
           <Text
-            className="text-[11px] mt-2 font-medium"
+            className="text-xs mt-2 font-medium"
             style={{ color: colors.textMuted }}
           >
             {STRINGS.more.versionPrefix} {CURRENT_APP_VERSION}

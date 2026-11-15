@@ -209,7 +209,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                   }}
                 >
                   <Text
-                    className="text-[11px] font-bold"
+                    className="text-xs font-bold"
                     style={{
                       color: isItemWon
                         ? colors.win
@@ -306,7 +306,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       {/* Disclaimer */}
       <View className="mt-4 px-2">
         <Text
-          className="text-[11px] text-center leading-relaxed"
+          className="text-xs text-center leading-relaxed"
           style={{ color: colors.textMuted }}
         >
           {STRINGS.check.disclaimer}

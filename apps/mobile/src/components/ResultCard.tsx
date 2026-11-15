@@ -357,7 +357,7 @@ export function ResultCard({
 
       {/* Disclaimer per FR-SYS-03 */}
       <Text
-        className="text-[11px] text-center mt-3 leading-4 italic"
+        className="text-xs text-center mt-3 leading-4 italic"
         style={{ color: colors.textMuted }}
       >
         {STRINGS.check.disclaimer}

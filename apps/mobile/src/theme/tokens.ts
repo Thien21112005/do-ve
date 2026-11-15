@@ -55,3 +55,56 @@ export const typography = {
     '4xl': 44,
   },
 } as const;
+
+/**
+ * Type scale with 6 standard tiers + dedicated lottery ticket number tiers (T10.07).
+ * Minimum size is 12px (WCAG accessible); ticket numbers enforce tabular-nums.
+ */
+export const typeScale = {
+  caption: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontFamily: 'BeVietnamPro-Regular',
+  },
+  body: {
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: 'BeVietnamPro-Regular',
+  },
+  bodyStrong: {
+    fontSize: 15,
+    lineHeight: 22,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+  title: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+  headline: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontFamily: 'BeVietnamPro-Bold',
+  },
+  display: {
+    fontSize: 32,
+    lineHeight: 38,
+    fontFamily: 'BeVietnamPro-Bold',
+  },
+  ticketLg: {
+    fontSize: 34,
+    lineHeight: 40,
+    fontFamily: 'BeVietnamPro-Bold',
+    fontVariant: ['tabular-nums'] as const,
+    letterSpacing: 4,
+  },
+  ticketMd: {
+    fontSize: 24,
+    lineHeight: 30,
+    fontFamily: 'BeVietnamPro-Bold',
+    fontVariant: ['tabular-nums'] as const,
+    letterSpacing: 2,
+  },
+} as const;
+
+export type TextVariant = keyof typeof typeScale;
