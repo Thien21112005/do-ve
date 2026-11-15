@@ -38,6 +38,28 @@ describe('TanStack Query & Network Configuration', () => {
     });
     expect(retryFn(0, clientError)).toBe(false);
 
+    // T09.25: Should retry TIMEOUT_ERROR and NETWORK_ERROR
+    const timeoutError = new ApiError({
+      status: 408,
+      code: 'TIMEOUT_ERROR',
+    });
+    expect(retryFn(0, timeoutError)).toBe(true);
+    expect(retryFn(1, timeoutError)).toBe(true);
+    expect(retryFn(2, timeoutError)).toBe(false);
+
+    const networkError = new ApiError({
+      status: 0,
+      code: 'NETWORK_ERROR',
+    });
+    expect(retryFn(0, networkError)).toBe(true);
+
+    // T09.25: Should NOT retry RATE_LIMITED (429)
+    const rateLimitedError = new ApiError({
+      status: 429,
+      code: 'RATE_LIMITED',
+    });
+    expect(retryFn(0, rateLimitedError)).toBe(false);
+
     // Should retry network or 5xx errors up to 2 times
     const serverError = new ApiError({ status: 500 });
     expect(retryFn(0, serverError)).toBe(true);

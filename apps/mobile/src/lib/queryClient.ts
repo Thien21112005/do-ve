@@ -43,14 +43,25 @@ export function createQueryClient(): QueryClient {
         staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 60 * 24, // 24 hours
         retry: (failureCount, error) => {
-          if (
-            error instanceof ApiError &&
-            error.status >= 400 &&
-            error.status < 500
-          ) {
-            return false; // Do not retry client 4xx errors
+          if (failureCount >= 2) {
+            return false;
           }
-          return failureCount < 2;
+          if (error instanceof ApiError) {
+            // T09.25: Explicitly retry transient timeout and network errors
+            if (error.code === 'TIMEOUT_ERROR' || error.status === 408) {
+              return true;
+            }
+            if (error.code === 'NETWORK_ERROR' || error.status === 0) {
+              return true;
+            }
+            // Do not retry 429 (rate limited) or other client 4xx errors
+            if (error.status >= 400 && error.status < 500) {
+              return false;
+            }
+            // Server 5xx errors are retried
+            return true;
+          }
+          return true;
         },
         refetchOnWindowFocus: Platform.OS === 'web',
         refetchOnReconnect: true,
