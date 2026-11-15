@@ -261,10 +261,10 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              testID="celebration-switch-visual"
+              accessible={false}
+              pointerEvents="none"
               value={settings.celebrationEnabled}
-              onValueChange={(val) =>
-                updateSettings({ celebrationEnabled: val })
-              }
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />
@@ -300,10 +300,10 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              testID="haptics-switch-visual"
+              accessible={false}
+              pointerEvents="none"
               value={settings.hapticsEnabled}
-              onValueChange={(val) =>
-                updateSettings({ hapticsEnabled: val })
-              }
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />
@@ -335,8 +335,10 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Switch
+              testID="reminder-switch-visual"
+              accessible={false}
+              pointerEvents="none"
               value={settings.reminderEnabled}
-              onValueChange={(val) => handleToggleReminder(val)}
               trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#FFFFFF"
             />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, AppState } from 'react-native';
+import { Alert, AppState, Switch } from 'react-native';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SettingsScreen from '../settings';
@@ -158,6 +158,25 @@ describe('SettingsScreen (Cài đặt)', () => {
     fireEvent.press(backBtn);
 
     expect(router.back).toHaveBeenCalled();
+  });
+
+  it('prevents double-toggle and duplicate screen reader announcement on switch rows (T09.50)', async () => {
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    const celebrationSwitch = getByTestId('celebration-switch-visual');
+    expect(celebrationSwitch.props.accessible).toBe(false);
+    expect(celebrationSwitch.props.pointerEvents).toBe('none');
+    expect(celebrationSwitch.props.onValueChange).toBeUndefined();
+
+    const hapticsSwitch = getByTestId('haptics-switch-visual');
+    expect(hapticsSwitch.props.accessible).toBe(false);
+    expect(hapticsSwitch.props.pointerEvents).toBe('none');
+    expect(hapticsSwitch.props.onValueChange).toBeUndefined();
+
+    const reminderSwitch = getByTestId('reminder-switch-visual');
+    expect(reminderSwitch.props.accessible).toBe(false);
+    expect(reminderSwitch.props.pointerEvents).toBe('none');
+    expect(reminderSwitch.props.onValueChange).toBeUndefined();
   });
 });
 
