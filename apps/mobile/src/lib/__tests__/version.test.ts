@@ -6,7 +6,6 @@ import {
   CURRENT_APP_VERSION,
   CURRENT_BUILD_NUMBER,
 } from '../version';
-import Constants from 'expo-constants';
 
 describe('Version comparison utilities', () => {
   describe('compareVersions', () => {

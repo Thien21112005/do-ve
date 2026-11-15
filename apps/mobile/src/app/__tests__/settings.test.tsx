@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, AppState, Switch } from 'react-native';
+import { Alert, AppState } from 'react-native';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SettingsScreen from '../settings';

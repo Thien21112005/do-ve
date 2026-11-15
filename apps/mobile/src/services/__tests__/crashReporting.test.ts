@@ -6,7 +6,6 @@ import {
   getStoredCrashReports,
   clearStoredCrashReports,
   _resetCrashReportingForTesting,
-  CRASH_STORAGE_KEY,
   MAX_STORED_CRASH_REPORTS,
   type SanitizedErrorPayload,
 } from '../crashReporting';

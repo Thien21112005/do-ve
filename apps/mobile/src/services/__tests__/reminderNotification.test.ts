@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { AndroidImportance } from 'expo-notifications';
 import {
   requestNotificationPermission,
   hasNotificationPermission,
@@ -237,7 +238,7 @@ describe('reminderNotification service', () => {
         REMINDER_CHANNEL_ID,
         expect.objectContaining({
           name: 'Nhắc nhở dò vé',
-          importance: Notifications.AndroidImportance.HIGH,
+          importance: AndroidImportance.HIGH,
         }),
       );
     });

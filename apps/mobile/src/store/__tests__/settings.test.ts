@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getSettings,
-  loadSettings,
   updateSettings,
   resetSettings,
   subscribeSettings,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Appearance } from 'react-native';
+import { Text } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useRouter } from 'expo-router';
