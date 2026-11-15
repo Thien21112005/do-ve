@@ -162,4 +162,41 @@ describe('CheckScreen Form Composition', () => {
     // Button should now display "Đã lưu vé"
     expect(await findByText('Đã lưu vé')).toBeTruthy();
   });
+
+  it('clears stale check result card when ticket number or station changes (T09.20)', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '112233',
+      stationCode: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: false,
+      wins: [],
+      totalAmount: 0,
+    });
+
+    const { getByTestId, findByTestId, queryByTestId } = await render(
+      <CheckScreen />,
+      { wrapper: createWrapper() },
+    );
+
+    await findByTestId('station-chips-TPHCM');
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '112233');
+
+    const submitBtn = await findByTestId('check-ticket-button');
+    fireEvent.press(submitBtn);
+
+    // Result card appears
+    await waitFor(() => {
+      expect(getByTestId('check-result-section')).toBeTruthy();
+    });
+
+    // Now change ticket number
+    fireEvent.changeText(getByTestId('ticket-input-digit-5'), '4');
+
+    // Stale result card must disappear immediately
+    await waitFor(() => {
+      expect(queryByTestId('check-result-section')).toBeNull();
+    });
+  });
 });

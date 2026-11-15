@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -41,6 +41,7 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
     isLoading,
     isError,
     error,
+    reset: resetSingle,
   } = useCheckTicket();
 
   const {
@@ -63,6 +64,21 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
   const [ticketNumber, setTicketNumber] = useState<string>('');
   const [batchText, setBatchText] = useState<string>('');
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+
+  // Clear stale check result when single ticket input, station, or date changes (T09.20)
+  useEffect(() => {
+    if (result) {
+      resetSingle();
+      setJustSaved(false);
+    }
+  }, [ticketNumber, selectedStation, selectedDate, resetSingle]);
+
+  // Clear stale batch check result when batch input, station, or date changes (T09.20)
+  useEffect(() => {
+    if (batchResult) {
+      resetBatch();
+    }
+  }, [batchText, selectedStation, selectedDate, resetBatch]);
 
   // Inline validation calculation
   let ticketError: string | null = null;
