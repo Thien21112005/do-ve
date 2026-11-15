@@ -58,6 +58,13 @@ module.exports = {
         lg: '14px',
         xl: '20px',
       },
+      fontFamily: {
+        sans: ['BeVietnamPro-Regular'],
+        regular: ['BeVietnamPro-Regular'],
+        medium: ['BeVietnamPro-Medium'],
+        semibold: ['BeVietnamPro-SemiBold'],
+        bold: ['BeVietnamPro-Bold'],
+      },
     },
   },
   plugins: [],

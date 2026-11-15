@@ -133,7 +133,7 @@ export default function ScheduleScreen() {
                     </Text>
                   </View>
                   <Text
-                    className={`text-base ${isToday ? 'font-black' : 'font-bold'}`}
+                    className="text-base font-bold"
                     style={{
                       color: isToday ? colors.primary : colors.textMain,
                     }}

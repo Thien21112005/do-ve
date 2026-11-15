@@ -69,7 +69,7 @@ export default function HomeScreen() {
               <View>
                 <View className="flex-row items-center">
                   <Text
-                    className="text-2xl font-black tracking-tight"
+                    className="text-2xl font-bold tracking-tight"
                     style={{ color: colors.textMain }}
                   >
                     {STRINGS.common.appName}
@@ -334,7 +334,7 @@ export default function HomeScreen() {
                       {STRINGS.home.specialPrizeBanner}
                     </Text>
                     <Text
-                      className="text-2xl font-black tracking-widest"
+                      className="text-2xl font-bold tracking-widest"
                       style={{
                         color: colors.primary,
                         fontVariant: ['tabular-nums'],

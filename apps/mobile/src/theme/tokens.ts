@@ -29,10 +29,10 @@ export const spacing = {
 export const typography = {
   fontFamily: {
     sans: 'BeVietnamPro-Regular',
+    regular: 'BeVietnamPro-Regular',
     medium: 'BeVietnamPro-Medium',
     semiBold: 'BeVietnamPro-SemiBold',
     bold: 'BeVietnamPro-Bold',
-    mono: 'Courier',
   },
   fontSize: {
     xs: 12,

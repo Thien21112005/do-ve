@@ -272,10 +272,11 @@ export function ResultCard({
                 </Text>
                 {((win as any).matchedDigits || (win as any).matchedNumber) ? (
                   <Text
-                    className="text-xs font-mono ml-2 px-1.5 py-0.5 rounded"
+                    className="text-xs ml-2 px-1.5 py-0.5 rounded"
                     style={{
                       color: colors.primary,
                       backgroundColor: colors.primarySubtle,
+                      fontVariant: ['tabular-nums'],
                     }}
                   >
                     ({(win as any).matchedDigits || (win as any).matchedNumber})

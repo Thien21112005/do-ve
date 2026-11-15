@@ -187,8 +187,8 @@ export default function TicketsScreen() {
                 Số vé
               </Text>
               <Text
-                className="text-2xl font-mono font-bold tracking-widest mt-0.5"
-                style={{ color: colors.textMain }}
+                className="text-2xl font-bold tracking-widest mt-0.5"
+                style={{ color: colors.textMain, fontVariant: ['tabular-nums'] }}
               >
                 {item.ticket}
               </Text>

@@ -106,7 +106,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               {STRINGS.check.batchTotalPrize}
             </Text>
             <Text
-              className={`text-2xl font-black mt-0.5 ${hasWon ? '' : ''}`}
+              className="text-2xl font-bold mt-0.5"
               style={{
                 color: hasWon ? colors.win : colors.textMain,
                 fontVariant: ['tabular-nums'],

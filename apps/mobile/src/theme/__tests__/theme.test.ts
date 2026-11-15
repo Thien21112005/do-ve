@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { colors } from '../colors';
 import { radii, spacing, typography } from '../tokens';
 import { useTheme, syncNativeWindTheme } from '../theme';
@@ -7,6 +5,13 @@ import * as ReactNative from 'react-native';
 import { renderHook, act } from '@testing-library/react-native';
 import { colorScheme } from 'nativewind';
 import { updateSettings, resetSettings } from '@/store/settings';
+
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs');
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path');
 
 // Helper to calculate relative luminance according to WCAG 2.1
 function getLuminance(hex: string): number {
@@ -165,9 +170,26 @@ describe('Design Tokens & Theme', () => {
       expect(spacing[8]).toBe(32);
     });
 
-    it('contains font typography tokens', () => {
-      expect(typography.fontFamily.sans).toContain('BeVietnamPro');
+    it('contains font typography tokens with Be Vietnam Pro family', () => {
+      expect(typography.fontFamily.sans).toBe('BeVietnamPro-Regular');
+      expect(typography.fontFamily.regular).toBe('BeVietnamPro-Regular');
+      expect(typography.fontFamily.medium).toBe('BeVietnamPro-Medium');
+      expect(typography.fontFamily.semiBold).toBe('BeVietnamPro-SemiBold');
+      expect(typography.fontFamily.bold).toBe('BeVietnamPro-Bold');
+      expect((typography.fontFamily as any).mono).toBeUndefined();
       expect(typography.fontSize.base).toBe(16);
+    });
+
+    it('maps Be Vietnam Pro font families in tailwind.config.js (T10.06)', () => {
+      const configPath = path.resolve(process.cwd(), 'tailwind.config.js');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const tailwindConfig = require(configPath);
+      const fonts = tailwindConfig.theme.extend.fontFamily;
+      expect(fonts.sans).toEqual(['BeVietnamPro-Regular']);
+      expect(fonts.regular).toEqual(['BeVietnamPro-Regular']);
+      expect(fonts.medium).toEqual(['BeVietnamPro-Medium']);
+      expect(fonts.semibold).toEqual(['BeVietnamPro-SemiBold']);
+      expect(fonts.bold).toEqual(['BeVietnamPro-Bold']);
     });
   });
 
