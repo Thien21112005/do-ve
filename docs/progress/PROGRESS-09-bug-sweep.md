@@ -30,7 +30,7 @@
 | T09.20 | P1 | Kết quả cũ vẫn hiển thị sau khi đổi ngày/đài/số | DONE | 96b44f5 | 2026-11-15 | Reset kết quả dò đơn và hàng loạt ngay khi người dùng thay đổi số vé, đài hoặc ngày |
 | T09.21 | P1 | Nút "Thử lại" ở banner offline lại submit form | DONE | f615542 | 2026-11-15 | Nút thử lại ở banner offline chỉ refetch query ngầm (lịch đài/đài quay), không submit form dò vé |
 | T09.22 | P1 | Hiệu ứng trúng thưởng bị render 2 lần + haptic 2–3 lần | DONE | f874414 | 2026-11-15 | Bỏ CelebrationEffect trong BatchResultList và gỡ bỏ haptics.success trùng lặp ở check.tsx |
-| T09.23 | P2 | Celebration kích hoạt lại ngoài ý muốn | TODO | | | |
+| T09.23 | P2 | Celebration kích hoạt lại ngoài ý muốn | DONE | 38044eb | 2026-11-15 | Chỉ kích hoạt celebration 1 lần duy nhất cho mỗi kết quả mới, không reset hasTriggeredRef khi bật/tắt settings và cô lập active theo chế độ hiện tại |
 | T09.24 | P1 | Thông báo lỗi API hiển thị tiếng Anh / thô | TODO | | | |
 | T09.25 | P2 | Retry policy sai cho timeout | TODO | | | |
 | T09.26 | P2 | Dò hàng loạt không bỏ số trùng, đếm cả token sai | TODO | | | |
@@ -127,6 +127,7 @@
 - 2026-11-15 | T09.20 | Kết quả cũ vẫn hiển thị khi người dùng đổi số vé/đài/ngày | Kích hoạt useEffect gọi resetSingle()/resetBatch() ngay khi thay đổi giá trị đầu vào, ẩn ResultCard cũ để tránh hiểu nhầm.
 - 2026-11-15 | T09.21 | Nút "Thử lại" trên OfflineBanner kích hoạt submit form gây lỗi | Gắn onRetry cho OfflineBanner refetch query schedule và stations qua invalidateQueries thay vì gọi handleSubmit.
 - 2026-11-15 | T09.22 | Hiệu ứng trúng thưởng và haptic success bị kích hoạt lặp 2-3 lần | Loại bỏ CelebrationEffect thừa trong BatchResultList và lược bỏ các lệnh haptics.success() trực tiếp ở onSuccess của check.tsx, gom về CelebrationEffect quản lý duy nhất.
+- 2026-11-15 | T09.23 | Celebration kích hoạt lại ngoài ý muốn khi đổi chế độ hoặc thay đổi setting | Di chuyển lệnh start animation/haptics vào trong khối guard hasTriggeredRef, chỉ reset ref khi active=false và cô lập prop active trong check.tsx theo chế độ single/batch hiện hành.
 
 ## Vấn đề mở
 
