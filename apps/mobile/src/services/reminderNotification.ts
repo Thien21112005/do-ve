@@ -1,7 +1,59 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
+import { formatDateVN } from '@/lib/format';
 import type { SavedTicket } from '@/types';
 
 export const REMINDER_DATA_TYPE = 'DOVE_PENDING_REMINDER';
+export const REMINDER_CHANNEL_ID = 'dove_reminders';
+
+// Configure foreground notification presentation (T09.42)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+/**
+ * Configure Android notification channel with high priority (T09.42)
+ */
+export async function setupNotificationChannel(): Promise<void> {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {
+      name: 'Nhắc nhở dò vé',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'default',
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#D9381E',
+    });
+  }
+}
+
+/**
+ * Listen for notification response click and navigate to Tickets tab (T09.42)
+ */
+export function registerNotificationResponseListener(
+  onNavigate?: (route: string) => void,
+): { remove: () => void } {
+  const subscription = Notifications.addNotificationResponseReceivedListener(
+    (response) => {
+      const data = response?.notification?.request?.content?.data;
+      if (data?.type === REMINDER_DATA_TYPE) {
+        if (onNavigate) {
+          onNavigate('/(tabs)/tickets');
+        } else {
+          router.push('/(tabs)/tickets');
+        }
+      }
+    },
+  );
+
+  return subscription;
+}
 
 export async function requestNotificationPermission(): Promise<boolean> {
   try {
@@ -40,6 +92,9 @@ export async function cancelAllPendingReminders(): Promise<void> {
 
 export async function syncPendingReminders(tickets: SavedTicket[]): Promise<void> {
   try {
+    // Ensure Android notification channel is configured
+    await setupNotificationChannel();
+
     // 1. Cancel previous pending reminders
     await cancelAllPendingReminders();
 
@@ -63,19 +118,24 @@ export async function syncPendingReminders(tickets: SavedTicket[]): Promise<void
         continue;
       }
 
+      const displayDate = formatDateVN(drawDate);
+
       await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Đã có kết quả xổ số kiến thiết',
-          body: `Bạn có ${count} vé đang chờ dò cho kỳ quay ngày ${drawDate}. Hãy mở DoVe để kiểm tra ngay!`,
+          body: `Bạn có ${count} vé đang chờ dò cho kỳ quay ngày ${displayDate}. Hãy mở DoVe để kiểm tra ngay!`,
           data: {
             type: REMINDER_DATA_TYPE,
             drawDate,
             count,
           },
+          sound: 'default',
+          ...(Platform.OS === 'android' ? { channelId: REMINDER_CHANNEL_ID } : {}),
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: reminderTime,
+          ...(Platform.OS === 'android' ? { channelId: REMINDER_CHANNEL_ID } : {}),
         },
       });
     }

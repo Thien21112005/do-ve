@@ -4,11 +4,19 @@ import { useSettings } from '@/store/settings';
 import {
   syncPendingReminders,
   cancelAllPendingReminders,
+  registerNotificationResponseListener,
 } from '@/services/reminderNotification';
 
 export function usePendingTicketsReminder(): void {
   const [tickets] = useSavedTickets();
   const [settings] = useSettings();
+
+  useEffect(() => {
+    const subscription = registerNotificationResponseListener();
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (settings.reminderEnabled) {

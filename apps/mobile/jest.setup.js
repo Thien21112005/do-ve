@@ -112,6 +112,16 @@ const mockNotifications = {
   getPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
   requestPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
   setNotificationHandler: jest.fn(),
+  setNotificationChannelAsync: jest.fn().mockResolvedValue(undefined),
+  addNotificationResponseReceivedListener: jest.fn().mockReturnValue({ remove: jest.fn() }),
+  AndroidImportance: {
+    HIGH: 4,
+    DEFAULT: 3,
+    LOW: 2,
+    MIN: 1,
+    NONE: 0,
+    MAX: 5,
+  },
   SchedulableTriggerInputTypes: {
     DATE: 'date',
     CALENDAR: 'calendar',

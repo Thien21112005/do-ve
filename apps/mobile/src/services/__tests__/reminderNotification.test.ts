@@ -1,10 +1,14 @@
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import {
   requestNotificationPermission,
   calculateReminderTime,
   syncPendingReminders,
   cancelAllPendingReminders,
+  setupNotificationChannel,
+  registerNotificationResponseListener,
   REMINDER_DATA_TYPE,
+  REMINDER_CHANNEL_ID,
 } from '../reminderNotification';
 import type { SavedTicket } from '@/types';
 
@@ -123,6 +127,8 @@ describe('reminderNotification service', () => {
       const callArg = (Notifications.scheduleNotificationAsync as jest.Mock).mock.calls[0][0];
       expect(callArg.content.title).toContain('kết quả');
       expect(callArg.content.body).toContain('2 vé');
+      expect(callArg.content.body).toContain('31/12/2099');
+      expect(callArg.content.body).not.toContain('2099-12-31');
       expect(callArg.content.data.type).toBe(REMINDER_DATA_TYPE);
       expect(callArg.content.data.drawDate).toBe(futureDate);
     });
@@ -196,6 +202,74 @@ describe('reminderNotification service', () => {
 
       expect(Notifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith('rem-1');
       expect(Notifications.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('not-mine');
+    });
+  });
+
+  describe('setupNotificationChannel (T09.42)', () => {
+    it('configures high priority channel on Android', async () => {
+      Platform.OS = 'android';
+      await setupNotificationChannel();
+
+      expect(Notifications.setNotificationChannelAsync).toHaveBeenCalledWith(
+        REMINDER_CHANNEL_ID,
+        expect.objectContaining({
+          name: 'Nhắc nhở dò vé',
+          importance: Notifications.AndroidImportance.HIGH,
+        }),
+      );
+    });
+
+    it('skips channel setup on non-Android platforms', async () => {
+      Platform.OS = 'ios';
+      await setupNotificationChannel();
+
+      expect(Notifications.setNotificationChannelAsync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('registerNotificationResponseListener (T09.42)', () => {
+    it('registers listener and navigates to tickets tab on response click', () => {
+      let registeredCallback: ((response: any) => void) | undefined;
+      (Notifications.addNotificationResponseReceivedListener as jest.Mock).mockImplementationOnce(
+        (cb) => {
+          registeredCallback = cb;
+          return { remove: jest.fn() };
+        },
+      );
+
+      const onNavigateMock = jest.fn();
+      const subscription = registerNotificationResponseListener(onNavigateMock);
+
+      expect(Notifications.addNotificationResponseReceivedListener).toHaveBeenCalled();
+      expect(registeredCallback).toBeDefined();
+
+      // Trigger with matching reminder notification
+      registeredCallback?.({
+        notification: {
+          request: {
+            content: {
+              data: { type: REMINDER_DATA_TYPE, drawDate: '2026-11-20' },
+            },
+          },
+        },
+      });
+
+      expect(onNavigateMock).toHaveBeenCalledWith('/(tabs)/tickets');
+
+      // Trigger with unrelated notification
+      registeredCallback?.({
+        notification: {
+          request: {
+            content: {
+              data: { type: 'OTHER_TYPE' },
+            },
+          },
+        },
+      });
+
+      expect(onNavigateMock).toHaveBeenCalledTimes(1);
+
+      subscription.remove();
     });
   });
 });

@@ -139,7 +139,7 @@ describe('ResultCard Component', () => {
 
     expect(getByTestId('result-card')).toBeTruthy();
     expect(getByText('Chưa có kết quả')).toBeTruthy();
-    expect(getByText('Chưa có kết quả, thường có sau 16h30')).toBeTruthy();
+    expect(getByText('Chưa có kết quả, thường có sau 16h35')).toBeTruthy();
     expect(getByText('777888')).toBeTruthy();
 
     const retryBtn = getByTestId('result-card-retry-btn');
