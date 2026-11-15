@@ -184,5 +184,42 @@ describe('ticketStore Service', () => {
     expect(saved).toBeDefined();
     expect(saved.ticket).toBe('999999');
   });
+
+  it('serializes concurrent writes so no tickets are lost (T09.35)', async () => {
+    // Launch 3 concurrent saveTicket operations
+    const p1 = saveTicket({
+      ticket: '111111',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+    const p2 = saveTicket({
+      ticket: '222222',
+      station: 'DONG_NAI',
+      stationName: 'Đồng Nai',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+    const p3 = saveTicket({
+      ticket: '333333',
+      station: 'BEN_TRE',
+      stationName: 'Bến Tre',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+
+    await Promise.all([p1, p2, p3]);
+
+    const all = await getTickets();
+    expect(all).toHaveLength(3);
+    const tickets = all.map((t) => t.ticket);
+    expect(tickets).toContain('111111');
+    expect(tickets).toContain('222222');
+    expect(tickets).toContain('333333');
+  });
 });
 
