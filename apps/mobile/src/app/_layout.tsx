@@ -1,6 +1,7 @@
 import '../global.css';
 import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import {
   useAppFonts,
@@ -23,12 +24,14 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 function AppContent() {
   const { config, refetch } = useAppConfig();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   usePendingTicketsReminder();
   usePendingTicketsRecheck();
 
   return (
-    <AppVersionGate config={config} onRetry={refetch}>
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <AppVersionGate config={config} onRetry={refetch}>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -69,6 +72,7 @@ function AppContent() {
         />
       </Stack>
     </AppVersionGate>
+    </>
   );
 }
 

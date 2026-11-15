@@ -1,9 +1,17 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, act } from '@testing-library/react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SettingsStore from '@/store/settings';
 import * as Hooks from '@/hooks';
 import RootLayout from '../_layout';
+
+const mockStatusBar = jest.fn();
+jest.mock('expo-status-bar', () => ({
+  StatusBar: (props: any) => {
+    mockStatusBar(props);
+    return null;
+  },
+}));
 
 jest.mock('@/hooks', () => ({
   useAppFonts: jest.fn(),
@@ -14,7 +22,8 @@ jest.mock('@/hooks', () => ({
 
 describe('RootLayout - Theme Flash Prevention (T09.48)', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    SettingsStore.resetSettings();
   });
 
   it('keeps splash screen visible until both fonts and settings are loaded', async () => {
@@ -45,6 +54,19 @@ describe('RootLayout - Theme Flash Prevention (T09.48)', () => {
 
     await waitFor(() => {
       expect(SplashScreen.hideAsync).toHaveBeenCalled();
+    });
+  });
+
+  it('renders StatusBar with style matching active theme (T10.14)', async () => {
+    (Hooks.useAppFonts as jest.Mock).mockReturnValue([true, null]);
+    await SettingsStore.updateSettings({ themeMode: 'dark' });
+
+    await render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(mockStatusBar).toHaveBeenCalledWith(
+        expect.objectContaining({ style: 'light' }),
+      );
     });
   });
 });
