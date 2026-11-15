@@ -67,7 +67,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand --forceExit",
+    "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand",
     "build:apk": "eas build -p android --profile preview",
     "build:testflight": "eas build -p ios --profile testflight",
     "build:prod": "eas build -p all --profile production",

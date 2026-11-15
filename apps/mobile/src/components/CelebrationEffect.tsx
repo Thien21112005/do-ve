@@ -61,6 +61,9 @@ export function CelebrationEffect({
         const timer = setTimeout(() => {
           onComplete?.();
         }, 1800);
+        if (typeof (timer as any)?.unref === 'function') {
+          (timer as any).unref();
+        }
 
         return () => clearTimeout(timer);
       }
