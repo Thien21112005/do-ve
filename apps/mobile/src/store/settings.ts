@@ -41,12 +41,16 @@ export async function loadSettings(): Promise<AppSettings> {
   return currentSettings;
 }
 
+/**
+ * Pure snapshot getter for useSyncExternalStore (T09.49).
+ * Contains no side-effects or async bootstrap calls.
+ */
 export function getSettings(): AppSettings {
-  if (!isInitialized) {
-    // Trigger initial background load once
-    loadSettings().catch(() => {});
-  }
   return currentSettings;
+}
+
+export function isSettingsInitialized(): boolean {
+  return isInitialized;
 }
 
 export function updateSettings(partial: Partial<AppSettings>): void {

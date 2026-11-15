@@ -1,5 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   getSettings,
+  loadSettings,
   updateSettings,
   resetSettings,
   subscribeSettings,
@@ -38,5 +40,23 @@ describe('Settings store', () => {
     resetSettings();
     expect(getSettings().celebrationEnabled).toBe(true);
     expect(getSettings().hapticsEnabled).toBe(true);
+  });
+
+  it('getSettings is a pure snapshot getter without side-effects (T09.49)', () => {
+    let isolatedGetSettings!: typeof getSettings;
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const mod = require('../settings');
+      isolatedGetSettings = mod.getSettings;
+    });
+
+    const getItemSpy = jest.spyOn(AsyncStorage, 'getItem');
+    getItemSpy.mockClear();
+
+    // On fresh uninitialized module, calling getSettings must not trigger AsyncStorage.getItem
+    isolatedGetSettings();
+    isolatedGetSettings();
+
+    expect(getItemSpy).not.toHaveBeenCalled();
   });
 });
