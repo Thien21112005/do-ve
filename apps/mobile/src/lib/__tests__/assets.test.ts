@@ -60,4 +60,25 @@ describe('DoVe Mobile App Icon Assets (T10.15)', () => {
     expect(appJson.expo.splash.backgroundColor).toBe('#F6F4EF');
     expect(appJson.expo.splash.dark?.backgroundColor).toBe('#0F1217');
   });
+
+  it('removes unused Expo template assets (T10.17)', () => {
+    const obsoleteAssets = [
+      'react-logo.png',
+      'react-logo@2x.png',
+      'react-logo@3x.png',
+      'expo-badge.png',
+      'expo-badge-white.png',
+      'expo-logo.png',
+      'logo-glow.png',
+      'tutorial-web.png',
+      'tabIcons',
+    ];
+
+    for (const item of obsoleteAssets) {
+      expect(fs.existsSync(path.join(assetsDir, item))).toBe(false);
+    }
+
+    const expoIconDir = path.resolve(process.cwd(), 'assets/expo.icon');
+    expect(fs.existsSync(expoIconDir)).toBe(false);
+  });
 });
