@@ -48,7 +48,7 @@
 | T09.38 | P1 | Khôi phục từ file ghi đè trạng thái mới bằng dữ liệu cũ | DONE | 7498854 | 2026-11-15 | Gộp vé sao lưu không hạ cấp trạng thái WON/LOST, đếm riêng vé mới và vé trùng |
 | T09.39 | P1 | Kiểm tra dữ liệu nhập từ file quá lỏng | DONE | 50003ad | 2026-11-15 | Bổ sung hàm isValidSavedTicket kiểm tra nghiêm ngặt định dạng số vé, ngày mở thưởng, đài và giải thưởng |
 | T09.40 | P2 | Nhập N vé = N lần ghi toàn bộ danh sách | DONE | be2b7f4 | 2026-11-15 | Bổ sung hàm saveManyTickets ghi gộp hàng loạt vé sao lưu trong 1 lần ghi AsyncStorage duy nhất |
-| T09.41 | P2 | Sao lưu "thành công" khi không có share sheet | TODO | | | |
+| T09.41 | P2 | Sao lưu "thành công" khi không có share sheet | DONE | f90dad0 | 2026-11-15 | Báo lỗi khi Sharing.isAvailableAsync() trả về false, không giả lập thành công |
 | T09.42 | P1 | Thông báo nhắc dò vé không hiện khi app mở & bấm không mở app đúng chỗ | TODO | | | |
 | T09.43 | P2 | Huỷ và lên lịch lại toàn bộ nhắc nhở mỗi khi danh sách vé đổi | TODO | | | |
 | T09.44 | P2 | Quyền thông báo bị thu hồi nhưng công tắc vẫn bật | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 15 | 14 |
-| P2 | 30 | 6 | 24 |
+| P2 | 30 | 7 | 23 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -145,6 +145,7 @@
 - 2026-11-15 | T09.38 | Khôi phục từ file sao lưu cũ ghi đè vé WON thành PENDING và đếm cả vé trùng | Triển khai shouldReplaceExistingTicket chặn hạ cấp vé chung cuộc (WON/LOST) về PENDING, đếm chính xác số vé mới thêm và vé trùng được bỏ qua.
 - 2026-11-15 | T09.39 | Kiểm tra dữ liệu nhập từ file sao lưu quá lỏng chấp nhận ký tự chữ, ngày rác, giải thưởng âm | Cài đặt hàm isValidSavedTicket kiểm tra regex đúng 6 chữ số, định dạng ngày chuẩn YYYY-MM-DD, trạng thái thuộc WON/LOST/PENDING và totalPrize >= 0.
 - 2026-11-15 | T09.40 | Nhập N vé sao lưu gây N lần ghi AsyncStorage tuần tự | Tạo saveManyTickets thực hiện batch write, giảm từ N lần serialize/write xuống 1 lần duy nhất.
+- 2026-11-15 | T09.41 | Sao lưu "thành công" dù thiết bị không hỗ trợ share sheet | Kiểm tra Sharing.isAvailableAsync(), trả về thông báo lỗi rõ ràng thay vì success: true khi không thể mở chia sẻ file.
 
 ## Vấn đề mở
 
