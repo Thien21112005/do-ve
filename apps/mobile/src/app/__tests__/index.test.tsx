@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ReactNode } from 'react';
-import { render, waitFor, act } from '@testing-library/react-native';
+import { render, waitFor, act, fireEvent } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HomeScreen from '../(tabs)/index';
 import CheckScreen from '../(tabs)/check';
@@ -64,6 +64,7 @@ describe('Tab Screens', () => {
     (apiDraws.fetchScheduleByDate as jest.Mock).mockResolvedValue(mockStations);
     (apiDraws.fetchDraw as jest.Mock).mockResolvedValue(mockLatestDraws[0]);
     (apiDraws.fetchLatestDraws as jest.Mock).mockResolvedValue(mockLatestDraws);
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockResolvedValue(mockLatestDraws);
   });
 
   it('renders HomeScreen with latest draws and quick check card', async () => {
@@ -96,7 +97,7 @@ describe('Tab Screens', () => {
     const refreshControl = scrollView.props.refreshControl;
     expect(refreshControl).toBeDefined();
 
-    const initialCalls = (apiDraws.fetchLatestDraws as jest.Mock).mock.calls
+    const initialCalls = (apiDraws.fetchLatestDayDraws as jest.Mock).mock.calls
       .length;
     await act(async () => {
       await refreshControl.props.onRefresh();
@@ -104,7 +105,7 @@ describe('Tab Screens', () => {
 
     await waitFor(() => {
       expect(
-        (apiDraws.fetchLatestDraws as jest.Mock).mock.calls.length,
+        (apiDraws.fetchLatestDayDraws as jest.Mock).mock.calls.length,
       ).toBeGreaterThan(initialCalls);
     });
   });
@@ -141,5 +142,40 @@ describe('Tab Screens', () => {
     expect(
       getByText('Vé chỉ lưu trên máy này, không gửi lên server.'),
     ).toBeTruthy();
+  });
+
+  it('deep links Home cards to station results with station and date params (T09.34)', async () => {
+    const { useRouter } = require('expo-router');
+    const router = useRouter();
+    const { getAllByText, getByText } = await render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getAllByText('Xem toàn bộ bảng giải').length).toBeGreaterThan(0);
+    });
+
+    // Click "Xem toàn bộ bảng giải" on the first card
+    const viewDetailsButtons = getAllByText('Xem toàn bộ bảng giải');
+    fireEvent.press(viewDetailsButtons[0]);
+
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/(tabs)/results',
+      params: {
+        station: 'tp-hcm',
+        date: '2026-11-14',
+      },
+    });
+
+    // Click "Xem tất cả"
+    const viewAllBtn = getByText('Xem tất cả');
+    fireEvent.press(viewAllBtn);
+
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/(tabs)/results',
+      params: {
+        date: '2026-11-14',
+      },
+    });
   });
 });

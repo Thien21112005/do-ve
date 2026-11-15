@@ -164,7 +164,12 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Pressable
-              onPress={() => router.push('/(tabs)/results')}
+              onPress={() =>
+                router.push({
+                  pathname: '/(tabs)/results',
+                  params: draws[0]?.drawDate ? { date: draws[0].drawDate } : undefined,
+                })
+              }
               className="flex-row items-center"
             >
               <Text
@@ -379,7 +384,18 @@ export default function HomeScreen() {
 
                   {/* Action Link to Details */}
                   <Pressable
-                    onPress={() => router.push('/(tabs)/results')}
+                    testID={`home-card-view-details-${draw.stationCode}`}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Xem toàn bộ bảng giải đài ${draw.stationName || draw.stationCode}`}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(tabs)/results',
+                        params: {
+                          station: draw.stationCode,
+                          date: draw.drawDate,
+                        },
+                      })
+                    }
                     className="mt-3 pt-2.5 border-t flex-row items-center justify-center"
                     style={{ borderColor: colors.border }}
                   >
