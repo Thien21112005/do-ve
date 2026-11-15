@@ -50,7 +50,7 @@
 | T09.40 | P2 | Nhập N vé = N lần ghi toàn bộ danh sách | DONE | be2b7f4 | 2026-11-15 | Bổ sung hàm saveManyTickets ghi gộp hàng loạt vé sao lưu trong 1 lần ghi AsyncStorage duy nhất |
 | T09.41 | P2 | Sao lưu "thành công" khi không có share sheet | DONE | f90dad0 | 2026-11-15 | Báo lỗi khi Sharing.isAvailableAsync() trả về false, không giả lập thành công |
 | T09.42 | P1 | Thông báo nhắc dò vé không hiện khi app mở & bấm không mở app đúng chỗ | DONE | 12cf0fb | 2026-11-15 | Cài đặt foreground notification handler, tạo channel Android, định dạng ngày DD/MM/YYYY, lắng nghe sự kiện bấm thông báo điều hướng tới màn Vé |
-| T09.43 | P2 | Huỷ và lên lịch lại toàn bộ nhắc nhở mỗi khi danh sách vé đổi | TODO | | | |
+| T09.43 | P2 | Huỷ và lên lịch lại toàn bộ nhắc nhở mỗi khi danh sách vé đổi | DONE | e8265ed | 2026-11-15 | Tạo getPendingTicketsKey băm tập vé PENDING theo ngày & số lượng, chỉ hủy/lên lịch lại thông báo khi tập này thay đổi |
 | T09.44 | P2 | Quyền thông báo bị thu hồi nhưng công tắc vẫn bật | TODO | | | |
 | T09.45 | P2 | Tự dò lại chỉ chạy khi mở tab Vé của tôi | TODO | | | |
 | T09.46 | P1 | Tắt "Phản hồi xúc giác" không có tác dụng | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 16 | 13 |
-| P2 | 30 | 7 | 23 |
+| P2 | 30 | 8 | 22 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -147,6 +147,7 @@
 - 2026-11-15 | T09.40 | Nhập N vé sao lưu gây N lần ghi AsyncStorage tuần tự | Tạo saveManyTickets thực hiện batch write, giảm từ N lần serialize/write xuống 1 lần duy nhất.
 - 2026-11-15 | T09.41 | Sao lưu "thành công" dù thiết bị không hỗ trợ share sheet | Kiểm tra Sharing.isAvailableAsync(), trả về thông báo lỗi rõ ràng thay vì success: true khi không thể mở chia sẻ file.
 - 2026-11-15 | T09.42 | Thông báo nhắc dò vé không hiển thị foreground và bấm không điều hướng đúng | Cấu hình Notifications.setNotificationHandler, tạo channel dove_reminders trên Android, chuẩn hoá ngày DD/MM/YYYY và thêm addNotificationResponseReceivedListener điều hướng tới /(tabs)/tickets.
+- 2026-11-15 | T09.43 | Huỷ và lên lịch lại toàn bộ nhắc nhở mỗi khi danh sách vé đổi dù không đổi kỳ quay chờ | Xây dựng hàm getPendingTicketsKey sắp xếp ngày và số lượng vé PENDING, dùng lastSyncKeyRef trong usePendingTicketsReminder chặn tái đồng bộ thừa khi thêm/xoá/sửa vé không phải PENDING.
 
 ## Vấn đề mở
 
