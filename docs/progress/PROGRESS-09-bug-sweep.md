@@ -32,7 +32,7 @@
 | T09.22 | P1 | Hiệu ứng trúng thưởng bị render 2 lần + haptic 2–3 lần | DONE | f874414 | 2026-11-15 | Bỏ CelebrationEffect trong BatchResultList và gỡ bỏ haptics.success trùng lặp ở check.tsx |
 | T09.23 | P2 | Celebration kích hoạt lại ngoài ý muốn | DONE | 38044eb | 2026-11-15 | Chỉ kích hoạt celebration 1 lần duy nhất cho mỗi kết quả mới, không reset hasTriggeredRef khi bật/tắt settings và cô lập active theo chế độ hiện tại |
 | T09.24 | P1 | Thông báo lỗi API hiển thị tiếng Anh / thô | DONE | 3261da6 | 2026-11-15 | Bản địa hoá thông báo lỗi qua API_ERROR_MESSAGES và hàm getApiErrorMessage type-safe, loại bỏ as any |
-| T09.25 | P2 | Retry policy sai cho timeout | TODO | | | |
+| T09.25 | P2 | Retry policy sai cho timeout | DONE | 78e5040 | 2026-11-15 | Cấu hình retry policy của queryClient cho phép thử lại TIMEOUT_ERROR (408) và NETWORK_ERROR (0), chặn 429 và 4xx |
 | T09.26 | P2 | Dò hàng loạt không bỏ số trùng, đếm cả token sai | TODO | | | |
 | T09.27 | P2 | Dò hàng loạt hiển thị mã đài thay tên đài | TODO | | | |
 | T09.28 | P2 | `onCheckSuccess?: (result: any)` và prop lạ trên screen | TODO | | | |
@@ -129,6 +129,7 @@
 - 2026-11-15 | T09.22 | Hiệu ứng trúng thưởng và haptic success bị kích hoạt lặp 2-3 lần | Loại bỏ CelebrationEffect thừa trong BatchResultList và lược bỏ các lệnh haptics.success() trực tiếp ở onSuccess của check.tsx, gom về CelebrationEffect quản lý duy nhất.
 - 2026-11-15 | T09.23 | Celebration kích hoạt lại ngoài ý muốn khi đổi chế độ hoặc thay đổi setting | Di chuyển lệnh start animation/haptics vào trong khối guard hasTriggeredRef, chỉ reset ref khi active=false và cô lập prop active trong check.tsx theo chế độ single/batch hiện hành.
 - 2026-11-15 | T09.24 | Thông báo lỗi API hiển thị chuỗi tiếng Anh thô từ hệ thống / mạng | Thiết lập từ điển chuẩn tiếng Việt API_ERROR_MESSAGES và hàm getApiErrorMessage(error), map toàn bộ mã lỗi (NETWORK_ERROR, TIMEOUT_ERROR, RATE_LIMITED,...) và loại bỏ as any trong check.tsx.
+- 2026-11-15 | T09.25 | QueryClient không retry lỗi timeout do coi 408 là lỗi 4xx | Điều chỉnh retry policy trong queryClient.ts: kiểm tra mã lỗi và status, cho phép retry TIMEOUT_ERROR và NETWORK_ERROR tối đa 2 lần, chặn triệt để retry đối với mã 429 và các lỗi 4xx khác.
 
 ## Vấn đề mở
 
