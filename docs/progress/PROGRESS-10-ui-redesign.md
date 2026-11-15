@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 15 / 62 task hoàn thành
+- **Tổng quan:** 16 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -23,7 +23,7 @@
 | T10.13 | Icon tab đúng nghĩa | DONE | bda545c | 2026-11-15 | Đổi icon Kết quả sang Table2 (thay Trophy), thêm strokeWidth 2.5 khi active, nhãn tab 12px BeVietnamPro-Medium |
 | T10.14 | StatusBar theo theme | DONE | 3685082 | 2026-11-15 | Gắn StatusBar style theo isDark ở root layout, đảm bảo hiển thị đúng trên cả light và dark mode, có unit test |
 | T10.15 | Icon app riêng của DoVe | DONE | 69d2353 | 2026-11-15 | Tạo bộ icon DoVe đặc trưng (tờ vé ngà ấm + đỏ son + tick trúng xanh), adaptive icons Android 13+ và favicon, có test xác thực |
-| T10.16 | Splash screen | TODO | | | |
+| T10.16 | Splash screen | DONE | 99049fc | 2026-11-15 | Cập nhật splash-icon đồ hoạ vé số DoVe, cấu hình app.json splash màu nền ngà ấm cho light và dark.backgroundColor |
 | T10.17 | Dọn asset template Expo | TODO | | | |
 | T10.18 | Bố cục Home mới: "hôm nay quay đài nào, đã có kết quả chưa" | TODO | | | |
 | T10.19 | Thẻ kết quả đài trên Home gọn hơn | TODO | | | |
