@@ -32,32 +32,75 @@ function getContrastRatio(hex1: string, hex2: string): number {
 }
 
 describe('Design Tokens & Theme', () => {
-  describe('WCAG 2.1 AA Contrast Compliance', () => {
-    it('meets AA standards (>= 4.5:1) for light mode main text on surface', () => {
-      const ratio = getContrastRatio(
+  describe('WCAG 2.1 AA & AAA Contrast Compliance (Direction A - Tờ vé giấy)', () => {
+    it('meets AAA standards (>= 7:1) for light mode main text on surface and background', () => {
+      const surfaceRatio = getContrastRatio(
         colors.light.textMain,
         colors.light.surface,
       );
-      expect(ratio).toBeGreaterThanOrEqual(4.5);
+      expect(surfaceRatio).toBeGreaterThanOrEqual(7.0);
+
+      const bgRatio = getContrastRatio(
+        colors.light.textMain,
+        colors.light.background,
+      );
+      expect(bgRatio).toBeGreaterThanOrEqual(7.0);
     });
 
-    it('meets AA standards (>= 4.5:1) for light mode muted text on surface', () => {
-      const ratio = getContrastRatio(
+    it('meets AA standards (>= 4.5:1) for light mode muted text on surface and background', () => {
+      const surfaceRatio = getContrastRatio(
         colors.light.textMuted,
         colors.light.surface,
+      );
+      expect(surfaceRatio).toBeGreaterThanOrEqual(4.5);
+
+      const bgRatio = getContrastRatio(
+        colors.light.textMuted,
+        colors.light.background,
+      );
+      expect(bgRatio).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('meets AA standards (>= 4.5:1) for light mode onPrimary text on primary button', () => {
+      const ratio = getContrastRatio(
+        colors.light.onPrimary,
+        colors.light.primary,
       );
       expect(ratio).toBeGreaterThanOrEqual(4.5);
     });
 
-    it('meets AA standards (>= 4.5:1) for dark mode main text on surface', () => {
-      const ratio = getContrastRatio(colors.dark.textMain, colors.dark.surface);
-      expect(ratio).toBeGreaterThanOrEqual(4.5);
+    it('meets AAA standards (>= 7:1) for dark mode main text on surface and background', () => {
+      const surfaceRatio = getContrastRatio(
+        colors.dark.textMain,
+        colors.dark.surface,
+      );
+      expect(surfaceRatio).toBeGreaterThanOrEqual(7.0);
+
+      const bgRatio = getContrastRatio(
+        colors.dark.textMain,
+        colors.dark.background,
+      );
+      expect(bgRatio).toBeGreaterThanOrEqual(7.0);
     });
 
-    it('meets AA standards (>= 4.5:1) for dark mode muted text on surface', () => {
-      const ratio = getContrastRatio(
+    it('meets AA standards (>= 4.5:1) for dark mode muted text on surface and background', () => {
+      const surfaceRatio = getContrastRatio(
         colors.dark.textMuted,
         colors.dark.surface,
+      );
+      expect(surfaceRatio).toBeGreaterThanOrEqual(4.5);
+
+      const bgRatio = getContrastRatio(
+        colors.dark.textMuted,
+        colors.dark.background,
+      );
+      expect(bgRatio).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('meets AA standards (>= 4.5:1) for dark mode onPrimary text on primary button', () => {
+      const ratio = getContrastRatio(
+        colors.dark.onPrimary,
+        colors.dark.primary,
       );
       expect(ratio).toBeGreaterThanOrEqual(4.5);
     });
@@ -74,6 +117,32 @@ describe('Design Tokens & Theme', () => {
         colors.dark.surface,
       );
       expect(darkWinRatio).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('meets AA standards for special prize (Giải Đặc biệt) text contrast', () => {
+      const lightSpecialRatio = getContrastRatio(
+        colors.light.special,
+        colors.light.surface,
+      );
+      expect(lightSpecialRatio).toBeGreaterThanOrEqual(4.5);
+
+      const darkSpecialRatio = getContrastRatio(
+        colors.dark.special,
+        colors.dark.surface,
+      );
+      expect(darkSpecialRatio).toBeGreaterThanOrEqual(4.5);
+    });
+
+    it('includes all required tint and surface tokens for Direction A', () => {
+      for (const mode of ['light', 'dark'] as const) {
+        expect(colors[mode].surfaceSunken).toBeDefined();
+        expect(colors[mode].special).toBeDefined();
+        expect(colors[mode].specialTint).toBeDefined();
+        expect(colors[mode].winTint).toBeDefined();
+        expect(colors[mode].pendingTint).toBeDefined();
+        expect(colors[mode].errorTint).toBeDefined();
+        expect(colors[mode].onPrimary).toBeDefined();
+      }
     });
   });
 

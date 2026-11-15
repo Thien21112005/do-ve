@@ -1,82 +1,104 @@
 /**
- * Semantic color palette with high contrast (WCAG 2.1 AA compliant)
- * Designed for Southern Vietnam Lottery checking experience (DoVe).
+ * Semantic color palette with high contrast (WCAG 2.1 AA & AAA compliant).
+ * Direction A — "Tờ vé giấy" (ADR-006):
+ * Nền giấy ngà ấm (#F6F4EF), chữ mực xanh đen đậm nét (#1A2230),
+ * đỏ son cho Giải Đặc biệt (#B91C1C), xanh lá trúng thưởng (#15803D).
  */
 
 export const colors = {
   light: {
-    // Brand & Primary
-    primary: '#2563eb', // blue-600
-    primaryHover: '#1d4ed8', // blue-700
-    primarySubtle: '#eff6ff', // blue-50
+    // Brand & Action
+    primary: '#1D4ED8', // blue-700
+    primaryHover: '#1E40AF',
+    primarySubtle: '#EFF4FE',
+    primaryTint: '#EFF4FE',
+    onPrimary: '#FFFFFF',
 
-    // Backgrounds & Surfaces
-    background: '#f8fafc', // slate-50
-    surface: '#ffffff', // pure white
-    surfaceSubtle: '#f1f5f9', // slate-100
-    surfaceElevated: '#ffffff',
+    // Backgrounds & Surfaces (Warm Paper Theme)
+    background: '#F6F4EF', // warm paper off-white
+    surface: '#FFFFFF', // pure paper surface
+    surfaceSunken: '#EFEBE3', // sunken wells / inputs
+    surfaceSubtle: '#EFEBE3',
+    surfaceElevated: '#FFFFFF',
 
-    // Text & Content
-    textMain: '#0f172a', // slate-900 (contrast > 18:1 on white)
-    textMuted: '#475569', // slate-600 (contrast ~ 5.9:1 on white)
-    textInverse: '#ffffff',
+    // Text & Content (Dark Ink)
+    textMain: '#1A2230', // dark blue-black ink (> 15:1 contrast)
+    textMuted: '#566070', // slate ink (> 5.7:1 contrast)
+    textInverse: '#FFFFFF',
 
-    // Borders & Dividers
-    border: '#e2e8f0', // slate-200
-    borderFocus: '#2563eb', // blue-600
+    // Borders & Lines
+    border: '#E2DDD2', // paper edge / perforation
+    borderFocus: '#1D4ED8',
 
-    // Lottery Result States
-    win: '#15803d', // green-700 (contrast ~ 4.9:1 on white)
-    winBg: '#f0fdf4', // green-50
-    winBorder: '#86efac', // green-300
+    // Lottery Result States & Specificity
+    special: '#B91C1C', // vermilion red (Giải Đặc biệt)
+    specialTint: '#FEF2F2',
+    specialBg: '#FEF2F2',
 
-    loss: '#475569', // slate-600
-    lossBg: '#f8fafc', // slate-50
-    lossBorder: '#cbd5e1', // slate-300
+    win: '#15803D', // emerald green (trúng thưởng)
+    winTint: '#F0FDF4',
+    winBg: '#F0FDF4',
+    winBorder: '#86EFAC',
 
-    pending: '#b45309', // amber-700
-    pendingBg: '#fffbeb', // amber-50
-    pendingBorder: '#fde68a', // amber-200
+    pending: '#B45309', // amber (kỳ quay chờ)
+    pendingTint: '#FFFBEB',
+    pendingBg: '#FFFBEB',
+    pendingBorder: '#FDE68A',
 
-    error: '#b91c1c', // red-700
-    errorBg: '#fef2f2', // red-50
+    loss: '#566070', // neutral ink
+    lossBg: '#F6F4EF',
+    lossBorder: '#E2DDD2',
+
+    error: '#B42318', // alert red
+    errorTint: '#FEF3F2',
+    errorBg: '#FEF3F2',
   },
   dark: {
-    // Brand & Primary
-    primary: '#3b82f6', // blue-500
-    primaryHover: '#60a5fa', // blue-400
-    primarySubtle: '#172554', // blue-950
+    // Brand & Action
+    primary: '#7AA2FF',
+    primaryHover: '#93B4FF',
+    primarySubtle: '#172554',
+    primaryTint: '#172554',
+    onPrimary: '#0F1217',
 
-    // Backgrounds & Surfaces
-    background: '#090d16', // deeper slate
-    surface: '#0f172a', // slate-900
-    surfaceSubtle: '#1e293b', // slate-800
-    surfaceElevated: '#1e293b', // slate-800
+    // Backgrounds & Surfaces (Night Charcoal)
+    background: '#0F1217',
+    surface: '#181C23',
+    surfaceSunken: '#12151B',
+    surfaceSubtle: '#12151B',
+    surfaceElevated: '#222731',
 
-    // Text & Content
-    textMain: '#f8fafc', // slate-50 (contrast > 18:1 on slate-900)
-    textMuted: '#94a3b8', // slate-400 (contrast ~ 6.1:1 on slate-900)
-    textInverse: '#0f172a',
+    // Text & Content (Bright Off-White)
+    textMain: '#EEF0F3',
+    textMuted: '#9AA3B2',
+    textInverse: '#0F1217',
 
-    // Borders & Dividers
-    border: '#334155', // slate-700
-    borderFocus: '#60a5fa', // blue-400
+    // Borders & Lines
+    border: '#2A303A',
+    borderFocus: '#7AA2FF',
 
-    // Lottery Result States
-    win: '#4ade80', // green-400 (contrast ~ 8.5:1 on slate-900)
-    winBg: '#052e16', // green-950
-    winBorder: '#166534', // green-800
+    // Lottery Result States & Specificity
+    special: '#FF7A70',
+    specialTint: '#450A0A',
+    specialBg: '#450A0A',
 
-    loss: '#94a3b8', // slate-400
-    lossBg: '#1e293b', // slate-800
-    lossBorder: '#334155', // slate-700
+    win: '#4ADE80',
+    winTint: '#052E16',
+    winBg: '#052E16',
+    winBorder: '#166534',
 
-    pending: '#fbbf24', // amber-400
-    pendingBg: '#451a03', // amber-950
-    pendingBorder: '#78350f', // amber-900
+    pending: '#FBBF24',
+    pendingTint: '#451A03',
+    pendingBg: '#451A03',
+    pendingBorder: '#78350F',
 
-    error: '#f87171', // red-400
-    errorBg: '#450a0a', // red-950
+    loss: '#9AA3B2',
+    lossBg: '#12151B',
+    lossBorder: '#2A303A',
+
+    error: '#FF8A80',
+    errorTint: '#450A0A',
+    errorBg: '#450A0A',
   },
 } as const;
 
