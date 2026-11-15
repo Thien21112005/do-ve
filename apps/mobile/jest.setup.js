@@ -104,6 +104,11 @@ jest.mock('expo-document-picker', () => ({
   }),
 }));
 
+jest.mock('expo-splash-screen', () => ({
+  preventAutoHideAsync: jest.fn().mockResolvedValue(true),
+  hideAsync: jest.fn().mockResolvedValue(true),
+}));
+
 const mockNotifications = {
   scheduleNotificationAsync: jest.fn().mockResolvedValue('notif-id-123'),
   cancelScheduledNotificationAsync: jest.fn().mockResolvedValue(undefined),

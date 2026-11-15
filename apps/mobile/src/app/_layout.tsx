@@ -1,5 +1,5 @@
 import '../global.css';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/hooks';
 import { AppProviders, AppVersionGate, ErrorBoundary } from '@/components';
 import { initCrashReporting } from '@/services/crashReporting';
+import { loadSettings } from '@/store/settings';
 
 initCrashReporting();
 
@@ -37,15 +38,26 @@ function AppContent() {
 
 export default function RootLayout() {
   const [loaded, error] = useAppFonts();
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   useEffect(() => {
-    if (loaded || error) {
+    loadSettings()
+      .catch(() => {})
+      .finally(() => {
+        setSettingsLoaded(true);
+      });
+  }, []);
+
+  const isReady = (loaded || error) && settingsLoaded;
+
+  useEffect(() => {
+    if (isReady) {
       SplashScreen.hideAsync().catch(() => {});
     }
-  }, [loaded, error]);
+  }, [isReady]);
 
-  // Keep showing splash screen while font is loading
-  if (!loaded && !error) {
+  // Keep showing splash screen while font and settings are loading (T09.48)
+  if (!isReady) {
     return null;
   }
 
