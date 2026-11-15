@@ -268,7 +268,7 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
         totalPrize: typeof raw.totalPrize === 'number' ? raw.totalPrize : 0,
         wins: Array.isArray(raw.wins) ? raw.wins : [],
         note: raw.note,
-        createdAt: raw.createdAt || new Date().toISOString(),
+        createdAt: raw.createdAt || existing?.createdAt || new Date().toISOString(),
       };
 
       if (existing) {
