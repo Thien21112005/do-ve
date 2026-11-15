@@ -39,7 +39,7 @@
 | T09.29 | P1 | Kết quả nháy "Chưa có kết quả" khi chưa chọn đài | DONE | 34c4903 | 2026-11-15 | Dùng useSchedule nhận biết trạng thái đang tải đài và chờ auto-select, hiển thị loading thay vì nháy empty state |
 | T09.30 | P1 | Gộp lỗi mạng với "chưa có dữ liệu" | DONE | 6a38f78 | 2026-11-15 | Tách biệt trạng thái lỗi kết nối với trạng thái chưa có kết quả (404), bổ sung nút Thử lại cho StationChips và ResultsScreen |
 | T09.31 | P1 | Lịch quay hard-code lệch nguồn dữ liệu | DONE | 81a9421 | 2026-11-15 | Hook useWeeklySchedule nạp lịch đài từ API cho 7 ngày, tự động fallback mảng tĩnh khi offline |
-| T09.32 | P1 | Thông tin sai trên màn Lịch quay | TODO | | | |
+| T09.32 | P1 | Thông tin sai trên màn Lịch quay | DONE | 27a149e | 2026-11-15 | Thống nhất khung giờ mở thưởng 16h15-16h35 và sửa thông tin nghỉ Tết Nguyên Đán chuẩn xác |
 | T09.33 | P2 | Bấm đài ở Lịch quay mở Kết quả sai | TODO | | | |
 | T09.34 | P2 | Nút trên Home không truyền ngữ cảnh | TODO | | | |
 | T09.35 | P1 | Ghi đè đồng thời làm mất vé (race condition) | TODO | | | |
@@ -86,7 +86,7 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 10 | 19 |
+| P1 | 29 | 11 | 18 |
 | P2 | 30 | 2 | 28 |
 | P3 | 3 | 0 | 3 |
 
@@ -136,6 +136,7 @@
 - 2026-11-15 | T09.29 | Màn Kết quả nháy flash "Chưa có kết quả" trước khi StationChips auto-select | Sử dụng useSchedule kiểm tra trạng thái nạp đài; chỉ hiển thị trạng thái rỗng khi đài đã được chọn và query kết thúc không có dữ liệu, tránh nháy giao diện.
 - 2026-11-15 | T09.30 | Lỗi mất mạng bị gộp nhầm thành "Không có đài mở thưởng" hoặc "Chưa có kết quả" | Tách riêng nhánh isError trong StationChips và ResultsScreen, hiển thị thông báo lỗi mạng kèm nút "Thử lại" chuyên biệt, không để 404 và lỗi mạng hiển thị giống nhau.
 - 2026-11-15 | T09.31 | Lịch quay hard-code mảng cứng lệch với database backend | Tạo hook useWeeklySchedule nạp song song 7 ngày từ /draws/schedule, kết hợp WEEKLY_SCHEDULE làm fallback an toàn khi mất kết nối mạng.
+- 2026-11-15 | T09.32 | Thông tin sai "không nghỉ Tết" và giờ quay mở thưởng mâu thuẫn | Đính chính lịch nghỉ Tết Nguyên Đán, chuẩn hoá toàn bộ chuỗi thông tin giờ mở thưởng thành 16h15-16h35 hàng ngày trong strings.ts và schedule.tsx.
 
 ## Vấn đề mở
 
