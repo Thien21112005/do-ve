@@ -18,7 +18,7 @@
 | T10.08 | Token spacing, radius, elevation có kỷ luật | DONE | c2d23c7 | 2026-11-15 | Rút gọn 3 bậc radius chuẩn (sm 8, md 12, lg 16) trong tokens.ts & tailwind, thêm token elevations (sheet, toast, none) |
 | T10.09 | Bộ primitive component | DONE | e9d02a9 | 2026-11-15 | Xây dựng bộ primitive components (Screen, Button, IconButton, Chip, Card, ListRow, SectionHeader, Banner, EmptyState, Badge, Divider, Segmented) chuẩn WCAG & a11y, 13 test xanh |
 | T10.10 | Ghi DESIGN.md bằng `/impeccable document` | DONE | d47b9f3 | 2026-11-15 | Soạn thảo DESIGN.md toàn diện: bảng màu Hướng A, type scale, radii, elevations, bộ 12 primitive components, quy tắc motion & haptics |
-| T10.11 | Header thống nhất bằng native Stack/Tabs header | TODO | | | |
+| T10.11 | Header thống nhất bằng native Stack/Tabs header | DONE | 8bb52b2 | 2026-11-15 | Dùng header native Stack/Tabs với BeVietnamPro, bỏ header tự vẽ trùng lặp ở schedule/settings/about, cập nhật test |
 | T10.12 | Thống nhất tên gọi | TODO | | | |
 | T10.13 | Icon tab đúng nghĩa | TODO | | | |
 | T10.14 | StatusBar theo theme | TODO | | | |
