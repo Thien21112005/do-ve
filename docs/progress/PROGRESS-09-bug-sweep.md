@@ -58,7 +58,7 @@
 | T09.48 | P2 | Nháy theme khi mở app | DONE | 2026-11-15 | 7049287 | Chờ loadSettings() cùng lúc với font trước khi SplashScreen.hideAsync() |
 | T09.49 | P2 | `getSnapshot` của useSyncExternalStore có side-effect | DONE | 2026-11-15 | 2989372 | Biến getSettings() thành pure snapshot getter, loại bỏ side-effect async |
 | T09.50 | P2 | Công tắc trong Cài đặt có thể đảo 2 lần & đọc 2 lần | DONE | 2026-11-15 | e13bf79 | Gán pointerEvents="none" & accessible={false} cho Switch, chỉ Pressable hàng xử lý toggle |
-| T09.51 | P1 | Link cập nhật app là domain giả | TODO | | | |
+| T09.51 | P1 | Link cập nhật app là domain giả | DONE | 2026-11-15 | 4024a2e | Mở Play Store / App Store thật theo Platform.OS hoặc config.storeUrl |
 | T09.52 | P2 | Version gate unmount toàn bộ điều hướng | TODO | | | |
 | T09.53 | P2 | Cờ bảo trì cũ bị khôi phục từ cache offline 7 ngày | TODO | | | |
 | T09.54 | P1 | Crash report không đi đâu cả | TODO | | | |
@@ -155,6 +155,7 @@
 - 2026-11-15 | T09.48 | Nháy theme khi mở app | Chờ loadSettings() cùng lúc với useAppFonts() trong RootLayout trước khi gọi SplashScreen.hideAsync(), loại bỏ hiện tượng nháy theme khi khởi động.
 - 2026-11-15 | T09.49 | getSnapshot của useSyncExternalStore có side-effect | Biến getSettings() thành pure snapshot getter, xoá bỏ hoàn toàn việc gọi loadSettings() bất đồng bộ trong getSnapshot.
 - 2026-11-15 | T09.50 | Công tắc trong Cài đặt có thể đảo 2 lần & đọc 2 lần | Chuyển toàn bộ quyền xử lý chạm và a11y sang Pressable hàng, gán pointerEvents="none" và accessible={false} cho Switch bên trong. Hoàn thành toàn bộ Nhóm F (5/5 tasks).
+- 2026-11-15 | T09.51 | Link cập nhật app là domain giả | Thay thế domain giả bằng URL Play Store / App Store thật theo Platform.OS và config.storeUrl từ backend.
 
 ## Vấn đề mở
 
