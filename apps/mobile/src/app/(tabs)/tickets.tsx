@@ -95,7 +95,7 @@ export default function TicketsScreen() {
       haptics.success();
       Alert.alert(
         'Khôi phục',
-        STRINGS.tickets.importSuccess(res.importedCount),
+        res.message || STRINGS.tickets.importSuccess(res.importedCount),
       );
     } else if (res.error) {
       Alert.alert('Khôi phục', res.error);

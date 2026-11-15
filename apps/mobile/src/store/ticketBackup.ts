@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { getTickets, saveTicket } from './ticketStore';
+import { getTickets, saveTicket, generateTicketId } from './ticketStore';
 import type { SavedTicket } from '@/types';
 
 export const BACKUP_FILE_NAME = 'dove-tickets.json';
@@ -24,8 +24,51 @@ export interface ExportResult {
 export interface ImportResult {
   success: boolean;
   importedCount: number;
+  newCount?: number;
+  skippedCount?: number;
+  updatedCount?: number;
   canceled?: boolean;
   error?: string;
+  message?: string;
+}
+
+/**
+ * Determine if a candidate ticket should replace an existing local ticket.
+ * Enforces rule: never downgrade terminal status (WON/LOST) to PENDING (T09.38).
+ */
+export function shouldReplaceExistingTicket(
+  existing: SavedTicket,
+  candidate: SavedTicket,
+): boolean {
+  // Never downgrade WON to non-WON
+  if (existing.status === 'WON' && candidate.status !== 'WON') {
+    return false;
+  }
+
+  // Upgrade PENDING to terminal status
+  if (
+    existing.status === 'PENDING' &&
+    (candidate.status === 'WON' || candidate.status === 'LOST')
+  ) {
+    return true;
+  }
+
+  // Upgrade LOST to WON
+  if (existing.status === 'LOST' && candidate.status === 'WON') {
+    return true;
+  }
+
+  // Never downgrade LOST to PENDING
+  if (existing.status === 'LOST' && candidate.status === 'PENDING') {
+    return false;
+  }
+
+  // Same status category: prefer candidate if its createdAt is newer
+  if (candidate.createdAt && existing.createdAt) {
+    return candidate.createdAt > existing.createdAt;
+  }
+
+  return false;
 }
 
 /**
@@ -135,7 +178,13 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
       };
     }
 
-    let validCount = 0;
+    const currentList = await getTickets();
+    const existingMap = new Map(currentList.map((t) => [t.id, t]));
+
+    let newCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+
     for (const raw of candidateTickets) {
       // Validate ticket schema (must have 6-digit ticket, station, drawDate)
       if (
@@ -144,7 +193,12 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
         typeof raw?.station === 'string' &&
         typeof raw?.drawDate === 'string'
       ) {
-        await saveTicket({
+        const id =
+          raw.id || generateTicketId(raw.station, raw.drawDate, raw.ticket);
+        const existing = existingMap.get(id);
+
+        const candidate: SavedTicket = {
+          id,
           ticket: raw.ticket,
           station: raw.station,
           stationName: raw.stationName || raw.station,
@@ -153,12 +207,27 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
           totalPrize: typeof raw.totalPrize === 'number' ? raw.totalPrize : 0,
           wins: Array.isArray(raw.wins) ? raw.wins : [],
           note: raw.note,
-        });
-        validCount++;
+          createdAt: raw.createdAt || new Date().toISOString(),
+        };
+
+        if (existing) {
+          if (shouldReplaceExistingTicket(existing, candidate)) {
+            await saveTicket(candidate);
+            existingMap.set(id, candidate);
+            updatedCount++;
+          } else {
+            skippedCount++;
+          }
+        } else {
+          await saveTicket(candidate);
+          existingMap.set(id, candidate);
+          newCount++;
+        }
       }
     }
 
-    if (validCount === 0) {
+    const totalProcessed = newCount + updatedCount + skippedCount;
+    if (totalProcessed === 0) {
       return {
         success: false,
         importedCount: 0,
@@ -166,9 +235,14 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
       };
     }
 
+    const importedCount = newCount + updatedCount;
     return {
       success: true,
-      importedCount: validCount,
+      importedCount,
+      newCount,
+      updatedCount,
+      skippedCount,
+      message: `Đã khôi phục ${newCount} vé mới${skippedCount > 0 ? ` (bỏ qua ${skippedCount} vé đã có)` : ''}.`,
     };
   } catch (err: any) {
     return {

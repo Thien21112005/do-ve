@@ -128,11 +128,64 @@ describe('ticketBackup (Export & Import Tickets JSON - T07.10 & T07.11)', () => 
 
       const result = await importTicketsFromJson();
       expect(result.success).toBe(true);
-      expect(result.importedCount).toBe(2);
+      expect(result.importedCount).toBe(1);
+      expect(result.skippedCount).toBe(1);
 
       const all = await getTickets();
       expect(all).toHaveLength(2);
       expect(all.some((t) => t.ticket === '012345')).toBe(true);
+    });
+
+    it('merges imported tickets without downgrading WON status to PENDING (T09.38)', async () => {
+      await saveTicket({
+        ticket: '888888',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'WON',
+        totalPrize: 2000000,
+        wins: [{ tier: 'FOURTH', prizeAmount: 2000000, matchedNumber: '88888' }],
+      });
+
+      const backupData = {
+        version: 1,
+        appName: 'DoVe',
+        tickets: [
+          {
+            ticket: '888888',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+            totalPrize: 0,
+            wins: [],
+          },
+          {
+            ticket: '777777',
+            station: 'DONG_NAI',
+            drawDate: '2026-11-14',
+            status: 'PENDING',
+            totalPrize: 0,
+          },
+        ],
+      };
+
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValueOnce({
+        canceled: false,
+        assets: [{ uri: 'file:///mock/dove-tickets.json' }],
+      });
+      (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
+        JSON.stringify(backupData),
+      );
+
+      const result = await importTicketsFromJson();
+      expect(result.success).toBe(true);
+
+      const all = await getTickets();
+      const ticket888888 = all.find((t) => t.ticket === '888888');
+      expect(ticket888888?.status).toBe('WON');
+      expect(ticket888888?.totalPrize).toBe(2000000);
+      expect(ticket888888?.wins).toHaveLength(1);
+      expect(all.find((t) => t.ticket === '777777')).toBeDefined();
     });
   });
 });
