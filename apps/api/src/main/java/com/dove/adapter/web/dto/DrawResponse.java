@@ -9,9 +9,9 @@ import java.util.Map;
 
 /** DTO for lottery draw result response (SRS 6.2). */
 public record DrawResponse(
-    String stationCode, LocalDate drawDate, Map<String, List<String>> numbers) {
+    String stationCode, String stationName, LocalDate drawDate, Map<String, List<String>> numbers) {
 
-  public static DrawResponse from(DrawResult domain) {
+  public static DrawResponse from(DrawResult domain, String stationName) {
     Map<String, List<String>> map = new LinkedHashMap<>();
     for (PrizeTier tier : PrizeTier.values()) {
       if (tier.isDrawn()) {
@@ -21,6 +21,10 @@ public record DrawResponse(
         }
       }
     }
-    return new DrawResponse(domain.stationCode(), domain.drawDate(), map);
+    return new DrawResponse(domain.stationCode(), stationName, domain.drawDate(), map);
+  }
+
+  public static DrawResponse from(DrawResult domain) {
+    return from(domain, null);
   }
 }

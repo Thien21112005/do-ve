@@ -113,6 +113,7 @@ class DrawControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
         .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("654321"))
         .andExpect(jsonPath("$.numbers.FIRST[0]").value("99999"))
@@ -184,6 +185,7 @@ class DrawControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"));
   }
 

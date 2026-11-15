@@ -288,7 +288,7 @@ class CheckControllerTest {
 
     CheckTicketUseCase useCase =
         new CheckTicketUseCase(drawRepository, stationSchedulePort, stationRepository, clock);
-    CheckController controller = new CheckController(useCase);
+    CheckController controller = new CheckController(useCase, Optional.of(stationRepository));
     mockMvc =
         MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(new GlobalExceptionHandler())
@@ -314,6 +314,7 @@ class CheckControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.ticket").value("654321"))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
         .andExpect(jsonPath("$.status").value("CHECKED"))
         .andExpect(jsonPath("$.won").value(true))
@@ -470,6 +471,7 @@ class CheckControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.ticket").value("654321"))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
         .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"))
         .andExpect(jsonPath("$.won").value(nullValue()))
@@ -497,6 +499,7 @@ class CheckControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.ticket").value("654321"))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
         .andExpect(jsonPath("$.status").value("RESULT_NOT_AVAILABLE"))
         .andExpect(jsonPath("$.won").value(nullValue()))
@@ -520,6 +523,7 @@ class CheckControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.stationName").value("TP. Hồ Chí Minh"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-09"))
         .andExpect(jsonPath("$.results", hasSize(1)))
         .andExpect(jsonPath("$.results[0].ticket").value("654321"))

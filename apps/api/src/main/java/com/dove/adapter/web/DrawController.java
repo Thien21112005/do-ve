@@ -1,5 +1,6 @@
 package com.dove.adapter.web;
 
+import com.dove.adapter.persistence.StationEntity;
 import com.dove.adapter.persistence.StationRepository;
 import com.dove.adapter.persistence.StationScheduleRepository;
 import com.dove.adapter.web.dto.DrawResponse;
@@ -122,7 +123,10 @@ public class DrawController {
       cacheControl = CacheControl.noCache();
     }
 
-    return ResponseEntity.ok().cacheControl(cacheControl).body(DrawResponse.from(drawResult));
+    String stationName = resolveStationName(station);
+    return ResponseEntity.ok()
+        .cacheControl(cacheControl)
+        .body(DrawResponse.from(drawResult, stationName));
   }
 
   @GetMapping("/latest")
@@ -154,6 +158,19 @@ public class DrawController {
 
     // Latest draw can change dynamically
     CacheControl cacheControl = CacheControl.noCache();
-    return ResponseEntity.ok().cacheControl(cacheControl).body(DrawResponse.from(drawResult));
+    String stationName = resolveStationName(drawResult.stationCode());
+    return ResponseEntity.ok()
+        .cacheControl(cacheControl)
+        .body(DrawResponse.from(drawResult, stationName));
+  }
+
+  private String resolveStationName(String stationCode) {
+    if (stationRepository != null && stationCode != null) {
+      return stationRepository
+          .findByCode(stationCode)
+          .map(StationEntity::getName)
+          .orElse(stationCode);
+    }
+    return stationCode;
   }
 }

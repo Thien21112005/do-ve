@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,7 @@ public class AdminDrawController {
   private final DrawRepository drawRepository;
   private final String configuredApiKey;
 
+  @Autowired
   public AdminDrawController(
       DrawRepository drawRepository,
       @Value("${dove.admin.api-key:dove-admin-secret-key}") String configuredApiKey,

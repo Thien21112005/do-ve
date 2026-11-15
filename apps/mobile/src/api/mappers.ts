@@ -144,7 +144,7 @@ export function mapCheckResponseToUi(
   stationsList?: StationResponse[],
 ): UiCheckResult {
   const stationCode = dto.stationCode || '';
-  const stationName = getStationName(stationCode, stationsList);
+  const stationName = dto.stationName || getStationName(stationCode, stationsList);
   const total =
     typeof dto.totalAmount === 'number'
       ? dto.totalAmount
@@ -184,7 +184,7 @@ export function mapBatchResponseToUi(
   stationsList?: StationResponse[],
 ): UiBatchResult {
   const stationCode = dto.stationCode || (dto as any).station || '';
-  const stationName = getStationName(stationCode, stationsList);
+  const stationName = dto.stationName || getStationName(stationCode, stationsList);
   const total =
     typeof dto.totalAmount === 'number'
       ? dto.totalAmount
@@ -216,7 +216,7 @@ export function mapDrawResponseToUi(
   stationsList?: StationResponse[],
 ): UiDrawView {
   const stationCode = dto.stationCode || '';
-  const stationName = getStationName(stationCode, stationsList);
+  const stationName = dto.stationName || getStationName(stationCode, stationsList);
   const numbers: Record<string, string[]> = dto.numbers || {};
 
   // Check if draw has all 18 numbers

@@ -9,17 +9,19 @@ import java.util.List;
 public record CheckTicketResponse(
     String ticket,
     String stationCode,
+    String stationName,
     LocalDate drawDate,
     String status,
     Boolean won,
     List<WinResponse> wins,
     long totalAmount) {
 
-  public static CheckTicketResponse from(CheckOutcome outcome) {
+  public static CheckTicketResponse from(CheckOutcome outcome, String stationName) {
     if (outcome.status() == CheckStatus.RESULT_NOT_AVAILABLE) {
       return new CheckTicketResponse(
           outcome.ticket().value(),
           outcome.stationCode(),
+          stationName,
           outcome.drawDate(),
           outcome.status().name(),
           null,
@@ -37,10 +39,15 @@ public record CheckTicketResponse(
     return new CheckTicketResponse(
         outcome.ticket().value(),
         outcome.stationCode(),
+        stationName,
         outcome.drawDate(),
         outcome.status().name(),
         won,
         winResponses,
         total);
+  }
+
+  public static CheckTicketResponse from(CheckOutcome outcome) {
+    return from(outcome, null);
   }
 }

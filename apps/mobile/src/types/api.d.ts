@@ -201,6 +201,7 @@ export interface components {
         CheckTicketResponse: {
             ticket?: string;
             stationCode?: string;
+            stationName?: string;
             /** Format: date */
             drawDate?: string;
             status?: string;
@@ -223,6 +224,7 @@ export interface components {
         };
         BatchCheckResponse: {
             stationCode?: string;
+            stationName?: string;
             /** Format: date */
             drawDate?: string;
             results?: components["schemas"]["CheckTicketResponse"][];
@@ -236,6 +238,7 @@ export interface components {
         };
         DrawResponse: {
             stationCode?: string;
+            stationName?: string;
             /** Format: date */
             drawDate?: string;
             numbers?: {
