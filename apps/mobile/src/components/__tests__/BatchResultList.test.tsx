@@ -109,4 +109,22 @@ describe('BatchResultList Component', () => {
 
     expect(onAgain).toHaveBeenCalled();
   });
+
+  it('displays full station name instead of raw code when only station code is provided (T09.27)', async () => {
+    const rawCodeBatchResult = {
+      station: 'tphcm',
+      stationCode: 'tphcm',
+      drawDate: '2026-11-14',
+      results: [],
+      totalAmount: 0,
+      totalTickets: 0,
+      totalWonTickets: 0,
+    } as any;
+
+    const { getByText } = await render(
+      <BatchResultList batchResult={rawCodeBatchResult} />,
+    );
+
+    expect(getByText(/Đài TP\. Hồ Chí Minh/)).toBeTruthy();
+  });
 });

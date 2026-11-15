@@ -9,7 +9,7 @@ import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
 import type { BatchCheckResponse } from '../types';
-import type { UiBatchResult } from '../api/mappers';
+import { getStationName, type UiBatchResult } from '../api/mappers';
 
 export interface BatchResultListProps {
   batchResult: UiBatchResult | BatchCheckResponse;
@@ -31,11 +31,12 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       : (batchResult.results || []).filter((r) => r.won).length;
   const hasWon = wonTickets > 0;
   const formattedDrawDate = formatDateVN(batchResult.drawDate ?? '');
-  const stationName =
+  const rawStation =
     (batchResult as any).stationName ||
     (batchResult as any).station ||
     (batchResult as any).stationCode ||
     '';
+  const stationName = getStationName(rawStation);
   const totalPrize =
     typeof (batchResult as any).totalPrize === 'number'
       ? (batchResult as any).totalPrize
