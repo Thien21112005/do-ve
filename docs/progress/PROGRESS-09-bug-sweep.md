@@ -72,7 +72,7 @@
 | T09.62 | P2 | Nguồn xskt trả trang của ngày khác bị cache sai ngày | DONE | bb784a5 | 2026-11-15 | Bỏ qua và không cache kết quả nếu HTML trả về ngày khác với ngày được yêu cầu, giới hạn cache 30 ngày |
 | T09.63 | P2 | 404 của `/draws` không phân biệt "đài không quay hôm đó" và "chưa có kết quả" | DONE | bc38b4e | 2026-11-15 | Phân biệt STATION_NOT_DRAWING (422) và RESULT_NOT_AVAILABLE (404) chuẩn ErrorCode enum |
 | T09.64 | P2 | Cache-Control 365 ngày `immutable` cho kỳ đã qua | DONE | c1bbe3f | 2026-11-15 | Giảm cache kỳ quá khứ xuống max-age 1 ngày kết hợp ETag revalidation (hỗ trợ 304 Not Modified) |
-| T09.65 | P2 | Lỗi body JSON sai / thiếu tham số không có `code` | TODO | | | |
+| T09.65 | P2 | Lỗi body JSON sai / thiếu tham số không có `code` | DONE | b1cfe1f | 2026-11-15 | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable, MissingServletRequestParameter và sanitize input |
 | T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | TODO | | | |
 | T09.67 | P2 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | TODO | | | |
 | T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
-| P2 | 30 | 14 | 16 |
+| P2 | 30 | 15 | 15 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -168,6 +168,7 @@
 - 2026-11-15 | T09.62 | Nguồn xskt trả trang của ngày khác bị cache sai ngày | Bỏ qua và không cache kết quả nếu ngày trích xuất từ HTML khác ngày yêu cầu; giới hạn kích thước dateCache 30 ngày.
 - 2026-11-15 | T09.63 | 404 của /draws không phân biệt đài không quay và chưa có kết quả | Thêm ErrorCode.RESULT_NOT_AVAILABLE (404) và ResultNotAvailableException; kiểm tra lịch quay trước khi tìm kết quả, trả STATION_NOT_DRAWING (422) nếu đài không quay hôm đó.
 - 2026-11-15 | T09.64 | Cache-Control 365 ngày immutable cho kỳ đã qua | Đổi max-age thành 1 ngày (86400s) không immutable, thêm header ETag và hỗ trợ điều kiện If-None-Match trả về 304 Not Modified.
+- 2026-11-15 | T09.65 | Lỗi body JSON sai / thiếu tham số không có code | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable và MissingServletRequestParameter, làm sạch dữ liệu đầu vào trong handleMethodArgumentTypeMismatch.
 
 ## Vấn đề mở
 
