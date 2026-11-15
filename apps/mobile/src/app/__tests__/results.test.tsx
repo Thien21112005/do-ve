@@ -4,6 +4,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ResultsScreen from '../(tabs)/results';
 import * as apiDraws from '@/api/draws';
+import { STRINGS } from '@/lib/strings';
 import type { StationResponse, DrawResponse } from '@/types';
 
 jest.mock('@/api/draws');
@@ -166,5 +167,19 @@ describe('ResultsScreen', () => {
     });
 
     jest.useRealTimers();
+  });
+
+  it('does NOT flash empty state "Chưa có kết quả" before station is selected (T09.29)', async () => {
+    // Delay schedule response so station selection does not happen immediately
+    (apiDraws.fetchScheduleByDate as jest.Mock).mockReturnValue(
+      new Promise((resolve) => setTimeout(() => resolve(mockStations), 100)),
+    );
+
+    const { queryByText } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    // While waiting for station selection, it should show loading/skeleton, NOT empty state!
+    expect(queryByText(STRINGS.results.emptyTitle)).toBeNull();
   });
 });

@@ -14,7 +14,7 @@ import {
   Icon,
   DrawTable,
 } from '@/components';
-import { useDraw } from '@/hooks';
+import { useDraw, useSchedule } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
 import { todayVN } from '@/lib';
@@ -25,10 +25,16 @@ export default function ResultsScreen() {
   const [selectedDate, setSelectedDate] = useState(() => todayVN());
   const [selectedStation, setSelectedStation] = useState<string>('');
 
+  const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
   const { draw, isLoading, isError, refetch } = useDraw(
     selectedDate,
     selectedStation,
   );
+
+  // T09.29: Avoid empty state flash before station chips are loaded and auto-selected
+  const isWaitingForStation =
+    !selectedStation && (isScheduleLoading || stations.length > 0);
+  const showLoading = isWaitingForStation || (Boolean(selectedStation) && isLoading);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -93,7 +99,7 @@ export default function ResultsScreen() {
 
         {/* Draw details container */}
         <View testID="results-draw-container" className="mt-4 mx-4">
-          {isLoading ? (
+          {showLoading ? (
             <View className="py-12 items-center justify-center">
               <ActivityIndicator size="large" color={colors.primary} />
               <Text
