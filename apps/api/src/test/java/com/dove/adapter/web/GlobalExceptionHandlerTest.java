@@ -45,6 +45,21 @@ class GlobalExceptionHandlerTest {
     public void throwValidation(@Valid @RequestBody DummyRequest request) {
       // no-op
     }
+
+    @GetMapping("/param")
+    public String requireParam(
+        @org.springframework.web.bind.annotation.RequestParam("station") String station) {
+      return station;
+    }
+
+    @GetMapping("/date")
+    public String requireDate(
+        @org.springframework.web.bind.annotation.RequestParam("date")
+            @org.springframework.format.annotation.DateTimeFormat(
+                iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
+            java.time.LocalDate date) {
+      return date.toString();
+    }
   }
 
   record DummyRequest(@NotBlank(message = "name is required") String name) {}
@@ -93,5 +108,57 @@ class GlobalExceptionHandlerTest {
         .andExpect(jsonPath("$.status").value(400))
         .andExpect(jsonPath("$.code").exists())
         .andExpect(jsonPath("$.detail").exists());
+  }
+
+  @Test
+  @DisplayName(
+      "HttpMessageNotReadableException (JSON sai định dạng) trả về Problem Details có code và timestamp (T09.65)")
+  void malformedJson_returnsProblemDetailsWithCodeAndTimestamp() throws Exception {
+    mockMvc
+        .perform(
+            post("/test/errors/validation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ malformed: json ]"))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(jsonPath("$.code").value("INVALID_REQUEST"))
+        .andExpect(jsonPath("$.timestamp").exists());
+  }
+
+  @Test
+  @DisplayName(
+      "MissingServletRequestParameterException (thiếu tham số) trả về Problem Details có code MISSING_PARAMETER (T09.65)")
+  void missingParam_returnsProblemDetailsWithCodeMissingParameter() throws Exception {
+    mockMvc
+        .perform(get("/test/errors/param"))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(jsonPath("$.code").value("MISSING_PARAMETER"))
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("station")));
+  }
+
+  @Test
+  @DisplayName(
+      "handleMethodArgumentTypeMismatch làm sạch giá trị đầu vào độc hại trong detail (T09.65)")
+  void typeMismatch_sanitizesInputValueInDetail() throws Exception {
+    mockMvc
+        .perform(
+            get("/test/errors/date")
+                .param(
+                    "date",
+                    "2026\n11\r02_extra_long_payload_string_that_exceeds_sixty_four_characters_long_for_test"))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.code").value("INVALID_DATE"))
+        .andExpect(
+            jsonPath("$.detail")
+                .value(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("\n"))))
+        .andExpect(
+            jsonPath("$.detail")
+                .value(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("\r"))))
+        .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.endsWith("...")));
   }
 }

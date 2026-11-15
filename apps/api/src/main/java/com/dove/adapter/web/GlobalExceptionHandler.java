@@ -32,12 +32,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   public ProblemDetail handleMethodArgumentTypeMismatch(
       MethodArgumentTypeMismatchException ex, WebRequest request) {
     String paramName = ex.getName();
+    String sanitizedValue = sanitizeValue(ex.getValue());
     String code = "INVALID_REQUEST";
-    String detail = "Tham số '" + paramName + "' không hợp lệ: " + ex.getValue();
+    String detail = "Tham số '" + paramName + "' không hợp lệ: " + sanitizedValue;
 
     if ("date".equalsIgnoreCase(paramName) || "drawDate".equalsIgnoreCase(paramName)) {
       code = ErrorCode.INVALID_DATE.name();
-      detail = "Ngày sai định dạng: " + ex.getValue();
+      detail = "Ngày sai định dạng: " + sanitizedValue;
     }
 
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
@@ -46,6 +47,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     problemDetail.setProperty("timestamp", Instant.now());
     enrichInstance(problemDetail, request);
     return problemDetail;
+  }
+
+  private String sanitizeValue(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    String str = value.toString().replaceAll("[\r\n\t]", "_");
+    if (str.length() > 64) {
+      return str.substring(0, 64) + "...";
+    }
+    return str;
   }
 
   @ExceptionHandler(BusinessException.class)
@@ -119,6 +131,54 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     problemDetail.setProperty("code", code);
+    problemDetail.setProperty("timestamp", Instant.now());
+    enrichInstance(problemDetail, request);
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(
+      org.springframework.http.converter.HttpMessageNotReadableException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+
+    String code = "INVALID_REQUEST";
+    String detail = "Dữ liệu JSON không hợp lệ hoặc sai cấu trúc";
+
+    Throwable root = ex.getMostSpecificCause();
+    if (root instanceof java.time.format.DateTimeParseException
+        || (root != null
+            && root.getMessage() != null
+            && (root.getMessage().contains("LocalDate")
+                || root.getMessage().contains("DateTimeParseException")))) {
+      code = ErrorCode.INVALID_DATE.name();
+      detail = "Ngày sai định dạng: yêu cầu định dạng chuẩn YYYY-MM-DD";
+    }
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+    problemDetail.setTitle("Bad Request");
+    problemDetail.setProperty("code", code);
+    problemDetail.setProperty("timestamp", Instant.now());
+    enrichInstance(problemDetail, request);
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMissingServletRequestParameter(
+      org.springframework.web.bind.MissingServletRequestParameterException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+
+    String paramName = ex.getParameterName();
+    String detail = "Thiếu tham số bắt buộc: " + paramName;
+
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+    problemDetail.setTitle("Bad Request");
+    problemDetail.setProperty("code", "MISSING_PARAMETER");
     problemDetail.setProperty("timestamp", Instant.now());
     enrichInstance(problemDetail, request);
 
