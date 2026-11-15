@@ -1,11 +1,27 @@
 import React from 'react';
-import { View, Text, Pressable, Linking } from 'react-native';
+import { View, Text, Pressable, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from './Icon';
 import { useTheme } from '../theme';
 import { isVersionOutdated, CURRENT_APP_VERSION } from '../lib/version';
 import { STRINGS } from '../lib/strings';
 import type { AppConfigResponse } from '../types';
+
+export const DEFAULT_PLAY_STORE_URL =
+  'https://play.google.com/store/apps/details?id=vn.lottery.dove';
+export const DEFAULT_APP_STORE_URL =
+  'https://apps.apple.com/app/dove-do-ve-so/id6470000000';
+
+/**
+ * Returns the destination store URL for forced app update (T09.51).
+ * Uses backend provided storeUrl when available, otherwise falls back to real Play Store / App Store URLs.
+ */
+export function getStoreUpdateUrl(config?: AppConfigResponse | null): string {
+  if (config?.storeUrl && config.storeUrl.trim().length > 0) {
+    return config.storeUrl.trim();
+  }
+  return Platform.OS === 'ios' ? DEFAULT_APP_STORE_URL : DEFAULT_PLAY_STORE_URL;
+}
 
 export interface AppVersionGateProps {
   config?: AppConfigResponse | null;
@@ -81,8 +97,8 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
       if (onUpdate) {
         onUpdate();
       } else {
-        // Default store link fallback
-        Linking.openURL('https://dove.lottery.vn/update').catch(() => {});
+        const targetUrl = getStoreUpdateUrl(config);
+        Linking.openURL(targetUrl).catch(() => {});
       }
     };
 

@@ -1,7 +1,11 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, Linking, Platform } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
-import { AppVersionGate } from '../AppVersionGate';
+import {
+  AppVersionGate,
+  DEFAULT_PLAY_STORE_URL,
+  DEFAULT_APP_STORE_URL,
+} from '../AppVersionGate';
 import type { AppConfigResponse } from '@/types';
 
 describe('AppVersionGate Component (T06.30)', () => {
@@ -81,6 +85,46 @@ describe('AppVersionGate Component (T06.30)', () => {
     const retryBtn = getByTestId('maintenance-retry-btn');
     fireEvent.press(retryBtn);
     expect(onRetry).toHaveBeenCalled();
+  });
+
+  describe('Real store URL handling for forced updates (T09.51)', () => {
+    it('opens backend provided storeUrl when available', async () => {
+      const openURLSpy = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+
+      const customConfig: AppConfigResponse = {
+        minSupportedVersion: '2.0.0',
+        maintenance: false,
+        storeUrl: 'https://example.com/custom-store-link',
+      };
+
+      const { getByTestId } = await render(
+        <AppVersionGate config={customConfig} currentVersion="1.0.0">
+          <Text>Content</Text>
+        </AppVersionGate>,
+      );
+
+      fireEvent.press(getByTestId('update-app-btn'));
+      expect(openURLSpy).toHaveBeenCalledWith('https://example.com/custom-store-link');
+    });
+
+    it('falls back to real Play Store / App Store link instead of fake domain', async () => {
+      const openURLSpy = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+
+      const { getByTestId } = await render(
+        <AppVersionGate config={outdatedConfig} currentVersion="1.0.0">
+          <Text>Content</Text>
+        </AppVersionGate>,
+      );
+
+      fireEvent.press(getByTestId('update-app-btn'));
+      expect(openURLSpy).not.toHaveBeenCalledWith('https://dove.lottery.vn/update');
+
+      if (Platform.OS === 'ios') {
+        expect(openURLSpy).toHaveBeenCalledWith(DEFAULT_APP_STORE_URL);
+      } else {
+        expect(openURLSpy).toHaveBeenCalledWith(DEFAULT_PLAY_STORE_URL);
+      }
+    });
   });
 });
 

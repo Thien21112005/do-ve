@@ -13,7 +13,9 @@ export type CheckTicketRequest = components['schemas']['CheckTicketRequest'];
 export type CheckTicketResponse = components['schemas']['CheckTicketResponse'];
 export type BatchCheckRequest = components['schemas']['BatchCheckRequest'];
 export type BatchCheckResponse = components['schemas']['BatchCheckResponse'];
-export type AppConfigResponse = components['schemas']['AppConfigResponse'];
+export type AppConfigResponse = components['schemas']['AppConfigResponse'] & {
+  storeUrl?: string;
+};
 export type ProblemDetail = {
   type?: string;
   title?: string;
