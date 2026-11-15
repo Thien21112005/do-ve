@@ -182,4 +182,18 @@ describe('ResultsScreen', () => {
     // While waiting for station selection, it should show loading/skeleton, NOT empty state!
     expect(queryByText(STRINGS.results.emptyTitle)).toBeNull();
   });
+
+  it('displays error state with retry button when draw fetch fails with network error (T09.30)', async () => {
+    (apiDraws.fetchDraw as jest.Mock).mockRejectedValue(
+      new Error('Network request failed'),
+    );
+
+    const { findByTestId, queryByText } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    const retryBtn = await findByTestId('results-error-retry-btn');
+    expect(retryBtn).toBeTruthy();
+    expect(queryByText(STRINGS.results.emptyTitle)).toBeNull();
+  });
 });

@@ -5,6 +5,7 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -19,6 +20,7 @@ import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
 import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
+import { getApiErrorMessage } from '@/api/client';
 
 export default function ResultsScreen() {
   const { colors } = useTheme();
@@ -26,7 +28,7 @@ export default function ResultsScreen() {
   const [selectedStation, setSelectedStation] = useState<string>('');
 
   const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
-  const { draw, isLoading, isError, refetch } = useDraw(
+  const { draw, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
     selectedStation,
   );
@@ -109,8 +111,42 @@ export default function ResultsScreen() {
                 {STRINGS.results.loading}
               </Text>
             </View>
-          ) : isError || !draw ? (
+          ) : isError ? (
             <View
+              testID="results-error-container"
+              className="p-5 rounded-2xl border items-center text-center mt-2"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: colors.error,
+              }}
+            >
+              <Icon name="alertCircle" size={32} color={colors.error} />
+              <Text
+                className="text-base font-bold mt-2.5 text-center"
+                style={{ color: colors.error }}
+              >
+                {getApiErrorMessage(error, 'Không thể tải kết quả mở thưởng')}
+              </Text>
+              <TouchableOpacity
+                testID="results-error-retry-btn"
+                onPress={() => refetch()}
+                className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center"
+                style={{
+                  borderColor: colors.error,
+                  backgroundColor: `${colors.error}15`,
+                }}
+              >
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: colors.error }}
+                >
+                  Thử lại
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : !draw ? (
+            <View
+              testID="results-empty-container"
               className="p-5 rounded-2xl border items-center text-center mt-2"
               style={{
                 backgroundColor: colors.surface,

@@ -140,4 +140,25 @@ describe('StationChips Component', () => {
       expect(onSelect).toHaveBeenCalledWith('TIEN_GIANG');
     });
   });
+
+  it('displays error banner with retry button on network error instead of empty schedule message (T09.30)', async () => {
+    (api.fetchScheduleByDate as jest.Mock).mockRejectedValue(
+      new Error('Network error'),
+    );
+
+    const onSelect = jest.fn();
+    const { findByTestId, queryByText } = await render(
+      <StationChips
+        selectedDate="2026-11-15"
+        selectedStation="TPHCM"
+        onSelectStation={onSelect}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    const errorContainer = await findByTestId('station-chips-error');
+    expect(errorContainer).toBeTruthy();
+    expect(await findByTestId('station-chips-retry-btn')).toBeTruthy();
+    expect(queryByText(/Không có đài mở thưởng trong ngày này/)).toBeNull();
+  });
 });
