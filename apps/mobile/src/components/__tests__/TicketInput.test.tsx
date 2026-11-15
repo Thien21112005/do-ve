@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { TicketInput } from '../TicketInput';
 import { colors } from '@/theme';
 
@@ -109,5 +109,28 @@ describe('TicketInput Component', () => {
     );
 
     expect(getByTestId('ticket-input-digit-0').props.editable).toBe(false);
+  });
+
+  it('keeps digit positions stable when middle digit is cleared without shifting (T09.18)', async () => {
+    const onChangeText = jest.fn();
+    const { getByTestId } = await render(
+      <TicketInput value="123456" onChangeText={onChangeText} />,
+    );
+
+    // User clears digit at index 2 (the '3')
+    fireEvent.changeText(getByTestId('ticket-input-digit-2'), '');
+    expect(onChangeText).toHaveBeenCalledWith('12 456');
+  });
+
+  it('renders intermediate spaces as empty boxes without shifting digits (T09.18)', async () => {
+    const { getByTestId } = await render(
+      <TicketInput value="12 456" onChangeText={jest.fn()} />,
+    );
+    expect(getByTestId('ticket-input-digit-0').props.value).toBe('1');
+    expect(getByTestId('ticket-input-digit-1').props.value).toBe('2');
+    expect(getByTestId('ticket-input-digit-2').props.value).toBe('');
+    expect(getByTestId('ticket-input-digit-3').props.value).toBe('4');
+    expect(getByTestId('ticket-input-digit-4').props.value).toBe('5');
+    expect(getByTestId('ticket-input-digit-5').props.value).toBe('6');
   });
 });

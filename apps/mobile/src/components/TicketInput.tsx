@@ -29,12 +29,12 @@ export function TicketInput({
   // Using any ref element to support React 19 / RN 0.88 TextInput instances seamlessly
   const inputRefs = useRef<any[]>([]);
 
-  // Pad or slice digits array of length 6
-  const cleanDigits = value.replace(/\D/g, '').slice(0, TICKET_LENGTH);
+  // Preserve digit positions: if a slot is a space or missing, keep it as empty string
   const digits = Array.from(
     { length: TICKET_LENGTH },
-    (_, i) => cleanDigits[i] || '',
+    (_, i) => (value[i] && /\d/.test(value[i]) ? value[i] : ''),
   );
+  const cleanDigits = digits.join('');
 
   const handleChange = (text: string, index: number) => {
     const rawClean = text.replace(/\D/g, '');
@@ -61,11 +61,14 @@ export function TicketInput({
       return;
     }
 
-    // Case 2: Single digit entered
+    // Case 2: Single digit entered or cleared
     const char = rawClean.slice(-1);
     const chars = [...digits];
     chars[index] = char;
-    const result = chars.join('').replace(/\s/g, '');
+
+    // Convert trailing empty slots to trimmed string, but keep internal spaces to avoid shifting
+    let result = chars.map((c) => (c ? c : ' ')).join('');
+    result = result.replace(/\s+$/, '');
 
     onChangeText(result);
 
@@ -73,7 +76,7 @@ export function TicketInput({
       inputRefs.current[index + 1]?.focus();
     }
 
-    if (result.length === TICKET_LENGTH) {
+    if (/^\d{6}$/.test(result)) {
       onComplete?.(result);
     }
   };
@@ -84,7 +87,7 @@ export function TicketInput({
         // Current box is empty, move back and clear previous box
         const chars = [...digits];
         chars[index - 1] = '';
-        const result = chars.join('');
+        let result = chars.map((c) => (c ? c : ' ')).join('').replace(/\s+$/, '');
         onChangeText(result);
         inputRefs.current[index - 1]?.focus();
       }
