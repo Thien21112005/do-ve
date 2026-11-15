@@ -52,11 +52,11 @@ module.exports = {
         },
       },
       borderRadius: {
-        xs: '4px',
-        sm: '6px',
-        md: '10px',
-        lg: '14px',
-        xl: '20px',
+        none: '0px',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
+        full: '9999px',
       },
       fontFamily: {
         sans: ['BeVietnamPro-Regular'],

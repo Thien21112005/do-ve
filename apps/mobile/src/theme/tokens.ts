@@ -5,12 +5,39 @@
 
 export const radii = {
   none: 0,
-  xs: 4,
-  sm: 6,
-  md: 10,
-  lg: 14,
-  xl: 20,
+  sm: 8,
+  md: 12,
+  lg: 16,
   full: 9999,
+} as const;
+
+/**
+ * Disciplined elevation tokens (T10.08):
+ * - Card: flat surface on background, crisp border, NO heavy shadow.
+ * - Sheet / Modal / Toast: elevated with subtle shadow.
+ */
+export const elevations = {
+  none: {
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  sheet: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  toast: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 10,
+  },
 } as const;
 
 export const spacing = {

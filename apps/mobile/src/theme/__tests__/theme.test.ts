@@ -1,5 +1,5 @@
 import { colors } from '../colors';
-import { radii, spacing, typography } from '../tokens';
+import { radii, spacing, typography, elevations } from '../tokens';
 import { useTheme, syncNativeWindTheme } from '../theme';
 import * as ReactNative from 'react-native';
 import { renderHook, act } from '@testing-library/react-native';
@@ -154,13 +154,18 @@ describe('Design Tokens & Theme', () => {
   });
 
   describe('Tokens validation', () => {
-    it('contains expected radii tokens', () => {
-      expect(radii.xs).toBe(4);
-      expect(radii.sm).toBe(6);
-      expect(radii.md).toBe(10);
-      expect(radii.lg).toBe(14);
-      expect(radii.xl).toBe(20);
+    it('contains disciplined radii tokens (T10.08)', () => {
+      expect(radii.none).toBe(0);
+      expect(radii.sm).toBe(8);
+      expect(radii.md).toBe(12);
+      expect(radii.lg).toBe(16);
       expect(radii.full).toBe(9999);
+    });
+
+    it('contains disciplined elevation tokens (T10.08)', () => {
+      expect(elevations.none.elevation).toBe(0);
+      expect(elevations.sheet.elevation).toBe(8);
+      expect(elevations.toast.elevation).toBe(10);
     });
 
     it('contains 4px grid spacing scale', () => {
