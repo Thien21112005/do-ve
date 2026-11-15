@@ -109,4 +109,31 @@ class XsktResultSourceAdapterTest {
 
     assertThat(result).isEmpty();
   }
+
+  @Test
+  @DisplayName(
+      "fetch bỏ qua và không cache kết quả nếu HTML trả về ngày khác với ngày được yêu cầu (T09.62)")
+  void fetchIgnoresAndDoesNotCacheDrawsWithDifferentDate() throws Exception {
+    // Giả lập ngày yêu cầu là 2026-11-03, nhưng trang nguồn trả về HTML của ngày 2026-11-02 (chưa
+    // có kết quả mới)
+    String htmlYesterday = loadHtml("xskt_xsmn_2026-11-02.html");
+
+    wireMockServer.stubFor(
+        get(urlEqualTo("/xsmn/ngay-03-11-2026"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/html; charset=UTF-8")
+                    .withBody(htmlYesterday)));
+
+    LocalDate requestedDate = LocalDate.of(2026, 11, 3);
+
+    Optional<DrawResult> result = adapter.fetch("tp-hcm", requestedDate);
+
+    // Phải bỏ qua draw ngày cũ, trả về empty
+    assertThat(result).isEmpty();
+
+    // Cache cho ngày yêu cầu không được chứa draw sai ngày
+    assertThat(adapter.getDateCache().get(requestedDate)).isNullOrEmpty();
+  }
 }

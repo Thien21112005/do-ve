@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 public class XsktResultSourceAdapter implements ResultSource {
 
   private static final Logger log = LoggerFactory.getLogger(XsktResultSourceAdapter.class);
+  private static final int MAX_CACHED_DATES = 30;
 
   private final LotteryHttpClient httpClient;
   private final XsktHtmlParser parser;
@@ -42,6 +43,10 @@ public class XsktResultSourceAdapter implements ResultSource {
     this.throttler = throttler;
     this.retryExecutor = retryExecutor;
     this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+  }
+
+  Map<LocalDate, Map<String, DrawResult>> getDateCache() {
+    return dateCache;
   }
 
   @Override
@@ -72,9 +77,27 @@ public class XsktResultSourceAdapter implements ResultSource {
 
       // 5. Parse all stations present in HTML
       List<DrawResult> draws = parser.parseAll(html);
+
+      // Chỉ chấp nhận các kết quả có ngày trùng khớp chính xác với ngày yêu cầu (T09.62)
+      List<DrawResult> matchingDraws =
+          draws.stream().filter(d -> drawDate.equals(d.drawDate())).toList();
+
+      if (matchingDraws.isEmpty()) {
+        log.warn(
+            "Trang nguồn xskt trả về kết quả không khớp ngày yêu cầu (yêu cầu: {}, tìm thấy: {})",
+            drawDate,
+            draws.isEmpty() ? "trống" : draws.get(0).drawDate());
+        return Optional.empty();
+      }
+
+      // Giới hạn kích thước cache để tránh rò rỉ bộ nhớ
+      if (dateCache.size() >= MAX_CACHED_DATES) {
+        dateCache.clear();
+      }
+
       Map<String, DrawResult> cacheEntry =
           dateCache.computeIfAbsent(drawDate, k -> new ConcurrentHashMap<>());
-      for (DrawResult draw : draws) {
+      for (DrawResult draw : matchingDraws) {
         cacheEntry.put(draw.stationCode(), draw);
       }
 
