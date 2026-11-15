@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 4 / 62 task hoàn thành
+- **Tổng quan:** 5 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | T10.01 | Viết PRODUCT.md bằng `/impeccable init` | DONE | b6e556e | 2026-11-15 | Khởi tạo PRODUCT.md chuẩn bối cảnh sản phẩm: Audience, Usage scene, Voice & Tone, Constraints, Anti-references |
 | T10.02 | Chốt hướng thị giác (cần người dùng duyệt) | DONE | c01b566 | 2026-11-15 | Phê duyệt và chốt Hướng A: 'Tờ vé giấy' qua ADR-006 (nền ngà ấm, mực xanh đen, số tabular, đỏ son ĐB) |
-| T10.03 | Bảng màu semantic mới (light + dark) có kiểm contrast | TODO | | | |
+| T10.03 | Bảng màu semantic mới (light + dark) có kiểm contrast | DONE | 8e11089 | 2026-11-15 | Cập nhật colors.ts chuẩn Hướng A: nền ngà ấm, mực xanh đen, đỏ son ĐB, các token tint/onPrimary; 17 test contrast WCAG AAA/AA xanh 100% |
 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | TODO | | | |
 | T10.05 | Cho NativeWind theo cài đặt theme của app | DONE | bf80900 | 2026-11-15 | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts (đồng bộ T09.47) |
 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | TODO | | | |
@@ -92,6 +92,7 @@
 - 2026-11-15 | T10.05 | Cho NativeWind theo cài đặt theme của app (đồng bộ T09.47) | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts, gọi colorScheme.set theo themeMode của app.
 - 2026-11-15 | T10.01 | Viết PRODUCT.md chuẩn bối cảnh sản phẩm | Hoàn thành PRODUCT.md định hình đối tượng (Cô Hai, Anh Tư, bạn trẻ), bối cảnh nắng ngoài trời/1 tay, giọng văn mộc mạc minh bạch, ràng buộc pháp lý & diệt AI-slop.
 - 2026-11-15 | T10.02 | Chốt hướng thị giác Hướng A 'Tờ vé giấy' | Soạn thảo và ban hành ADR-006 chốt hướng thị giác A: nền giấy ngà ấm, mực xanh đen, số tabular, đỏ son ĐB, xanh lá trúng thưởng.
+- 2026-11-15 | T10.03 | Bảng màu semantic mới có test contrast | Viết lại src/theme/colors.ts theo Hướng A, bổ sung các token tint/onPrimary/surfaceSunken, viết test kiểm tra độ tương phản WCAG AAA (> 7:1) cho text chính và AA (> 4.5:1) cho text phụ/nút ở cả 2 theme.
 
 ## Vấn đề mở
 
