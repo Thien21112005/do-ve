@@ -32,6 +32,57 @@ export interface ImportResult {
   message?: string;
 }
 
+const VALID_TICKET_NUMBER_REGEX = /^\d{6}$/;
+const VALID_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const VALID_STATUSES = new Set(['WON', 'LOST', 'PENDING']);
+
+/**
+ * Strict validator for imported ticket structure (T09.39).
+ */
+export function isValidSavedTicket(raw: any): boolean {
+  if (!raw || typeof raw !== 'object') return false;
+
+  // 1. ticket: exactly 6 digits
+  if (
+    typeof raw.ticket !== 'string' ||
+    !VALID_TICKET_NUMBER_REGEX.test(raw.ticket)
+  ) {
+    return false;
+  }
+
+  // 2. station: non-empty string
+  if (typeof raw.station !== 'string' || raw.station.trim().length === 0) {
+    return false;
+  }
+
+  // 3. drawDate: valid YYYY-MM-DD
+  if (typeof raw.drawDate !== 'string' || !VALID_DATE_REGEX.test(raw.drawDate)) {
+    return false;
+  }
+  const [year, month, day] = raw.drawDate.split('-').map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return false;
+  }
+
+  // 4. status: must be WON, LOST, or PENDING (if provided)
+  if (raw.status !== undefined && !VALID_STATUSES.has(raw.status)) {
+    return false;
+  }
+
+  // 5. totalPrize: must be non-negative integer/number
+  if (raw.totalPrize !== undefined) {
+    if (
+      typeof raw.totalPrize !== 'number' ||
+      isNaN(raw.totalPrize) ||
+      raw.totalPrize < 0
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Determine if a candidate ticket should replace an existing local ticket.
  * Enforces rule: never downgrade terminal status (WON/LOST) to PENDING (T09.38).
@@ -186,43 +237,40 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
     let skippedCount = 0;
 
     for (const raw of candidateTickets) {
-      // Validate ticket schema (must have 6-digit ticket, station, drawDate)
-      if (
-        typeof raw?.ticket === 'string' &&
-        raw.ticket.length === 6 &&
-        typeof raw?.station === 'string' &&
-        typeof raw?.drawDate === 'string'
-      ) {
-        const id =
-          raw.id || generateTicketId(raw.station, raw.drawDate, raw.ticket);
-        const existing = existingMap.get(id);
+      // Validate ticket schema strictly (T09.39)
+      if (!isValidSavedTicket(raw)) {
+        continue;
+      }
 
-        const candidate: SavedTicket = {
-          id,
-          ticket: raw.ticket,
-          station: raw.station,
-          stationName: raw.stationName || raw.station,
-          drawDate: raw.drawDate,
-          status: raw.status || 'PENDING',
-          totalPrize: typeof raw.totalPrize === 'number' ? raw.totalPrize : 0,
-          wins: Array.isArray(raw.wins) ? raw.wins : [],
-          note: raw.note,
-          createdAt: raw.createdAt || new Date().toISOString(),
-        };
+      const id =
+        raw.id || generateTicketId(raw.station, raw.drawDate, raw.ticket);
+      const existing = existingMap.get(id);
 
-        if (existing) {
-          if (shouldReplaceExistingTicket(existing, candidate)) {
-            await saveTicket(candidate);
-            existingMap.set(id, candidate);
-            updatedCount++;
-          } else {
-            skippedCount++;
-          }
-        } else {
+      const candidate: SavedTicket = {
+        id,
+        ticket: raw.ticket,
+        station: raw.station,
+        stationName: raw.stationName || raw.station,
+        drawDate: raw.drawDate,
+        status: raw.status || 'PENDING',
+        totalPrize: typeof raw.totalPrize === 'number' ? raw.totalPrize : 0,
+        wins: Array.isArray(raw.wins) ? raw.wins : [],
+        note: raw.note,
+        createdAt: raw.createdAt || new Date().toISOString(),
+      };
+
+      if (existing) {
+        if (shouldReplaceExistingTicket(existing, candidate)) {
           await saveTicket(candidate);
           existingMap.set(id, candidate);
-          newCount++;
+          updatedCount++;
+        } else {
+          skippedCount++;
         }
+      } else {
+        await saveTicket(candidate);
+        existingMap.set(id, candidate);
+        newCount++;
       }
     }
 

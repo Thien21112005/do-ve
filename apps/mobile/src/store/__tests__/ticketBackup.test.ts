@@ -187,5 +187,72 @@ describe('ticketBackup (Export & Import Tickets JSON - T07.10 & T07.11)', () => 
       expect(ticket888888?.wins).toHaveLength(1);
       expect(all.find((t) => t.ticket === '777777')).toBeDefined();
     });
+
+    it('rejects corrupt or invalid ticket fields and imports only strictly valid tickets (T09.39)', async () => {
+      const corruptPayload = {
+        version: 1,
+        appName: 'DoVe',
+        tickets: [
+          {
+            ticket: 'abcdef', // letters
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'WON',
+            totalPrize: 100000,
+          },
+          {
+            ticket: '123456',
+            station: 'TPHCM',
+            drawDate: 'hôm qua', // invalid date format
+            status: 'WON',
+            totalPrize: 100000,
+          },
+          {
+            ticket: '222222',
+            station: '', // empty station
+            drawDate: '2026-11-14',
+            status: 'WON',
+            totalPrize: 100000,
+          },
+          {
+            ticket: '333333',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'INVALID_STATUS', // invalid status
+            totalPrize: 100000,
+          },
+          {
+            ticket: '444444',
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'WON',
+            totalPrize: -50000, // negative prize
+          },
+          {
+            ticket: '555555', // VALID ticket
+            station: 'TPHCM',
+            drawDate: '2026-11-14',
+            status: 'WON',
+            totalPrize: 500000,
+          },
+        ],
+      };
+
+      (DocumentPicker.getDocumentAsync as jest.Mock).mockResolvedValueOnce({
+        canceled: false,
+        assets: [{ uri: 'file:///mock/dove-tickets.json' }],
+      });
+      (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
+        JSON.stringify(corruptPayload),
+      );
+
+      const result = await importTicketsFromJson();
+      expect(result.success).toBe(true);
+      expect(result.importedCount).toBe(1);
+
+      const all = await getTickets();
+      expect(all).toHaveLength(1);
+      expect(all[0].ticket).toBe('555555');
+    });
   });
 });
