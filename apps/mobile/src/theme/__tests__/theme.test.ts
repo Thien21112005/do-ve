@@ -1,8 +1,10 @@
 import { colors } from '../colors';
 import { radii, spacing, typography } from '../tokens';
-import { useTheme } from '../theme';
+import { useTheme, syncNativeWindTheme } from '../theme';
 import * as ReactNative from 'react-native';
-import { renderHook } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
+import { colorScheme } from 'nativewind';
+import { updateSettings, resetSettings } from '@/store/settings';
 
 // Helper to calculate relative luminance according to WCAG 2.1
 function getLuminance(hex: string): number {
@@ -115,6 +117,54 @@ describe('Design Tokens & Theme', () => {
       const { result } = await renderHook(() => useTheme());
       expect(result.current.isDark).toBe(true);
       expect(result.current.colors.surface).toBe(colors.dark.surface);
+    });
+
+    it('forces dark theme when settings.themeMode is dark even if OS is light (T09.47 / T10.05)', async () => {
+      jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue('light');
+      await act(async () => {
+        updateSettings({ themeMode: 'dark' });
+      });
+
+      const { result } = await renderHook(() => useTheme());
+      expect(result.current.isDark).toBe(true);
+      expect(result.current.colors.surface).toBe(colors.dark.surface);
+
+      await act(async () => {
+        resetSettings();
+      });
+    });
+
+    it('forces light theme when settings.themeMode is light even if OS is dark (T09.47 / T10.05)', async () => {
+      jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue('dark');
+      await act(async () => {
+        updateSettings({ themeMode: 'light' });
+      });
+
+      const { result } = await renderHook(() => useTheme());
+      expect(result.current.isDark).toBe(false);
+      expect(result.current.colors.surface).toBe(colors.light.surface);
+
+      await act(async () => {
+        resetSettings();
+      });
+    });
+  });
+
+  describe('NativeWind theme sync (T09.47 / T10.05)', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+      resetSettings();
+    });
+
+    it('calls NativeWind colorScheme.set with themeMode', () => {
+      syncNativeWindTheme('dark');
+      expect(colorScheme.set).toHaveBeenCalledWith('dark');
+
+      syncNativeWindTheme('light');
+      expect(colorScheme.set).toHaveBeenCalledWith('light');
+
+      syncNativeWindTheme('system');
+      expect(colorScheme.set).toHaveBeenCalledWith('system');
     });
   });
 });

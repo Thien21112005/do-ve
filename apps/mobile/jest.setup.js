@@ -131,3 +131,18 @@ const mockNotifications = {
 
 jest.mock('expo-notifications', () => mockNotifications);
 
+const mockNativewindColorScheme = {
+  set: jest.fn(),
+  get: jest.fn().mockReturnValue('light'),
+  toggle: jest.fn(),
+};
+
+jest.mock('nativewind', () => ({
+  colorScheme: mockNativewindColorScheme,
+  useColorScheme: () => ({
+    colorScheme: 'light',
+    setColorScheme: jest.fn((val) => mockNativewindColorScheme.set(val)),
+    toggleColorScheme: jest.fn(),
+  }),
+}));
+
