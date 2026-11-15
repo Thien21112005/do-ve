@@ -41,7 +41,7 @@ describe('AppVersionGate Component (T06.30)', () => {
 
   it('displays update required screen when app version is below minimum', async () => {
     const onUpdate = jest.fn();
-    const { getByTestId, getByText, queryByText } = await render(
+    const { getByTestId, getByText } = await render(
       <AppVersionGate
         config={outdatedConfig}
         currentVersion="1.0.0"
@@ -51,7 +51,6 @@ describe('AppVersionGate Component (T06.30)', () => {
       </AppVersionGate>,
     );
 
-    expect(queryByText('Normal App Content')).toBeNull();
     expect(getByTestId('update-required-screen')).toBeTruthy();
     expect(getByText(/Cần cập nhật ứng dụng/i)).toBeTruthy();
     expect(
@@ -65,7 +64,7 @@ describe('AppVersionGate Component (T06.30)', () => {
 
   it('displays maintenance screen when maintenance is true', async () => {
     const onRetry = jest.fn();
-    const { getByTestId, getByText, queryByText } = await render(
+    const { getByTestId, getByText } = await render(
       <AppVersionGate
         config={maintenanceConfig}
         currentVersion="1.0.0"
@@ -75,7 +74,6 @@ describe('AppVersionGate Component (T06.30)', () => {
       </AppVersionGate>,
     );
 
-    expect(queryByText('Normal App Content')).toBeNull();
     expect(getByTestId('maintenance-screen')).toBeTruthy();
     expect(getByText(/Hệ thống đang bảo trì/i)).toBeTruthy();
     expect(
@@ -85,6 +83,50 @@ describe('AppVersionGate Component (T06.30)', () => {
     const retryBtn = getByTestId('maintenance-retry-btn');
     fireEvent.press(retryBtn);
     expect(onRetry).toHaveBeenCalled();
+  });
+
+  describe('Preserving children navigation tree across maintenance transitions (T09.52)', () => {
+    it('displays maintenance screen as an overlay without unmounting children', async () => {
+      let mountCount = 0;
+      const StatefulChild = () => {
+        React.useEffect(() => {
+          mountCount++;
+        }, []);
+        return <Text>User Draft Ticket 123456</Text>;
+      };
+
+      const { getByTestId, getByText, rerender } = await render(
+        <AppVersionGate config={normalConfig} currentVersion="1.0.0">
+          <StatefulChild />
+        </AppVersionGate>,
+      );
+
+      expect(mountCount).toBe(1);
+      expect(getByText('User Draft Ticket 123456')).toBeTruthy();
+
+      // Now server toggles maintenance = true
+      await rerender(
+        <AppVersionGate config={maintenanceConfig} currentVersion="1.0.0">
+          <StatefulChild />
+        </AppVersionGate>,
+      );
+
+      // Maintenance overlay is shown
+      expect(getByTestId('maintenance-screen')).toBeTruthy();
+      // Child is PRESERVED in tree, not unmounted
+      expect(getByText('User Draft Ticket 123456')).toBeTruthy();
+      expect(mountCount).toBe(1);
+
+      // Maintenance ends
+      await rerender(
+        <AppVersionGate config={normalConfig} currentVersion="1.0.0">
+          <StatefulChild />
+        </AppVersionGate>,
+      );
+
+      // Still exactly 1 mount, child was never destroyed and remounted
+      expect(mountCount).toBe(1);
+    });
   });
 
   describe('Real store URL handling for forced updates (T09.51)', () => {
