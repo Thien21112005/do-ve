@@ -26,7 +26,7 @@
 | T10.16 | Splash screen | DONE | 99049fc | 2026-11-15 | Cập nhật splash-icon đồ hoạ vé số DoVe, cấu hình app.json splash màu nền ngà ấm cho light và dark.backgroundColor |
 | T10.17 | Dọn asset template Expo | DONE | 481ed52 | 2026-11-15 | Xoá toàn bộ asset mẫu của Expo (react-logo, expo-badge, expo-logo, tabIcons, expo.icon), bổ sung test tự động kiểm tra |
 | T10.18 | Bố cục Home mới: "hôm nay quay đài nào, đã có kết quả chưa" | DONE | f8d97cf | 2026-11-15 | Tái cấu trúc Home: thanh trạng thái hôm nay, card dò nhanh tích hợp đài trong ngày & kết quả inline, lối tắt vé đã lưu |
-| T10.19 | Thẻ kết quả đài trên Home gọn hơn | TODO | | | |
+| T10.19 | Thẻ kết quả đài trên Home gọn hơn | DONE | 5ab142d | 2026-11-15 | Bỏ card lồng card, số ĐB ticketMd màu đỏ son special (#B91C1C), dòng phụ G1/G8, cả thẻ bấm được mở Kết quả đài |
 | T10.20 | Trạng thái đang quay (live) trên Home | TODO | | | |
 | T10.21 | Skeleton đúng hình dạng cho Home | TODO | | | |
 | T10.22 | Ô nhập 6 số kiểu "tờ vé" | TODO | | | |
@@ -100,6 +100,7 @@
 - 2026-11-15 | T10.09 | Bộ primitive component | Xây dựng trọn bộ 12 primitive components (Screen, Button, IconButton, Chip, Card, ListRow, SectionHeader, Banner, EmptyState, Badge, Divider, Segmented) dùng Pressable, scale feedback 0.98, haptics tôn trọng settings, đảm bảo touch target >= 44pt và 13 unit test xanh 100%.
 - 2026-11-15 | T10.10 | Ghi DESIGN.md tài liệu hoá hệ thống thiết kế | Biên soạn DESIGN.md ở root repo mô tả toàn diện design system DoVe: triết lý Tờ vé giấy, bảng màu semantic WCAG AAA/AA, Be Vietnam Pro type scale, radii, elevations, danh mục primitive components và quy tắc haptics/motion. Hoàn thành 100% Nhóm A (10/10 tasks).
 - 2026-11-15 | T10.18 | Bố cục Home mới | Tái thiết kế màn hình Trang chủ: (1) Thanh trạng thái ngày hôm nay (home-today-status) hiển thị thứ, ngày, số đài và trạng thái quay live; (2) Card dò vé nhanh inline (home-ticket-input, home-quick-check-btn, home-quick-check-result) dò trực tiếp không cần chuyển tab; (3) Lối tắt Vé của tôi (home-my-tickets-shortcut); (4) 8 unit tests xanh 100%.
+- 2026-11-15 | T10.19 | Thẻ kết quả đài trên Home gọn hơn | Tối ưu thẻ kết quả đài Trang chủ: (1) Bỏ card-lồng-card, số Đặc biệt cỡ ticketMd (24px tabular) dùng màu đỏ son special (#B91C1C) chuẩn Hướng A; (2) Dòng phụ G1/G8 tinh giản trên nền surfaceSubtle; (3) Badge trạng thái chữ thường/title case; (4) Cả thẻ bấm được (TouchableOpacity) mở ngay tab Kết quả đúng đài và ngày; (5) Unit tests xanh 100%.
 
 ## Vấn đề mở
 
