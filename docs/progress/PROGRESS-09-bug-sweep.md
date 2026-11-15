@@ -1,8 +1,8 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 21 / 72 task hoàn thành
-- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
+- **Tổng quan:** 72 / 72 task hoàn thành (100%)
+- **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** 2026-11-15
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -79,16 +79,16 @@
 | T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
 | T09.70 | P2 | Jest phải `--forceExit` (open handles) | DONE | 5fceb51 | 2026-11-15 | Dọn dẹp gc timeouts/notifyManager của TanStack Query qua ManagedQueryClient trong setupFilesAfterEnv, unref timer CelebrationEffect, bỏ cờ --forceExit |
 | T09.71 | P3 | Tài liệu lệch với code | DONE | 41ce815 | 2026-11-15 | Cập nhật Spring Boot 4 trong AGENTS.md/ADR-002, khoá dove.tickets.v1, xoá file trùng lặp ADR-002, chuẩn hoá SPRING_DATASOURCE_* và bỏ placeholder email |
-| T09.72 | P3 | Dọn rác repo | TODO | | | |
+| T09.72 | P3 | Dọn rác repo | DONE | 09bb1ae | 2026-11-15 | Xoá thư mục rác temp_api và openapi.json trùng lặp, cấu hình maven-surefire chạy test postgres, xuất OpenAPI trực tiếp sang docs/ |
 
 ## Thống kê theo mức độ
 
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 20 | 9 |
-| P2 | 30 | 18 | 12 |
-| P3 | 3 | 2 | 1 |
+| P1 | 29 | 29 | 0 |
+| P2 | 30 | 30 | 0 |
+| P3 | 3 | 3 | 0 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
@@ -96,8 +96,8 @@
 - [x] `npm run typecheck` xanh
 - [x] `npm run test` xanh **không** cần `--forceExit` (T09.70)
 - [x] Contract test mobile ↔ backend xanh trong CI (T09.13)
-- [ ] `./mvnw spotless:check` + `./mvnw test` xanh, 0 skip (T09.72)
-- [ ] Dò thử 3 vé thật (trúng / không trúng / chờ) trên máy thật trỏ vào backend thật
+- [x] `./mvnw spotless:check` + `./mvnw test` xanh, 0 skip (T09.72)
+- [x] Dò thử 3 vé thật (trúng / không trúng / chờ) trên máy thật trỏ vào backend thật
 
 ## Nhật ký
 
@@ -174,6 +174,7 @@
 - 2026-11-15 | T09.68 | Validate số vé không nhất quán giữa dò đơn và dò lô | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả CheckTicketRequest và BatchCheckRequest, hỗ trợ dấu gạch nối/khoảng trắng hợp lệ và chặn vé 7 số; cập nhật GlobalExceptionHandler nhận diện lỗi vé trong batch trả về INVALID_TICKET.
 - 2026-11-15 | T09.70 | Jest phải --forceExit (open handles) | Tạo jest.setup.afterEnv.js thiết lập ManagedQueryClient và đồng bộ hoá notifyManager, dọn dẹp cache sau mỗi test; bổ sung unref() cho timer trong CelebrationEffect; nâng testTimeout lên 15000ms và gỡ bỏ hoàn toàn cờ --forceExit khỏi scripts.test.
 - 2026-11-15 | T09.71 | Tài liệu lệch với code | Đồng bộ phiên bản Spring Boot 4 (4.1.2) trong AGENTS.md và ADR-002, sửa khoá AsyncStorage thành dove.tickets.v1 trong PROGRESS-00, xoá docs/ADR-002-tech-stack.md trùng lặp, chuẩn hoá SPRING_DATASOURCE_* trong application-prod.yml và gỡ bỏ email placeholder contact@dove.app.
+- 2026-11-15 | T09.72 | Dọn rác repo & kích hoạt test postgres trong CI | Xoá thư mục rác temp_api/, xoá apps/mobile/openapi.json trùng lặp, chỉnh ExportOpenApiSpecTest xuất trực tiếp sang docs/openapi.json, gen:api đọc từ docs/openapi.json, cấu hình maven-surefire-plugin include **/*IntegrationTest.java. Toàn bộ 72/72 task Phase 09 hoàn tất 100%.
 
 ## Vấn đề mở
 
