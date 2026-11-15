@@ -45,4 +45,19 @@ describe('DoVe Mobile App Icon Assets (T10.15)', () => {
     expect(width).toBe(48);
     expect(height).toBe(48);
   });
+
+  it('provides branded splash-icon and light/dark theme colors in app.json (T10.16)', () => {
+    const splashPath = path.join(assetsDir, 'splash-icon.png');
+    expect(fs.existsSync(splashPath)).toBe(true);
+    const { width, height } = getPngDimensions(splashPath);
+    expect(width).toBe(512);
+    expect(height).toBe(512);
+
+    const appJsonPath = path.resolve(process.cwd(), 'app.json');
+    const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
+
+    // Check light & dark background match Direction A tokens
+    expect(appJson.expo.splash.backgroundColor).toBe('#F6F4EF');
+    expect(appJson.expo.splash.dark?.backgroundColor).toBe('#0F1217');
+  });
 });

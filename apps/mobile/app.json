@@ -10,7 +10,11 @@
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2563eb"
+      "backgroundColor": "#F6F4EF",
+      "dark": {
+        "image": "./assets/images/splash-icon.png",
+        "backgroundColor": "#0F1217"
+      }
     },
     "ios": {
       "bundleIdentifier": "com.dove.app",
@@ -40,9 +44,13 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#2563eb",
+          "backgroundColor": "#F6F4EF",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 120
+          "imageWidth": 180,
+          "dark": {
+            "image": "./assets/images/splash-icon.png",
+            "backgroundColor": "#0F1217"
+          }
         }
       ]
     ],
