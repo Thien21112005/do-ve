@@ -13,6 +13,7 @@ import { Icon, OfflineBanner } from '@/components';
 import { useLatestDraws } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
+import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 
 export default function HomeScreen() {
@@ -30,7 +31,7 @@ export default function HomeScreen() {
     }
   }, [refetch]);
 
-  const todayStr = formatDateVN(new Date().toISOString().split('T')[0]);
+  const todayStr = formatDateVN(todayVN());
 
   return (
     <SafeAreaView

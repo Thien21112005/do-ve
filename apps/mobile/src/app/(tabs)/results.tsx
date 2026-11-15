@@ -17,14 +17,12 @@ import {
 import { useDraw } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
+import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 
 export default function ResultsScreen() {
   const { colors } = useTheme();
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [selectedDate, setSelectedDate] = useState(() => todayVN());
   const [selectedStation, setSelectedStation] = useState<string>('');
 
   const { draw, isLoading, isError, refetch } = useDraw(

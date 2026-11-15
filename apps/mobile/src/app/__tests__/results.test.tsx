@@ -151,4 +151,20 @@ describe('ResultsScreen', () => {
       ).toBeGreaterThan(initialCalls);
     });
   });
+
+  it('uses Vietnam date for initial selected date during 0h-7h UTC boundary (T09.16)', async () => {
+    // 2026-11-14 20:00:00 UTC is 2026-11-15 03:00:00 in Vietnam
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-11-14T20:00:00Z'));
+
+    await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(apiDraws.fetchScheduleByDate).toHaveBeenCalledWith('2026-11-15');
+    });
+
+    jest.useRealTimers();
+  });
 });
