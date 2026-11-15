@@ -15,6 +15,15 @@ let cachedTickets: SavedTicket[] = [];
 let isInitialized = false;
 const listeners = new Set<(tickets: SavedTicket[]) => void>();
 
+export function subscribeTickets(
+  listener: (tickets: SavedTicket[]) => void,
+): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 // Promise queue to serialize all mutating operations and prevent race conditions (T09.35)
 let writeQueue: Promise<unknown> = Promise.resolve();
 
@@ -52,7 +61,6 @@ export async function getTickets(): Promise<SavedTicket[]> {
     if (!raw) {
       cachedTickets = [];
       isInitialized = true;
-      notifyListeners();
       return [];
     }
 
@@ -60,19 +68,16 @@ export async function getTickets(): Promise<SavedTicket[]> {
     if (parsed && Array.isArray(parsed.tickets)) {
       cachedTickets = [...parsed.tickets];
       isInitialized = true;
-      notifyListeners();
       return cachedTickets;
     }
 
     cachedTickets = [];
     isInitialized = true;
-    notifyListeners();
     return [];
   } catch {
     // Graceful fallback on corrupt data or storage error
     cachedTickets = [];
     isInitialized = true;
-    notifyListeners();
     return [];
   }
 }
@@ -236,7 +241,11 @@ export function useSavedTickets(): [
       listeners.add(callback);
       // Trigger initial load if not done
       if (!isInitialized) {
-        getTickets().catch(() => {});
+        getTickets()
+          .then(() => {
+            notifyListeners();
+          })
+          .catch(() => {});
       }
       return () => {
         listeners.delete(callback);

@@ -6,6 +6,7 @@ import {
   clearAllTickets,
   updateTicket,
   getTicketById,
+  subscribeTickets,
   TICKETS_STORAGE_KEY,
 } from '../ticketStore';
 
@@ -222,6 +223,29 @@ describe('ticketStore Service', () => {
     expect(tickets).toContain('111111');
     expect(tickets).toContain('222222');
     expect(tickets).toContain('333333');
+  });
+
+  it('does not notify listeners on read operations like getTickets or getTicketById (T09.37)', async () => {
+    await saveTicket({
+      ticket: '123456',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+
+    const mockListener = jest.fn();
+    const unsubscribe = subscribeTickets(mockListener);
+
+    // Pure read calls
+    await getTickets();
+    await getTicketById('TPHCM_2026-11-14_123456');
+
+    // Should NOT have notified listeners during read operations
+    expect(mockListener).not.toHaveBeenCalled();
+
+    unsubscribe();
   });
 });
 
