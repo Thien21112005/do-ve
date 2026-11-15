@@ -219,4 +219,33 @@ describe('CheckScreen Form Composition', () => {
     expect(apiCheck.checkTicket).not.toHaveBeenCalled();
     expect(haptics.warning).not.toHaveBeenCalled();
   });
+
+  it('triggers haptics.success exactly once on winning check (T09.22)', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '999999',
+      stationCode: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-15',
+      status: 'CHECKED',
+      won: true,
+      wins: [
+        { prize: 'SPECIAL', prizeName: 'Giải Đặc biệt', amount: 2000000000 },
+      ],
+      totalAmount: 2000000000,
+    });
+
+    const { getByTestId, findByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await findByTestId('station-chips-TPHCM');
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '999999');
+
+    const submitBtn = await findByTestId('check-ticket-button');
+    fireEvent.press(submitBtn);
+
+    await waitFor(() => {
+      expect(haptics.success).toHaveBeenCalledTimes(1);
+    });
+  });
 });

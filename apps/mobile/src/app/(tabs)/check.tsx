@@ -180,9 +180,6 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
         },
         {
           onSuccess: (data) => {
-            if (data.won) {
-              haptics.success();
-            }
             onCheckSuccess?.(data);
           },
           onError: () => {
@@ -199,9 +196,6 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
         },
         {
           onSuccess: (data) => {
-            if ((data.results?.filter((r) => r.won).length ?? 0) > 0) {
-              haptics.success();
-            }
             onCheckSuccess?.(data);
           },
           onError: () => {

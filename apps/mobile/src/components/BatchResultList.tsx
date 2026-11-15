@@ -5,7 +5,6 @@ import {
   HighlightedTicket,
   getLongestMatchedSuffix,
 } from './HighlightedTicket';
-import { CelebrationEffect } from './CelebrationEffect';
 import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
@@ -46,9 +45,6 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
 
   return (
     <View testID={testID} className="w-full">
-      {/* Celebration Effect if any ticket won */}
-      <CelebrationEffect active={hasWon} />
-
       {/* Summary Header Card */}
       <View
         className="p-5 rounded-2xl border mb-4 shadow-sm"
