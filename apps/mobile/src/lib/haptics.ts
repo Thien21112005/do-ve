@@ -1,9 +1,27 @@
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
+import { getSettings } from '@/store/settings';
+
+/**
+ * Check whether haptics are supported and enabled by user settings (T09.46 / T10.60)
+ */
+function canTriggerHaptics(): boolean {
+  if (Platform.OS === 'web') return false;
+  return getSettings().hapticsEnabled;
+}
 
 export const haptics = {
+  selection: async () => {
+    if (!canTriggerHaptics()) return;
+    try {
+      await Haptics.selectionAsync();
+    } catch {
+      // Ignore haptics failure gracefully
+    }
+  },
+
   light: async () => {
-    if (Platform.OS === 'web') return;
+    if (!canTriggerHaptics()) return;
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch {
@@ -12,7 +30,7 @@ export const haptics = {
   },
 
   medium: async () => {
-    if (Platform.OS === 'web') return;
+    if (!canTriggerHaptics()) return;
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch {
@@ -21,7 +39,7 @@ export const haptics = {
   },
 
   success: async () => {
-    if (Platform.OS === 'web') return;
+    if (!canTriggerHaptics()) return;
     try {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch {
@@ -30,7 +48,7 @@ export const haptics = {
   },
 
   warning: async () => {
-    if (Platform.OS === 'web') return;
+    if (!canTriggerHaptics()) return;
     try {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     } catch {
@@ -39,7 +57,7 @@ export const haptics = {
   },
 
   error: async () => {
-    if (Platform.OS === 'web') return;
+    if (!canTriggerHaptics()) return;
     try {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } catch {
