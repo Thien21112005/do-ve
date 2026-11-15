@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text } from 'react-native';
-import { render, fireEvent } from '@testing-library/react-native';
+import { Text, Appearance } from 'react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { useRouter } from 'expo-router';
 
 // Suppress console.error in this test because intentional throw triggers React error boundary logging
 const originalError = console.error;
@@ -45,5 +46,44 @@ describe('ErrorBoundary Component', () => {
 
     // Clicking retry resets error boundary state
     fireEvent.press(getByTestId('error-boundary-retry-btn'));
+  });
+
+  it('recovers error boundary by changing child key and navigating to safe route (T09.55)', async () => {
+    const router = useRouter();
+    let mountCount = 0;
+    let shouldCrash = true;
+
+    function CrashOnce() {
+      React.useEffect(() => {
+        mountCount++;
+      }, []);
+      if (shouldCrash) {
+        throw new Error('Fatal crash');
+      }
+      return <Text testID="recovered-child">Recovered</Text>;
+    }
+
+    const onReset = jest.fn();
+    const { getByTestId, queryByTestId } = await render(
+      <ErrorBoundary onReset={onReset}>
+        <CrashOnce />
+      </ErrorBoundary>,
+    );
+
+    expect(getByTestId('error-boundary-fallback')).toBeTruthy();
+    expect(mountCount).toBe(0);
+
+    // User clicks retry
+    shouldCrash = false;
+    fireEvent.press(getByTestId('error-boundary-retry-btn'));
+
+    expect(onReset).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalledWith('/(tabs)');
+
+    await waitFor(() => {
+      expect(queryByTestId('error-boundary-fallback')).toBeNull();
+    });
+    expect(getByTestId('recovered-child')).toBeTruthy();
+    expect(mountCount).toBe(1);
   });
 });

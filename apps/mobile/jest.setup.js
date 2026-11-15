@@ -8,6 +8,7 @@ jest.mock('expo-router', () => {
   };
   return {
     __esModule: true,
+    router: routerMock,
     useRouter: () => routerMock,
     useLocalSearchParams: () => ({}),
     usePathname: () => '/',
