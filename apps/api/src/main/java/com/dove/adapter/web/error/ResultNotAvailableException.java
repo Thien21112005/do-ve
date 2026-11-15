@@ -15,4 +15,3 @@ public class ResultNotAvailableException extends BusinessException {
     super(ErrorCode.RESULT_NOT_AVAILABLE, message);
   }
 }
-

@@ -100,7 +100,8 @@ public class DrawController {
           @RequestParam("date")
           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
           LocalDate date,
-      @Parameter(description = "Mã đài (ví dụ: tp-hcm)") @RequestParam("station") String station) {
+      @Parameter(description = "Mã đài (ví dụ: tp-hcm)") @RequestParam("station") String station,
+      org.springframework.web.context.request.WebRequest webRequest) {
     if (stationRepository.findByCode(station).isEmpty()) {
       throw new StationNotFoundException(station);
     }
@@ -118,11 +119,16 @@ public class DrawController {
             .findByStationAndDate(station, date)
             .orElseThrow(() -> new ResultNotAvailableException(station, date));
 
+    String etag = generateETag(drawResult);
+    if (webRequest != null && webRequest.checkNotModified(etag)) {
+      return null;
+    }
+
     LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
     CacheControl cacheControl;
     if (date.isBefore(todayVn)) {
-      // Past draws are immutable and can be cached long-term
-      cacheControl = CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable();
+      // Past draws can be cached for up to 1 day with ETag revalidation (T09.64)
+      cacheControl = CacheControl.maxAge(Duration.ofDays(1)).cachePublic();
     } else {
       // Today's draws might be in progress or freshly updated
       cacheControl = CacheControl.noCache();
@@ -131,7 +137,29 @@ public class DrawController {
     String stationName = resolveStationName(station);
     return ResponseEntity.ok()
         .cacheControl(cacheControl)
+        .eTag(etag)
         .body(DrawResponse.from(drawResult, stationName));
+  }
+
+  private String generateETag(DrawResult draw) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(draw.stationCode()).append(':').append(draw.drawDate()).append(':');
+    draw.numbers()
+        .forEach(
+            (tier, nums) -> {
+              sb.append(tier.name()).append('=').append(String.join(",", nums)).append(';');
+            });
+    try {
+      java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+      byte[] hash = md.digest(sb.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      StringBuilder hex = new StringBuilder();
+      for (byte b : hash) {
+        hex.append(String.format("%02x", b));
+      }
+      return "\"" + hex + "\"";
+    } catch (java.security.NoSuchAlgorithmException e) {
+      return "\"" + Integer.toHexString(sb.toString().hashCode()) + "\"";
+    }
   }
 
   @GetMapping("/latest")

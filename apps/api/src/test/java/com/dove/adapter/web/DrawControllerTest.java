@@ -156,7 +156,8 @@ class DrawControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/draws với đài không có lịch quay vào ngày đó trả về 422 và code STATION_NOT_DRAWING (T09.63)")
+  @DisplayName(
+      "GET /api/v1/draws với đài không có lịch quay vào ngày đó trả về 422 và code STATION_NOT_DRAWING (T09.63)")
   void getDraw_stationNotDrawing_returns422StationNotDrawing() throws Exception {
     LocalDate tuesday = LocalDate.of(2026, 11, 10); // Tuesday (weekday 2)
     when(stationRepository.findByCode("tp-hcm"))
@@ -240,8 +241,8 @@ class DrawControllerTest {
 
   @Test
   @DisplayName(
-      "T05.15: Kỳ quá khứ trả về header Cache-Control: public, max-age=31536000, immutable")
-  void getDraw_pastDate_returnsCacheControlImmutable() throws Exception {
+      "T09.64: Kỳ quá khứ trả về header Cache-Control: max-age=86400, public và có ETag (revalidatable)")
+  void getDraw_pastDate_returnsCacheControlMaxAge1DayAndETag() throws Exception {
     LocalDate pastDate = LocalDate.of(2026, 11, 8);
     Clock clockAtNov9 =
         Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneId.of("Asia/Ho_Chi_Minh"));
@@ -258,7 +259,41 @@ class DrawControllerTest {
 
     mvc.perform(get("/api/v1/draws").param("date", "2026-11-08").param("station", "tp-hcm"))
         .andExpect(status().isOk())
-        .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"));
+        .andExpect(header().string("Cache-Control", "max-age=86400, public"))
+        .andExpect(header().exists("ETag"));
+  }
+
+  @Test
+  @DisplayName("T09.64: GET /api/v1/draws với If-None-Match khớp ETag trả về 304 Not Modified")
+  void getDraw_withMatchingETag_returns304NotModified() throws Exception {
+    LocalDate pastDate = LocalDate.of(2026, 11, 8);
+    Clock clockAtNov9 =
+        Clock.fixed(Instant.parse("2026-11-09T10:00:00Z"), ZoneId.of("Asia/Ho_Chi_Minh"));
+    DrawController controller =
+        new DrawController(
+            stationScheduleRepository, drawRepository, stationRepository, clockAtNov9);
+    MockMvc mvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+    DrawResult result =
+        new DrawResult("tp-hcm", pastDate, Map.of(PrizeTier.SPECIAL, List.of("654321")));
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(drawRepository.findByStationAndDate("tp-hcm", pastDate)).thenReturn(Optional.of(result));
+
+    String etag =
+        mvc.perform(get("/api/v1/draws").param("date", "2026-11-08").param("station", "tp-hcm"))
+            .andExpect(status().isOk())
+            .andExpect(header().exists("ETag"))
+            .andReturn()
+            .getResponse()
+            .getHeader("ETag");
+
+    mvc.perform(
+            get("/api/v1/draws")
+                .param("date", "2026-11-08")
+                .param("station", "tp-hcm")
+                .header("If-None-Match", etag))
+        .andExpect(status().isNotModified());
   }
 
   @Test
