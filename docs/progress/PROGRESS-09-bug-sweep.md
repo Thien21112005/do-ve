@@ -1,7 +1,7 @@
 # PROGRESS 09 — Quét lỗi toàn dự án
 
 - **Plan:** [`plans/PLAN-09-bug-sweep.md`](../plans/PLAN-09-bug-sweep.md)
-- **Tổng quan:** 13 / 72 task hoàn thành
+- **Tổng quan:** 14 / 72 task hoàn thành
 - **Bắt đầu:** 2026-11-14  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -13,7 +13,7 @@
 | T09.03 | P0 | Gửi `stationCode` trong request dò vé | DONE | a421809 | 2026-11-14 | Sửa check.tsx và usePendingTicketsRecheck.ts gửi stationCode |
 | T09.04 | P0 | Lớp ánh xạ response (adapter) phía mobile | DONE | b22189b | 2026-11-14 | Xây dựng mappers.ts chuyển DTO backend sang UI models |
 | T09.05 | P0 | Home crash vì `/draws/latest` trả object | DONE | e09ad77 | 2026-11-14 | Xử lý an toàn single object response từ GET /draws/latest trong useLatestDraws |
-| T09.06 | P1 | Endpoint "kết quả mới nhất trong ngày" cho Home | TODO | | | |
+| T09.06 | P1 | Endpoint "kết quả mới nhất trong ngày" cho Home | DONE | 4cd9d12 | 2026-11-15 | Thêm endpoint GET /draws/latest-day trả mảng kết quả mọi đài ngày gần nhất kèm stationName; useLatestDraws gọi endpoint này |
 | T09.07 | P1 | Bổ sung `stationName` vào response backend | DONE | 84f1c21 | 2026-11-15 | Bổ sung stationName vào DrawResponse, CheckTicketResponse, BatchCheckResponse; export OpenAPI và cập nhật mappers |
 | T09.08 | P0 | DrawTable đọc `numbers` thay vì `prizes` | DONE | 23a750a | 2026-11-14 | Cập nhật DrawTable hỗ trợ numbers và test với fixture 18 số |
 | T09.09 | P1 | Trạng thái kỳ quay (FINAL/đang chờ) không có trong API | DONE | 7b95574 | 2026-11-14 | Tự động tính toán tính hoàn chỉnh của kỳ quay (isComplete & FINAL/PENDING) |
@@ -86,7 +86,7 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 3 | 26 |
+| P1 | 29 | 4 | 25 |
 | P2 | 30 | 0 | 30 |
 | P3 | 3 | 0 | 3 |
 
@@ -116,8 +116,8 @@
 - 2026-11-14 | T09.57 | API key admin có nguy cơ dùng default yếu ở prod | Bắt buộc DOVE_ADMIN_API_KEY không default ở prod yml & docker-compose, chặn app startup nếu key rỗng/demo/< 32 ký tự.
 - 2026-11-14 | T09.12 | Toàn bộ 15 file test mock sai contract khiến tsc báo 66 lỗi | Thay thế mock types theo schema OpenAPI thật, sửa StationChips/ResultCard/BatchResultList, toàn bộ 50 test suites (226 tests) và typecheck xanh 100%.
 - 2026-11-15 | T09.07 | Mobile phải lookup thủ công stationName từ code | Bổ sung stationName vào DrawResponse, CheckTicketResponse, BatchCheckResponse trên backend, tự động enrich qua stationRepository, export lại OpenAPI và cập nhật mappers.ts.
+- 2026-11-15 | T09.06 | Màn Home chỉ hiển thị 1 đài do /draws/latest trả single draw | Cài đặt endpoint GET /api/v1/draws/latest-day trả danh sách kết quả tất cả các đài trong ngày mở thưởng gần nhất; mobile gọi fetchLatestDayDraws() hiển thị trọn vẹn 3-4 đài.
 
 ## Vấn đề mở
 
-- T09.06 / T09.07 / T09.09 đổi response backend: chốt có thêm field `stationName`, `complete` và endpoint `/draws/latest-day` hay để mobile tự suy ra.
 - T09.54: chọn nơi nhận crash report (lưu cục bộ hay gửi về backend).
