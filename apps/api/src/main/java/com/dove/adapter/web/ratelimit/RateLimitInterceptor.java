@@ -39,11 +39,16 @@ public class RateLimitInterceptor implements HandlerInterceptor {
   }
 
   private String resolveClientIp(HttpServletRequest request) {
-    String xForwardedFor = request.getHeader("X-Forwarded-For");
-    if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-      return xForwardedFor.split(",")[0].trim();
+    // Rely on request.getRemoteAddr(), which is populated correctly by Spring / Tomcat
+    // RemoteIpValve (server.forward-headers-strategy: native) from trusted reverse proxy hops (e.g.
+    // Caddy).
+    // Never trust raw client-provided X-Forwarded-For headers directly to prevent rate-limit
+    // spoofing.
+    String remoteAddr = request.getRemoteAddr();
+    if (remoteAddr != null && !remoteAddr.isBlank()) {
+      return remoteAddr.trim();
     }
-    return request.getRemoteAddr() != null ? request.getRemoteAddr() : "unknown";
+    return "unknown";
   }
 
   public SlidingWindowRateLimiter getRateLimiter() {

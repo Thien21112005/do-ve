@@ -123,11 +123,26 @@ class CheckRateLimitTest {
         .andExpect(jsonPath("$.status").value(429))
         .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
 
-    // Request from different IP (via X-Forwarded-For): OK
+    // Request 4 from same IP attempting to bypass rate limit with spoofed X-Forwarded-For: MUST
+    // FAIL (429)
     mockMvc
         .perform(
             post("/api/v1/check")
-                .header("X-Forwarded-For", "10.0.0.99")
+                .header("X-Forwarded-For", "198.51.100.24, 10.0.0.1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+        .andExpect(status().isTooManyRequests())
+        .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
+
+    // Request from genuinely different client IP: OK
+    mockMvc
+        .perform(
+            post("/api/v1/check")
+                .with(
+                    req -> {
+                      req.setRemoteAddr("10.0.0.99");
+                      return req;
+                    })
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
         .andExpect(status().isOk());

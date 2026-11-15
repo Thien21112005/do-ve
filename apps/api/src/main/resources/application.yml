@@ -17,6 +17,7 @@ spring:
 server:
   port: ${PORT:8080}
   shutdown: graceful
+  forward-headers-strategy: ${SERVER_FORWARD_HEADERS_STRATEGY:native}
   server-header: ""
   error:
     include-stacktrace: never
