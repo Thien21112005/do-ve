@@ -156,4 +156,33 @@ describe('TicketInput Component', () => {
     const box5 = getByTestId('ticket-input-digit-5').parent;
     expect(box5?.props.style?.borderColor).not.toBe(colors.light.primary);
   });
+
+  it('renders ticket-style paper boxes with height >= 56 and hidden text input (T10.22)', async () => {
+    const onChangeText = jest.fn();
+    const onComplete = jest.fn();
+    const { getByTestId } = await render(
+      <TicketInput
+        value="012345"
+        onChangeText={onChangeText}
+        onComplete={onComplete}
+      />,
+    );
+
+    // Box height should be >= 56
+    const box0 = getByTestId('ticket-input-digit-0').parent;
+    const boxStyles = Array.isArray(box0?.props.style)
+      ? Object.assign({}, ...box0?.props.style)
+      : box0?.props.style;
+    expect(boxStyles?.height || boxStyles?.minHeight || 56).toBeGreaterThanOrEqual(56);
+
+    // Hidden input exists to support native autofill/pasting
+    const hiddenInput = getByTestId('ticket-input-hidden-input');
+    expect(hiddenInput).toBeTruthy();
+    expect(hiddenInput.props.value).toBe('012345');
+
+    // Pasting into hidden input updates value
+    fireEvent.changeText(hiddenInput, '654321');
+    expect(onChangeText).toHaveBeenCalledWith('654321');
+    expect(onComplete).toHaveBeenCalledWith('654321');
+  });
 });

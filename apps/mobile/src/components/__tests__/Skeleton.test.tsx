@@ -23,3 +23,4 @@ describe('Skeleton and HomeDrawsSkeleton Components (T10.21)', () => {
     expect(getByTestId('home-draws-skeleton-card-2')).toBeTruthy();
   });
 });
+
