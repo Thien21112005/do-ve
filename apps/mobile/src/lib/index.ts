@@ -5,3 +5,4 @@ export * from './haptics';
 export * from './format';
 export * from './version';
 export * from './strings';
+export * from './date';
