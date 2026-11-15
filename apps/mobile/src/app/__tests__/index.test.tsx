@@ -234,14 +234,26 @@ describe('Tab Screens', () => {
     ).toBeTruthy();
   });
 
-  it('deep links Home cards to station results with station and date params (T09.34)', async () => {
+  it('deep links Home cards to station results with station and date params (T09.34, T10.19)', async () => {
     const router = useRouter();
-    const { getAllByText, getByText } = await render(<HomeScreen />, {
+    const { getAllByText, getByText, getByTestId } = await render(<HomeScreen />, {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => {
       expect(getAllByText('Xem toàn bộ bảng giải').length).toBeGreaterThan(0);
+    });
+
+    // Click entire card to navigate (T10.19)
+    const firstCard = getByTestId('latest-draw-card-tp-hcm');
+    fireEvent.press(firstCard);
+
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/(tabs)/results',
+      params: {
+        station: 'tp-hcm',
+        date: '2026-11-14',
+      },
     });
 
     // Click "Xem toàn bộ bảng giải" on the first card

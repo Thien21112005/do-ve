@@ -602,20 +602,29 @@ export default function HomeScreen() {
               const isFinal = draw.status === 'FINAL' || draw.isComplete;
 
               return (
-                <View
+                <TouchableOpacity
                   key={`${draw.stationCode}-${draw.drawDate}`}
                   testID={`latest-draw-card-${draw.stationCode}`}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Kết quả đài ${draw.stationName || draw.stationCode}, kỳ quay ngày ${formattedDrawDate}`}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(tabs)/results',
+                      params: {
+                        station: draw.stationCode,
+                        date: draw.drawDate,
+                      },
+                    })
+                  }
+                  activeOpacity={0.8}
                   className="p-4 rounded-2xl border mb-3 shadow-sm"
                   style={{
                     backgroundColor: colors.surface,
                     borderColor: colors.border,
                   }}
                 >
-                  {/* Card Header */}
-                  <View
-                    className="flex-row items-center justify-between pb-3 border-b"
-                    style={{ borderColor: colors.border }}
-                  >
+                  {/* Card Header: Station name + Status badge */}
+                  <View className="flex-row items-center justify-between pb-2.5">
                     <View>
                       <Text
                         className="text-base font-bold"
@@ -632,13 +641,19 @@ export default function HomeScreen() {
                     </View>
 
                     <View
-                      className="px-2.5 py-1 rounded-full"
+                      className="px-2.5 py-1 rounded-full flex-row items-center"
                       style={{
                         backgroundColor: isFinal
                           ? `${colors.win}1A`
                           : `${colors.pending}1A`,
                       }}
                     >
+                      <View
+                        className="w-1.5 h-1.5 rounded-full mr-1.5"
+                        style={{
+                          backgroundColor: isFinal ? colors.win : colors.pending,
+                        }}
+                      />
                       <Text
                         className="text-xs font-semibold"
                         style={{
@@ -652,24 +667,25 @@ export default function HomeScreen() {
                     </View>
                   </View>
 
-                  {/* Special Prize Banner */}
+                  {/* Special Prize Display: Flat, no card-in-card, vermilion red */}
                   <View
-                    className="mt-3 p-3 rounded-xl items-center border"
+                    className="py-3 px-3.5 rounded-xl flex-row items-center justify-between"
                     style={{
-                      backgroundColor: `${colors.primary}0D`,
-                      borderColor: `${colors.primary}26`,
+                      backgroundColor: colors.surfaceSubtle,
                     }}
                   >
-                    <Text
-                      className="text-xs font-bold uppercase tracking-wider mb-1"
-                      style={{ color: colors.primary }}
-                    >
-                      {STRINGS.home.specialPrizeBanner}
-                    </Text>
+                    <View>
+                      <Text
+                        className="text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: colors.textMuted }}
+                      >
+                        {STRINGS.home.specialPrizeBanner}
+                      </Text>
+                    </View>
                     <Text
                       className="text-2xl font-bold tracking-widest"
                       style={{
-                        color: colors.primary,
+                        color: colors.special,
                         fontVariant: ['tabular-nums'],
                       }}
                     >
@@ -677,17 +693,20 @@ export default function HomeScreen() {
                     </Text>
                   </View>
 
-                  {/* Quick Prize Highlights (First & Eighth) */}
-                  <View className="flex-row items-center justify-between mt-3 pt-2">
-                    <View className="flex-1 mr-2 flex-row items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800">
+                  {/* Secondary prizes (First & Eighth) + Deep link cue */}
+                  <View
+                    className="flex-row items-center justify-between mt-3 pt-2.5 border-t"
+                    style={{ borderColor: colors.border }}
+                  >
+                    <View className="flex-row items-center">
                       <Text
-                        className="text-xs font-medium"
+                        className="text-xs font-medium mr-1"
                         style={{ color: colors.textMuted }}
                       >
-                        {STRINGS.home.firstPrizeLabel}
+                        {STRINGS.home.firstPrizeLabel}:
                       </Text>
                       <Text
-                        className="text-sm font-bold"
+                        className="text-xs font-bold mr-3"
                         style={{
                           color: colors.textMain,
                           fontVariant: ['tabular-nums'],
@@ -695,16 +714,14 @@ export default function HomeScreen() {
                       >
                         {firstPrize}
                       </Text>
-                    </View>
-                    <View className="flex-1 ml-2 flex-row items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800">
                       <Text
-                        className="text-xs font-medium"
+                        className="text-xs font-medium mr-1"
                         style={{ color: colors.textMuted }}
                       >
-                        {STRINGS.home.eighthPrizeLabel}
+                        {STRINGS.home.eighthPrizeLabel}:
                       </Text>
                       <Text
-                        className="text-sm font-bold"
+                        className="text-xs font-bold"
                         style={{
                           color: colors.textMain,
                           fontVariant: ['tabular-nums'],
@@ -713,38 +730,25 @@ export default function HomeScreen() {
                         {eighthPrize}
                       </Text>
                     </View>
-                  </View>
 
-                  {/* Action Link to Details */}
-                  <Pressable
-                    testID={`home-card-view-details-${draw.stationCode}`}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Xem toàn bộ bảng giải đài ${draw.stationName || draw.stationCode}`}
-                    onPress={() =>
-                      router.push({
-                        pathname: '/(tabs)/results',
-                        params: {
-                          station: draw.stationCode,
-                          date: draw.drawDate,
-                        },
-                      })
-                    }
-                    className="mt-3 pt-2.5 border-t flex-row items-center justify-center"
-                    style={{ borderColor: colors.border }}
-                  >
-                    <Text
-                      className="text-xs font-semibold mr-1"
-                      style={{ color: colors.primary }}
+                    <View
+                      testID={`home-card-view-details-${draw.stationCode}`}
+                      className="flex-row items-center"
                     >
-                      {STRINGS.home.viewFullTable}
-                    </Text>
-                    <Icon
-                      name="chevronRight"
-                      size={14}
-                      color={colors.primary}
-                    />
-                  </Pressable>
-                </View>
+                      <Text
+                        className="text-xs font-semibold mr-1"
+                        style={{ color: colors.primary }}
+                      >
+                        {STRINGS.home.viewFullTable}
+                      </Text>
+                      <Icon
+                        name="chevronRight"
+                        size={14}
+                        color={colors.primary}
+                      />
+                    </View>
+                  </View>
+                </TouchableOpacity>
               );
             })}
         </View>
