@@ -38,6 +38,32 @@ describe('parseBatchTickets helper', () => {
     expect(result.invalidTokens).toEqual(['123', '9999999', 'abcdef']);
     expect(result.error).toMatch(/không hợp lệ/i);
   });
+
+  it('dedupes tickets preserving order and reports duplicate count (T09.26)', () => {
+    const raw = '123456 654321 123456 999999 654321';
+    const result = parseBatchTickets(raw);
+
+    expect(result.validTickets).toEqual(['123456', '654321', '999999']);
+    expect(result.count).toBe(3);
+    expect(result.duplicateCount).toBe(2);
+    expect(result.notice).toMatch(/Đã loại bỏ 2 số trùng/i);
+  });
+
+  it('calculates limit strictly based on unique valid tickets (T09.26)', () => {
+    // 15 unique valid tickets + 6 duplicates + 4 invalid tokens = 25 tokens total
+    const uniqueTickets = Array.from({ length: 15 }, (_, i) =>
+      String(100000 + i),
+    );
+    const duplicates = uniqueTickets.slice(0, 6);
+    const invalids = ['abc', '12', '9999999', 'xyz'];
+    const raw = [...uniqueTickets, ...duplicates, ...invalids].join(' ');
+
+    const result = parseBatchTickets(raw, 20);
+
+    expect(result.count).toBe(15);
+    expect(result.duplicateCount).toBe(6);
+    expect(result.isOverLimit).toBe(false);
+  });
 });
 
 describe('BatchTicketInput Component', () => {

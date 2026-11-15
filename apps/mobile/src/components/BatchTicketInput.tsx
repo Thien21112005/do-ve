@@ -7,9 +7,11 @@ import { STRINGS } from '../lib/strings';
 export interface BatchParsedResult {
   validTickets: string[];
   invalidTokens: string[];
+  duplicateCount: number;
   count: number;
   isOverLimit: boolean;
   error: string | null;
+  notice: string | null;
 }
 
 export function parseBatchTickets(
@@ -21,9 +23,11 @@ export function parseBatchTickets(
     return {
       validTickets: [],
       invalidTokens: [],
+      duplicateCount: 0,
       count: 0,
       isOverLimit: false,
       error: null,
+      notice: null,
     };
   }
 
@@ -33,17 +37,24 @@ export function parseBatchTickets(
     .filter(Boolean);
 
   const validTickets: string[] = [];
+  const seen = new Set<string>();
   const invalidTokens: string[] = [];
+  let duplicateCount = 0;
 
   for (const token of tokens) {
     if (/^\d{6}$/.test(token)) {
-      validTickets.push(token);
+      if (seen.has(token)) {
+        duplicateCount++;
+      } else {
+        seen.add(token);
+        validTickets.push(token);
+      }
     } else {
       invalidTokens.push(token);
     }
   }
 
-  const count = tokens.length;
+  const count = validTickets.length;
   const isOverLimit = count > maxTickets;
 
   let error: string | null = null;
@@ -55,12 +66,19 @@ export function parseBatchTickets(
     error = STRINGS.check.batchErrorInvalidTokens(`${preview}${more}`);
   }
 
+  const notice =
+    duplicateCount > 0
+      ? STRINGS.check.batchDuplicateNotice(duplicateCount)
+      : null;
+
   return {
     validTickets,
     invalidTokens,
+    duplicateCount,
     count,
     isOverLimit,
     error,
+    notice,
   };
 }
 
@@ -180,6 +198,22 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
             style={{ color: colors.error }}
           >
             {parsed.error}
+          </Text>
+        </View>
+      )}
+
+      {/* Duplicate Notice */}
+      {!hasError && parsed.notice && (
+        <View
+          testID="batch-input-notice"
+          className="flex-row items-center mt-2 px-1"
+        >
+          <Icon name="info" size={14} color={colors.primary} />
+          <Text
+            className="text-xs font-medium ml-1.5 flex-1"
+            style={{ color: colors.primary }}
+          >
+            {parsed.notice}
           </Text>
         </View>
       )}

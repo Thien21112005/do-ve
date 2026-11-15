@@ -114,6 +114,8 @@ export const STRINGS = {
       `Vượt quá giới hạn tối đa ${max} vé${count !== undefined ? ` (hiện có ${count} vé)` : ''}`,
     batchErrorInvalidTokens: (preview: string) =>
       `Số vé không hợp lệ: phải gồm đúng 6 chữ số (${preview})`,
+    batchDuplicateNotice: (count: number) =>
+      `Đã loại bỏ ${count} số trùng lặp.`,
     batchResultSummary: (total: number) => `Kết quả dò ${total} vé`,
     batchResultTitle: 'Kết quả dò hàng loạt',
     batchWonCount: (count: number) => `${count} vé trúng`,
