@@ -47,6 +47,49 @@ public final class DrawResultMapper {
   }
 
   /**
+   * Cập nhật bản ghi {@link DrawResultEntity} hiện có với dữ liệu mới từ {@link DrawResult}. Tái sử
+   * dụng các PrizeNumberEntity hiện có theo tier và position để tránh vi phạm unique constraint,
+   * cập nhật source và updated_at.
+   */
+  public static void updateEntity(DrawResultEntity entity, DrawResult domain, String source) {
+    Objects.requireNonNull(entity, "entity DrawResultEntity không được null");
+    Objects.requireNonNull(domain, "domain DrawResult không được null");
+
+    entity.setSource(source != null ? source : "UNKNOWN");
+    entity.setUpdatedAt(java.time.Instant.now());
+
+    java.util.Map<String, PrizeNumberEntity> existingMap = new java.util.HashMap<>();
+    for (PrizeNumberEntity pn : entity.getPrizeNumbers()) {
+      existingMap.put(pn.getTier() + ":" + pn.getPosition(), pn);
+    }
+
+    java.util.Set<String> processedKeys = new java.util.HashSet<>();
+
+    domain
+        .numbers()
+        .forEach(
+            (tier, numbers) -> {
+              if (tier != null && numbers != null) {
+                for (int pos = 0; pos < numbers.size(); pos++) {
+                  String key = tier.name() + ":" + pos;
+                  processedKeys.add(key);
+                  String num = numbers.get(pos);
+                  PrizeNumberEntity existing = existingMap.get(key);
+                  if (existing != null) {
+                    existing.setNumber(num);
+                  } else {
+                    entity.addPrizeNumber(new PrizeNumberEntity(tier.name(), pos, num));
+                  }
+                }
+              }
+            });
+
+    entity
+        .getPrizeNumbers()
+        .removeIf(pn -> !processedKeys.contains(pn.getTier() + ":" + pn.getPosition()));
+  }
+
+  /**
    * Converts {@link DrawResultEntity} back into immutable domain {@link DrawResult}.
    *
    * @param entity the persisted entity

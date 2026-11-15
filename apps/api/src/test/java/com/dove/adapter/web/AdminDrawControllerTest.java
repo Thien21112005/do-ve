@@ -128,6 +128,34 @@ class AdminDrawControllerTest {
   }
 
   @Test
+  @DisplayName("4b. PUT liên tiếp 2 lần cùng một đài và ngày phải cập nhật thành công (upsert)")
+  void upsertDraw_consecutivePutRequests_updatesSuccessfully() throws Exception {
+    when(drawRepository.save(any(DrawResult.class), eq("ADMIN_MANUAL")))
+        .thenAnswer(invocation -> invocation.getArgument(0));
+
+    mockMvc
+        .perform(
+            put("/api/v1/admin/draws")
+                .header("X-API-Key", API_KEY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createValidPayload())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("success"));
+
+    mockMvc
+        .perform(
+            put("/api/v1/admin/draws")
+                .header("X-API-Key", API_KEY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createValidPayload())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("success"));
+
+    verify(drawRepository, org.mockito.Mockito.times(2))
+        .save(any(DrawResult.class), eq("ADMIN_MANUAL"));
+  }
+
+  @Test
   @DisplayName("5. Profile prod từ chối khởi động nếu thiếu hoặc rỗng API Key")
   void prodProfile_missingOrBlankApiKey_throwsIllegalStateException() {
     assertThatThrownBy(() -> new AdminDrawController(drawRepository, "", "prod"))

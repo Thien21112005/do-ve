@@ -45,6 +45,9 @@ public class DrawResultEntity {
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt = Instant.now();
 
+  @Column(name = "updated_at")
+  private Instant updatedAt;
+
   @OneToMany(mappedBy = "drawResult", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("position ASC")
   private List<PrizeNumberEntity> prizeNumbers = new ArrayList<>();
@@ -101,6 +104,14 @@ public class DrawResultEntity {
 
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public List<PrizeNumberEntity> getPrizeNumbers() {

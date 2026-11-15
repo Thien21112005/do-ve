@@ -83,4 +83,29 @@ class IdempotentDrawSaveTest {
 
     executor.shutdown();
   }
+
+  @Test
+  @DisplayName(
+      "Lưu cập nhật kết quả đã tồn tại (upsert): ghi đè giải thưởng mới và source mới, không ném exception")
+  void shouldUpdateExistingDrawResultWhenSavedAgain() {
+    drawRepositoryAdapter.save(sampleDraw, "SCRAPER");
+
+    Map<PrizeTier, List<String>> updatedNumbers =
+        Map.of(
+            PrizeTier.SPECIAL, List.of("111111"),
+            PrizeTier.FIRST, List.of("22222"),
+            PrizeTier.EIGHTH, List.of("33"));
+    DrawResult updatedDraw = new DrawResult("tp-hcm", sampleDraw.drawDate(), updatedNumbers);
+
+    DrawResult saved = drawRepositoryAdapter.save(updatedDraw, "ADMIN_MANUAL");
+
+    assertThat(saved.numbers().get(PrizeTier.SPECIAL)).containsExactly("111111");
+    assertThat(drawResultRepository.count()).isEqualTo(1);
+
+    Optional<DrawResultEntity> found =
+        drawResultRepository.findByStationCodeAndDrawDate("tp-hcm", sampleDraw.drawDate());
+    assertThat(found).isPresent();
+    assertThat(found.get().getSource()).isEqualTo("ADMIN_MANUAL");
+    assertThat(found.get().getUpdatedAt()).isNotNull();
+  }
 }

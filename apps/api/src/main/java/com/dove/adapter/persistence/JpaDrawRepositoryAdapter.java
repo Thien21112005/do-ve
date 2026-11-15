@@ -75,7 +75,18 @@ public class JpaDrawRepositoryAdapter implements DrawRepository {
                     new IllegalArgumentException(
                         "Không tìm thấy đài với mã: " + drawResult.stationCode()));
 
-    DrawResultEntity entity = DrawResultMapper.toEntity(drawResult, station, source);
+    Optional<DrawResultEntity> existingOpt =
+        drawResultRepository.findByStationCodeAndDrawDate(
+            drawResult.stationCode(), drawResult.drawDate());
+
+    DrawResultEntity entity;
+    if (existingOpt.isPresent()) {
+      entity = existingOpt.get();
+      DrawResultMapper.updateEntity(entity, drawResult, source);
+    } else {
+      entity = DrawResultMapper.toEntity(drawResult, station, source);
+    }
+
     DrawResultEntity saved = drawResultRepository.saveAndFlush(entity);
     return DrawResultMapper.toDomain(saved);
   }
