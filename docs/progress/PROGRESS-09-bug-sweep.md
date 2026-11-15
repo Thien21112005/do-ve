@@ -45,7 +45,7 @@
 | T09.35 | P1 | Ghi đè đồng thời làm mất vé (race condition) | DONE | f70a196 | 2026-11-15 | Hàng đợi ghi tuần tự enqueueWrite qua promise chain trong ticketStore, chống race condition |
 | T09.36 | P1 | Báo "đã lưu" dù ghi AsyncStorage thất bại | DONE | 3f1ebb3 | 2026-11-15 | Ném lỗi khi AsyncStorage ghi thất bại, hiển thị Alert thông báo lỗi trên UI check và tickets |
 | T09.37 | P2 | `getTickets()` phát sự kiện mỗi lần đọc | DONE | 06612e8 | 2026-11-15 | Bỏ gọi notifyListeners trong getTickets, chỉ phát sự kiện khi có thay đổi dữ liệu thật |
-| T09.38 | P1 | Khôi phục từ file ghi đè trạng thái mới bằng dữ liệu cũ | TODO | | | |
+| T09.38 | P1 | Khôi phục từ file ghi đè trạng thái mới bằng dữ liệu cũ | DONE | 7498854 | 2026-11-15 | Gộp vé sao lưu không hạ cấp trạng thái WON/LOST, đếm riêng vé mới và vé trùng |
 | T09.39 | P1 | Kiểm tra dữ liệu nhập từ file quá lỏng | TODO | | | |
 | T09.40 | P2 | Nhập N vé = N lần ghi toàn bộ danh sách | TODO | | | |
 | T09.41 | P2 | Sao lưu "thành công" khi không có share sheet | TODO | | | |
@@ -86,7 +86,7 @@
 | Mức | Tổng | Done | Còn lại |
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
-| P1 | 29 | 13 | 16 |
+| P1 | 29 | 14 | 15 |
 | P2 | 30 | 5 | 25 |
 | P3 | 3 | 0 | 3 |
 
@@ -142,6 +142,7 @@
 - 2026-11-15 | T09.35 | Ghi đè đồng thời làm mất vé khi lưu vé và tự động dò lại chạy song song | Viết test kiểm chứng 3 luồng lưu song song làm rơi vé; cài đặt hàng đợi enqueueWrite tuần tự hoá các tác vụ ghi (saveTicket, removeTicket, clearAll, updateTicket) bằng promise chain, giải quyết triệt để race condition.
 - 2026-11-15 | T09.36 | Báo "đã lưu" dù ghi AsyncStorage thất bại khiến mất vé khi mở lại app | Không nuốt lỗi trong saveTicket khi AsyncStorage thất bại, rethrow để thông báo cho caller; bổ sung Alert thông báo lỗi lưu vé trên CheckScreen và lỗi xoá vé trên TicketsScreen.
 - 2026-11-15 | T09.37 | getTickets() phát sự kiện notifyListeners mỗi lần đọc gây re-render thừa | Loại bỏ lệnh gọi notifyListeners khỏi getTickets và getTicketById, chỉ kích hoạt sự kiện khi dữ liệu thực tế bị biến đổi qua các thao tác ghi.
+- 2026-11-15 | T09.38 | Khôi phục từ file sao lưu cũ ghi đè vé WON thành PENDING và đếm cả vé trùng | Triển khai shouldReplaceExistingTicket chặn hạ cấp vé chung cuộc (WON/LOST) về PENDING, đếm chính xác số vé mới thêm và vé trùng được bỏ qua.
 
 ## Vấn đề mở
 
