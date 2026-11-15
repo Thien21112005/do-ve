@@ -47,6 +47,7 @@ jest.mock('expo-router', () => {
 describe('ScheduleScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFetchScheduleByDate.mockReset();
   });
 
   it('renders all 7 weekdays with correct stations matching SRS 3.3', async () => {
@@ -114,16 +115,6 @@ describe('ScheduleScreen', () => {
     expect(getByTestId('schedule-today-badge')).toBeTruthy();
 
     jest.useRealTimers();
-  });
-
-  it('handles back button navigation', async () => {
-    const router = useRouter();
-    const { getByTestId } = await renderScheduleScreen();
-
-    const backBtn = getByTestId('schedule-back-btn');
-    fireEvent.press(backBtn);
-
-    expect(router.back).toHaveBeenCalled();
   });
 
   it('loads weekly schedule dynamically from api (T09.31)', async () => {

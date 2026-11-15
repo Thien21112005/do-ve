@@ -10,7 +10,6 @@ import {
   SETTINGS_STORAGE_KEY,
 } from '@/store/settings';
 import * as reminderNotification from '@/services/reminderNotification';
-import { useRouter } from 'expo-router';
 
 describe('SettingsScreen (Cài đặt)', () => {
   beforeEach(async () => {
@@ -23,7 +22,7 @@ describe('SettingsScreen (Cài đặt)', () => {
     const { getByTestId, getByText } = await render(<SettingsScreen />);
 
     expect(getByTestId('settings-screen')).toBeTruthy();
-    expect(getByText('Cài đặt')).toBeTruthy();
+    expect(getByText('GIAO DIỆN & HIỂN THỊ')).toBeTruthy();
     expect(getByTestId('settings-theme-system')).toBeTruthy();
     expect(getByTestId('settings-theme-light')).toBeTruthy();
     expect(getByTestId('settings-theme-dark')).toBeTruthy();
@@ -148,16 +147,6 @@ describe('SettingsScreen (Cài đặt)', () => {
     });
 
     expect(alertSpy).toHaveBeenCalled();
-  });
-
-  it('navigates back when pressing header back button', async () => {
-    const router = useRouter();
-    const { getByTestId } = await render(<SettingsScreen />);
-
-    const backBtn = getByTestId('settings-back-btn');
-    fireEvent.press(backBtn);
-
-    expect(router.back).toHaveBeenCalled();
   });
 
   it('prevents double-toggle and duplicate screen reader announcement on switch rows (T09.50)', async () => {

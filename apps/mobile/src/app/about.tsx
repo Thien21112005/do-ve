@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
@@ -9,41 +8,14 @@ import { CURRENT_APP_VERSION, CURRENT_BUILD_NUMBER } from '@/lib/version';
 
 export default function AboutScreen() {
   const { colors } = useTheme();
-  const router = useRouter();
 
   return (
     <SafeAreaView
       testID="about-screen"
-      edges={['top', 'bottom']}
-      className="flex-1 bg-slate-50 dark:bg-slate-900"
+      edges={['bottom']}
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
     >
-      {/* Header */}
-      <View
-        className="px-4 py-3 flex-row items-center border-b"
-        style={{
-          borderColor: colors.border,
-          backgroundColor: colors.surface,
-        }}
-      >
-        <Pressable
-          testID="about-back-btn"
-          accessibilityRole="button"
-          accessibilityLabel="Quay lại"
-          onPress={() => router.back()}
-          hitSlop={8}
-          className="w-10 h-10 rounded-full items-center justify-center mr-2 active:opacity-70"
-          style={{ backgroundColor: `${colors.border}40` }}
-        >
-          <Icon name="chevronLeft" size={20} color={colors.textMain} />
-        </Pressable>
-        <Text
-          className="text-lg font-bold flex-1"
-          style={{ color: colors.textMain }}
-        >
-          {STRINGS.about.screenTitle}
-        </Text>
-      </View>
-
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         className="flex-1 px-4 pt-4"

@@ -22,6 +22,11 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
         },
         headerTintColor: colors.textMain,
+        headerTitleStyle: {
+          fontFamily: 'BeVietnamPro-SemiBold',
+          fontSize: 17,
+        },
+        headerShadowVisible: false,
       }}
     >
       <Tabs.Screen
@@ -70,7 +75,7 @@ export default function TabLayout() {
         name="tickets"
         options={{
           title: STRINGS.tabs.tickets,
-          headerTitle: 'Vé đã lưu',
+          headerTitle: STRINGS.tabs.tickets,
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="bookmark"
@@ -84,7 +89,7 @@ export default function TabLayout() {
         name="more"
         options={{
           title: STRINGS.tabs.more,
-          headerTitle: 'Thêm & Cài đặt',
+          headerTitle: STRINGS.tabs.more,
           tabBarIcon: ({ color, size }) => (
             <Icon
               name="more"

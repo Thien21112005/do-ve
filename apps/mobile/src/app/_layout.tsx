@@ -11,6 +11,8 @@ import {
 import { AppProviders, AppVersionGate, ErrorBoundary } from '@/components';
 import { initCrashReporting } from '@/services/crashReporting';
 import { loadSettings } from '@/store/settings';
+import { useTheme } from '@/theme';
+import { STRINGS } from '@/lib/strings';
 
 initCrashReporting();
 
@@ -21,16 +23,50 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 function AppContent() {
   const { config, refetch } = useAppConfig();
+  const { colors } = useTheme();
   usePendingTicketsReminder();
   usePendingTicketsRecheck();
 
   return (
     <AppVersionGate config={config} onRetry={refetch}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.textMain,
+          headerTitleStyle: {
+            fontFamily: 'BeVietnamPro-SemiBold',
+            fontSize: 17,
+          },
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+        }}
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="schedule" options={{ headerShown: false }} />
-        <Stack.Screen name="settings" options={{ headerShown: false }} />
-        <Stack.Screen name="about" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="schedule"
+          options={{
+            headerShown: true,
+            headerTitle: STRINGS.schedule.screenTitle,
+            headerBackTitle: 'Quay lại',
+          }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{
+            headerShown: true,
+            headerTitle: STRINGS.settings.screenTitle,
+            headerBackTitle: 'Quay lại',
+          }}
+        />
+        <Stack.Screen
+          name="about"
+          options={{
+            headerShown: true,
+            headerTitle: STRINGS.about.screenTitle,
+            headerBackTitle: 'Quay lại',
+          }}
+        />
       </Stack>
     </AppVersionGate>
   );

@@ -28,40 +28,10 @@ export default function ScheduleScreen() {
   return (
     <SafeAreaView
       testID="schedule-screen"
-      edges={['top', 'bottom']}
-      className="flex-1 bg-slate-50 dark:bg-slate-900"
+      edges={['bottom']}
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
     >
-      {/* Header Bar */}
-      <View
-        className="px-4 py-3.5 flex-row items-center border-b"
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        }}
-      >
-        <Pressable
-          testID="schedule-back-btn"
-          accessibilityRole="button"
-          accessibilityLabel="Quay lại"
-          onPress={() => router.back()}
-          className="w-9 h-9 rounded-full items-center justify-center mr-3 active:opacity-70"
-          style={{ backgroundColor: `${colors.border}55` }}
-        >
-          <Icon name="chevronLeft" size={20} color={colors.textMain} />
-        </Pressable>
-        <View className="flex-1">
-          <Text
-            className="text-lg font-bold"
-            style={{ color: colors.textMain }}
-          >
-            {STRINGS.schedule.screenTitle}
-          </Text>
-          <Text className="text-xs" style={{ color: colors.textMuted }}>
-            {STRINGS.schedule.subtitle}
-          </Text>
-        </View>
-      </View>
-
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
         className="flex-1 px-4 pt-3"
