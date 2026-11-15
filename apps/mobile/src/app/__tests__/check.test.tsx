@@ -79,11 +79,9 @@ describe('CheckScreen Form Composition', () => {
       message: null,
     });
 
-    const onCheckSuccess = jest.fn();
-    const { getByTestId } = await render(
-      <CheckScreen onCheckSuccess={onCheckSuccess} />,
-      { wrapper: createWrapper() },
-    );
+    const { getByTestId, findByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
 
     // Wait for station chips to render
     await waitFor(() => {
@@ -108,8 +106,8 @@ describe('CheckScreen Form Composition', () => {
           stationCode: 'TPHCM',
         }),
       );
-      expect(onCheckSuccess).toHaveBeenCalled();
     });
+    expect(await findByTestId('check-result-section')).toBeTruthy();
   });
 
   it('saves ticket into ticketStore when pressing save button on ResultCard', async () => {

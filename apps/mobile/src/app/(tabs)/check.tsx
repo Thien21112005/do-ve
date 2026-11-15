@@ -31,11 +31,7 @@ import { useSavedTickets } from '@/store/ticketStore';
 import { getApiErrorMessage } from '@/api/client';
 import type { SavedTicketStatus } from '@/types';
 
-export interface CheckScreenProps {
-  onCheckSuccess?: (result: any) => void;
-}
-
-export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
+export default function CheckScreen() {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
   const {
@@ -180,9 +176,6 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           drawDate: selectedDate,
         },
         {
-          onSuccess: (data) => {
-            onCheckSuccess?.(data);
-          },
           onError: () => {
             haptics.error();
           },
@@ -196,9 +189,6 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
           tickets: parsedBatch.validTickets,
         },
         {
-          onSuccess: (data) => {
-            onCheckSuccess?.(data);
-          },
           onError: () => {
             haptics.error();
           },
