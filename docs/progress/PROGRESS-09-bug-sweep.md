@@ -63,7 +63,7 @@
 | T09.53 | P2 | Cờ bảo trì cũ bị khôi phục từ cache offline 7 ngày | DONE | 2026-11-15 | 62d457c | Loại bỏ ['app', 'config'] khỏi shouldDehydrateQuery của queryClient persister |
 | T09.54 | P1 | Crash report không đi đâu cả | DONE | 2026-11-15 | 134d69e | Lưu tối đa 20 crash report đã khử nhạy cảm vào AsyncStorage |
 | T09.55 | P2 | ErrorBoundary "Thử lại" lặp crash, không theo theme | DONE | 2026-11-15 | fafc1af | Đổi resetKey remount cây con, điều hướng về Home /(tabs), áp dụng màu theo Appearance |
-| T09.56 | P2 | Phiên bản app hard-code 3 nơi | TODO | | | |
+| T09.56 | P2 | Phiên bản app hard-code 3 nơi | DONE | 2026-11-15 | 7379291 | Đọc version và build number động từ expoConfig thay vì hard-code |
 | T09.57 | P0 | API key admin mặc định công khai trong production | DONE | ae9277f | 2026-11-14 | Bắt buộc DOVE_ADMIN_API_KEY ở prod, fail-fast nếu < 32 ký tự hoặc dùng key demo |
 | T09.58 | P1 | "Upsert" admin thực ra chỉ insert → 500 khi sửa kỳ đã có | TODO | | | |
 | T09.59 | P1 | Rate limit dò vé bị vượt bằng header giả | TODO | | | |
@@ -160,6 +160,7 @@
 - 2026-11-15 | T09.53 | Cờ bảo trì cũ bị khôi phục từ cache offline 7 ngày | Cấu hình shouldDehydrateQuery trong setupQueryClientPersistence bỏ qua ['app', 'config'], ngăn ngừa việc kẹt màn bảo trì offline.
 - 2026-11-15 | T09.54 | Crash report không đi đâu cả | Tự động lưu tối đa 20 bản ghi crash đã làm sạch thông tin nhạy cảm vào AsyncStorage, kèm hàm truy xuất và xoá cho khôi phục chẩn đoán.
 - 2026-11-15 | T09.55 | ErrorBoundary "Thử lại" lặp crash, không theo theme | Thêm resetKey buộc remount cây con, tự động điều hướng về Home /(tabs) an toàn khi nhấn Thử lại, chọn màu theme theo Appearance.
+- 2026-11-15 | T09.56 | Phiên bản app hard-code 3 nơi | Đọc version và build number động từ Constants.expoConfig thay vì hard-code '1.0.0' và 'Build 1'. Hoàn thành toàn bộ Nhóm G (6/6 tasks).
 
 ## Vấn đề mở
 
