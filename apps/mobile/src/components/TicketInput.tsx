@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, TextInput, type NativeSyntheticEvent } from 'react-native';
 import { useTheme } from '@/theme';
 
@@ -28,6 +28,7 @@ export function TicketInput({
   const { colors } = useTheme();
   // Using any ref element to support React 19 / RN 0.88 TextInput instances seamlessly
   const inputRefs = useRef<any[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
   // Preserve digit positions: if a slot is a space or missing, keep it as empty string
   const digits = Array.from(
@@ -103,10 +104,7 @@ export function TicketInput({
     >
       {Array.from({ length: TICKET_LENGTH }).map((_, index) => {
         const isFilled = Boolean(digits[index]);
-        const isFocused =
-          !disabled &&
-          (cleanDigits.length === index ||
-            (index === 5 && cleanDigits.length === 6));
+        const isFocused = !disabled && focusedIndex === index;
 
         let borderColor = colors.border;
         if (hasError) {
@@ -134,6 +132,8 @@ export function TicketInput({
               value={digits[index]}
               onChangeText={(text) => handleChange(text, index)}
               onKeyPress={(e) => handleKeyPress(e, index)}
+              onFocus={() => setFocusedIndex(index)}
+              onBlur={() => setFocusedIndex(null)}
               editable={!disabled}
               autoFocus={autoFocus && index === 0}
               selectTextOnFocus

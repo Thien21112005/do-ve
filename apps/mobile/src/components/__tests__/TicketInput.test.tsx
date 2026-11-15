@@ -133,4 +133,27 @@ describe('TicketInput Component', () => {
     expect(getByTestId('ticket-input-digit-4').props.value).toBe('5');
     expect(getByTestId('ticket-input-digit-5').props.value).toBe('6');
   });
+
+  it('tracks real focus state on the active input box instead of string length (T09.19)', async () => {
+    const onChangeText = jest.fn();
+    const { getByTestId } = await render(
+      <TicketInput value="123456" onChangeText={onChangeText} />,
+    );
+
+    // Focus on box 1
+    await act(async () => {
+      fireEvent(getByTestId('ticket-input-digit-1'), 'focus');
+    });
+
+    const box1 = getByTestId('ticket-input-digit-1').parent;
+    expect(box1?.props.style).toEqual(
+      expect.objectContaining({
+        borderColor: colors.light.primary,
+      }),
+    );
+
+    // Box 5 should NOT have primary focus border
+    const box5 = getByTestId('ticket-input-digit-5').parent;
+    expect(box5?.props.style?.borderColor).not.toBe(colors.light.primary);
+  });
 });
