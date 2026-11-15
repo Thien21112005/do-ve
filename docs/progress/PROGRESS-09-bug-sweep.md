@@ -78,7 +78,7 @@
 | T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | DONE | df09f1f | 2026-11-15 | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả dò đơn và dò lô, hỗ trợ dấu gạch nối và khoảng trắng |
 | T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
 | T09.70 | P2 | Jest phải `--forceExit` (open handles) | DONE | 5fceb51 | 2026-11-15 | Dọn dẹp gc timeouts/notifyManager của TanStack Query qua ManagedQueryClient trong setupFilesAfterEnv, unref timer CelebrationEffect, bỏ cờ --forceExit |
-| T09.71 | P3 | Tài liệu lệch với code | TODO | | | |
+| T09.71 | P3 | Tài liệu lệch với code | DONE | 41ce815 | 2026-11-15 | Cập nhật Spring Boot 4 trong AGENTS.md/ADR-002, khoá dove.tickets.v1, xoá file trùng lặp ADR-002, chuẩn hoá SPRING_DATASOURCE_* và bỏ placeholder email |
 | T09.72 | P3 | Dọn rác repo | TODO | | | |
 
 ## Thống kê theo mức độ
@@ -88,7 +88,7 @@
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
 | P2 | 30 | 18 | 12 |
-| P3 | 3 | 1 | 2 |
+| P3 | 3 | 2 | 1 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
@@ -173,6 +173,7 @@
 - 2026-11-15 | T09.67 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | Tắt springdoc.api-docs và swagger-ui trong application-prod.yml; gỡ bỏ header X-XSS-Protection lỗi thời và chặn đường dẫn tài liệu API tại reverse proxy Caddy.
 - 2026-11-15 | T09.68 | Validate số vé không nhất quán giữa dò đơn và dò lô | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả CheckTicketRequest và BatchCheckRequest, hỗ trợ dấu gạch nối/khoảng trắng hợp lệ và chặn vé 7 số; cập nhật GlobalExceptionHandler nhận diện lỗi vé trong batch trả về INVALID_TICKET.
 - 2026-11-15 | T09.70 | Jest phải --forceExit (open handles) | Tạo jest.setup.afterEnv.js thiết lập ManagedQueryClient và đồng bộ hoá notifyManager, dọn dẹp cache sau mỗi test; bổ sung unref() cho timer trong CelebrationEffect; nâng testTimeout lên 15000ms và gỡ bỏ hoàn toàn cờ --forceExit khỏi scripts.test.
+- 2026-11-15 | T09.71 | Tài liệu lệch với code | Đồng bộ phiên bản Spring Boot 4 (4.1.2) trong AGENTS.md và ADR-002, sửa khoá AsyncStorage thành dove.tickets.v1 trong PROGRESS-00, xoá docs/ADR-002-tech-stack.md trùng lặp, chuẩn hoá SPRING_DATASOURCE_* trong application-prod.yml và gỡ bỏ email placeholder contact@dove.app.
 
 ## Vấn đề mở
 
