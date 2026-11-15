@@ -169,20 +169,22 @@ describe('ticketStore Service', () => {
     expect(tickets).toEqual([]);
   });
 
-  it('gracefully handles storage write failure in saveTicket', async () => {
+  it('throws error when storage write fails in saveTicket and does not corrupt cache (T09.36)', async () => {
     jest.spyOn(AsyncStorage, 'setItem').mockRejectedValueOnce(new Error('Disk full'));
 
-    const saved = await saveTicket({
-      ticket: '999999',
-      station: 'TPHCM',
-      stationName: 'TP. Hồ Chí Minh',
-      drawDate: '2026-11-14',
-      status: 'PENDING',
-      totalPrize: 0,
-    });
+    await expect(
+      saveTicket({
+        ticket: '999999',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'PENDING',
+        totalPrize: 0,
+      }),
+    ).rejects.toThrow('Disk full');
 
-    expect(saved).toBeDefined();
-    expect(saved.ticket).toBe('999999');
+    const current = await getTickets();
+    expect(current.find((t) => t.ticket === '999999')).toBeUndefined();
   });
 
   it('serializes concurrent writes so no tickets are lost (T09.35)', async () => {

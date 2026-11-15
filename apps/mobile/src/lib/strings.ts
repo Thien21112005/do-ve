@@ -13,6 +13,7 @@ export const STRINGS = {
     close: 'Đóng',
     cancel: 'Hủy',
     confirm: 'Xác nhận',
+    error: 'Lỗi',
     offlineTitle: 'Không có kết nối mạng',
     offlineMessage: 'Không có kết nối mạng. Vui lòng kiểm tra lại.',
     networkError: 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
@@ -48,10 +49,12 @@ export const STRINGS = {
     deleteTicket: 'Xóa vé',
     deleteConfirmTitle: 'Xóa vé này?',
     deleteConfirmMsg: 'Bạn có chắc chắn muốn xóa vé số này khỏi thiết bị?',
+    deleteError: 'Không thể xóa vé, vui lòng thử lại.',
     clearAll: 'Xóa tất cả',
     clearAllConfirmTitle: 'Xóa tất cả vé?',
     clearAllConfirmMsg:
       'Toàn bộ danh sách vé đã lưu trên thiết bị sẽ bị xóa. Thao tác này không thể hoàn tác.',
+    clearAllError: 'Không thể xóa tất cả vé, vui lòng thử lại.',
     exportBtn: 'Sao lưu',
     exportSuccess: 'Đã xuất file sao lưu thành công.',
     exportError: 'Không thể xuất file sao lưu.',
@@ -100,6 +103,7 @@ export const STRINGS = {
       `Vé số ${ticket} không trùng với các bộ số mở thưởng kỳ quay này.`,
     saveTicket: 'Lưu vé này',
     savedTicket: 'Đã lưu vé',
+    saveTicketError: 'Không lưu được vé, vui lòng thử lại.',
     savePendingTicket: 'Lưu vé để tự động dò sau',
 
     // Batch check

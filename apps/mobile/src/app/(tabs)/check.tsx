@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -124,16 +125,23 @@ export default function CheckScreen() {
           ? ticketResult.totalAmount
           : 0;
 
-    await saveTicketToStore({
-      ticket: ticketResult.ticket,
-      station,
-      stationName,
-      drawDate: ticketResult.drawDate,
-      status,
-      totalPrize,
-      wins: ticketResult.wins || [],
-    });
-    setJustSaved(true);
+    try {
+      await saveTicketToStore({
+        ticket: ticketResult.ticket,
+        station,
+        stationName,
+        drawDate: ticketResult.drawDate,
+        status,
+        totalPrize,
+        wins: ticketResult.wins || [],
+      });
+      setJustSaved(true);
+    } catch {
+      Alert.alert(
+        STRINGS.common.error,
+        STRINGS.check.saveTicketError,
+      );
+    }
   };
 
   const activeLoading = mode === 'single' ? isLoading : isBatchLoading;

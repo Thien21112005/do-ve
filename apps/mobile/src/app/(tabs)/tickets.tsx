@@ -46,8 +46,12 @@ export default function TicketsScreen() {
           text: STRINGS.common.confirm,
           style: 'destructive',
           onPress: async () => {
-            await remove(id);
-            haptics.light();
+            const success = await remove(id);
+            if (success) {
+              haptics.light();
+            } else {
+              Alert.alert(STRINGS.common.error, STRINGS.tickets.deleteError);
+            }
           },
         },
       ],
@@ -64,8 +68,12 @@ export default function TicketsScreen() {
           text: STRINGS.common.confirm,
           style: 'destructive',
           onPress: async () => {
-            await clearAll();
-            haptics.medium();
+            const success = await clearAll();
+            if (success) {
+              haptics.medium();
+            } else {
+              Alert.alert(STRINGS.common.error, STRINGS.tickets.clearAllError);
+            }
           },
         },
       ],

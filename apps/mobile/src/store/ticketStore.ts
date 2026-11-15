@@ -103,38 +103,31 @@ export async function saveTicket(
       createdAt,
     };
 
-    try {
-      const currentList = await getTickets();
-      const existingIndex = currentList.findIndex((t) => t.id === id);
+    const currentList = await getTickets();
+    const existingIndex = currentList.findIndex((t) => t.id === id);
 
-      let updatedList: SavedTicket[];
-      if (existingIndex >= 0) {
-        // Update existing ticket
-        updatedList = [...currentList];
-        updatedList[existingIndex] = {
-          ...currentList[existingIndex],
-          ...newTicket,
-        };
-      } else {
-        // Prepend newest ticket
-        updatedList = [newTicket, ...currentList];
-      }
-
-      const payload: TicketStorageEnvelope = {
-        version: CURRENT_SCHEMA_VERSION,
-        tickets: updatedList,
+    let updatedList: SavedTicket[];
+    if (existingIndex >= 0) {
+      // Update existing ticket
+      updatedList = [...currentList];
+      updatedList[existingIndex] = {
+        ...currentList[existingIndex],
+        ...newTicket,
       };
-
-      await AsyncStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(payload));
-      cachedTickets = updatedList;
-      notifyListeners();
-      return newTicket;
-    } catch {
-      // If storage write fails, still update in-memory and return
-      cachedTickets = [newTicket, ...cachedTickets.filter((t) => t.id !== id)];
-      notifyListeners();
-      return newTicket;
+    } else {
+      // Prepend newest ticket
+      updatedList = [newTicket, ...currentList];
     }
+
+    const payload: TicketStorageEnvelope = {
+      version: CURRENT_SCHEMA_VERSION,
+      tickets: updatedList,
+    };
+
+    await AsyncStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(payload));
+    cachedTickets = updatedList;
+    notifyListeners();
+    return newTicket;
   });
 }
 
