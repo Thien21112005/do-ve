@@ -73,7 +73,7 @@
 | T09.63 | P2 | 404 của `/draws` không phân biệt "đài không quay hôm đó" và "chưa có kết quả" | DONE | bc38b4e | 2026-11-15 | Phân biệt STATION_NOT_DRAWING (422) và RESULT_NOT_AVAILABLE (404) chuẩn ErrorCode enum |
 | T09.64 | P2 | Cache-Control 365 ngày `immutable` cho kỳ đã qua | DONE | c1bbe3f | 2026-11-15 | Giảm cache kỳ quá khứ xuống max-age 1 ngày kết hợp ETag revalidation (hỗ trợ 304 Not Modified) |
 | T09.65 | P2 | Lỗi body JSON sai / thiếu tham số không có `code` | DONE | b1cfe1f | 2026-11-15 | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable, MissingServletRequestParameter và sanitize input |
-| T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | TODO | | | |
+| T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | DONE | 01ccc99 | 2026-11-15 | Chỉ chấp nhận correlation ID khớp regex [A-Za-z0-9-]{1,64}, ngược lại sinh UUID mới |
 | T09.67 | P2 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | TODO | | | |
 | T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | TODO | | | |
 | T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
-| P2 | 30 | 15 | 15 |
+| P2 | 30 | 16 | 14 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -169,6 +169,7 @@
 - 2026-11-15 | T09.63 | 404 của /draws không phân biệt đài không quay và chưa có kết quả | Thêm ErrorCode.RESULT_NOT_AVAILABLE (404) và ResultNotAvailableException; kiểm tra lịch quay trước khi tìm kết quả, trả STATION_NOT_DRAWING (422) nếu đài không quay hôm đó.
 - 2026-11-15 | T09.64 | Cache-Control 365 ngày immutable cho kỳ đã qua | Đổi max-age thành 1 ngày (86400s) không immutable, thêm header ETag và hỗ trợ điều kiện If-None-Match trả về 304 Not Modified.
 - 2026-11-15 | T09.65 | Lỗi body JSON sai / thiếu tham số không có code | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable và MissingServletRequestParameter, làm sạch dữ liệu đầu vào trong handleMethodArgumentTypeMismatch.
+- 2026-11-15 | T09.66 | Correlation ID nhận bất kỳ chuỗi nào từ client | Kiểm tra regex [A-Za-z0-9-]{1,64} trước khi đưa vào MDC/header; tự động sinh UUID mới nếu chuỗi chứa ký tự độc hại/xuống dòng hoặc vượt quá 64 ký tự.
 
 ## Vấn đề mở
 
