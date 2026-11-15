@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 8 / 62 task hoàn thành
+- **Tổng quan:** 9 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -15,7 +15,7 @@
 | T10.05 | Cho NativeWind theo cài đặt theme của app | DONE | bf80900 | 2026-11-15 | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts (đồng bộ T09.47) |
 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | DONE | 57d26d4 | 2026-11-15 | Cấu hình fontFamily BeVietnamPro (regular/medium/semibold/bold) trong tailwind.config.js & tokens.ts, xoá triệt để font-black & font-mono |
 | T10.07 | Thang chữ (type scale) và quy tắc số | DONE | 074cc5f | 2026-11-15 | Định nghĩa typeScale trong tokens.ts (6 bậc + ticketLg/ticketMd), tạo component <Text variant=...>, thay toàn bộ text-[10px]/[11px] thành text-xs |
-| T10.08 | Token spacing, radius, elevation có kỷ luật | TODO | | | |
+| T10.08 | Token spacing, radius, elevation có kỷ luật | DONE | c2d23c7 | 2026-11-15 | Rút gọn 3 bậc radius chuẩn (sm 8, md 12, lg 16) trong tokens.ts & tailwind, thêm token elevations (sheet, toast, none) |
 | T10.09 | Bộ primitive component | TODO | | | |
 | T10.10 | Ghi DESIGN.md bằng `/impeccable document` | TODO | | | |
 | T10.11 | Header thống nhất bằng native Stack/Tabs header | TODO | | | |
@@ -96,6 +96,7 @@
 - 2026-11-15 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | Khai báo toàn bộ token màu thành biến CSS trong global.css cho :root và .dark, tích hợp vào theme.extend.colors của tailwind.config.js, xoá palette brand/lottery cũ.
 - 2026-11-15 | T10.06 | Áp dụng font Be Vietnam Pro thật sự | Định nghĩa fontFamily trong tailwind.config.js và tokens.ts, xoá bỏ hoàn toàn font-black (không load) và font-mono/Courier, áp dụng fontVariant tabular-nums cho toàn bộ số vé.
 - 2026-11-15 | T10.07 | Thang chữ type scale và component Text | Bổ sung typeScale 6 bậc + ticketLg/ticketMd trong tokens.ts, tạo component <Text variant=...>, thay toàn bộ font size < 12px (text-[10px]/[11px]) thành text-xs chuẩn a11y.
+- 2026-11-15 | T10.08 | Token spacing, radius, elevation có kỷ luật | Cố định 3 bậc radius chuẩn sm:8, md:12, lg:16 và bổ sung token elevations (sheet, toast, none), quy định card phẳng trên nền giấy.
 
 ## Vấn đề mở
 
