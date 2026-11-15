@@ -187,4 +187,52 @@ describe('TanStack Query & Network Configuration', () => {
     unsub1();
     unsub2();
   });
+
+  it('does not persist app config queries to avoid stale maintenance traps (T09.53)', async () => {
+    await AsyncStorage.clear();
+
+    const client = createQueryClient();
+    const [unsubscribe, restorePromise] = setupQueryClientPersistence(client);
+    await restorePromise;
+
+    // Simulate app config received with maintenance: true
+    const configData = {
+      maintenance: true,
+      minSupportedVersion: '1.0.0',
+      message: 'Hệ thống đang bảo trì tạm thời.',
+    };
+    client.setQueryData(['app', 'config'], configData);
+
+    // Also set regular draw data
+    const drawData = {
+      drawDate: '2026-11-14',
+      station: 'TPHCM',
+    };
+    client.setQueryData(['draws', '2026-11-14', 'TPHCM'], drawData);
+
+    // Wait for throttleTime (1000ms in persister)
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // Verify stored JSON does NOT contain app/config query
+    const rawSaved = await AsyncStorage.getItem(QUERY_STORAGE_KEY);
+    expect(rawSaved).not.toBeNull();
+    expect(rawSaved).not.toContain('Hệ thống đang bảo trì tạm thời.');
+
+    // Now restore in fresh offline client
+    const offlineClient = createQueryClient();
+    const [unsubOffline, restoreOfflinePromise] =
+      setupQueryClientPersistence(offlineClient);
+    await restoreOfflinePromise;
+
+    // Regular draw data is restored
+    expect(
+      offlineClient.getQueryData(['draws', '2026-11-14', 'TPHCM']),
+    ).toEqual(drawData);
+
+    // But app config is NOT restored (must be undefined)
+    expect(offlineClient.getQueryData(['app', 'config'])).toBeUndefined();
+
+    unsubscribe();
+    unsubOffline();
+  });
 });

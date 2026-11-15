@@ -22,6 +22,21 @@ export const asyncStoragePersister = createAsyncStoragePersister({
   throttleTime: 1000,
 });
 
+/**
+ * Filter which queries should be persisted to disk (T09.53).
+ * Excludes transient app configuration/maintenance state to prevent offline traps.
+ */
+export function shouldDehydrateQuery(query: {
+  queryKey: readonly unknown[];
+  state: { status: string };
+}): boolean {
+  const key = query.queryKey;
+  if (Array.isArray(key) && key[0] === 'app' && key[1] === 'config') {
+    return false;
+  }
+  return query.state.status === 'success';
+}
+
 export function setupQueryClientPersistence(
   client: QueryClient = queryClient,
   persister = asyncStoragePersister,
@@ -32,6 +47,9 @@ export function setupQueryClientPersistence(
     persister,
     maxAge: QUERY_CACHE_MAX_AGE,
     buster,
+    dehydrateOptions: {
+      shouldDehydrateQuery,
+    },
   });
   return [unsubscribe, restorePromise];
 }
