@@ -200,6 +200,40 @@ describe('Tab Screens', () => {
     });
   });
 
+  it('shows live drawing state during draw window 16h10 to 16h40 VN (T10.20)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const dateModule = require('@/lib/date');
+    const spyNow = jest.spyOn(dateModule, 'nowVN').mockReturnValue({
+      year: 2026,
+      month: 11,
+      day: 15,
+      hour: 16,
+      minute: 20,
+      second: 0,
+    });
+    const spyLive = jest
+      .spyOn(dateModule, 'isLiveDrawingVN')
+      .mockReturnValue(true);
+
+    try {
+      const { getByTestId, getByText } = await render(<HomeScreen />, {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(
+        () => {
+          expect(getByTestId('home-today-status')).toBeTruthy();
+          expect(getByText(/Đang quay/)).toBeTruthy();
+          expect(getByTestId('home-live-pulse-dot')).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
+    } finally {
+      spyNow.mockRestore();
+      spyLive.mockRestore();
+    }
+  });
+
   it('renders CheckScreen correctly', async () => {
     const { getByText } = await render(<CheckScreen />, {
       wrapper: createWrapper(),

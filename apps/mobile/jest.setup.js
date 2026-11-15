@@ -12,6 +12,14 @@ jest.mock('expo-router', () => {
     useRouter: () => routerMock,
     useLocalSearchParams: () => ({}),
     usePathname: () => '/',
+    useFocusEffect: (cb) => {
+      if (typeof cb === 'function') {
+        const cleanup = cb();
+        if (typeof cleanup === 'function') {
+          return cleanup;
+        }
+      }
+    },
     Link: ({ children }) => children,
     Tabs: Object.assign(({ children }) => children, { Screen: () => null }),
     Stack: Object.assign(({ children }) => children, { Screen: () => null }),

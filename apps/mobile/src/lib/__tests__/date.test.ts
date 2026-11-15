@@ -3,6 +3,7 @@ import {
   nowVN,
   addDays,
   weekdayVN,
+  isLiveDrawingVN,
 } from '../date';
 import { formatDateVN } from '../format';
 
@@ -53,5 +54,18 @@ describe('Vietnam Timezone Date Helpers (T09.15)', () => {
   it('formats dates in Vietnamese standard dd/MM/yyyy', () => {
     expect(formatDateVN('2026-11-15')).toBe('15/11/2026');
     expect(formatDateVN('2026-05-02')).toBe('02/05/2026');
+  });
+
+  it('detects live drawing window 16h10 to 16h40 VN (T10.20)', () => {
+    // 16:09 VN -> 09:09 UTC -> false
+    expect(isLiveDrawingVN(new Date('2026-11-15T09:09:00Z'))).toBe(false);
+    // 16:10 VN -> 09:10 UTC -> true
+    expect(isLiveDrawingVN(new Date('2026-11-15T09:10:00Z'))).toBe(true);
+    // 16:25 VN -> 09:25 UTC -> true
+    expect(isLiveDrawingVN(new Date('2026-11-15T09:25:00Z'))).toBe(true);
+    // 16:40 VN -> 09:40 UTC -> true
+    expect(isLiveDrawingVN(new Date('2026-11-15T09:40:00Z'))).toBe(true);
+    // 16:41 VN -> 09:41 UTC -> false
+    expect(isLiveDrawingVN(new Date('2026-11-15T09:41:00Z'))).toBe(false);
   });
 });

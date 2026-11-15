@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,17 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  Animated,
+  AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Icon, OfflineBanner } from '@/components';
 import { useLatestDraws, useCheckTicket } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
 import { useTheme } from '@/theme';
 import { formatDateVN, formatCurrency } from '@/lib/format';
-import { todayVN, nowVN, weekdayVN } from '@/lib/date';
+import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
@@ -54,18 +56,70 @@ export default function HomeScreen() {
     draws[0]?.stationCode ||
     'tp-hcm';
 
+  // Check live drawing window (16h10 - 16h40 VN)
+  const isLive = isLiveDrawingVN();
+
   // Compute live time status
   const timeStatus = useMemo(() => {
-    const { hour, minute } = nowVN();
-    const timeMinutes = hour * 60 + minute;
-    if (timeMinutes >= 975 && timeMinutes <= 1005) {
+    if (isLive) {
       return 'Đang quay';
     }
-    if (timeMinutes > 1005 || (draws && draws.length > 0)) {
+    const { hour, minute } = nowVN();
+    const timeMinutes = hour * 60 + minute;
+    if (timeMinutes > 1000 || (draws && draws.length > 0)) {
       return 'Đã có kết quả';
     }
     return 'Quay lúc 16h15';
-  }, [draws]);
+  }, [isLive, draws]);
+
+  // Animated pulse dot for live drawing, respects reduceMotion
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then(setReduceMotion)
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      setReduceMotion,
+    );
+    return () => sub?.remove();
+  }, []);
+
+  useEffect(() => {
+    if (!isLive || reduceMotion) {
+      pulseAnim.setValue(1);
+      return;
+    }
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 0.25,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [isLive, reduceMotion, pulseAnim]);
+
+  // Auto-refetch every 60s when screen is focused during live drawing window
+  useFocusEffect(
+    useCallback(() => {
+      if (!isLive) return;
+      const interval = setInterval(() => {
+        refetch();
+      }, 60000);
+      return () => clearInterval(interval);
+    }, [isLive, refetch]),
+  );
 
   const pendingCount = savedTickets.filter((t) => t.status === 'PENDING').length;
 
@@ -149,7 +203,8 @@ export default function HomeScreen() {
             }}
           >
             <View className="flex-row items-center flex-1 mr-2">
-              <View
+              <Animated.View
+                testID={isLive ? 'home-live-pulse-dot' : 'home-status-dot'}
                 className="w-2.5 h-2.5 rounded-full mr-2"
                 style={{
                   backgroundColor:
@@ -158,6 +213,7 @@ export default function HomeScreen() {
                       : timeStatus === 'Đã có kết quả'
                         ? colors.win
                         : colors.primary,
+                  opacity: isLive && !reduceMotion ? pulseAnim : 1,
                 }}
               />
               <Text
