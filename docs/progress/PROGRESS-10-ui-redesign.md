@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 10 / 62 task hoàn thành
+- **Tổng quan:** 11 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -17,7 +17,7 @@
 | T10.07 | Thang chữ (type scale) và quy tắc số | DONE | 074cc5f | 2026-11-15 | Định nghĩa typeScale trong tokens.ts (6 bậc + ticketLg/ticketMd), tạo component <Text variant=...>, thay toàn bộ text-[10px]/[11px] thành text-xs |
 | T10.08 | Token spacing, radius, elevation có kỷ luật | DONE | c2d23c7 | 2026-11-15 | Rút gọn 3 bậc radius chuẩn (sm 8, md 12, lg 16) trong tokens.ts & tailwind, thêm token elevations (sheet, toast, none) |
 | T10.09 | Bộ primitive component | DONE | e9d02a9 | 2026-11-15 | Xây dựng bộ primitive components (Screen, Button, IconButton, Chip, Card, ListRow, SectionHeader, Banner, EmptyState, Badge, Divider, Segmented) chuẩn WCAG & a11y, 13 test xanh |
-| T10.10 | Ghi DESIGN.md bằng `/impeccable document` | TODO | | | |
+| T10.10 | Ghi DESIGN.md bằng `/impeccable document` | DONE | d47b9f3 | 2026-11-15 | Soạn thảo DESIGN.md toàn diện: bảng màu Hướng A, type scale, radii, elevations, bộ 12 primitive components, quy tắc motion & haptics |
 | T10.11 | Header thống nhất bằng native Stack/Tabs header | TODO | | | |
 | T10.12 | Thống nhất tên gọi | TODO | | | |
 | T10.13 | Icon tab đúng nghĩa | TODO | | | |
@@ -98,6 +98,7 @@
 - 2026-11-15 | T10.07 | Thang chữ type scale và component Text | Bổ sung typeScale 6 bậc + ticketLg/ticketMd trong tokens.ts, tạo component <Text variant=...>, thay toàn bộ font size < 12px (text-[10px]/[11px]) thành text-xs chuẩn a11y.
 - 2026-11-15 | T10.08 | Token spacing, radius, elevation có kỷ luật | Cố định 3 bậc radius chuẩn sm:8, md:12, lg:16 và bổ sung token elevations (sheet, toast, none), quy định card phẳng trên nền giấy.
 - 2026-11-15 | T10.09 | Bộ primitive component | Xây dựng trọn bộ 12 primitive components (Screen, Button, IconButton, Chip, Card, ListRow, SectionHeader, Banner, EmptyState, Badge, Divider, Segmented) dùng Pressable, scale feedback 0.98, haptics tôn trọng settings, đảm bảo touch target >= 44pt và 13 unit test xanh 100%.
+- 2026-11-15 | T10.10 | Ghi DESIGN.md tài liệu hoá hệ thống thiết kế | Biên soạn DESIGN.md ở root repo mô tả toàn diện design system DoVe: triết lý Tờ vé giấy, bảng màu semantic WCAG AAA/AA, Be Vietnam Pro type scale, radii, elevations, danh mục primitive components và quy tắc haptics/motion. Hoàn thành 100% Nhóm A (10/10 tasks).
 
 ## Vấn đề mở
 
