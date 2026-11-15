@@ -77,7 +77,7 @@
 | T09.67 | P2 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | DONE | 7a362ae | 2026-11-15 | Tắt springdoc trong application-prod.yml, chặn đường dẫn docs và gỡ X-XSS-Protection lỗi thời ở Caddyfile |
 | T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | DONE | df09f1f | 2026-11-15 | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả dò đơn và dò lô, hỗ trợ dấu gạch nối và khoảng trắng |
 | T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
-| T09.70 | P2 | Jest phải `--forceExit` (open handles) | TODO | | | |
+| T09.70 | P2 | Jest phải `--forceExit` (open handles) | DONE | 5fceb51 | 2026-11-15 | Dọn dẹp gc timeouts/notifyManager của TanStack Query qua ManagedQueryClient trong setupFilesAfterEnv, unref timer CelebrationEffect, bỏ cờ --forceExit |
 | T09.71 | P3 | Tài liệu lệch với code | TODO | | | |
 | T09.72 | P3 | Dọn rác repo | TODO | | | |
 
@@ -87,14 +87,14 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
-| P2 | 30 | 17 | 13 |
+| P2 | 30 | 18 | 12 |
 | P3 | 3 | 1 | 2 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
 - [x] `npm run lint` xanh (T09.69)
 - [x] `npm run typecheck` xanh
-- [ ] `npm run test` xanh **không** cần `--forceExit` (T09.70)
+- [x] `npm run test` xanh **không** cần `--forceExit` (T09.70)
 - [x] Contract test mobile ↔ backend xanh trong CI (T09.13)
 - [ ] `./mvnw spotless:check` + `./mvnw test` xanh, 0 skip (T09.72)
 - [ ] Dò thử 3 vé thật (trúng / không trúng / chờ) trên máy thật trỏ vào backend thật
@@ -172,6 +172,7 @@
 - 2026-11-15 | T09.66 | Correlation ID nhận bất kỳ chuỗi nào từ client | Kiểm tra regex [A-Za-z0-9-]{1,64} trước khi đưa vào MDC/header; tự động sinh UUID mới nếu chuỗi chứa ký tự độc hại/xuống dòng hoặc vượt quá 64 ký tự.
 - 2026-11-15 | T09.67 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | Tắt springdoc.api-docs và swagger-ui trong application-prod.yml; gỡ bỏ header X-XSS-Protection lỗi thời và chặn đường dẫn tài liệu API tại reverse proxy Caddy.
 - 2026-11-15 | T09.68 | Validate số vé không nhất quán giữa dò đơn và dò lô | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả CheckTicketRequest và BatchCheckRequest, hỗ trợ dấu gạch nối/khoảng trắng hợp lệ và chặn vé 7 số; cập nhật GlobalExceptionHandler nhận diện lỗi vé trong batch trả về INVALID_TICKET.
+- 2026-11-15 | T09.70 | Jest phải --forceExit (open handles) | Tạo jest.setup.afterEnv.js thiết lập ManagedQueryClient và đồng bộ hoá notifyManager, dọn dẹp cache sau mỗi test; bổ sung unref() cho timer trong CelebrationEffect; nâng testTimeout lên 15000ms và gỡ bỏ hoàn toàn cờ --forceExit khỏi scripts.test.
 
 ## Vấn đề mở
 
