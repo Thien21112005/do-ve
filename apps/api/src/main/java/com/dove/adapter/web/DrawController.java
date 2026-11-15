@@ -5,6 +5,8 @@ import com.dove.adapter.persistence.StationRepository;
 import com.dove.adapter.persistence.StationScheduleRepository;
 import com.dove.adapter.web.dto.DrawResponse;
 import com.dove.adapter.web.dto.StationResponse;
+import com.dove.adapter.web.error.ResultNotAvailableException;
+import com.dove.adapter.web.error.StationNotDrawingException;
 import com.dove.adapter.web.error.StationNotFoundException;
 import com.dove.application.DrawRepository;
 import com.dove.domain.DrawResult;
@@ -21,13 +23,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.CacheControl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /** Controller for lottery draw schedules and draw results endpoints. */
 @RestController
@@ -104,14 +104,19 @@ public class DrawController {
     if (stationRepository.findByCode(station).isEmpty()) {
       throw new StationNotFoundException(station);
     }
+
+    int weekday = date.getDayOfWeek().getValue();
+    boolean isDrawingOnDate =
+        stationScheduleRepository.findStationsDrawingOn(weekday).stream()
+            .anyMatch(s -> s.getCode().equalsIgnoreCase(station));
+    if (!isDrawingOnDate) {
+      throw new StationNotDrawingException(station, date);
+    }
+
     DrawResult drawResult =
         drawRepository
             .findByStationAndDate(station, date)
-            .orElseThrow(
-                () ->
-                    new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Chưa có kết quả cho đài " + station + " vào ngày " + date));
+            .orElseThrow(() -> new ResultNotAvailableException(station, date));
 
     LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
     CacheControl cacheControl;
@@ -150,8 +155,7 @@ public class DrawController {
     DrawResult drawResult =
         drawResultOpt.orElseThrow(
             () ->
-                new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+                new ResultNotAvailableException(
                     station != null
                         ? "Chưa có kết quả cho đài " + station
                         : "Chưa có kết quả nào trong hệ thống"));

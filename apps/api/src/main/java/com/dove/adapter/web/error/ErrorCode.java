@@ -8,6 +8,7 @@ public enum ErrorCode {
   INVALID_DATE(HttpStatus.BAD_REQUEST, "Ngày sai định dạng hoặc ở tương lai"),
   STATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Mã đài không tồn tại"),
   STATION_NOT_DRAWING(HttpStatus.UNPROCESSABLE_ENTITY, "Đài không quay vào ngày đó"),
+  RESULT_NOT_AVAILABLE(HttpStatus.NOT_FOUND, "Chưa có kết quả mở thưởng"),
   RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "Quá giới hạn");
 
   private final HttpStatus httpStatus;

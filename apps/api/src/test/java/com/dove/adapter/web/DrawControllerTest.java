@@ -42,6 +42,8 @@ class DrawControllerTest {
     stationScheduleRepository = mock(StationScheduleRepository.class);
     drawRepository = mock(DrawRepository.class);
     stationRepository = mock(StationRepository.class);
+    when(stationScheduleRepository.findStationsDrawingOn(org.mockito.ArgumentMatchers.anyInt()))
+        .thenReturn(List.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
     DrawController controller =
         new DrawController(stationScheduleRepository, drawRepository, stationRepository);
     mockMvc =
@@ -141,13 +143,33 @@ class DrawControllerTest {
     LocalDate drawDate = LocalDate.of(2026, 11, 9);
     when(stationRepository.findByCode("tp-hcm"))
         .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(stationScheduleRepository.findStationsDrawingOn(1))
+        .thenReturn(List.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
     when(drawRepository.findByStationAndDate("tp-hcm", drawDate)).thenReturn(Optional.empty());
 
     mockMvc
         .perform(get("/api/v1/draws").param("date", "2026-11-09").param("station", "tp-hcm"))
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
-        .andExpect(jsonPath("$.status").value(404));
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("RESULT_NOT_AVAILABLE"));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/draws với đài không có lịch quay vào ngày đó trả về 422 và code STATION_NOT_DRAWING (T09.63)")
+  void getDraw_stationNotDrawing_returns422StationNotDrawing() throws Exception {
+    LocalDate tuesday = LocalDate.of(2026, 11, 10); // Tuesday (weekday 2)
+    when(stationRepository.findByCode("tp-hcm"))
+        .thenReturn(Optional.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
+    when(stationScheduleRepository.findStationsDrawingOn(2))
+        .thenReturn(List.of(new StationEntity("ben-tre", "Bến Tre", "SOUTH")));
+
+    mockMvc
+        .perform(get("/api/v1/draws").param("date", "2026-11-10").param("station", "tp-hcm"))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
+        .andExpect(jsonPath("$.status").value(422))
+        .andExpect(jsonPath("$.code").value("STATION_NOT_DRAWING"));
   }
 
   @Test
@@ -212,7 +234,8 @@ class DrawControllerTest {
         .perform(get("/api/v1/draws/latest"))
         .andExpect(status().isNotFound())
         .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
-        .andExpect(jsonPath("$.status").value(404));
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.code").value("RESULT_NOT_AVAILABLE"));
   }
 
   @Test
