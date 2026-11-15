@@ -56,7 +56,7 @@
 | T09.46 | P1 | Tắt "Phản hồi xúc giác" không có tác dụng | DONE | 3fe955f | 2026-11-15 | Bọc toàn bộ các hàm haptics kiểm tra settings.hapticsEnabled, bổ sung haptics.selection |
 | T09.47 | P1 | Ép theme sáng/tối cho ra UI lẫn lộn | DONE | 2026-11-15 | bf80900 | Đồng bộ NativeWind colorScheme theo themeMode của app (≈ T10.05) |
 | T09.48 | P2 | Nháy theme khi mở app | DONE | 2026-11-15 | 7049287 | Chờ loadSettings() cùng lúc với font trước khi SplashScreen.hideAsync() |
-| T09.49 | P2 | `getSnapshot` của useSyncExternalStore có side-effect | TODO | | | |
+| T09.49 | P2 | `getSnapshot` của useSyncExternalStore có side-effect | DONE | 2026-11-15 | 2989372 | Biến getSettings() thành pure snapshot getter, loại bỏ side-effect async |
 | T09.50 | P2 | Công tắc trong Cài đặt có thể đảo 2 lần & đọc 2 lần | TODO | | | |
 | T09.51 | P1 | Link cập nhật app là domain giả | TODO | | | |
 | T09.52 | P2 | Version gate unmount toàn bộ điều hướng | TODO | | | |
@@ -153,6 +153,7 @@
 - 2026-11-15 | T09.46 | Tắt "Phản hồi xúc giác" trong Cài đặt nhưng haptics vẫn rung khắp app | Bổ sung canTriggerHaptics() trong haptics.ts đọc getSettings().hapticsEnabled, bổ sung haptics.selection, vô hiệu hoá rung trên toàn bộ app khi setting tắt (đồng bộ T10.60).
 - 2026-11-15 | T09.47 | Ép theme sáng/tối cho ra UI lẫn lộn giữa useTheme và class dark: của NativeWind | Xây dựng syncNativeWindTheme và NativeWindThemeSync trong AppProviders, gọi colorScheme.set theo themeMode của app để toàn bộ class dark: hoạt động đúng theo cài đặt người dùng (đồng bộ T10.05).
 - 2026-11-15 | T09.48 | Nháy theme khi mở app | Chờ loadSettings() cùng lúc với useAppFonts() trong RootLayout trước khi gọi SplashScreen.hideAsync(), loại bỏ hiện tượng nháy theme khi khởi động.
+- 2026-11-15 | T09.49 | getSnapshot của useSyncExternalStore có side-effect | Biến getSettings() thành pure snapshot getter, xoá bỏ hoàn toàn việc gọi loadSettings() bất đồng bộ trong getSnapshot.
 
 ## Vấn đề mở
 
