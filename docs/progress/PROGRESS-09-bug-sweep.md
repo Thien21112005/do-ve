@@ -44,7 +44,7 @@
 | T09.34 | P2 | Nút trên Home không truyền ngữ cảnh | DONE | 6854ee7 | 2026-11-15 | Truyền params station và date khi bấm Xem toàn bộ bảng giải hoặc Xem tất cả trên Home |
 | T09.35 | P1 | Ghi đè đồng thời làm mất vé (race condition) | DONE | f70a196 | 2026-11-15 | Hàng đợi ghi tuần tự enqueueWrite qua promise chain trong ticketStore, chống race condition |
 | T09.36 | P1 | Báo "đã lưu" dù ghi AsyncStorage thất bại | DONE | 3f1ebb3 | 2026-11-15 | Ném lỗi khi AsyncStorage ghi thất bại, hiển thị Alert thông báo lỗi trên UI check và tickets |
-| T09.37 | P2 | `getTickets()` phát sự kiện mỗi lần đọc | TODO | | | |
+| T09.37 | P2 | `getTickets()` phát sự kiện mỗi lần đọc | DONE | 06612e8 | 2026-11-15 | Bỏ gọi notifyListeners trong getTickets, chỉ phát sự kiện khi có thay đổi dữ liệu thật |
 | T09.38 | P1 | Khôi phục từ file ghi đè trạng thái mới bằng dữ liệu cũ | TODO | | | |
 | T09.39 | P1 | Kiểm tra dữ liệu nhập từ file quá lỏng | TODO | | | |
 | T09.40 | P2 | Nhập N vé = N lần ghi toàn bộ danh sách | TODO | | | |
@@ -87,7 +87,7 @@
 |---|---|---|---|
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 13 | 16 |
-| P2 | 30 | 4 | 26 |
+| P2 | 30 | 5 | 25 |
 | P3 | 3 | 0 | 3 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
@@ -141,6 +141,7 @@
 - 2026-11-15 | T09.34 | Nút trên Home không truyền ngữ cảnh đài và ngày khi mở tab Kết quả | Bổ sung params station và date khi người dùng bấm "Xem toàn bộ bảng giải" hoặc "Xem tất cả", điều hướng chính xác kỳ quay tương ứng trên ResultsScreen. Hoàn thành toàn bộ Nhóm D (6/6 tasks).
 - 2026-11-15 | T09.35 | Ghi đè đồng thời làm mất vé khi lưu vé và tự động dò lại chạy song song | Viết test kiểm chứng 3 luồng lưu song song làm rơi vé; cài đặt hàng đợi enqueueWrite tuần tự hoá các tác vụ ghi (saveTicket, removeTicket, clearAll, updateTicket) bằng promise chain, giải quyết triệt để race condition.
 - 2026-11-15 | T09.36 | Báo "đã lưu" dù ghi AsyncStorage thất bại khiến mất vé khi mở lại app | Không nuốt lỗi trong saveTicket khi AsyncStorage thất bại, rethrow để thông báo cho caller; bổ sung Alert thông báo lỗi lưu vé trên CheckScreen và lỗi xoá vé trên TicketsScreen.
+- 2026-11-15 | T09.37 | getTickets() phát sự kiện notifyListeners mỗi lần đọc gây re-render thừa | Loại bỏ lệnh gọi notifyListeners khỏi getTickets và getTicketById, chỉ kích hoạt sự kiện khi dữ liệu thực tế bị biến đổi qua các thao tác ghi.
 
 ## Vấn đề mở
 
