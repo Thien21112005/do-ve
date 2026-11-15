@@ -234,6 +234,33 @@ describe('Tab Screens', () => {
     }
   });
 
+  it('renders realistic home draws skeleton while loading (T10.21)', async () => {
+    let resolveDraws: (val: any) => void = () => {};
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockReturnValue(
+      new Promise((resolve) => {
+        resolveDraws = resolve;
+      }),
+    );
+
+    const { getByTestId, queryByTestId } = await render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    expect(getByTestId('home-draws-loading')).toBeTruthy();
+    expect(getByTestId('home-draws-skeleton-card-0')).toBeTruthy();
+    expect(getByTestId('home-draws-skeleton-card-1')).toBeTruthy();
+    expect(getByTestId('home-draws-skeleton-card-2')).toBeTruthy();
+
+    await act(async () => {
+      resolveDraws(mockLatestDraws);
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId('home-draws-loading')).toBeNull();
+      expect(getByTestId('latest-draw-card-tp-hcm')).toBeTruthy();
+    });
+  });
+
   it('renders CheckScreen correctly', async () => {
     const { getByText } = await render(<CheckScreen />, {
       wrapper: createWrapper(),

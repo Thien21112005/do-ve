@@ -5,6 +5,7 @@ export * from './TicketInput';
 export * from './DateStrip';
 export * from './StationChips';
 export * from './ResultSkeleton';
+export * from './Skeleton';
 export * from './ResultCard';
 export * from './HighlightedTicket';
 export * from './CelebrationEffect';

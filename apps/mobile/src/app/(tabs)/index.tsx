@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Icon, OfflineBanner } from '@/components';
+import { Icon, OfflineBanner, HomeDrawsSkeleton } from '@/components';
 import { useLatestDraws, useCheckTicket } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
 import { useTheme } from '@/theme';
@@ -73,7 +73,7 @@ export default function HomeScreen() {
   }, [isLive, draws]);
 
   // Animated pulse dot for live drawing, respects reduceMotion
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [pulseAnim] = useState(() => new Animated.Value(1));
   const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
@@ -570,23 +570,10 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          {/* Loading State */}
+          {/* Loading State (T10.21) */}
           {isLoading && (
-            <View
-              testID="home-draws-loading"
-              className="py-12 items-center justify-center rounded-2xl border"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              }}
-            >
-              <ActivityIndicator size="small" color={colors.primary} />
-              <Text
-                className="text-xs mt-2.5 font-medium"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.home.loadingLatest}
-              </Text>
+            <View testID="home-draws-loading">
+              <HomeDrawsSkeleton count={3} />
             </View>
           )}
 
