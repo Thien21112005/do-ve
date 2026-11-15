@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
+import { weekdayVN } from '@/lib';
 
 export interface ScheduledStation {
   code: string;
@@ -94,8 +95,7 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
 
 
 function getTodayWeekday(): number {
-  const day = new Date().getDay(); // 0 = Sunday, 1 = Monday ... 6 = Saturday
-  return day === 0 ? 7 : day;
+  return weekdayVN(new Date());
 }
 
 export default function ScheduleScreen() {
@@ -182,6 +182,7 @@ export default function ScheduleScreen() {
           return (
             <View
               key={day.dayOfWeek}
+              testID={`schedule-day-${day.dayOfWeek}`}
               accessible
               accessibilityRole="text"
               accessibilityLabel={`${day.dayName}: ${day.stations.map((s) => s.name).join(', ')}`}

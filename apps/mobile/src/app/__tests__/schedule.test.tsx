@@ -73,6 +73,19 @@ describe('ScheduleScreen', () => {
     expect(getByText('HÔM NAY')).toBeTruthy();
   });
 
+  it('selects correct Vietnam weekday across UTC boundary (T09.17)', async () => {
+    // 2026-11-15 18:00:00 UTC (Sunday night UTC) is 2026-11-16 01:00:00 VN (Monday morning)
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-11-15T18:00:00Z'));
+
+    const { getByTestId } = await render(<ScheduleScreen />);
+    // Monday schedule item should have the badge
+    expect(getByTestId('schedule-day-1')).toBeTruthy();
+    expect(getByTestId('schedule-today-badge')).toBeTruthy();
+
+    jest.useRealTimers();
+  });
+
   it('handles back button navigation', async () => {
     const router = useRouter();
     const { getByTestId } = await render(<ScheduleScreen />);

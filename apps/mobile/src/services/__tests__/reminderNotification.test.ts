@@ -56,14 +56,15 @@ describe('reminderNotification service', () => {
   });
 
   describe('calculateReminderTime', () => {
-    it('calculates 16:45:00 on the specified draw date', () => {
+    it('calculates 16:45:00 in Vietnam timezone (09:45:00 UTC) on the specified draw date', () => {
       const time = calculateReminderTime('2026-11-20');
-      expect(time.getFullYear()).toBe(2026);
-      expect(time.getMonth()).toBe(10); // 0-indexed November
-      expect(time.getDate()).toBe(20);
-      expect(time.getHours()).toBe(16);
-      expect(time.getMinutes()).toBe(45);
-      expect(time.getSeconds()).toBe(0);
+      expect(time.toISOString()).toBe('2026-11-20T09:45:00.000Z');
+      expect(time.getUTCFullYear()).toBe(2026);
+      expect(time.getUTCMonth()).toBe(10); // 0-indexed November
+      expect(time.getUTCDate()).toBe(20);
+      expect(time.getUTCHours()).toBe(9);
+      expect(time.getUTCMinutes()).toBe(45);
+      expect(time.getUTCSeconds()).toBe(0);
     });
   });
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/theme';
+import { todayVN, addDays, weekdayVN } from '@/lib';
 
 export interface DateStripProps {
   selectedDate: string; // YYYY-MM-DD
@@ -20,18 +21,15 @@ const VN_DAYS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 export function getPastDays(count = 14, baseDate = new Date()): DayItem[] {
   const items: DayItem[] = [];
+  const baseDayStr = todayVN(baseDate);
 
   for (let i = 0; i < count; i++) {
-    const d = new Date(baseDate);
-    d.setDate(d.getDate() - i);
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const dateString = `${year}-${month}-${day}`;
+    const dateString = addDays(baseDayStr, -i);
+    const [, month, day] = dateString.split('-');
 
     const isToday = i === 0;
-    const dayOfWeekShort = VN_DAYS[d.getDay()];
+    const isoWeekday = weekdayVN(dateString);
+    const dayOfWeekShort = isoWeekday === 7 ? 'CN' : VN_DAYS[isoWeekday];
     const dayOfMonth = `${day}/${month}`;
 
     items.push({

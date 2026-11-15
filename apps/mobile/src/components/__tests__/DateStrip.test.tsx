@@ -23,6 +23,17 @@ describe('DateStrip Component', () => {
         expect(item.dateString <= '2026-11-14').toBe(true);
       });
     });
+
+    it('consistently produces Vietnam dates even during early morning UTC window (T09.17)', () => {
+      // 2026-11-14 20:30:00 UTC is 2026-11-15 03:30:00 in Vietnam
+      const morningDate = new Date('2026-11-14T20:30:00Z');
+      const days = getPastDays(7, morningDate);
+
+      expect(days[0].dateString).toBe('2026-11-15');
+      expect(days[0].dayOfWeekShort).toBe('CN'); // Nov 15, 2026 is Sunday
+      expect(days[1].dateString).toBe('2026-11-14');
+      expect(days[1].dayOfWeekShort).toBe('T7'); // Nov 14, 2026 is Saturday
+    });
   });
 
   describe('DateStrip Rendering & Interactions', () => {

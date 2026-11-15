@@ -21,7 +21,8 @@ export function calculateReminderTime(drawDate: string): Date {
   const year = parts[0] ?? new Date().getFullYear();
   const month = parts[1] ?? 1;
   const day = parts[2] ?? 1;
-  return new Date(year, month - 1, day, 16, 45, 0, 0);
+  // 16:45:00 in Vietnam (UTC+7) corresponds exactly to 09:45:00 UTC everywhere
+  return new Date(Date.UTC(year, month - 1, day, 9, 45, 0, 0));
 }
 
 export async function cancelAllPendingReminders(): Promise<void> {
