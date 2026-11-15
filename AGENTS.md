@@ -9,7 +9,7 @@
 
 | Thành phần | Công nghệ đã chốt (ADR-002) |
 |---|---|
-| **Backend** | Java 21 (LTS), Spring Boot 3, Maven (`mvnw`), Kiến trúc Hexagonal (Domain thuần không phụ thuộc Spring/DB) |
+| **Backend** | Java 21 (LTS), Spring Boot 4 (4.1.2), Maven (`mvnw`), Kiến trúc Hexagonal (Domain thuần không phụ thuộc Spring/DB) |
 | **Database** | PostgreSQL 16 (chạy Docker), Flyway migrations (`db/migration/V*.sql`), Spring Data JPA |
 | **Scraper** | Jsoup parse HTML kết quả, HTTP Client có timeout + rate limiter |
 | **Mobile App** | React Native + Expo (TypeScript), Expo Router (Tabs), NativeWind v4 (Tailwind CSS) |
@@ -57,7 +57,7 @@ docker compose up -d                 # Khởi chạy PostgreSQL 16
 ## 🗺️ 4. Bản Đồ Tài Liệu Dự Án
 
 - `docs/SRS.md`: Tài liệu đặc tả yêu cầu phần mềm chuẩn (12 mục chi tiết).
-- `docs/ADR-002-tech-stack.md`: Quyết định kiến trúc & tech stack đã chốt.
+- `docs/decisions/ADR-002-tech-stack.md`: Quyết định kiến trúc & tech stack đã chốt.
 - `docs/plans/PLAN-00-overview.md`: Tổng quan 179 task chia 8 phase.
 - `docs/progress/PROGRESS-00-overview.md`: Bảng điều khiển tiến độ tổng thể.
 - `RECOMMENDED_SKILLS.md`: Cẩm nang kho skills và triết lý vibecoding chuyên nghiệp.

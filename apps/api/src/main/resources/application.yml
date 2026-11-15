@@ -50,7 +50,7 @@ dove:
     window-start: "${DOVE_SCHEDULER_WINDOW_START:16:10}"
     window-end: "${DOVE_SCHEDULER_WINDOW_END:17:30}"
   ingestion:
-    user-agent: "${DOVE_INGESTION_USER_AGENT:DoVe-Bot/1.0 (+https://github.com/thien211105/DoVe; contact@dove.app)}"
+    user-agent: "${DOVE_INGESTION_USER_AGENT:DoVe-Bot/1.0 (+https://github.com/thien211105/DoVe)}"
     rate-limit-interval-ms: ${DOVE_INGESTION_RATE_LIMIT_MS:2000}
     connect-timeout-ms: ${DOVE_INGESTION_CONNECT_TIMEOUT_MS:5000}
     read-timeout-ms: ${DOVE_INGESTION_READ_TIMEOUT_MS:10000}

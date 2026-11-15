@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class LotteryHttpClient {
 
   public static final String DEFAULT_USER_AGENT =
-      "DoVe-Bot/1.0 (+https://github.com/thien211105/DoVe; contact@dove.app)";
+      "DoVe-Bot/1.0 (+https://github.com/thien211105/DoVe)";
 
   private final HttpClient httpClient;
   private final String userAgent;

@@ -59,7 +59,9 @@ class LotteryHttpClientTest {
     String html = client.fetchHtml("http://127.0.0.1:" + serverPort + "/test-ok");
 
     assertThat(html).isEqualTo(expectedHtml);
-    assertThat(receivedUserAgent.get()).contains("DoVe-Bot/1.0").contains("contact@dove.app");
+    assertThat(receivedUserAgent.get())
+        .contains("DoVe-Bot/1.0")
+        .contains("https://github.com/thien211105/DoVe");
   }
 
   @Test

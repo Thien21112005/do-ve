@@ -14,7 +14,7 @@ DoVe là **app di động** dò vé số miền Nam (Android và iOS): dò 1 ho�
 | Tầng | Công nghệ | Lý do ngắn |
 |---|---|---|
 | Ngôn ngữ | **Java 21 (LTS)** | Mạnh nhất, record/sealed/pattern matching hợp domain nhỏ, bất biến |
-| Framework | **Spring Boot** (bản stable mới nhất lúc init) | Web, Validation, Data JPA, Actuator, Scheduling có sẵn |
+| Framework | **Spring Boot 4** (4.1.2) | Web, Validation, Data JPA, Actuator, Scheduling có sẵn |
 | Build | **Maven** (`mvnw`) | Quen thuộc, đủ plugin (Spotless, JaCoCo) |
 | DB | **PostgreSQL 16** | UNIQUE/CHECK tốt, miễn phí, chạy Docker dễ |
 | Migration | **Flyway** | SQL thuần, dễ review |

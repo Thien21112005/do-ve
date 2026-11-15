@@ -38,9 +38,9 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | ADR | Nội dung | Trạng thái |
 |---|---|---|
 | ADR-001 | Chọn nguồn dữ liệu kết quả | Đã chốt: xskt.com.vn làm chính, minhngoc fallback (`docs/decisions/ADR-001-data-source.md`) |
-| ADR-002 | Chốt stack API + app mobile | Đã chốt: Spring Boot 3 Java 21 + React Native Expo NativeWind (`docs/decisions/ADR-002-tech-stack.md`) |
+| ADR-002 | Chốt stack API + app mobile | Đã chốt: Spring Boot 4 Java 21 + React Native Expo NativeWind (`docs/decisions/ADR-002-tech-stack.md`) |
 | ADR-003 | Xử lý 'chưa có kết quả' | Đã chốt: 200 + `RESULT_NOT_AVAILABLE` và trạng thái `PENDING` |
-| ADR-004 | Lưu vé phía client | Đã chốt: AsyncStorage trên thiết bị (`dove.saved_tickets.v1`), không gửi lên server |
+| ADR-004 | Lưu vé phía client | Đã chốt: AsyncStorage trên thiết bị (`dove.tickets.v1`), không gửi lên server |
 | ADR-005 | Chính sách App Store / Google Play với app xổ số | Đã chốt: Nhóm Utility/Reference, Offline-first, Disclaimer và Privacy Policy (`docs/decisions/ADR-005-store-policy.md`) |
 
 ## Việc cần xác minh trước khi release

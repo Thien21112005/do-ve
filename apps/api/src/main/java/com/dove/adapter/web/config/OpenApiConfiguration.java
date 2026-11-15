@@ -23,7 +23,6 @@ public class OpenApiConfiguration {
                 .contact(
                     new Contact()
                         .name("DoVe Engineering Team")
-                        .email("contact@dove.app")
                         .url("https://github.com/thien211105/DoVe"))
                 .license(
                     new License()
