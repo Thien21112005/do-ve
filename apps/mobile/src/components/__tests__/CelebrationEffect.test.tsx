@@ -49,4 +49,25 @@ describe('CelebrationEffect Component', () => {
     expect(queryByTestId('celebration-overlay')).toBeNull();
     expect(haptics.success).not.toHaveBeenCalled();
   });
+
+  it('does NOT re-trigger celebration/haptics when toggling settings while active remains true (T09.23)', async () => {
+    const { rerender } = await render(
+      <CelebrationEffect active={true} testID="celebration-overlay" />,
+    );
+    expect(haptics.success).toHaveBeenCalledTimes(1);
+
+    // Toggle celebrationEnabled off and on while active stays true
+    updateSettings({ celebrationEnabled: false });
+    await rerender(
+      <CelebrationEffect active={true} testID="celebration-overlay" />,
+    );
+
+    updateSettings({ celebrationEnabled: true });
+    await rerender(
+      <CelebrationEffect active={true} testID="celebration-overlay" />,
+    );
+
+    // Should still only have been called once, not re-triggered
+    expect(haptics.success).toHaveBeenCalledTimes(1);
+  });
 });

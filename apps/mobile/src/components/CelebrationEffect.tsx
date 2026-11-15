@@ -44,27 +44,27 @@ export function CelebrationEffect({
         if (settings.hapticsEnabled) {
           haptics.success();
         }
+
+        opacity.value = withSequence(
+          withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) }),
+          withDelay(
+            1200,
+            withTiming(0, { duration: 350, easing: Easing.in(Easing.ease) }),
+          ),
+        );
+
+        scale.value = withSequence(
+          withTiming(1.1, { duration: 300, easing: Easing.out(Easing.ease) }),
+          withTiming(1, { duration: 200 }),
+        );
+
+        const timer = setTimeout(() => {
+          onComplete?.();
+        }, 1800);
+
+        return () => clearTimeout(timer);
       }
-
-      opacity.value = withSequence(
-        withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) }),
-        withDelay(
-          1200,
-          withTiming(0, { duration: 350, easing: Easing.in(Easing.ease) }),
-        ),
-      );
-
-      scale.value = withSequence(
-        withTiming(1.1, { duration: 300, easing: Easing.out(Easing.ease) }),
-        withTiming(1, { duration: 200 }),
-      );
-
-      const timer = setTimeout(() => {
-        onComplete?.();
-      }, 1800);
-
-      return () => clearTimeout(timer);
-    } else {
+    } else if (!active) {
       hasTriggeredRef.current = false;
       opacity.value = 0;
     }

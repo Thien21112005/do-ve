@@ -482,9 +482,13 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* Subtle celebration when ticket wins */}
+      {/* Subtle celebration when ticket wins (T09.23: scoped to current active mode) */}
       <CelebrationEffect
-        active={Boolean(result?.won || (batchResult?.results?.some((r) => r.won) ?? false))}
+        active={
+          mode === 'single'
+            ? Boolean(result?.won)
+            : Boolean(batchResult?.results?.some((r) => r.won))
+        }
       />
     </SafeAreaView>
   );
