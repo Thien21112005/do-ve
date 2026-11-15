@@ -75,7 +75,7 @@
 | T09.65 | P2 | Lỗi body JSON sai / thiếu tham số không có `code` | DONE | b1cfe1f | 2026-11-15 | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable, MissingServletRequestParameter và sanitize input |
 | T09.66 | P2 | Correlation ID nhận bất kỳ chuỗi nào từ client | DONE | 01ccc99 | 2026-11-15 | Chỉ chấp nhận correlation ID khớp regex [A-Za-z0-9-]{1,64}, ngược lại sinh UUID mới |
 | T09.67 | P2 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | DONE | 7a362ae | 2026-11-15 | Tắt springdoc trong application-prod.yml, chặn đường dẫn docs và gỡ X-XSS-Protection lỗi thời ở Caddyfile |
-| T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | TODO | | | |
+| T09.68 | P3 | Validate số vé không nhất quán giữa dò đơn và dò lô | DONE | df09f1f | 2026-11-15 | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả dò đơn và dò lô, hỗ trợ dấu gạch nối và khoảng trắng |
 | T09.69 | P1 | CI Mobile đỏ do ESLint | DONE | 8fa4c26 | 2026-11-14 | Sửa flat config ESLint và làm patch script idempotent |
 | T09.70 | P2 | Jest phải `--forceExit` (open handles) | TODO | | | |
 | T09.71 | P3 | Tài liệu lệch với code | TODO | | | |
@@ -88,7 +88,7 @@
 | P0 | 10 | 10 | 0 |
 | P1 | 29 | 20 | 9 |
 | P2 | 30 | 17 | 13 |
-| P3 | 3 | 0 | 3 |
+| P3 | 3 | 1 | 2 |
 
 ## Cổng chất lượng (cập nhật khi đóng phase)
 
@@ -171,6 +171,7 @@
 - 2026-11-15 | T09.65 | Lỗi body JSON sai / thiếu tham số không có code | Bổ sung ProblemDetail chuẩn có code/timestamp cho HttpMessageNotReadable và MissingServletRequestParameter, làm sạch dữ liệu đầu vào trong handleMethodArgumentTypeMismatch.
 - 2026-11-15 | T09.66 | Correlation ID nhận bất kỳ chuỗi nào từ client | Kiểm tra regex [A-Za-z0-9-]{1,64} trước khi đưa vào MDC/header; tự động sinh UUID mới nếu chuỗi chứa ký tự độc hại/xuống dòng hoặc vượt quá 64 ký tự.
 - 2026-11-15 | T09.67 | Swagger UI mở công khai ở production & CSP Caddy chặn nó | Tắt springdoc.api-docs và swagger-ui trong application-prod.yml; gỡ bỏ header X-XSS-Protection lỗi thời và chặn đường dẫn tài liệu API tại reverse proxy Caddy.
+- 2026-11-15 | T09.68 | Validate số vé không nhất quán giữa dò đơn và dò lô | Chuẩn hoá regex ^(?:[\s-]*\d){6}[\s-]*$ bắt đúng 6 chữ số cho cả CheckTicketRequest và BatchCheckRequest, hỗ trợ dấu gạch nối/khoảng trắng hợp lệ và chặn vé 7 số; cập nhật GlobalExceptionHandler nhận diện lỗi vé trong batch trả về INVALID_TICKET.
 
 ## Vấn đề mở
 
