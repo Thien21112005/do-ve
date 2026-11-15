@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { colors } from '../colors';
 import { radii, spacing, typography } from '../tokens';
 import { useTheme, syncNativeWindTheme } from '../theme';
@@ -234,6 +236,44 @@ describe('Design Tokens & Theme', () => {
 
       syncNativeWindTheme('system');
       expect(colorScheme.set).toHaveBeenCalledWith('system');
+    });
+  });
+
+  describe('Tailwind & NativeWind token mapping (T10.04)', () => {
+    it('defines CSS variables for all semantic tokens in global.css', () => {
+      const globalCss = fs.readFileSync(
+        path.resolve(process.cwd(), 'src/global.css'),
+        'utf8',
+      );
+      expect(globalCss).toContain('--color-background: #F6F4EF');
+      expect(globalCss).toContain('--color-surface: #FFFFFF');
+      expect(globalCss).toContain('--color-text-main: #1A2230');
+      expect(globalCss).toContain('--color-special: #B91C1C');
+      expect(globalCss).toContain('--color-win: #15803D');
+
+      // Dark mode variables
+      expect(globalCss).toContain('.dark {');
+      expect(globalCss).toContain('--color-background: #0F1217');
+      expect(globalCss).toContain('--color-surface: #181C23');
+      expect(globalCss).toContain('--color-text-main: #EEF0F3');
+      expect(globalCss).toContain('--color-special: #FF7A70');
+      expect(globalCss).toContain('--color-win: #4ADE80');
+    });
+
+    it('maps theme tokens to CSS variables in tailwind.config.js', () => {
+      const configPath = path.resolve(process.cwd(), 'tailwind.config.js');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const tailwindConfig = require(configPath);
+      const themeColors = tailwindConfig.theme.extend.colors;
+      expect(themeColors.background).toBe('var(--color-background)');
+      expect(themeColors.surface.DEFAULT).toBe('var(--color-surface)');
+      expect(themeColors.main).toBe('var(--color-text-main)');
+      expect(themeColors.muted).toBe('var(--color-text-muted)');
+      expect(themeColors.primary.DEFAULT).toBe('var(--color-primary)');
+      expect(themeColors.special.DEFAULT).toBe('var(--color-special)');
+      expect(themeColors.win.DEFAULT).toBe('var(--color-win)');
+      expect(themeColors.brand).toBeUndefined();
+      expect(themeColors.lottery).toBeUndefined();
     });
   });
 });

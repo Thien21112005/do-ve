@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background: #F6F4EF;
+    --color-surface: #FFFFFF;
+    --color-surface-sunken: #EFEBE3;
+    --color-surface-subtle: #EFEBE3;
+    --color-surface-elevated: #FFFFFF;
+    --color-text-main: #1A2230;
+    --color-text-muted: #566070;
+    --color-text-inverse: #FFFFFF;
+    --color-border: #E2DDD2;
+    --color-border-focus: #1D4ED8;
+    --color-primary: #1D4ED8;
+    --color-primary-hover: #1E40AF;
+    --color-primary-subtle: #EFF4FE;
+    --color-primary-tint: #EFF4FE;
+    --color-on-primary: #FFFFFF;
+    --color-special: #B91C1C;
+    --color-special-tint: #FEF2F2;
+    --color-win: #15803D;
+    --color-win-tint: #F0FDF4;
+    --color-win-border: #86EFAC;
+    --color-pending: #B45309;
+    --color-pending-tint: #FFFBEB;
+    --color-pending-border: #FDE68A;
+    --color-loss: #566070;
+    --color-loss-bg: #F6F4EF;
+    --color-loss-border: #E2DDD2;
+    --color-error: #B42318;
+    --color-error-tint: #FEF3F2;
+  }
+
+  .dark {
+    --color-background: #0F1217;
+    --color-surface: #181C23;
+    --color-surface-sunken: #12151B;
+    --color-surface-subtle: #12151B;
+    --color-surface-elevated: #222731;
+    --color-text-main: #EEF0F3;
+    --color-text-muted: #9AA3B2;
+    --color-text-inverse: #0F1217;
+    --color-border: #2A303A;
+    --color-border-focus: #7AA2FF;
+    --color-primary: #7AA2FF;
+    --color-primary-hover: #93B4FF;
+    --color-primary-subtle: #172554;
+    --color-primary-tint: #172554;
+    --color-on-primary: #0F1217;
+    --color-special: #FF7A70;
+    --color-special-tint: #450A0A;
+    --color-win: #4ADE80;
+    --color-win-tint: #052E16;
+    --color-win-border: #166534;
+    --color-pending: #FBBF24;
+    --color-pending-tint: #451A03;
+    --color-pending-border: #78350F;
+    --color-loss: #9AA3B2;
+    --color-loss-bg: #12151B;
+    --color-loss-border: #2A303A;
+    --color-error: #FF8A80;
+    --color-error-tint: #450A0A;
+  }
+}

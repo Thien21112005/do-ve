@@ -6,19 +6,49 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
+        background: 'var(--color-background)',
+        surface: {
+          DEFAULT: 'var(--color-surface)',
+          sunken: 'var(--color-surface-sunken)',
+          subtle: 'var(--color-surface-subtle)',
+          elevated: 'var(--color-surface-elevated)',
         },
-        lottery: {
-          win: '#15803d',
-          'win-dark': '#4ade80',
-          loss: '#475569',
-          'loss-dark': '#94a3b8',
-          pending: '#b45309',
-          'pending-dark': '#fbbf24',
+        main: 'var(--color-text-main)',
+        muted: 'var(--color-text-muted)',
+        inverse: 'var(--color-text-inverse)',
+        border: {
+          DEFAULT: 'var(--color-border)',
+          focus: 'var(--color-border-focus)',
+        },
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          hover: 'var(--color-primary-hover)',
+          subtle: 'var(--color-primary-subtle)',
+          tint: 'var(--color-primary-tint)',
+        },
+        'on-primary': 'var(--color-on-primary)',
+        special: {
+          DEFAULT: 'var(--color-special)',
+          tint: 'var(--color-special-tint)',
+        },
+        win: {
+          DEFAULT: 'var(--color-win)',
+          tint: 'var(--color-win-tint)',
+          border: 'var(--color-win-border)',
+        },
+        pending: {
+          DEFAULT: 'var(--color-pending)',
+          tint: 'var(--color-pending-tint)',
+          border: 'var(--color-pending-border)',
+        },
+        loss: {
+          DEFAULT: 'var(--color-loss)',
+          bg: 'var(--color-loss-bg)',
+          border: 'var(--color-loss-border)',
+        },
+        error: {
+          DEFAULT: 'var(--color-error)',
+          tint: 'var(--color-error-tint)',
         },
       },
       borderRadius: {
