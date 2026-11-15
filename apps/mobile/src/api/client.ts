@@ -14,6 +14,33 @@ export interface ProblemDetail {
   [key: string]: unknown;
 }
 
+export const API_ERROR_MESSAGES: Record<string, string> = {
+  NETWORK_ERROR: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại mạng.',
+  TIMEOUT_ERROR: 'Yêu cầu máy chủ vượt quá thời gian cho phép. Vui lòng thử lại.',
+  STATION_NOT_FOUND: 'Không tìm thấy thông tin đài quay thưởng.',
+  STATION_NOT_DRAWING: 'Đài này không mở thưởng vào ngày đã chọn.',
+  INVALID_DATE: 'Ngày mở thưởng không hợp lệ.',
+  INVALID_TICKET: 'Số vé không hợp lệ (cần đủ 6 chữ số).',
+  RATE_LIMITED: 'Bạn đã thực hiện quá nhiều yêu cầu. Vui lòng chờ ít phút.',
+  INTERNAL_ERROR: 'Máy chủ gặp sự cố nội bộ. Vui lòng thử lại sau.',
+};
+
+export function getApiErrorMessage(
+  error: unknown,
+  fallback = 'Đã có lỗi xảy ra. Vui lòng thử lại.',
+): string {
+  if (error instanceof ApiError) {
+    if (error.code && API_ERROR_MESSAGES[error.code]) {
+      return API_ERROR_MESSAGES[error.code];
+    }
+    return error.detail || error.title || fallback;
+  }
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+  return fallback;
+}
+
 export class ApiError extends Error {
   readonly status: number;
   readonly code?: string;
@@ -152,7 +179,7 @@ export async function request<T>(
         status: 408,
         code: 'TIMEOUT_ERROR',
         title: 'Request Timeout',
-        detail: `Yêu cầu máy chủ vượt quá thời gian cho phép (${timeoutMs}ms)`,
+        detail: API_ERROR_MESSAGES.TIMEOUT_ERROR,
       });
     }
 
@@ -160,10 +187,7 @@ export async function request<T>(
       status: 0,
       code: 'NETWORK_ERROR',
       title: 'Lỗi kết nối',
-      detail:
-        err instanceof Error
-          ? err.message
-          : 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại mạng.',
+      detail: API_ERROR_MESSAGES.NETWORK_ERROR,
     });
   } finally {
     clearTimeout(timer);

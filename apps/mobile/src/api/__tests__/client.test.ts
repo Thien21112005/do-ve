@@ -1,4 +1,10 @@
-import { apiClient, ApiError, getApiBaseUrl } from '../client';
+import {
+  apiClient,
+  ApiError,
+  getApiBaseUrl,
+  getApiErrorMessage,
+  API_ERROR_MESSAGES,
+} from '../client';
 
 describe('Typed API Client', () => {
   const originalFetch = globalThis.fetch;
@@ -184,5 +190,64 @@ describe('Typed API Client', () => {
       expect(apiErr.code).toBe('TIMEOUT_ERROR');
       expect(apiErr.status).toBe(408);
     }
+  });
+
+  describe('getApiErrorMessage and localized error messages (T09.24)', () => {
+    it('maps known error codes to Vietnamese messages', () => {
+      const codes = [
+        'NETWORK_ERROR',
+        'TIMEOUT_ERROR',
+        'STATION_NOT_FOUND',
+        'STATION_NOT_DRAWING',
+        'INVALID_DATE',
+        'INVALID_TICKET',
+        'RATE_LIMITED',
+        'INTERNAL_ERROR',
+      ];
+
+      for (const code of codes) {
+        expect(API_ERROR_MESSAGES[code]).toBeTruthy();
+        const err = new ApiError({
+          status: 400,
+          code,
+          detail: 'Raw english detail from server',
+        });
+        expect(getApiErrorMessage(err)).toBe(API_ERROR_MESSAGES[code]);
+      }
+    });
+
+    it('returns Vietnamese network error detail on fetch network failure', async () => {
+      globalThis.fetch = jest
+        .fn()
+        .mockRejectedValue(new Error('Network request failed'));
+
+      try {
+        await apiClient.get('/api/v1/stations');
+        throw new Error('Should have failed');
+      } catch (e: unknown) {
+        expect(e).toBeInstanceOf(ApiError);
+        const apiErr = e as ApiError;
+        expect(apiErr.code).toBe('NETWORK_ERROR');
+        expect(getApiErrorMessage(apiErr)).toBe(
+          API_ERROR_MESSAGES.NETWORK_ERROR,
+        );
+      }
+    });
+
+    it('returns custom detail if code is not in known map', () => {
+      const err = new ApiError({
+        status: 400,
+        code: 'CUSTOM_CODE',
+        detail: 'Chi tiết lỗi tuỳ chỉnh',
+      });
+      expect(getApiErrorMessage(err)).toBe('Chi tiết lỗi tuỳ chỉnh');
+    });
+
+    it('returns fallback message for unknown error types', () => {
+      expect(getApiErrorMessage(null, 'Lỗi mặc định')).toBe('Lỗi mặc định');
+      expect(getApiErrorMessage(undefined, 'Lỗi mặc định')).toBe(
+        'Lỗi mặc định',
+      );
+    });
   });
 });

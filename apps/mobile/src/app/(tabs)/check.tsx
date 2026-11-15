@@ -28,6 +28,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 import { useSavedTickets } from '@/store/ticketStore';
+import { getApiErrorMessage } from '@/api/client';
 import type { SavedTicketStatus } from '@/types';
 
 export interface CheckScreenProps {
@@ -420,9 +421,10 @@ export default function CheckScreen({ onCheckSuccess }: CheckScreenProps = {}) {
                   className="text-sm font-semibold"
                   style={{ color: colors.error }}
                 >
-                  {(activeErrorObj as any)?.detail ||
-                    activeErrorObj?.message ||
-                    STRINGS.common.unknownError}
+                  {getApiErrorMessage(
+                    activeErrorObj,
+                    STRINGS.common.unknownError,
+                  )}
                 </Text>
                 <Text
                   className="text-xs mt-0.5"

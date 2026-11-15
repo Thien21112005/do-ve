@@ -248,4 +248,29 @@ describe('CheckScreen Form Composition', () => {
       expect(haptics.success).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('displays localized Vietnamese error message when check fails (T09.24)', async () => {
+    const { ApiError, API_ERROR_MESSAGES } = jest.requireActual('@/api/client');
+    (apiCheck.checkTicket as jest.Mock).mockRejectedValue(
+      new ApiError({
+        status: 429,
+        code: 'RATE_LIMITED',
+        title: 'Too Many Requests',
+        detail: 'Rate limit exceeded',
+      }),
+    );
+
+    const { getByTestId, findByTestId, findByText } = await render(
+      <CheckScreen />,
+      { wrapper: createWrapper() },
+    );
+
+    await findByTestId('station-chips-TPHCM');
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '112233');
+
+    const submitBtn = await findByTestId('check-ticket-button');
+    fireEvent.press(submitBtn);
+
+    expect(await findByText(API_ERROR_MESSAGES.RATE_LIMITED)).toBeTruthy();
+  });
 });
