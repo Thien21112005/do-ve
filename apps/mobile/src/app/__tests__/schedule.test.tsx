@@ -144,4 +144,17 @@ describe('ScheduleScreen', () => {
     expect(getAllByText(/16h15 – 16h35/).length).toBeGreaterThanOrEqual(1);
     expect(getByText(/Tết Nguyên Đán/i)).toBeTruthy();
   });
+
+  it('navigates to results with station param when a station is tapped (T09.33)', async () => {
+    const router = useRouter();
+    const { getByText } = await renderScheduleScreen();
+
+    const stationBtn = getByText('Đồng Tháp');
+    fireEvent.press(stationBtn);
+
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/(tabs)/results',
+      params: { station: 'dong-thap' },
+    });
+  });
 });

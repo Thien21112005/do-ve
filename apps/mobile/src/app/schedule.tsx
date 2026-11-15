@@ -104,9 +104,6 @@ export default function ScheduleScreen() {
             <View
               key={day.dayOfWeek}
               testID={`schedule-day-${day.dayOfWeek}`}
-              accessible
-              accessibilityRole="text"
-              accessibilityLabel={`${day.dayName}: ${day.stations.map((s) => s.name).join(', ')}`}
               className="p-4 rounded-2xl border mb-3 shadow-sm"
               style={{
                 backgroundColor: colors.surface,
@@ -166,7 +163,17 @@ export default function ScheduleScreen() {
                 {day.stations.map((station) => (
                   <Pressable
                     key={station.code}
-                    onPress={() => router.push('/(tabs)/results')}
+                    testID={`schedule-station-${station.code}`}
+                    accessible
+                    accessibilityRole="button"
+                    accessibilityLabel={`Xem kết quả đài ${station.name}`}
+                    accessibilityHint="Mở màn hình kết quả của đài này"
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(tabs)/results',
+                        params: { station: station.code },
+                      })
+                    }
                     className="px-3 py-2 rounded-xl border flex-row items-center active:opacity-70"
                     style={{
                       backgroundColor: isToday

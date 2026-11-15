@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams } from 'expo-router';
 import {
   DateStrip,
   StationChips,
@@ -24,8 +25,23 @@ import { getApiErrorMessage } from '@/api/client';
 
 export default function ResultsScreen() {
   const { colors } = useTheme();
-  const [selectedDate, setSelectedDate] = useState(() => todayVN());
-  const [selectedStation, setSelectedStation] = useState<string>('');
+  const params = useLocalSearchParams<{ station?: string; date?: string }>();
+  const [selectedDate, setSelectedDate] = useState(() => params.date || todayVN());
+  const [selectedStation, setSelectedStation] = useState<string>(
+    () => params.station || '',
+  );
+
+  useEffect(() => {
+    if (params.station && params.station !== selectedStation) {
+      setSelectedStation(params.station);
+    }
+  }, [params.station]);
+
+  useEffect(() => {
+    if (params.date && params.date !== selectedDate) {
+      setSelectedDate(params.date);
+    }
+  }, [params.date]);
 
   const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
   const { draw, isLoading, isError, error, refetch } = useDraw(
