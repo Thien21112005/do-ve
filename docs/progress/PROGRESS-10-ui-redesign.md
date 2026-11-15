@@ -1,14 +1,14 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 0 / 62 task hoàn thành
-- **Bắt đầu:** —  |  **Hoàn thành:** —
+- **Tổng quan:** 3 / 62 task hoàn thành
+- **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T10.01 | Viết PRODUCT.md bằng `/impeccable init` | TODO | | | |
+| T10.01 | Viết PRODUCT.md bằng `/impeccable init` | DONE | b6e556e | 2026-11-15 | Khởi tạo PRODUCT.md chuẩn bối cảnh sản phẩm: Audience, Usage scene, Voice & Tone, Constraints, Anti-references |
 | T10.02 | Chốt hướng thị giác (cần người dùng duyệt) | TODO | | | |
 | T10.03 | Bảng màu semantic mới (light + dark) có kiểm contrast | TODO | | | |
 | T10.04 | Đồng bộ token sang Tailwind/NativeWind | TODO | | | |
@@ -90,6 +90,7 @@
 - 2026-11-14 | — | Critique + audit native bằng skill impeccable, lập plan 62 task. Phát hiện lớn nhất: font Be Vietnam Pro chưa từng được áp dụng; theme NativeWind không theo cài đặt; icon app là icon mặc định của Expo.
 - 2026-11-15 | T10.60 | Haptic tinh tế, tôn trọng cài đặt (đồng bộ T09.46) | Bổ sung canTriggerHaptics() trong haptics.ts đọc getSettings().hapticsEnabled, bổ sung haptics.selection.
 - 2026-11-15 | T10.05 | Cho NativeWind theo cài đặt theme của app (đồng bộ T09.47) | Thêm NativeWindThemeSync trong AppProviders, syncNativeWindTheme trong theme.ts, gọi colorScheme.set theo themeMode của app.
+- 2026-11-15 | T10.01 | Viết PRODUCT.md chuẩn bối cảnh sản phẩm | Hoàn thành PRODUCT.md định hình đối tượng (Cô Hai, Anh Tư, bạn trẻ), bối cảnh nắng ngoài trời/1 tay, giọng văn mộc mạc minh bạch, ràng buộc pháp lý & diệt AI-slop.
 
 ## Vấn đề mở
 
