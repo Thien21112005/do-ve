@@ -10,3 +10,4 @@ export * from './useCheckBatchTickets';
 export * from './useAppConfig';
 export * from './usePendingTicketsRecheck';
 export * from './usePendingTicketsReminder';
+export * from './useWeeklySchedule';

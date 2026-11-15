@@ -6,3 +6,4 @@ export * from './format';
 export * from './version';
 export * from './strings';
 export * from './date';
+export * from './schedule';

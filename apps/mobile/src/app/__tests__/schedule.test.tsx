@@ -1,7 +1,37 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import React, { type ReactNode } from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ScheduleScreen, { WEEKLY_SCHEDULE } from '../schedule';
 import { useRouter } from 'expo-router';
+
+const mockFetchScheduleByDate = jest.fn();
+jest.mock('@/api', () => {
+  const actual = jest.requireActual('@/api');
+  return {
+    ...actual,
+    fetchScheduleByDate: (date: string) => mockFetchScheduleByDate(date),
+  };
+});
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: Infinity,
+      },
+    },
+  });
+  const Wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  Wrapper.displayName = 'TestQueryClientWrapper';
+  return Wrapper;
+}
+
+function renderScheduleScreen(options = {}) {
+  return render(<ScheduleScreen />, { wrapper: createWrapper(), ...options });
+}
 
 jest.mock('expo-router', () => {
   const routerMock = {
@@ -20,7 +50,7 @@ describe('ScheduleScreen', () => {
   });
 
   it('renders all 7 weekdays with correct stations matching SRS 3.3', async () => {
-    const { getByText, getByTestId } = await render(<ScheduleScreen />);
+    const { getByText, getByTestId } = await renderScheduleScreen();
 
     expect(getByTestId('schedule-screen')).toBeTruthy();
     expect(WEEKLY_SCHEDULE).toHaveLength(7);
@@ -68,7 +98,7 @@ describe('ScheduleScreen', () => {
   });
 
   it('highlights current weekday with Hôm nay badge', async () => {
-    const { getByText, getByTestId } = await render(<ScheduleScreen />);
+    const { getByText, getByTestId } = await renderScheduleScreen();
     expect(getByTestId('schedule-today-badge')).toBeTruthy();
     expect(getByText('HÔM NAY')).toBeTruthy();
   });
@@ -78,7 +108,7 @@ describe('ScheduleScreen', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2026-11-15T18:00:00Z'));
 
-    const { getByTestId } = await render(<ScheduleScreen />);
+    const { getByTestId } = await renderScheduleScreen();
     // Monday schedule item should have the badge
     expect(getByTestId('schedule-day-1')).toBeTruthy();
     expect(getByTestId('schedule-today-badge')).toBeTruthy();
@@ -88,11 +118,22 @@ describe('ScheduleScreen', () => {
 
   it('handles back button navigation', async () => {
     const router = useRouter();
-    const { getByTestId } = await render(<ScheduleScreen />);
+    const { getByTestId } = await renderScheduleScreen();
 
     const backBtn = getByTestId('schedule-back-btn');
     fireEvent.press(backBtn);
 
     expect(router.back).toHaveBeenCalled();
+  });
+
+  it('loads weekly schedule dynamically from api (T09.31)', async () => {
+    mockFetchScheduleByDate.mockImplementation(async () => {
+      return [{ code: 'dong-thap-vip', name: 'Đồng Tháp Mới' }];
+    });
+
+    const { getAllByText } = await renderScheduleScreen();
+    await waitFor(() => {
+      expect(getAllByText('Đồng Tháp Mới').length).toBe(7);
+    });
   });
 });
