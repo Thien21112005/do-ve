@@ -116,7 +116,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     String code = "INVALID_REQUEST";
     boolean hasTicketError =
         ex.getBindingResult().getFieldErrors().stream()
-            .anyMatch(err -> "ticket".equalsIgnoreCase(err.getField()));
+            .anyMatch(
+                err -> {
+                  String field = err.getField();
+                  return field != null
+                      && ("ticket".equalsIgnoreCase(field)
+                          || field.equalsIgnoreCase("tickets")
+                          || field.startsWith("tickets["));
+                });
     boolean hasDateError =
         ex.getBindingResult().getFieldErrors().stream()
             .anyMatch(

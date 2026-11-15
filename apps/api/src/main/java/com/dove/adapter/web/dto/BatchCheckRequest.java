@@ -14,7 +14,10 @@ public record BatchCheckRequest(
         @Size(min = 1, max = 20, message = "Số lượng vé dò mỗi lần từ 1 đến 20 vé")
         List<
                 @NotBlank(message = "Số vé không được để trống")
-                @Pattern(regexp = "^\\d{6}$", message = "Vé phải gồm đúng 6 chữ số") String>
+                @Pattern(
+                    regexp = "^(?:[\\s-]*\\d){6}[\\s-]*$",
+                    message = "Vé phải gồm đúng 6 chữ số")
+                String>
             tickets,
     @NotBlank(message = "stationCode không được để trống") String stationCode,
     @NotNull(message = "drawDate không được để trống") LocalDate drawDate) {
