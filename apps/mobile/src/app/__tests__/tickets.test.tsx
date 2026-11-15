@@ -172,5 +172,22 @@ describe('TicketsScreen (Vé của tôi)', () => {
 
     expect(getByTestId('saved-tickets-empty')).toBeTruthy();
   });
+
+  it('supports pull-to-refresh on saved tickets list (T09.45)', async () => {
+    await saveTicket({
+      ticket: '123456',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+
+    const { getByTestId } = await render(<TicketsScreen />);
+    const list = getByTestId('saved-tickets-list');
+    expect(list.props.refreshControl).toBeTruthy();
+    expect(list.props.refreshControl.props.refreshing).toBe(false);
+    expect(typeof list.props.refreshControl.props.onRefresh).toBe('function');
+  });
 });
 

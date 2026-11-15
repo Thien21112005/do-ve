@@ -94,43 +94,73 @@ export async function recheckPendingTickets(
   }
 }
 
+export const DEFAULT_RECHECK_THROTTLE_MS = 2 * 60 * 1000; // 2 minutes (T09.45)
+
+let lastRecheckTimestamp = 0;
+
+export function resetRecheckThrottle(): void {
+  lastRecheckTimestamp = 0;
+}
+
+export function setLastRecheckTimestamp(ts: number): void {
+  lastRecheckTimestamp = ts;
+}
+
+export function getLastRecheckTimestamp(): number {
+  return lastRecheckTimestamp;
+}
+
 /**
  * React hook that triggers pending ticket recheck when the screen mounts
  * or when the app returns from background to foreground (AppState 'active').
+ * Throttles automatic recheck calls to 2 minutes between runs (T09.45).
  */
 export function usePendingTicketsRecheck(options?: {
   enabled?: boolean;
+  throttleMs?: number;
   onRecheckComplete?: (updatedCount: number) => void;
 }) {
-  const { enabled = true, onRecheckComplete } = options || {};
+  const {
+    enabled = true,
+    throttleMs = DEFAULT_RECHECK_THROTTLE_MS,
+    onRecheckComplete,
+  } = options || {};
   const [isRechecking, setIsRechecking] = useState(false);
   const isRunningRef = useRef(false);
 
-  const runRecheck = useCallback(async () => {
-    if (!enabled || isRunningRef.current) return;
-    isRunningRef.current = true;
-    setIsRechecking(true);
-    try {
-      const { updatedCount } = await recheckPendingTickets();
-      if (updatedCount > 0) {
-        onRecheckComplete?.(updatedCount);
+  const runRecheck = useCallback(
+    async (force = false) => {
+      if (!enabled || isRunningRef.current) return;
+      const now = Date.now();
+      if (!force && throttleMs > 0 && now - lastRecheckTimestamp < throttleMs) {
+        return;
       }
-    } finally {
-      isRunningRef.current = false;
-      setIsRechecking(false);
-    }
-  }, [enabled, onRecheckComplete]);
+      isRunningRef.current = true;
+      setIsRechecking(true);
+      try {
+        const { updatedCount } = await recheckPendingTickets();
+        lastRecheckTimestamp = Date.now();
+        if (updatedCount > 0) {
+          onRecheckComplete?.(updatedCount);
+        }
+      } finally {
+        isRunningRef.current = false;
+        setIsRechecking(false);
+      }
+    },
+    [enabled, throttleMs, onRecheckComplete],
+  );
 
   useEffect(() => {
-    // Recheck on mount
-    runRecheck();
+    // Recheck on mount (respecting throttle)
+    runRecheck(false);
 
-    // Recheck when app transitions to active foreground
+    // Recheck when app transitions to active foreground (respecting throttle)
     const subscription = AppState.addEventListener(
       'change',
       (nextState: AppStateStatus) => {
         if (nextState === 'active') {
-          runRecheck();
+          runRecheck(false);
         }
       },
     );
@@ -140,5 +170,8 @@ export function usePendingTicketsRecheck(options?: {
     };
   }, [runRecheck]);
 
-  return { isRechecking, refetchPending: runRecheck };
+  return {
+    isRechecking,
+    refetchPending: (force = true) => runRecheck(force),
+  };
 }

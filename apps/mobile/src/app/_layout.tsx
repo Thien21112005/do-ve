@@ -2,7 +2,12 @@ import '../global.css';
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useAppFonts, useAppConfig, usePendingTicketsReminder } from '@/hooks';
+import {
+  useAppFonts,
+  useAppConfig,
+  usePendingTicketsReminder,
+  usePendingTicketsRecheck,
+} from '@/hooks';
 import { AppProviders, AppVersionGate, ErrorBoundary } from '@/components';
 import { initCrashReporting } from '@/services/crashReporting';
 
@@ -16,6 +21,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 function AppContent() {
   const { config, refetch } = useAppConfig();
   usePendingTicketsReminder();
+  usePendingTicketsRecheck();
 
   return (
     <AppVersionGate config={config} onRetry={refetch}>

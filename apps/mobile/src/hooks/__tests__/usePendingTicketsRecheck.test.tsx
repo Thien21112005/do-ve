@@ -4,6 +4,8 @@ import {
   groupPendingTickets,
   recheckPendingTickets,
   usePendingTicketsRecheck,
+  resetRecheckThrottle,
+  DEFAULT_RECHECK_THROTTLE_MS,
 } from '../usePendingTicketsRecheck';
 import {
   saveTicket,
@@ -254,8 +256,8 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
       });
 
       const onComplete = jest.fn();
-      renderHook(() =>
-        usePendingTicketsRecheck({ onRecheckComplete: onComplete }),
+      await renderHook(() =>
+        usePendingTicketsRecheck({ onRecheckComplete: onComplete, throttleMs: 0 }),
       );
 
       // Wait for mount recheck
@@ -271,6 +273,56 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
         await new Promise((r) => setTimeout(r, 20));
       });
 
+      expect(apiCheck.checkBatchTickets).toHaveBeenCalledTimes(2);
+    });
+
+    it('throttles automatic recheck to 2 minutes between runs (T09.45)', async () => {
+      resetRecheckThrottle();
+      expect(DEFAULT_RECHECK_THROTTLE_MS).toBe(120000);
+
+      await saveTicket({
+        ticket: '111222',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'PENDING',
+        totalPrize: 0,
+      });
+
+      (apiCheck.checkBatchTickets as jest.Mock).mockResolvedValue({
+        station: 'TPHCM',
+        drawDate: '2026-11-14',
+        results: [],
+        totalWonTickets: 0,
+        totalPrize: 0,
+      });
+
+      let appStateListener: ((state: string) => void) | undefined;
+      jest
+        .spyOn(AppState, 'addEventListener')
+        .mockImplementation((_event, listener) => {
+          appStateListener = listener as any;
+          return { remove: jest.fn() } as any;
+        });
+
+      const { result } = await renderHook(() => usePendingTicketsRecheck());
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      expect(apiCheck.checkBatchTickets).toHaveBeenCalledTimes(1);
+
+      // AppState change within 2 minutes should be throttled
+      await act(async () => {
+        appStateListener?.('active');
+        await new Promise((r) => setTimeout(r, 20));
+      });
+      expect(apiCheck.checkBatchTickets).toHaveBeenCalledTimes(1);
+
+      // Manual pull-to-refresh (refetchPending) should bypass throttle
+      await act(async () => {
+        await result.current.refetchPending(true);
+      });
       expect(apiCheck.checkBatchTickets).toHaveBeenCalledTimes(2);
     });
   });

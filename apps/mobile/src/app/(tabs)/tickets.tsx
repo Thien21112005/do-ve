@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  RefreshControl,
   type ListRenderItemInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,8 +25,8 @@ export default function TicketsScreen() {
   const { colors } = useTheme();
   const [tickets, { remove, clearAll }] = useSavedTickets();
 
-  // Auto recheck PENDING tickets on mount & foreground
-  usePendingTicketsRecheck();
+  // Manual pull-to-refresh & recheck status (T09.45)
+  const { isRechecking, refetchPending } = usePendingTicketsRecheck();
 
   // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
@@ -313,6 +314,15 @@ export default function TicketsScreen() {
           data={sortedTickets}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              testID="tickets-refresh-control"
+              refreshing={isRechecking}
+              onRefresh={() => refetchPending(true)}
+              colors={[colors.primary]}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={{
             paddingHorizontal: 16,
             paddingTop: 8,
