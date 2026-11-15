@@ -68,6 +68,51 @@ class CorrelationIdFilterTest {
   }
 
   @Test
+  @DisplayName(
+      "T09.66: Header chứa ký tự xuống dòng / không hợp lệ phải bị từ chối và thay bằng UUID mới")
+  void shouldRejectHeaderWithInvalidCharactersOrNewline() throws ServletException, IOException {
+    String maliciousId = "valid-prefix\r\nInjected-Header: evil";
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.addHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, maliciousId);
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    AtomicReference<String> mdcCaptured = new AtomicReference<>();
+
+    FilterChain chain =
+        (req, res) -> {
+          mdcCaptured.set(MDC.get(CorrelationIdFilter.MDC_KEY));
+        };
+
+    filter.doFilter(request, response, chain);
+
+    String responseHeader = response.getHeader(CorrelationIdFilter.CORRELATION_ID_HEADER);
+    assertThat(responseHeader).isNotEqualTo(maliciousId);
+    assertThat(responseHeader).matches("^[0-9a-fA-F-]{36}$");
+    assertThat(mdcCaptured.get()).isEqualTo(responseHeader);
+  }
+
+  @Test
+  @DisplayName("T09.66: Header dài quá 64 ký tự phải bị từ chối và thay bằng UUID mới")
+  void shouldRejectHeaderExceeding64Characters() throws ServletException, IOException {
+    String tooLongId = "a".repeat(65);
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.addHeader(CorrelationIdFilter.CORRELATION_ID_HEADER, tooLongId);
+    MockHttpServletResponse response = new MockHttpServletResponse();
+    AtomicReference<String> mdcCaptured = new AtomicReference<>();
+
+    FilterChain chain =
+        (req, res) -> {
+          mdcCaptured.set(MDC.get(CorrelationIdFilter.MDC_KEY));
+        };
+
+    filter.doFilter(request, response, chain);
+
+    String responseHeader = response.getHeader(CorrelationIdFilter.CORRELATION_ID_HEADER);
+    assertThat(responseHeader).isNotEqualTo(tooLongId);
+    assertThat(responseHeader).matches("^[0-9a-fA-F-]{36}$");
+    assertThat(mdcCaptured.get()).isEqualTo(responseHeader);
+  }
+
+  @Test
   @DisplayName("Should cleanly remove MDC correlation ID even when filter chain throws exception")
   void shouldCleanUpMdcEvenWhenFilterChainThrowsException() {
     MockHttpServletRequest request = new MockHttpServletRequest();

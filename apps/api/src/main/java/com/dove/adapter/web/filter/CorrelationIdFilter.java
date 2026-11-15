@@ -24,6 +24,8 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
 
   public static final String CORRELATION_ID_HEADER = "X-Request-Id";
   public static final String MDC_KEY = "requestId";
+  private static final java.util.regex.Pattern VALID_CORRELATION_ID =
+      java.util.regex.Pattern.compile("^[A-Za-z0-9-]{1,64}$");
 
   @Override
   protected void doFilterInternal(
@@ -31,8 +33,11 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-    if (!StringUtils.hasText(correlationId)) {
+    if (!StringUtils.hasText(correlationId)
+        || !VALID_CORRELATION_ID.matcher(correlationId.trim()).matches()) {
       correlationId = UUID.randomUUID().toString();
+    } else {
+      correlationId = correlationId.trim();
     }
 
     MDC.put(MDC_KEY, correlationId);
