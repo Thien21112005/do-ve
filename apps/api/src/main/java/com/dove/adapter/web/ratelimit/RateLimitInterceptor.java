@@ -54,4 +54,10 @@ public class RateLimitInterceptor implements HandlerInterceptor {
   public SlidingWindowRateLimiter getRateLimiter() {
     return rateLimiter;
   }
+
+  @org.springframework.scheduling.annotation.Scheduled(
+      fixedDelayString = "${dove.rate-limit.cleanup-interval-ms:60000}")
+  public void cleanupExpiredEntries() {
+    rateLimiter.evictExpired();
+  }
 }
