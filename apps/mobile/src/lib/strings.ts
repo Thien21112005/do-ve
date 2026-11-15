@@ -30,7 +30,6 @@ export const STRINGS = {
 
   tickets: {
     screenTitle: 'Vé của tôi',
-    headerTitle: 'Vé đã lưu',
     subtitle: 'Lưu trữ và theo dõi các vé số đã dò',
     emptyTitle: 'Chưa có vé nào được lưu',
     emptyDesc:

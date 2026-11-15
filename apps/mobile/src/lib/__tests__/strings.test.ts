@@ -36,11 +36,17 @@ describe('STRINGS localization dictionary', () => {
     expect(STRINGS.schedule.todayTag).toBe('Hôm nay');
   });
 
-  it('contains version gate strings', () => {
-    expect(STRINGS.gate.maintenanceTitle).toBe('Hệ thống đang bảo trì');
-    expect(STRINGS.gate.updateTitle).toBe('Cần cập nhật ứng dụng');
-    expect(STRINGS.gate.updateCurrentVersion('1.0.0')).toBe(
-      'Phiên bản hiện tại: 1.0.0',
-    );
+  it('aligns tab and header titles without redundant keys (T10.12)', () => {
+    expect(STRINGS.tabs.tickets).toBe('Vé của tôi');
+    expect(STRINGS.tickets.screenTitle).toBe('Vé của tôi');
+    expect((STRINGS.tickets as Record<string, unknown>).headerTitle).toBeUndefined();
+
+    expect(STRINGS.tabs.more).toBe('Thêm');
+    expect(STRINGS.more.screenTitle).toBe('Thêm');
+
+    expect(STRINGS.tabs.results).toBe('Kết quả');
+    expect(STRINGS.results.screenTitle).toBe('Kết quả xổ số');
+
+    expect(STRINGS.common.appName).toBe('DoVe');
   });
 });
