@@ -136,4 +136,33 @@ describe('TanStack Query & Network Configuration', () => {
     unsubscribe();
     unsubOffline();
   });
+
+  it('discards persisted cache if buster does not match (T09.14)', async () => {
+    await AsyncStorage.clear();
+
+    const client1 = createQueryClient();
+    const [unsub1, restore1] = setupQueryClientPersistence(
+      client1,
+      undefined,
+      'old-buster-1.0.0',
+    );
+    await restore1;
+
+    client1.setQueryData(['testKey'], { foo: 'bar' });
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // Now restore with updated buster
+    const client2 = createQueryClient();
+    const [unsub2, restore2] = setupQueryClientPersistence(
+      client2,
+      undefined,
+      'new-buster-1.0.1',
+    );
+    await restore2;
+
+    expect(client2.getQueryData(['testKey'])).toBeUndefined();
+
+    unsub1();
+    unsub2();
+  });
 });

@@ -9,9 +9,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import { ApiError } from '@/api';
+import { CURRENT_APP_VERSION } from './version';
 
 export const QUERY_STORAGE_KEY = 'dove.querycache.v1';
 export const QUERY_CACHE_MAX_AGE = 1000 * 60 * 60 * 24 * 7; // 7 days cache for offline viewing
+export const API_SCHEMA_VERSION = '2026.11-v2';
+export const QUERY_CACHE_BUSTER = `${CURRENT_APP_VERSION}-${API_SCHEMA_VERSION}`;
 
 export const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
@@ -22,12 +25,13 @@ export const asyncStoragePersister = createAsyncStoragePersister({
 export function setupQueryClientPersistence(
   client: QueryClient = queryClient,
   persister = asyncStoragePersister,
+  buster = QUERY_CACHE_BUSTER,
 ): [() => void, Promise<void>] {
   const [unsubscribe, restorePromise] = persistQueryClient({
     queryClient: client,
     persister,
     maxAge: QUERY_CACHE_MAX_AGE,
-    buster: '1.0.0',
+    buster,
   });
   return [unsubscribe, restorePromise];
 }
