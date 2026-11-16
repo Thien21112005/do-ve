@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/theme';
-import { todayVN, addDays, weekdayVN } from '@/lib';
+import { todayVN, addDays, weekdayVN, nowVN } from '@/lib';
 
 export interface DateStripProps {
   selectedDate: string; // YYYY-MM-DD
@@ -51,6 +51,9 @@ export function DateStrip({
 }: DateStripProps) {
   const { colors } = useTheme();
   const days = getPastDays(daysCount);
+  const todayStr = todayVN();
+  const timeVN = nowVN();
+  const isPastDrawTimeToday = timeVN.hour * 60 + timeVN.minute >= 16 * 60 + 35;
 
   return (
     <View testID={testID} className="my-2">
@@ -61,6 +64,8 @@ export function DateStrip({
       >
         {days.map((item) => {
           const isSelected = item.dateString === selectedDate;
+          const hasResult =
+            item.dateString < todayStr || (item.isToday && isPastDrawTimeToday);
 
           return (
             <TouchableOpacity
@@ -68,7 +73,7 @@ export function DateStrip({
               testID={`${testID}-chip-${item.dateString}`}
               onPress={() => onSelectDate(item.dateString)}
               accessibilityRole="button"
-              accessibilityLabel={`${item.isToday ? 'Hôm nay, ' : ''}${item.dayOfWeekShort}, ngày ${item.dayOfMonth}`}
+              accessibilityLabel={`${item.isToday ? 'Hôm nay, ' : ''}${item.dayOfWeekShort}, ngày ${item.dayOfMonth}${hasResult ? ', đã có kết quả' : ''}`}
               accessibilityState={{ selected: isSelected }}
               className="items-center justify-center py-2 px-3 rounded-xl border min-w-[62px]"
               style={{
@@ -94,6 +99,19 @@ export function DateStrip({
               >
                 {item.dayOfMonth}
               </Text>
+              {hasResult && (
+                <View
+                  testID={
+                    !item.isToday
+                      ? 'date-strip-chip-dot-past'
+                      : `${testID}-chip-${item.dateString}-dot`
+                  }
+                  className="w-1.5 h-1.5 rounded-full mt-1"
+                  style={{
+                    backgroundColor: isSelected ? '#ffffff' : colors.primary,
+                  }}
+                />
+              )}
             </TouchableOpacity>
           );
         })}

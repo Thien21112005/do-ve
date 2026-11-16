@@ -58,12 +58,32 @@ describe('CheckScreen Form Composition', () => {
       wrapper: createWrapper(),
     });
 
-    expect(getByText('1. Chọn ngày mở thưởng')).toBeTruthy();
-    expect(getByText('2. Chọn đài quay')).toBeTruthy();
+    expect(getByTestId('check-context-box')).toBeTruthy();
+    expect(getByText('Kỳ mở thưởng')).toBeTruthy();
+    expect(getByTestId('date-strip')).toBeTruthy();
+    expect(getByTestId('station-chips')).toBeTruthy();
     expect(getByText('3. Nhập 6 chữ số trên vé')).toBeTruthy();
 
     const submitBtn = getByTestId('check-ticket-button');
     expect(submitBtn.props.accessibilityState.disabled).toBe(true);
+  });
+
+  it('merges date and station into one context box with result indicators (T10.24)', async () => {
+    const { getByTestId, getAllByTestId, queryByText } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    // Separate standalone headers should no longer exist
+    expect(queryByText('1. Chọn ngày mở thưởng')).toBeNull();
+    expect(queryByText('2. Chọn đài quay')).toBeNull();
+
+    // Context box contains both date strip and station chips
+    const contextBox = getByTestId('check-context-box');
+    expect(contextBox).toBeTruthy();
+
+    // Past date chips should render a result indicator dot
+    const pastDots = getAllByTestId('date-strip-chip-dot-past');
+    expect(pastDots.length).toBeGreaterThan(0);
   });
 
   it('enables submit button and calls check API when ticket is fully filled', async () => {

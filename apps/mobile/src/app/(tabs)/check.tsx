@@ -222,34 +222,50 @@ export default function CheckScreen() {
           {/* Offline indicator banner */}
           <OfflineBanner onRetry={handleOfflineRetry} />
 
-          {/* Section: Chọn ngày mở thưởng */}
-          <View className="pt-3 px-4 pb-1">
-            <Text
-              accessibilityRole="header"
-              className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
-            >
-              {STRINGS.check.stepDate}
-            </Text>
-          </View>
-          <DateStrip
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-          />
+          {/* Context box: Gộp chọn ngày + đài thành 1 khối ngữ cảnh (T10.24) */}
+          <View
+            testID="check-context-box"
+            className="mx-4 mt-3 mb-2 rounded-2xl border p-3 shadow-xs"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            }}
+          >
+            <View className="flex-row items-center justify-between px-1 mb-1">
+              <View className="flex-row items-center gap-1.5">
+                <Icon name="calendar" size={15} color={colors.primary} />
+                <Text
+                  accessibilityRole="header"
+                  className="text-xs font-bold uppercase tracking-wider"
+                  style={{ color: colors.primary }}
+                >
+                  Kỳ mở thưởng
+                </Text>
+              </View>
+              <Text
+                className="text-xs font-medium"
+                style={{ color: colors.textMuted }}
+              >
+                {selectedDate}
+              </Text>
+            </View>
 
-          {/* Section: Chọn đài */}
-          <View className="pt-2 px-4 pb-1">
-            <Text
-              accessibilityRole="header"
-              className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1"
-            >
-              {STRINGS.check.stepStation}
-            </Text>
+            <DateStrip
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+            />
+
+            <View
+              className="h-[1px] my-1"
+              style={{ backgroundColor: colors.border }}
+            />
+
+            <StationChips
+              selectedDate={selectedDate}
+              selectedStation={selectedStation}
+              onSelectStation={setSelectedStation}
+            />
           </View>
-          <StationChips
-            selectedDate={selectedDate}
-            selectedStation={selectedStation}
-            onSelectStation={setSelectedStation}
-          />
 
           {/* Mode Selector: Dò từng vé / Dò hàng loạt */}
           <View className="px-4 pt-3 pb-1">

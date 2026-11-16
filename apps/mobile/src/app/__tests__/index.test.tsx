@@ -262,11 +262,11 @@ describe('Tab Screens', () => {
   });
 
   it('renders CheckScreen correctly', async () => {
-    const { getByText } = await render(<CheckScreen />, {
+    const { getByText, getByTestId } = await render(<CheckScreen />, {
       wrapper: createWrapper(),
     });
-    expect(getByText('1. Chọn ngày mở thưởng')).toBeTruthy();
-    expect(getByText('2. Chọn đài quay')).toBeTruthy();
+    expect(getByTestId('check-context-box')).toBeTruthy();
+    expect(getByText('Kỳ mở thưởng')).toBeTruthy();
     expect(getByText('3. Nhập 6 chữ số trên vé')).toBeTruthy();
   });
 
