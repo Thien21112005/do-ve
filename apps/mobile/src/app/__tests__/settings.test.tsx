@@ -23,11 +23,13 @@ describe('SettingsScreen (Cài đặt)', () => {
 
     expect(getByTestId('settings-screen')).toBeTruthy();
     expect(getByText('GIAO DIỆN & HIỂN THỊ')).toBeTruthy();
+    expect(getByTestId('settings-theme-segmented')).toBeTruthy();
     expect(getByTestId('settings-theme-system')).toBeTruthy();
     expect(getByTestId('settings-theme-light')).toBeTruthy();
     expect(getByTestId('settings-theme-dark')).toBeTruthy();
-    expect(getByTestId('settings-celebration-switch')).toBeTruthy();
     expect(getByTestId('settings-draw-order-segmented')).toBeTruthy();
+    expect(getByTestId('settings-autosubmit-switch')).toBeTruthy();
+    expect(getByTestId('settings-celebration-switch')).toBeTruthy();
     expect(getByTestId('settings-haptics-switch')).toBeTruthy();
     expect(getByTestId('settings-reminder-switch')).toBeTruthy();
   });
@@ -60,6 +62,21 @@ describe('SettingsScreen (Cài đặt)', () => {
     await waitFor(async () => {
       const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
       expect(JSON.parse(stored!).celebrationEnabled).toBe(false);
+    });
+  });
+
+  it('toggles auto-submit when 6 digits are typed and persists to AsyncStorage (T10.54)', async () => {
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    const switchBtn = getByTestId('settings-autosubmit-switch');
+    expect(getSettings().autoSubmitEnabled).toBe(true);
+
+    fireEvent.press(switchBtn);
+    expect(getSettings().autoSubmitEnabled).toBe(false);
+
+    await waitFor(async () => {
+      const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
+      expect(JSON.parse(stored!).autoSubmitEnabled).toBe(false);
     });
   });
 
@@ -166,23 +183,28 @@ describe('SettingsScreen (Cài đặt)', () => {
     expect(alertSpy).toHaveBeenCalled();
   });
 
-  it('prevents double-toggle and duplicate screen reader announcement on switch rows (T09.50)', async () => {
+  it('renders native switches with proper a11y role and labels (T10.54)', async () => {
     const { getByTestId } = await render(<SettingsScreen />);
 
-    const celebrationSwitch = getByTestId('celebration-switch-visual');
-    expect(celebrationSwitch.props.accessible).toBe(false);
-    expect(celebrationSwitch.props.pointerEvents).toBe('none');
-    expect(celebrationSwitch.props.onValueChange).toBeUndefined();
+    const autoSubmitSwitch = getByTestId('settings-autosubmit-switch');
+    expect(autoSubmitSwitch.props.accessibilityRole).toBe('switch');
+    expect(autoSubmitSwitch.props.accessibilityLabel).toBeTruthy();
+    expect(typeof (autoSubmitSwitch.props.onChange || autoSubmitSwitch.props.onValueChange)).toBe('function');
 
-    const hapticsSwitch = getByTestId('haptics-switch-visual');
-    expect(hapticsSwitch.props.accessible).toBe(false);
-    expect(hapticsSwitch.props.pointerEvents).toBe('none');
-    expect(hapticsSwitch.props.onValueChange).toBeUndefined();
+    const celebrationSwitch = getByTestId('settings-celebration-switch');
+    expect(celebrationSwitch.props.accessibilityRole).toBe('switch');
+    expect(celebrationSwitch.props.accessibilityLabel).toBeTruthy();
+    expect(typeof (celebrationSwitch.props.onChange || celebrationSwitch.props.onValueChange)).toBe('function');
 
-    const reminderSwitch = getByTestId('reminder-switch-visual');
-    expect(reminderSwitch.props.accessible).toBe(false);
-    expect(reminderSwitch.props.pointerEvents).toBe('none');
-    expect(reminderSwitch.props.onValueChange).toBeUndefined();
+    const hapticsSwitch = getByTestId('settings-haptics-switch');
+    expect(hapticsSwitch.props.accessibilityRole).toBe('switch');
+    expect(hapticsSwitch.props.accessibilityLabel).toBeTruthy();
+    expect(typeof (hapticsSwitch.props.onChange || hapticsSwitch.props.onValueChange)).toBe('function');
+
+    const reminderSwitch = getByTestId('settings-reminder-switch');
+    expect(reminderSwitch.props.accessibilityRole).toBe('switch');
+    expect(reminderSwitch.props.accessibilityLabel).toBeTruthy();
+    expect(typeof (reminderSwitch.props.onChange || reminderSwitch.props.onValueChange)).toBe('function');
   });
 });
 

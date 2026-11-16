@@ -288,6 +288,8 @@ export const STRINGS = {
     drawTableOrderDesc: 'Sắp xếp theo thứ tự tờ dò thực tế hoặc từ Đặc biệt xuống',
     drawTableOrderG8First: 'G8 → ĐB (Tờ dò)',
     drawTableOrderSpecialFirst: 'ĐB → G8',
+    autoSubmitTitle: 'Tự dò khi đủ 6 số',
+    autoSubmitDesc: 'Tự động tra cứu kết quả ngay khi nhập đủ 6 chữ số',
     openSettings: 'Mở Cài đặt',
     close: 'Đóng',
   },

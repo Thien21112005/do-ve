@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import {
   View,
   Text,
-  Pressable,
   ScrollView,
   Switch,
   Alert,
@@ -14,6 +13,7 @@ import { useTheme } from '@/theme';
 import { useSettings } from '@/store/settings';
 import { STRINGS } from '@/lib/strings';
 import { Segmented } from '@/components/ui/Segmented';
+import { ListRow } from '@/components/ui/ListRow';
 import {
   requestNotificationPermission,
   hasNotificationPermission,
@@ -84,32 +84,6 @@ export default function SettingsScreen() {
     }
   };
 
-  const themeOptions: {
-    mode: 'system' | 'light' | 'dark';
-    testID: string;
-    title: string;
-    desc: string;
-  }[] = [
-    {
-      mode: 'system',
-      testID: 'settings-theme-system',
-      title: STRINGS.settings.themeSystem,
-      desc: STRINGS.settings.themeSystemDesc,
-    },
-    {
-      mode: 'light',
-      testID: 'settings-theme-light',
-      title: STRINGS.settings.themeLight,
-      desc: STRINGS.settings.themeLightDesc,
-    },
-    {
-      mode: 'dark',
-      testID: 'settings-theme-dark',
-      title: STRINGS.settings.themeDark,
-      desc: STRINGS.settings.themeDarkDesc,
-    },
-  ];
-
   return (
     <SafeAreaView
       testID="settings-screen"
@@ -136,80 +110,61 @@ export default function SettingsScreen() {
             borderColor: colors.border,
           }}
         >
-          {themeOptions.map((opt, index) => {
-            const isSelected = settings.themeMode === opt.mode;
-            const isLast = index === themeOptions.length - 1;
-            return (
-              <Pressable
-                key={opt.mode}
-                testID={opt.testID}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={opt.title}
-                onPress={() => updateSettings({ themeMode: opt.mode })}
-                className="p-4 flex-row items-center border-b active:opacity-75"
-                style={{
-                  borderColor: colors.border,
-                  borderBottomWidth: isLast ? 0 : 1,
-                  backgroundColor: isSelected
-                    ? `${colors.primary}0D`
-                    : colors.surface,
-                }}
-              >
-                <View className="flex-1 mr-3">
-                  <Text
-                    className="text-base font-semibold mb-0.5"
-                    style={{
-                      color: isSelected ? colors.primary : colors.textMain,
-                    }}
-                  >
-                    {opt.title}
-                  </Text>
-                  <Text
-                    className="text-xs leading-relaxed"
-                    style={{ color: colors.textMuted }}
-                  >
-                    {opt.desc}
-                  </Text>
-                </View>
-                <View
-                  className="w-6 h-6 rounded-full border items-center justify-center"
-                  style={{
-                    borderColor: isSelected ? colors.primary : colors.border,
-                    backgroundColor: isSelected ? colors.primary : 'transparent',
-                  }}
-                >
-                  {isSelected && (
-                    <View className="w-2.5 h-2.5 rounded-full bg-white" />
-                  )}
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Experience Section */}
-        <Text
-          className="text-xs font-bold uppercase tracking-wider mb-2 px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.settings.experienceSection}
-        </Text>
-
-        <View
-          className="rounded-2xl border overflow-hidden shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          {/* Draw Table Order setting (T10.38) */}
+          {/* Theme mode Segmented row (T10.54) */}
           <View
-            testID="settings-draw-order-row"
+            testID="settings-theme-row"
             className="p-4 border-b"
             style={{
               borderColor: colors.border,
               borderBottomWidth: 1,
+            }}
+          >
+            <View className="mb-2.5">
+              <Text
+                className="text-base font-semibold mb-0.5"
+                style={{ color: colors.textMain }}
+              >
+                {STRINGS.settings.themeModeTitle}
+              </Text>
+              <Text
+                className="text-xs leading-relaxed"
+                style={{ color: colors.textMuted }}
+              >
+                {STRINGS.settings.themeSystemDesc}
+              </Text>
+            </View>
+            <Segmented
+              testID="settings-theme-segmented"
+              selectedKey={settings.themeMode || 'system'}
+              onChange={(key) =>
+                updateSettings({ themeMode: key as 'system' | 'light' | 'dark' })
+              }
+              options={[
+                {
+                  key: 'system',
+                  label: STRINGS.settings.themeSystem,
+                  testID: 'settings-theme-system',
+                },
+                {
+                  key: 'light',
+                  label: 'Sáng',
+                  testID: 'settings-theme-light',
+                },
+                {
+                  key: 'dark',
+                  label: 'Tối',
+                  testID: 'settings-theme-dark',
+                },
+              ]}
+            />
+          </View>
+
+          {/* Draw Table Order setting (T10.38) */}
+          <View
+            testID="settings-draw-order-row"
+            className="p-4"
+            style={{
+              borderColor: colors.border,
             }}
           >
             <View className="mb-2.5">
@@ -246,122 +201,97 @@ export default function SettingsScreen() {
               ]}
             />
           </View>
+        </View>
 
-          {/* Celebration toggle */}
-          <Pressable
-            testID="settings-celebration-switch"
-            accessibilityRole="switch"
-            accessibilityState={{ checked: settings.celebrationEnabled }}
-            accessibilityLabel={STRINGS.settings.celebrationTitle}
-            onPress={() =>
-              updateSettings({ celebrationEnabled: !settings.celebrationEnabled })
-            }
-            className="p-4 flex-row items-center border-b justify-between active:opacity-80"
-            style={{
-              borderColor: colors.border,
-              borderBottomWidth: 1,
-            }}
-          >
-            <View className="flex-1 mr-3">
-              <Text
-                className="text-base font-semibold mb-0.5"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.settings.celebrationTitle}
-              </Text>
-              <Text
-                className="text-xs leading-relaxed"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.settings.celebrationDesc}
-              </Text>
-            </View>
-            <Switch
-              testID="celebration-switch-visual"
-              accessible={false}
-              pointerEvents="none"
-              value={settings.celebrationEnabled}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor="#FFFFFF"
-            />
-          </Pressable>
+        {/* Experience Section */}
+        <Text
+          className="text-xs font-bold uppercase tracking-wider mb-2 px-1"
+          style={{ color: colors.textMuted }}
+        >
+          {STRINGS.settings.experienceSection}
+        </Text>
 
-          {/* Haptics toggle */}
-          <Pressable
-            testID="settings-haptics-switch"
-            accessibilityRole="switch"
-            accessibilityState={{ checked: settings.hapticsEnabled }}
-            accessibilityLabel={STRINGS.settings.hapticsTitle}
-            onPress={() =>
-              updateSettings({ hapticsEnabled: !settings.hapticsEnabled })
+        <View
+          className="rounded-2xl border overflow-hidden shadow-sm"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+          {/* Auto submit when 6 digits are typed (T10.54) */}
+          <ListRow
+            title={STRINGS.settings.autoSubmitTitle}
+            subtitle={STRINGS.settings.autoSubmitDesc}
+            trailing={
+              <Switch
+                testID="settings-autosubmit-switch"
+                accessibilityRole="switch"
+                accessibilityLabel={STRINGS.settings.autoSubmitTitle}
+                value={settings.autoSubmitEnabled}
+                onValueChange={(val) => updateSettings({ autoSubmitEnabled: val })}
+                {...({ onPress: () => updateSettings({ autoSubmitEnabled: !settings.autoSubmitEnabled }) } as any)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
             }
-            className="p-4 flex-row items-center border-b justify-between active:opacity-80"
-            style={{
-              borderColor: colors.border,
-              borderBottomWidth: 1,
-            }}
-          >
-            <View className="flex-1 mr-3">
-              <Text
-                className="text-base font-semibold mb-0.5"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.settings.hapticsTitle}
-              </Text>
-              <Text
-                className="text-xs leading-relaxed"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.settings.hapticsDesc}
-              </Text>
-            </View>
-            <Switch
-              testID="haptics-switch-visual"
-              accessible={false}
-              pointerEvents="none"
-              value={settings.hapticsEnabled}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor="#FFFFFF"
-            />
-          </Pressable>
+          />
 
-          {/* Reminder toggle */}
-          <Pressable
-            testID="settings-reminder-switch"
-            accessibilityRole="switch"
-            accessibilityState={{ checked: settings.reminderEnabled }}
-            accessibilityLabel={STRINGS.settings.reminderTitle}
-            onPress={() =>
-              handleToggleReminder(!settings.reminderEnabled)
+          {/* Celebration toggle (T10.54) */}
+          <ListRow
+            title={STRINGS.settings.celebrationTitle}
+            subtitle={STRINGS.settings.celebrationDesc}
+            trailing={
+              <Switch
+                testID="settings-celebration-switch"
+                accessibilityRole="switch"
+                accessibilityLabel={STRINGS.settings.celebrationTitle}
+                value={settings.celebrationEnabled}
+                onValueChange={(val) => updateSettings({ celebrationEnabled: val })}
+                {...({ onPress: () => updateSettings({ celebrationEnabled: !settings.celebrationEnabled }) } as any)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
             }
-            className="p-4 flex-row items-center justify-between active:opacity-80"
-          >
-            <View className="flex-1 mr-3">
-              <Text
-                className="text-base font-semibold mb-0.5"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.settings.reminderTitle}
-              </Text>
-              <Text
-                className="text-xs leading-relaxed"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.settings.reminderDesc}
-              </Text>
-            </View>
-            <Switch
-              testID="reminder-switch-visual"
-              accessible={false}
-              pointerEvents="none"
-              value={settings.reminderEnabled}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor="#FFFFFF"
-            />
-          </Pressable>
+          />
+
+          {/* Haptics toggle (T10.54) */}
+          <ListRow
+            title={STRINGS.settings.hapticsTitle}
+            subtitle={STRINGS.settings.hapticsDesc}
+            trailing={
+              <Switch
+                testID="settings-haptics-switch"
+                accessibilityRole="switch"
+                accessibilityLabel={STRINGS.settings.hapticsTitle}
+                value={settings.hapticsEnabled}
+                onValueChange={(val) => updateSettings({ hapticsEnabled: val })}
+                {...({ onPress: () => updateSettings({ hapticsEnabled: !settings.hapticsEnabled }) } as any)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
+            }
+          />
+
+          {/* Reminder toggle (T10.54) */}
+          <ListRow
+            title={STRINGS.settings.reminderTitle}
+            subtitle={STRINGS.settings.reminderDesc}
+            style={{ borderBottomWidth: 0 }}
+            trailing={
+              <Switch
+                testID="settings-reminder-switch"
+                accessibilityRole="switch"
+                accessibilityLabel={STRINGS.settings.reminderTitle}
+                value={settings.reminderEnabled}
+                onValueChange={handleToggleReminder}
+                {...({ onPress: () => handleToggleReminder(!settings.reminderEnabled) } as any)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#FFFFFF"
+              />
+            }
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
