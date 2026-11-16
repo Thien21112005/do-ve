@@ -34,7 +34,7 @@ export function TicketStatusBadge({
         borderColor: colors.pendingBorder,
         textColor: colors.pending,
         label: STRINGS.tickets.statusPendingBadge,
-        a11y: 'Chưa có kết quả mở thưởng',
+        a11y: STRINGS.tickets.statusPending,
       }
     : isWon
       ? {
@@ -45,8 +45,8 @@ export function TicketStatusBadge({
           textColor: colors.win,
           label: STRINGS.tickets.statusWonBadge,
           a11y: hasPrize
-            ? `Trúng thưởng: ${formatCurrency(totalPrize)}`
-            : 'Trúng thưởng',
+            ? `${STRINGS.tickets.statusWon}: ${formatCurrency(totalPrize)}`
+            : STRINGS.tickets.statusWon,
         }
       : {
           icon: 'x' as const,
@@ -55,7 +55,7 @@ export function TicketStatusBadge({
           borderColor: colors.border,
           textColor: colors.textMuted,
           label: STRINGS.tickets.statusLostBadge,
-          a11y: 'Không trúng giải',
+          a11y: STRINGS.tickets.statusLost,
         };
 
   const isSmall = size === 'sm';

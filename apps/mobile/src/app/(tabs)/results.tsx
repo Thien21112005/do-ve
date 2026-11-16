@@ -261,7 +261,7 @@ export default function ResultsScreen() {
                 >
                   {getApiErrorMessage(
                     dailyError,
-                    'Không thể tải kết quả mở thưởng',
+                    STRINGS.results.errorLoading,
                   )}
                 </Text>
                 <TouchableOpacity
@@ -383,7 +383,7 @@ export default function ResultsScreen() {
                 className="text-base font-bold mt-2.5 text-center"
                 style={{ color: colors.error }}
               >
-                {getApiErrorMessage(error, 'Không thể tải kết quả mở thưởng')}
+                {getApiErrorMessage(error, STRINGS.results.errorLoading)}
               </Text>
               <TouchableOpacity
                 testID="results-error-retry-btn"

@@ -208,7 +208,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
             }}
             accessibilityRole="button"
             accessibilityLabel={
-              areAllTicketsSaved ? 'Đã lưu tất cả vé' : 'Lưu tất cả vé'
+              areAllTicketsSaved ? STRINGS.check.savedAllTickets : STRINGS.check.saveAllTickets
             }
           >
             <Icon
@@ -223,8 +223,8 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               }}
             >
               {areAllTicketsSaved
-                ? 'Đã lưu tất cả'
-                : `Lưu tất cả (${totalTickets})`}
+                ? STRINGS.check.savedAll
+                : STRINGS.check.saveAll(totalTickets)}
             </Text>
           </Pressable>
         </View>
@@ -350,7 +350,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                     className="text-xs font-medium"
                     style={{ color: colors.pending }}
                   >
-                    Chưa có kết quả
+                    {STRINGS.check.resultPendingTitle}
                   </Text>
                 )}
                 {!isItemWon && !isNotAvailable && (
@@ -358,7 +358,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                     className="text-xs"
                     style={{ color: colors.textMuted }}
                   >
-                    Không trúng
+                    {STRINGS.check.resultLostBadge}
                   </Text>
                 )}
               </View>
@@ -396,7 +396,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                   className="p-1.5 ml-2 rounded-lg"
                   accessibilityRole="button"
                   accessibilityLabel={
-                    isSaved ? 'Đã lưu vé' : `Lưu vé ${item.ticket}`
+                    isSaved ? STRINGS.check.savedTicket : `${STRINGS.check.saveTicket} ${item.ticket}`
                   }
                 >
                   <Icon

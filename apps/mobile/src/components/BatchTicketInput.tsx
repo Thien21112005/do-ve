@@ -269,7 +269,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
                     }}
                   >
                     {token.text}
-                    {isDup ? ' (trùng)' : isInvalid ? ' (sai)' : ''}
+                    {isDup ? ` (${STRINGS.check.duplicateTag})` : isInvalid ? ` (${STRINGS.check.invalidTag})` : ''}
                   </Text>
                 </View>
               );

@@ -62,14 +62,14 @@ export default function HomeScreen() {
   // Compute live time status
   const timeStatus = useMemo(() => {
     if (isLive) {
-      return 'Đang quay';
+      return STRINGS.home.statusLive;
     }
     const { hour, minute } = nowVN();
     const timeMinutes = hour * 60 + minute;
     if (timeMinutes > 1000 || (draws && draws.length > 0)) {
-      return 'Đã có kết quả';
+      return STRINGS.home.statusFinal;
     }
-    return 'Quay lúc 16h15';
+    return STRINGS.home.statusUpcoming;
   }, [isLive, draws]);
 
   // Animated pulse dot for live drawing, respects reduceMotion
@@ -208,9 +208,9 @@ export default function HomeScreen() {
                 className="w-2.5 h-2.5 rounded-full mr-2"
                 style={{
                   backgroundColor:
-                    timeStatus === 'Đang quay'
+                    timeStatus === STRINGS.home.statusLive
                       ? colors.pending
-                      : timeStatus === 'Đã có kết quả'
+                      : timeStatus === STRINGS.home.statusFinal
                         ? colors.win
                         : colors.primary,
                   opacity: isLive && !reduceMotion ? pulseAnim : 1,
@@ -221,7 +221,7 @@ export default function HomeScreen() {
                 style={{ color: colors.textMain }}
                 numberOfLines={1}
               >
-                {scheduleDay?.dayName || 'Hôm nay'}, {todayStr} · {todayStations.length} đài · {timeStatus}
+                {scheduleDay?.dayName || STRINGS.schedule.todayTag}, {todayStr} · {todayStations.length} đài · {timeStatus}
               </Text>
             </View>
 
@@ -342,7 +342,7 @@ export default function HomeScreen() {
                   testID="home-ticket-input"
                   value={ticketNumber}
                   onChangeText={(val) => setTicketNumber(val.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="Nhập 6 chữ số vé (vd: 654321)"
+                  placeholder={STRINGS.home.quickCheckPlaceholder}
                   placeholderTextColor={colors.textMuted}
                   keyboardType="number-pad"
                   maxLength={6}
@@ -411,7 +411,7 @@ export default function HomeScreen() {
                     }}
                   >
                     <Text className="text-[10px] font-bold text-white">
-                      {result.won ? 'TRÚNG THƯỞNG' : 'KHÔNG TRÚNG'}
+                      {result.won ? STRINGS.check.resultWonBadge : STRINGS.check.resultLostBadge}
                     </Text>
                   </View>
                 </View>
@@ -422,7 +422,7 @@ export default function HomeScreen() {
                       className="text-base font-bold"
                       style={{ color: colors.win }}
                     >
-                      Chúc mừng bạn đã trúng thưởng!
+                      {STRINGS.check.resultWonTitle}
                     </Text>
                     <Text
                       className="text-xl font-bold tracking-tight mt-0.5"
@@ -436,7 +436,7 @@ export default function HomeScreen() {
                     className="text-xs my-1"
                     style={{ color: colors.textMuted }}
                   >
-                    Rất tiếc, vé {result.ticket} không trúng giải kỳ mở thưởng này.
+                    {STRINGS.check.lostNotice(result.ticket)}
                   </Text>
                 )}
 
@@ -456,7 +456,7 @@ export default function HomeScreen() {
                         className="text-xs font-semibold"
                         style={{ color: saved ? colors.textMuted : colors.primary }}
                       >
-                        {saved ? 'Đã lưu vé' : 'Lưu vé này'}
+                        {saved ? STRINGS.check.savedTicket : STRINGS.check.saveTicket}
                       </Text>
                     </TouchableOpacity>
                   )}

@@ -3,15 +3,15 @@ import { render } from '@testing-library/react-native';
 import { TicketStatusBadge } from '../TicketStatusBadge';
 
 describe('TicketStatusBadge Component', () => {
-  it('renders PENDING status with clock icon and "Chưa có KQ" text', async () => {
+  it('renders PENDING status with clock icon and "Chờ kết quả" text (T10.57)', async () => {
     const { getByTestId, getByText } = await render(
       <TicketStatusBadge status="PENDING" />,
     );
 
     const badge = getByTestId('ticket-status-badge');
     expect(badge).toBeTruthy();
-    expect(getByText('Chưa có KQ')).toBeTruthy();
-    expect(badge.props.accessibilityLabel).toContain('Chưa có kết quả');
+    expect(getByText('Chờ kết quả')).toBeTruthy();
+    expect(badge.props.accessibilityLabel).toContain('Chờ kết quả');
   });
 
   it('renders WON status with trophy icon, "Trúng" text and total prize amount', async () => {

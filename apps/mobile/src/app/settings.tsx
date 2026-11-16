@@ -147,12 +147,12 @@ export default function SettingsScreen() {
                 },
                 {
                   key: 'light',
-                  label: 'Sáng',
+                  label: STRINGS.settings.themeLightShort,
                   testID: 'settings-theme-light',
                 },
                 {
                   key: 'dark',
-                  label: 'Tối',
+                  label: STRINGS.settings.themeDarkShort,
                   testID: 'settings-theme-dark',
                 },
               ]}

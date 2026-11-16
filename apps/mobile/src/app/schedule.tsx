@@ -141,7 +141,7 @@ export default function ScheduleScreen() {
                       accessible
                       accessibilityRole="button"
                       accessibilityLabel={`Xem kết quả đài ${station.name}`}
-                      accessibilityHint="Mở màn hình kết quả của kỳ quay gần nhất"
+                      accessibilityHint={STRINGS.schedule.openResultA11yHint}
                       onPress={() => {
                         haptics.selection();
                         router.push({

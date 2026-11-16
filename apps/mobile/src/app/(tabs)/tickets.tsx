@@ -242,7 +242,7 @@ export default function TicketsScreen() {
     if (res.success) {
       haptics.success();
     } else if (res.error) {
-      Alert.alert('Sao lưu', res.error);
+      Alert.alert(STRINGS.tickets.exportTitle, res.error);
     }
   };
 
@@ -251,11 +251,11 @@ export default function TicketsScreen() {
     if (res.success) {
       haptics.success();
       Alert.alert(
-        'Khôi phục',
+        STRINGS.tickets.importTitle,
         res.message || STRINGS.tickets.importSuccess(res.importedCount),
       );
     } else if (res.error) {
-      Alert.alert('Khôi phục', res.error);
+      Alert.alert(STRINGS.tickets.importTitle, res.error);
     }
   };
 
@@ -394,7 +394,7 @@ export default function TicketsScreen() {
             setIsMenuOpen(true);
           }}
           accessibilityRole="button"
-          accessibilityLabel="Tùy chọn vé"
+          accessibilityLabel={STRINGS.tickets.optionsMenuA11y}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           className="w-10 h-10 rounded-full items-center justify-center border"
           style={{
@@ -425,7 +425,7 @@ export default function TicketsScreen() {
               >
                 {summaryStats.pending > 0
                   ? `Đang cập nhật ${summaryStats.pending} vé chờ…`
-                  : 'Đang kiểm tra kết quả mới…'}
+                  : STRINGS.tickets.recheckingStatus}
               </Text>
             </View>
           )}
@@ -727,7 +727,7 @@ export default function TicketsScreen() {
               testID="undo-delete-btn"
               onPress={handleUndoDelete}
               accessibilityRole="button"
-              accessibilityLabel="Hoàn tác xóa vé"
+              accessibilityLabel={STRINGS.tickets.undoDeleteA11y}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               className="px-3 py-1.5 rounded-lg mr-1.5"
               style={{ backgroundColor: colors.primary }}
@@ -742,7 +742,7 @@ export default function TicketsScreen() {
                 setLastDeletedTicket(null);
               }}
               accessibilityRole="button"
-              accessibilityLabel="Đóng thông báo"
+              accessibilityLabel={STRINGS.common.close}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               className="p-1 rounded-full"
             >
@@ -807,7 +807,7 @@ export default function TicketsScreen() {
                   testID="detail-sheet-close-btn"
                   onPress={() => setSelectedDetailTicket(null)}
                   accessibilityRole="button"
-                  accessibilityLabel="Đóng chi tiết vé"
+                  accessibilityLabel={STRINGS.tickets.closeDetailA11y}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   className="p-1 rounded-full"
                 >
@@ -845,7 +845,7 @@ export default function TicketsScreen() {
                       className="text-xs"
                       style={{ color: colors.textMuted }}
                     >
-                      Số vé
+                      {STRINGS.check.ticketNumberLabel}
                     </Text>
                     <Text
                       testID="detail-sheet-ticket-number"
@@ -879,7 +879,7 @@ export default function TicketsScreen() {
                     testID="detail-sheet-note-input"
                     value={noteDraft}
                     onChangeText={setNoteDraft}
-                    placeholder="Thêm ghi chú (ví dụ: vé mua chung, nơi mua...)"
+                    placeholder={STRINGS.tickets.notePlaceholder}
                     placeholderTextColor={colors.textMuted}
                     maxLength={100}
                     className="flex-1 px-3 py-2.5 rounded-xl border text-sm"
@@ -894,12 +894,12 @@ export default function TicketsScreen() {
                     onPress={handleSaveNote}
                     disabled={isSavingNote}
                     accessibilityRole="button"
-                    accessibilityLabel="Lưu ghi chú"
+                    accessibilityLabel={STRINGS.tickets.saveNoteA11y}
                     className="ml-2 px-3 py-2.5 rounded-xl"
                     style={{ backgroundColor: colors.primary }}
                   >
                     <Text className="text-white text-xs font-bold">
-                      {isSavingNote ? 'Đang lưu' : 'Lưu'}
+                      {isSavingNote ? STRINGS.tickets.savingNote : STRINGS.tickets.saveNote}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -917,7 +917,7 @@ export default function TicketsScreen() {
                     );
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Xem bảng kết quả kỳ này"
+                  accessibilityLabel={STRINGS.tickets.viewDrawResultA11y}
                   className="w-full py-3 rounded-xl border flex-row items-center justify-center"
                   style={{
                     backgroundColor: colors.surface,
@@ -929,7 +929,7 @@ export default function TicketsScreen() {
                     className="text-sm font-semibold ml-2"
                     style={{ color: colors.textMain }}
                   >
-                    Xem bảng kết quả kỳ này
+                    {STRINGS.tickets.viewDrawResultA11y}
                   </Text>
                 </TouchableOpacity>
 
@@ -943,7 +943,7 @@ export default function TicketsScreen() {
                     );
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Dò lại vé này"
+                  accessibilityLabel={STRINGS.tickets.recheckTicketA11y}
                   className="w-full py-3 rounded-xl border flex-row items-center justify-center"
                   style={{
                     backgroundColor: colors.surface,
@@ -955,7 +955,7 @@ export default function TicketsScreen() {
                     className="text-sm font-semibold ml-2"
                     style={{ color: colors.textMain }}
                   >
-                    Dò lại vé này
+                    {STRINGS.tickets.recheckTicketA11y}
                   </Text>
                 </TouchableOpacity>
 
@@ -967,7 +967,7 @@ export default function TicketsScreen() {
                     handleDeleteTicket(t);
                   }}
                   accessibilityRole="button"
-                  accessibilityLabel="Xóa vé này"
+                  accessibilityLabel={STRINGS.tickets.deleteTicketA11y}
                   className="w-full py-2.5 rounded-xl flex-row items-center justify-center mt-1"
                 >
                   <Icon name="trash" size={15} color={colors.error} />
@@ -1014,7 +1014,7 @@ export default function TicketsScreen() {
                 className="text-base font-bold"
                 style={{ color: colors.textMain }}
               >
-                Tùy chọn vé
+                {STRINGS.tickets.optionsMenuA11y}
               </Text>
               <TouchableOpacity
                 testID="tickets-menu-close-btn"
@@ -1024,7 +1024,7 @@ export default function TicketsScreen() {
                 }}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 accessibilityRole="button"
-                accessibilityLabel="Đóng menu"
+                accessibilityLabel={STRINGS.common.close}
                 className="w-8 h-8 rounded-full items-center justify-center"
               >
                 <Icon name="x" size={18} color={colors.textMuted} />

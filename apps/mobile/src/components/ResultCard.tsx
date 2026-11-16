@@ -237,7 +237,7 @@ export function ResultCard({
               }}
               accessibilityRole="button"
               accessibilityLabel={
-                isSaved ? 'Đã lưu để tự dò lại' : 'Lưu để tự dò lại'
+                isSaved ? STRINGS.check.savedPendingTicket : STRINGS.check.savePendingTicket
               }
             >
               <Icon
@@ -249,7 +249,7 @@ export function ResultCard({
                 className="text-sm font-semibold ml-2"
                 style={{ color: isSaved ? colors.win : '#FFFFFF' }}
               >
-                {isSaved ? 'Đã lưu để tự dò lại' : 'Lưu để tự dò lại'}
+                {isSaved ? STRINGS.check.savedPendingTicket : STRINGS.check.savePendingTicket}
               </Text>
             </Pressable>
           )}
@@ -269,7 +269,7 @@ export function ResultCard({
                 opacity: pressed ? 0.8 : 1,
               })}
               accessibilityRole="button"
-              accessibilityLabel="Dò lại kết quả"
+              accessibilityLabel={STRINGS.check.checkAgain}
             >
               <Icon name="refresh" size={16} color={colors.textMuted} />
               <Text
@@ -342,7 +342,7 @@ export function ResultCard({
               className="text-sm font-semibold"
               style={{ color: colors.textMuted }}
             >
-              Tổng tiền thưởng
+              {STRINGS.check.batchTotalPrize}
             </Text>
             <Text
               testID="result-card-total-prize"

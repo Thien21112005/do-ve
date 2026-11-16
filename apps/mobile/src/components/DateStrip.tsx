@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 import { todayVN, addDays, weekdayVN, nowVN } from '@/lib';
+import { STRINGS } from '@/lib/strings';
 import { Icon } from './Icon';
 
 export interface DateStripProps {
@@ -172,7 +173,7 @@ export function DateStrip({
             testID={`${testID}-calendar-btn`}
             onPress={() => setModalVisible(true)}
             accessibilityRole="button"
-            accessibilityLabel="Chọn ngày khác trong lịch 60 ngày gần nhất"
+            accessibilityLabel={STRINGS.check.openCalendarA11y}
             className="items-center justify-center py-2 px-3 rounded-xl border min-w-[62px]"
             style={{
               backgroundColor: colors.surfaceSubtle,
@@ -221,7 +222,7 @@ export function DateStrip({
                   testID="date-picker-close-btn"
                   onPress={() => setModalVisible(false)}
                   accessibilityRole="button"
-                  accessibilityLabel="Đóng lịch chọn ngày"
+                  accessibilityLabel={STRINGS.common.close}
                   className="p-1 rounded-full"
                 >
                   <Icon name="x" size={20} color={colors.textMuted} />

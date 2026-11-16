@@ -404,10 +404,10 @@ export default function CheckScreen() {
               selectedKey={mode}
               onChange={(key) => setMode(key as 'single' | 'batch')}
               options={[
-                { key: 'single', label: 'Một vé', testID: 'mode-single-btn' },
+                { key: 'single', label: STRINGS.check.modeSingleShort, testID: 'mode-single-btn' },
                 {
                   key: 'batch',
-                  label: 'Nhiều vé (tối đa 20)',
+                  label: STRINGS.check.modeBatchShort,
                   testID: 'mode-batch-btn',
                 },
               ]}
@@ -606,9 +606,9 @@ export default function CheckScreen() {
               {activeLoading
                 ? STRINGS.check.btnChecking
                 : !isFormValid && mode === 'single' && ticketNumber.length < 6
-                  ? `Nhập đủ 6 số (${ticketNumber.length}/6)`
+                  ? STRINGS.check.validationIncomplete(ticketNumber.length)
                   : !isFormValid && !selectedStation
-                    ? 'Chọn đài quay'
+                    ? STRINGS.check.selectStationPrompt
                     : mode === 'single'
                       ? STRINGS.check.btnCheck
                       : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}

@@ -51,7 +51,7 @@ function AppContent() {
           options={{
             headerShown: true,
             headerTitle: STRINGS.schedule.screenTitle,
-            headerBackTitle: 'Quay lại',
+            headerBackTitle: STRINGS.common.back,
           }}
         />
         <Stack.Screen
@@ -59,7 +59,7 @@ function AppContent() {
           options={{
             headerShown: true,
             headerTitle: STRINGS.settings.screenTitle,
-            headerBackTitle: 'Quay lại',
+            headerBackTitle: STRINGS.common.back,
           }}
         />
         <Stack.Screen
@@ -67,7 +67,7 @@ function AppContent() {
           options={{
             headerShown: true,
             headerTitle: STRINGS.about.screenTitle,
-            headerBackTitle: 'Quay lại',
+            headerBackTitle: STRINGS.common.back,
           }}
         />
       </Stack>
