@@ -114,4 +114,44 @@ describe('BatchTicketInput Component', () => {
 
     expect(onChange).toHaveBeenCalledWith('');
   });
+
+  it('renders tokenized chips for valid, invalid, and duplicate tickets (T10.36)', async () => {
+    const raw = '123456 999 123456 654321';
+    const { getByTestId, getAllByTestId, getByText } = await render(
+      <BatchTicketInput value={raw} onChangeText={jest.fn()} />,
+    );
+
+    // Tokenized chips container
+    expect(getByTestId('batch-token-chips')).toBeTruthy();
+
+    // Valid chip
+    expect(getByTestId('batch-token-chip-654321')).toBeTruthy();
+    expect(getByText('654321')).toBeTruthy();
+
+    // Invalid chip
+    expect(getByTestId('batch-token-chip-999')).toBeTruthy();
+    expect(getByText('999 (sai)')).toBeTruthy();
+
+    // Duplicate chip
+    const chips123456 = getAllByTestId('batch-token-chip-123456');
+    expect(chips123456.length).toBe(2);
+    expect(getByText('123456 (trùng)')).toBeTruthy();
+  });
+
+  it('renders paste from clipboard button and triggers onPaste callback (T10.36)', async () => {
+    const onPaste = jest.fn();
+    const { getByTestId } = await render(
+      <BatchTicketInput
+        value=""
+        onChangeText={jest.fn()}
+        onPaste={onPaste}
+      />,
+    );
+
+    const pasteBtn = getByTestId('batch-paste-btn');
+    expect(pasteBtn).toBeTruthy();
+
+    fireEvent.press(pasteBtn);
+    expect(onPaste).toHaveBeenCalled();
+  });
 });

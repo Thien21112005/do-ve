@@ -4,6 +4,14 @@ import { Icon } from './Icon';
 import { useTheme } from '../theme';
 import { STRINGS } from '../lib/strings';
 
+export type BatchTokenType = 'valid' | 'duplicate' | 'invalid';
+
+export interface BatchToken {
+  text: string;
+  type: BatchTokenType;
+  index: number;
+}
+
 export interface BatchParsedResult {
   validTickets: string[];
   invalidTokens: string[];
@@ -12,6 +20,7 @@ export interface BatchParsedResult {
   isOverLimit: boolean;
   error: string | null;
   notice: string | null;
+  tokens: BatchToken[];
 }
 
 export function parseBatchTickets(
@@ -28,10 +37,11 @@ export function parseBatchTickets(
       isOverLimit: false,
       error: null,
       notice: null,
+      tokens: [],
     };
   }
 
-  const tokens = trimmed
+  const rawTokens = trimmed
     .split(/[\r\n,;\s]+/)
     .map((t) => t.trim())
     .filter(Boolean);
@@ -39,18 +49,23 @@ export function parseBatchTickets(
   const validTickets: string[] = [];
   const seen = new Set<string>();
   const invalidTokens: string[] = [];
+  const tokenList: BatchToken[] = [];
   let duplicateCount = 0;
 
-  for (const token of tokens) {
+  for (let i = 0; i < rawTokens.length; i++) {
+    const token = rawTokens[i];
     if (/^\d{6}$/.test(token)) {
       if (seen.has(token)) {
         duplicateCount++;
+        tokenList.push({ text: token, type: 'duplicate', index: i });
       } else {
         seen.add(token);
         validTickets.push(token);
+        tokenList.push({ text: token, type: 'valid', index: i });
       }
     } else {
       invalidTokens.push(token);
+      tokenList.push({ text: token, type: 'invalid', index: i });
     }
   }
 
@@ -79,12 +94,14 @@ export function parseBatchTickets(
     isOverLimit,
     error,
     notice,
+    tokens: tokenList,
   };
 }
 
 export interface BatchTicketInputProps {
   value: string;
   onChangeText: (text: string) => void;
+  onPaste?: () => void;
   maxTickets?: number;
   testID?: string;
 }
@@ -92,6 +109,7 @@ export interface BatchTicketInputProps {
 export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
   value,
   onChangeText,
+  onPaste,
   maxTickets = 20,
   testID = 'batch-ticket-input',
 }) => {
@@ -131,6 +149,29 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
           </View>
 
           <View className="flex-row items-center">
+            {/* Paste Button (T10.36) */}
+            {onPaste && (
+              <Pressable
+                testID="batch-paste-btn"
+                accessibilityRole="button"
+                accessibilityLabel={STRINGS.check.batchPasteBtn}
+                onPress={onPaste}
+                className="px-2 py-0.5 rounded-md border flex-row items-center mr-2 active:opacity-60"
+                style={{
+                  backgroundColor: colors.surfaceSubtle,
+                  borderColor: colors.border,
+                }}
+              >
+                <Icon name="clipboard" size={12} color={colors.primary} />
+                <Text
+                  className="text-xs font-semibold ml-1"
+                  style={{ color: colors.primary }}
+                >
+                  Dán
+                </Text>
+              </Pressable>
+            )}
+
             {/* Ticket Counter Badge */}
             <View
               className="px-2 py-0.5 rounded-full mr-2"
@@ -165,7 +206,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
           </View>
         </View>
 
-        {/* Text Area */}
+        {/* Text Area (with Return Key to type next ticket smoothly) */}
         <TextInput
           testID={testID}
           multiline
@@ -174,6 +215,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="numbers-and-punctuation"
+          returnKeyType="default"
           placeholder={STRINGS.check.batchPlaceholder(maxTickets)}
           placeholderTextColor={colors.textMuted}
           value={value}
@@ -184,6 +226,56 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
             fontVariant: ['tabular-nums'],
           }}
         />
+
+        {/* Tokenized Chips list (T10.36) */}
+        {parsed.tokens.length > 0 && (
+          <View
+            testID="batch-token-chips"
+            className="flex-row flex-wrap gap-1.5 mt-2 pt-2 border-t"
+            style={{ borderColor: colors.surfaceSubtle }}
+          >
+            {parsed.tokens.map((token, idx) => {
+              const isValid = token.type === 'valid';
+              const isDup = token.type === 'duplicate';
+              const isInvalid = token.type === 'invalid';
+
+              return (
+                <View
+                  key={`token-${token.text}-${idx}`}
+                  testID={`batch-token-chip-${token.text}`}
+                  className="px-2 py-0.5 rounded-md border flex-row items-center"
+                  style={{
+                    backgroundColor: isValid
+                      ? colors.surfaceSubtle
+                      : isDup
+                        ? colors.pendingBg
+                        : colors.errorBg,
+                    borderColor: isValid
+                      ? colors.border
+                      : isDup
+                        ? colors.pendingBorder
+                        : colors.error,
+                  }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{
+                      color: isValid
+                        ? colors.textMain
+                        : isDup
+                          ? colors.pending
+                          : colors.error,
+                      fontVariant: ['tabular-nums'],
+                    }}
+                  >
+                    {token.text}
+                    {isDup ? ' (trùng)' : isInvalid ? ' (sai)' : ''}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
       </View>
 
       {/* Error Message */}
@@ -220,4 +312,3 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
     </View>
   );
 };
-

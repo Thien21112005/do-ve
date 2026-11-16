@@ -24,6 +24,7 @@ import {
   Table2,
   ListOrdered,
   ScanSearch,
+  Clipboard,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react-native';
@@ -53,6 +54,7 @@ export const iconMap = {
   table: Table2,
   listOrdered: ListOrdered,
   scanSearch: ScanSearch,
+  clipboard: Clipboard,
 } as const;
 
 export type IconName = keyof typeof iconMap;

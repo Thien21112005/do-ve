@@ -280,6 +280,20 @@ export default function CheckScreen() {
     [selectedStation, selectedDate, isLoading, submitCheck],
   );
 
+  const handleBatchPaste = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.readText) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          setBatchText((prev) => (prev ? `${prev}\n${text}` : text));
+          haptics.light();
+        }
+      }
+    } catch {
+      // Clipboard not available or permissions denied
+    }
+  };
+
   const handleTicketChange = (val: string) => {
     setHasInteracted(true);
     setTicketNumber(val);
@@ -450,6 +464,7 @@ export default function CheckScreen() {
               <BatchTicketInput
                 value={batchText}
                 onChangeText={setBatchText}
+                onPaste={handleBatchPaste}
                 maxTickets={20}
               />
             </View>

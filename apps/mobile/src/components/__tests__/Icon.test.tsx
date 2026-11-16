@@ -30,5 +30,6 @@ describe('Icon component', () => {
     expect(iconMap.table).toBeDefined();
     expect(iconMap.listOrdered).toBeDefined();
     expect(iconMap.scanSearch).toBeDefined();
+    expect(iconMap.clipboard).toBeDefined();
   });
 });
