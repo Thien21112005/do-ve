@@ -115,9 +115,7 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(getAllByText(/2.000.000.000 đ/).length).toBeGreaterThanOrEqual(1);
   });
 
-  it('deletes an individual ticket with confirmation dialog', async () => {
-    jest.spyOn(Alert, 'alert');
-
+  it('deletes an individual ticket via swipe with undo snackbar (T10.47)', async () => {
     const ticket = await saveTicket({
       ticket: '112233',
       station: 'TPHCM',
@@ -127,32 +125,46 @@ describe('TicketsScreen (Vé của tôi)', () => {
       totalPrize: 100000,
     });
 
-    const { getByTestId, queryByText } = await render(<TicketsScreen />);
-
-    const deleteBtn = getByTestId(`delete-ticket-btn-${ticket.id}`);
-    expect(deleteBtn).toBeTruthy();
-
-    fireEvent.press(deleteBtn);
-
-    expect(Alert.alert).toHaveBeenCalledWith(
-      expect.stringContaining('Xóa vé'),
-      expect.any(String),
-      expect.any(Array),
+    const { getByTestId, getByText, queryByText } = await render(
+      <TicketsScreen />,
     );
 
-    // Trigger confirmation
-    const alertCall = (Alert.alert as jest.Mock).mock.calls[0];
-    const buttons = alertCall[2];
-    const confirmButton = buttons.find((b: any) => b.style === 'destructive');
-    await confirmButton.onPress();
+    // Verify swipe action delete button exists with proper a11y label
+    const swipeDeleteBtn = getByTestId(`swipe-delete-btn-${ticket.id}`);
+    expect(swipeDeleteBtn).toBeTruthy();
+    expect(swipeDeleteBtn.props.accessibilityLabel).toContain('112233');
 
-    // Verify ticket is deleted from store
+    // Trigger swipe delete
+    fireEvent.press(swipeDeleteBtn);
+
+    // Verify ticket is removed from view and store
     await waitFor(async () => {
+      expect(queryByText('112233')).toBeNull();
       const remaining = await getTickets();
       expect(remaining.length).toBe(0);
     });
 
-    expect(queryByText('112233')).toBeNull();
+    // Verify Undo snackbar appears
+    expect(getByTestId('undo-delete-snackbar')).toBeTruthy();
+    expect(getByText(/Đã xóa vé 112233/)).toBeTruthy();
+    const undoBtn = getByTestId('undo-delete-btn');
+    expect(undoBtn).toBeTruthy();
+
+    // Press Undo
+    fireEvent.press(undoBtn);
+
+    // Verify ticket is restored in view and storage
+    await waitFor(async () => {
+      expect(getByText('112233')).toBeTruthy();
+      const restored = await getTickets();
+      expect(restored.length).toBe(1);
+      expect(restored[0].ticket).toBe('112233');
+    });
+
+    // Verify snackbar disappears after undo
+    await waitFor(() => {
+      expect(queryByText(/Đã xóa vé 112233/)).toBeNull();
+    });
   });
 
   it('clears all tickets when pressing "Xóa tất cả" and confirming', async () => {

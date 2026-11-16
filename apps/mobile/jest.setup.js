@@ -175,3 +175,36 @@ jest.mock('nativewind', () => ({
   }),
 }));
 
+jest.mock('react-native-gesture-handler', () => {
+  const { View } = require('react-native');
+  return {
+    Swipeable: ({ children, renderRightActions, renderLeftActions, testID }) => {
+      return (
+        <View testID={testID}>
+          {renderLeftActions && renderLeftActions()}
+          {children}
+          {renderRightActions && renderRightActions()}
+        </View>
+      );
+    },
+    GestureHandlerRootView: ({ children }) => children,
+    State: {},
+    PanGestureHandler: ({ children }) => children,
+    TapGestureHandler: ({ children }) => children,
+    Directions: {},
+  };
+});
+
+jest.mock('react-native-gesture-handler/Swipeable', () => {
+  const { View } = require('react-native');
+  return function MockSwipeable({ children, renderRightActions, renderLeftActions, testID }) {
+    return (
+      <View testID={testID}>
+        {renderLeftActions && renderLeftActions()}
+        {children}
+        {renderRightActions && renderRightActions()}
+      </View>
+    );
+  };
+}, { virtual: true });
+

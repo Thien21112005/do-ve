@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+// eslint-disable-next-line import/no-unresolved
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
@@ -35,7 +37,7 @@ export function resetSessionSavedTicketFilter() {
 export default function TicketsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [tickets, { remove, clearAll }] = useSavedTickets();
+  const [tickets, { save, remove, clearAll }] = useSavedTickets();
 
   // Manual pull-to-refresh & recheck status (T09.45)
   const { isRechecking, refetchPending } = usePendingTicketsRecheck();
@@ -43,6 +45,20 @@ export default function TicketsScreen() {
   // Filter state for summary cards with session memory (T10.44 & T10.45)
   const [activeFilter, setActiveFilterState] =
     useState<TicketFilterStatus>(sessionSavedTicketFilter);
+
+  // Undo delete ticket snackbar state (T10.47)
+  const [lastDeletedTicket, setLastDeletedTicket] =
+    useState<SavedTicket | null>(null);
+  const [isUndoVisible, setIsUndoVisible] = useState(false);
+  const undoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (undoTimeoutRef.current) {
+        clearTimeout(undoTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const setActiveFilter = useCallback((filter: TicketFilterStatus) => {
     sessionSavedTicketFilter = filter;
@@ -122,26 +138,33 @@ export default function TicketsScreen() {
     }));
   }, [filteredTickets]);
 
-  const handleDeleteTicket = (id: string, ticketNumber: string) => {
-    Alert.alert(
-      STRINGS.tickets.deleteConfirmTitle,
-      `${STRINGS.tickets.deleteConfirmMsg}\nSố vé: ${ticketNumber}`,
-      [
-        { text: STRINGS.common.cancel, style: 'cancel' },
-        {
-          text: STRINGS.common.confirm,
-          style: 'destructive',
-          onPress: async () => {
-            const success = await remove(id);
-            if (success) {
-              haptics.light();
-            } else {
-              Alert.alert(STRINGS.common.error, STRINGS.tickets.deleteError);
-            }
-          },
-        },
-      ],
-    );
+  const handleDeleteTicket = async (ticket: SavedTicket) => {
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+    }
+    const success = await remove(ticket.id);
+    if (success) {
+      haptics.light();
+      setLastDeletedTicket(ticket);
+      setIsUndoVisible(true);
+      undoTimeoutRef.current = setTimeout(() => {
+        setIsUndoVisible(false);
+        setLastDeletedTicket(null);
+      }, 5000);
+    } else {
+      Alert.alert(STRINGS.common.error, STRINGS.tickets.deleteError);
+    }
+  };
+
+  const handleUndoDelete = async () => {
+    if (!lastDeletedTicket) return;
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+    }
+    await save(lastDeletedTicket);
+    haptics.success();
+    setIsUndoVisible(false);
+    setLastDeletedTicket(null);
   };
 
   const handleClearAll = () => {
@@ -217,56 +240,76 @@ export default function TicketsScreen() {
   );
 
   const renderItem = ({ item }: { item: SavedTicket }) => {
-    return (
-      <View
-        testID={`saved-ticket-item-${item.id}`}
-        accessible={true}
-        accessibilityRole="text"
-        className="mb-2 p-3 rounded-xl border flex-row items-center justify-between"
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        }}
+    const renderRightActions = () => (
+      <TouchableOpacity
+        testID={`swipe-delete-btn-${item.id}`}
+        onPress={() => handleDeleteTicket(item)}
+        accessibilityRole="button"
+        accessibilityLabel={`Xóa vé ${item.ticket}`}
+        className="justify-center items-center px-5 mb-2 ml-2 rounded-xl"
+        style={{ backgroundColor: colors.error }}
       >
-        {/* Left: Tabular ticket number & station name */}
-        <View className="flex-1 mr-2">
-          <Text
-            className="text-lg font-bold tracking-wider"
-            style={{
-              color: colors.textMain,
-              fontVariant: ['tabular-nums'],
-            }}
-          >
-            {item.ticket}
-          </Text>
-          <Text
-            className="text-xs mt-0.5"
-            style={{ color: colors.textMuted }}
-            numberOfLines={1}
-          >
-            {item.stationName || item.station}
-          </Text>
-        </View>
+        <Icon name="trash" size={18} color="#ffffff" />
+        <Text className="text-white text-xs font-semibold mt-1">Xóa</Text>
+      </TouchableOpacity>
+    );
 
-        {/* Right: TicketStatusBadge & Delete button */}
-        <View className="flex-row items-center">
-          <TicketStatusBadge
-            status={item.status}
-            totalPrize={item.totalPrize}
-            size="sm"
-          />
-          <TouchableOpacity
-            testID={`delete-ticket-btn-${item.id}`}
-            onPress={() => handleDeleteTicket(item.id, item.ticket)}
-            accessibilityRole="button"
-            accessibilityLabel={`Xóa vé ${item.ticket}`}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            className="ml-2 p-1.5 rounded-full"
-          >
-            <Icon name="trash" size={15} color={colors.textMuted} />
-          </TouchableOpacity>
+    return (
+      <Swipeable
+        key={item.id}
+        renderRightActions={renderRightActions}
+        testID={`swipeable-${item.id}`}
+      >
+        <View
+          testID={`saved-ticket-item-${item.id}`}
+          accessible={true}
+          accessibilityRole="text"
+          className="mb-2 p-3 rounded-xl border flex-row items-center justify-between"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+          {/* Left: Tabular ticket number & station name */}
+          <View className="flex-1 mr-2">
+            <Text
+              className="text-lg font-bold tracking-wider"
+              style={{
+                color: colors.textMain,
+                fontVariant: ['tabular-nums'],
+              }}
+            >
+              {item.ticket}
+            </Text>
+            <Text
+              className="text-xs mt-0.5"
+              style={{ color: colors.textMuted }}
+              numberOfLines={1}
+            >
+              {item.stationName || item.station}
+            </Text>
+          </View>
+
+          {/* Right: TicketStatusBadge & Delete button */}
+          <View className="flex-row items-center">
+            <TicketStatusBadge
+              status={item.status}
+              totalPrize={item.totalPrize}
+              size="sm"
+            />
+            <TouchableOpacity
+              testID={`delete-ticket-btn-${item.id}`}
+              onPress={() => handleDeleteTicket(item)}
+              accessibilityRole="button"
+              accessibilityLabel={`Xóa vé ${item.ticket}`}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="ml-2 p-1.5 rounded-full"
+            >
+              <Icon name="trash" size={15} color={colors.textMuted} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </Swipeable>
     );
   };
 
@@ -591,6 +634,57 @@ export default function TicketsScreen() {
             </View>
           }
         />
+      )}
+
+      {/* Undo Delete Ticket Snackbar (T10.47) */}
+      {isUndoVisible && lastDeletedTicket && (
+        <View
+          testID="undo-delete-snackbar"
+          accessible={true}
+          accessibilityLiveRegion="polite"
+          className="absolute bottom-6 left-4 right-4 p-3.5 rounded-xl flex-row items-center justify-between shadow-lg"
+          style={{
+            backgroundColor: colors.textMain,
+          }}
+        >
+          <View className="flex-row items-center flex-1 mr-2">
+            <Icon name="trash" size={16} color="#ffffff" />
+            <Text
+              testID="undo-delete-message"
+              className="text-white text-sm font-medium ml-2"
+              numberOfLines={1}
+            >
+              Đã xóa vé {lastDeletedTicket.ticket}
+            </Text>
+          </View>
+          <View className="flex-row items-center">
+            <TouchableOpacity
+              testID="undo-delete-btn"
+              onPress={handleUndoDelete}
+              accessibilityRole="button"
+              accessibilityLabel="Hoàn tác xóa vé"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="px-3 py-1.5 rounded-lg mr-1.5"
+              style={{ backgroundColor: colors.primary }}
+            >
+              <Text className="text-white text-xs font-bold">Hoàn tác</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              testID="close-undo-snackbar-btn"
+              onPress={() => {
+                if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+                setIsUndoVisible(false);
+                setLastDeletedTicket(null);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Đóng thông báo"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="p-1 rounded-full"
+            >
+              <Icon name="x" size={16} color="#9CA3AF" />
+            </TouchableOpacity>
+          </View>
+        </View>
       )}
     </SafeAreaView>
   );
