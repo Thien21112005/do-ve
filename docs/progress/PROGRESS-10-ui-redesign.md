@@ -52,7 +52,7 @@
 | T10.42 | Trạng thái Kết quả tách rõ | DONE | ea5f27f | 2026-11-16 | Skeleton 9 dòng phẳng thay spinner, tách rõ 4 trạng thái (skeleton, chưa chọn đài, chưa có KQ kèm giờ dự kiến, lỗi mạng có nút thử lại) |
 | T10.43 | Chia sẻ kết quả | DONE | 078c758 | 2026-11-16 | Nút chia sẻ kết quả đài và cả ngày dạng text qua Share API native (XSMN DD/MM/YYYY - Đài: ĐB ... G8), không thêm thư viện ngoài |
 | T10.44 | Thẻ tổng quan đầu danh sách | DONE | 47060d1 | 2026-11-16 | Thẻ SavedTicketsSummary 3 cột (tổng vé · đang chờ · tiền trúng), số tabular to, bấm vào lọc danh sách tương ứng, haptic nhẹ |
-| T10.45 | Bộ lọc trạng thái | TODO | | | |
+| T10.45 | Bộ lọc trạng thái | DONE | bf6fc77 | 2026-11-16 | Chip lọc (Tất cả / Trúng / Chờ kết quả / Không trúng) kèm số lượng, nhớ lựa chọn trong phiên, empty view khi lọc |
 | T10.46 | Dòng vé gọn, tiêu đề nhóm dính (sticky) | TODO | | | |
 | T10.47 | Vuốt để xoá + hoàn tác | TODO | | | |
 | T10.48 | Màn/Sheet chi tiết vé | TODO | | | |
@@ -126,6 +126,7 @@
 - 2026-11-16 | T10.42 | Trạng thái Kết quả tách rõ | Dùng DrawTableSkeleton 9 dòng phẳng thay spinner, phân tách rõ 4 trạng thái (skeleton, chưa chọn đài với icon mapPin, chưa có kết quả kèm badge giờ dự kiến VN, lỗi mạng có nút Thử lại), fix an toàn null-check cho mapDrawResponseToUi; 9 unit tests xanh 100%.
 - 2026-11-16 | T10.43 | Chia sẻ kết quả | Bổ sung nút chia sẻ kết quả đài (results-share-btn) và kết quả cả ngày (results-share-daily-btn) sử dụng React Native Share API thuần túy, định dạng văn bản trực quan rõ ràng ('XSMN DD/MM/YYYY – Đài: ĐB ... G8'), phản hồi haptic xúc giác nhẹ; hoàn tất 100% Nhóm E (6/6 tasks); 26 unit tests xanh 100%.
 - 2026-11-16 | T10.44 | Thẻ tổng quan đầu danh sách | Xây dựng SavedTicketsSummary 3 cột phẳng trên nền giấy (Tổng vé · Đang chờ · Tiền trúng) với số tabular to nổi bật, semantic color (pending/win), bấm vào từng cột để lọc danh sách tức thì kèm phản hồi haptic xúc giác nhẹ; 7 unit tests xanh 100%.
+- 2026-11-16 | T10.45 | Bộ lọc trạng thái | Xây dựng thanh chip lọc ngang tickets-filter-chips (Tất cả · Trúng thưởng · Chờ kết quả · Không trúng) kèm bộ đếm số lượng, lưu trữ bộ lọc trong biến phiên sessionSavedTicketFilter giúp giữ nguyên trạng thái khi đổi tab, bổ sung view rỗng tickets-filter-empty khi không có vé phù hợp; 9 unit tests xanh 100%.
 
 ## Vấn đề mở
 
