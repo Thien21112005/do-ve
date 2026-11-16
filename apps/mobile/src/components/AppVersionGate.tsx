@@ -2,13 +2,13 @@ import React from 'react';
 import {
   View,
   Text,
-  Pressable,
   Linking,
   Platform,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from './Icon';
+import { Button } from './ui/Button';
 import { useTheme } from '../theme';
 import { isVersionOutdated, CURRENT_APP_VERSION } from '../lib/version';
 import { STRINGS } from '../lib/strings';
@@ -78,40 +78,44 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
         >
           <SafeAreaView className="flex-1 items-center justify-center p-6">
             <View
-              className="w-16 h-16 rounded-2xl items-center justify-center mb-4"
-              style={{ backgroundColor: `${colors.pending}1A` }}
+              className="w-16 h-16 rounded-2xl items-center justify-center mb-4 border"
+              style={{
+                backgroundColor: colors.surfaceSubtle,
+                borderColor: colors.border,
+              }}
             >
-              <Icon name="clock" size={36} color={colors.pending} />
+              <Icon name="clock" size={32} color={colors.pending} />
             </View>
 
             <Text
               className="text-xl font-bold text-center mb-2"
-              style={{ color: colors.textMain }}
+              style={{
+                color: colors.textMain,
+                fontFamily: 'BeVietnamPro-Bold',
+              }}
             >
               {STRINGS.gate.maintenanceTitle}
             </Text>
 
             <Text
               className="text-sm text-center leading-relaxed mb-6 px-4"
-              style={{ color: colors.textMuted }}
+              style={{
+                color: colors.textMuted,
+                fontFamily: 'BeVietnamPro-Regular',
+              }}
             >
               {config?.message || STRINGS.gate.maintenanceDefaultMsg}
             </Text>
 
             {onRetry && (
-              <Pressable
+              <Button
                 testID="maintenance-retry-btn"
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.gate.maintenanceRetryBtn}
+                variant="primary"
+                size="md"
+                title={STRINGS.common.retry}
+                icon={<Icon name="refresh" size={16} color={colors.onPrimary} />}
                 onPress={onRetry}
-                className="py-3 px-6 rounded-xl flex-row items-center active:opacity-80"
-                style={{ backgroundColor: colors.primary }}
-              >
-                <Icon name="refresh" size={16} color="#FFFFFF" />
-                <Text className="text-white font-bold text-sm ml-2">
-                  {STRINGS.common.retry}
-                </Text>
-              </Pressable>
+              />
             )}
           </SafeAreaView>
         </View>
@@ -128,47 +132,62 @@ export const AppVersionGate: React.FC<AppVersionGateProps> = ({
         >
           <SafeAreaView className="flex-1 items-center justify-center p-6">
             <View
-              className="w-16 h-16 rounded-2xl items-center justify-center mb-4"
-              style={{ backgroundColor: `${colors.primary}1A` }}
+              className="w-16 h-16 rounded-2xl items-center justify-center mb-4 border"
+              style={{
+                backgroundColor: colors.surfaceSubtle,
+                borderColor: colors.border,
+              }}
             >
-              <Icon name="alertCircle" size={36} color={colors.primary} />
+              <Icon name="alertCircle" size={32} color={colors.primary} />
             </View>
 
             <Text
-              className="text-xl font-bold text-center mb-1"
-              style={{ color: colors.textMain }}
+              className="text-xl font-bold text-center mb-2"
+              style={{
+                color: colors.textMain,
+                fontFamily: 'BeVietnamPro-Bold',
+              }}
             >
               {STRINGS.gate.updateTitle}
             </Text>
 
-            <Text
-              className="text-xs font-semibold text-center mb-3"
-              style={{ color: colors.primary }}
+            <View
+              className="px-3 py-1 rounded-full border mb-4"
+              style={{
+                backgroundColor: colors.surfaceSubtle,
+                borderColor: colors.border,
+              }}
             >
-              Phiên bản {currentVersion} • Yêu cầu tối thiểu{' '}
-              {config?.minSupportedVersion}
-            </Text>
+              <Text
+                className="text-xs font-semibold text-center"
+                style={{
+                  color: colors.primary,
+                  fontFamily: 'BeVietnamPro-SemiBold',
+                }}
+              >
+                Phiên bản {currentVersion} • Yêu cầu tối thiểu{' '}
+                {config?.minSupportedVersion}
+              </Text>
+            </View>
 
             <Text
               className="text-sm text-center leading-relaxed mb-6 px-4"
-              style={{ color: colors.textMuted }}
+              style={{
+                color: colors.textMuted,
+                fontFamily: 'BeVietnamPro-Regular',
+              }}
             >
               {config?.message || STRINGS.gate.updateRequiredMsg}
             </Text>
 
-            <Pressable
+            <Button
               testID="update-app-btn"
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.gate.updateBtn}
+              variant="primary"
+              size="md"
+              title={STRINGS.gate.updateBtn}
+              icon={<Icon name="chevronRight" size={16} color={colors.onPrimary} />}
               onPress={handleUpdate}
-              className="py-3 px-6 rounded-xl flex-row items-center active:opacity-80 shadow-sm"
-              style={{ backgroundColor: colors.primary }}
-            >
-              <Text className="text-white font-bold text-sm mr-1">
-                {STRINGS.gate.updateBtn}
-              </Text>
-              <Icon name="chevronRight" size={16} color="#FFFFFF" />
-            </Pressable>
+            />
           </SafeAreaView>
         </View>
       )}

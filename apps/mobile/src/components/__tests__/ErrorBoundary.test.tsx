@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, Appearance } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { useRouter } from 'expo-router';
+import { colors } from '@/theme/colors';
 
 // Suppress console.error in this test because intentional throw triggers React error boundary logging
 const originalError = console.error;
@@ -85,5 +86,39 @@ describe('ErrorBoundary Component', () => {
     });
     expect(getByTestId('recovered-child')).toBeTruthy();
     expect(mountCount).toBe(1);
+  });
+
+  it('renders theme token styling in both light and dark appearances (T10.56)', async () => {
+    // Test Light Mode styling
+    const colorSchemeSpy = jest.spyOn(Appearance, 'getColorScheme').mockReturnValue('light');
+    const { getByTestId } = await render(
+      <ErrorBoundary>
+        <BadComponent shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    const fallbackLight = getByTestId('error-boundary-fallback');
+    const lightStyle = [fallbackLight.props.style].flat();
+    expect(lightStyle).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ backgroundColor: colors.light.background }),
+      ]),
+    );
+
+    // Test Dark Mode styling
+    colorSchemeSpy.mockReturnValue('dark');
+    const { getByTestId: getByTestIdDark } = await render(
+      <ErrorBoundary>
+        <BadComponent shouldThrow={true} />
+      </ErrorBoundary>,
+    );
+
+    const fallbackDark = getByTestIdDark('error-boundary-fallback');
+    const darkStyle = [fallbackDark.props.style].flat();
+    expect(darkStyle).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ backgroundColor: colors.dark.background }),
+      ]),
+    );
   });
 });

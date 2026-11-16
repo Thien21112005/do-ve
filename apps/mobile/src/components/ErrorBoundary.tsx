@@ -1,8 +1,10 @@
 import React, { Component, type ReactNode } from 'react';
-import { View, Text, Pressable, Appearance } from 'react-native';
+import { View, Text, Pressable, Appearance, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { recordCrash } from '@/services/crashReporting';
 import { colors } from '@/theme/colors';
+import { radii } from '@/theme/tokens';
+import { haptics } from '@/lib/haptics';
 import { Icon } from './Icon';
 
 export interface ErrorBoundaryProps {
@@ -42,6 +44,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
   }
 
   handleReset = (): void => {
+    try {
+      haptics.selection();
+    } catch {
+      // Ignore haptics error outside UI thread
+    }
+
     // 1. Notify custom reset handler
     try {
       this.props.onReset?.();
@@ -71,7 +79,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
         return this.props.fallback;
       }
 
-      // Safe theme resolution outside ThemeProvider context (T09.55)
+      // Safe theme resolution outside ThemeProvider context (T09.55, T10.56)
       const isDark = Appearance.getColorScheme() === 'dark';
       const themeColors = isDark ? colors.dark : colors.light;
 
@@ -82,32 +90,59 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
           style={{ backgroundColor: themeColors.background }}
         >
           <View
-            className="w-16 h-16 rounded-full items-center justify-center mb-4"
-            style={{ backgroundColor: `${themeColors.loss}1A` }}
+            className="w-16 h-16 rounded-2xl items-center justify-center mb-4 border"
+            style={{
+              backgroundColor: `${themeColors.error}15`,
+              borderColor: `${themeColors.error}30`,
+            }}
           >
-            <Icon name="alertCircle" size={32} color={themeColors.loss} />
+            <Icon name="alertCircle" size={32} color={themeColors.error} />
           </View>
+
           <Text
             className="text-lg font-bold text-center mb-2"
-            style={{ color: themeColors.textMain }}
+            style={{
+              color: themeColors.textMain,
+              fontFamily: 'BeVietnamPro-Bold',
+            }}
           >
             Đã xảy ra lỗi không mong muốn
           </Text>
+
           <Text
             className="text-xs text-center mb-6 leading-relaxed px-4"
-            style={{ color: themeColors.textMuted }}
+            style={{
+              color: themeColors.textMuted,
+              fontFamily: 'BeVietnamPro-Regular',
+            }}
           >
             Ứng dụng đã ghi nhận sự cố để xử lý. Dữ liệu vé của bạn vẫn an toàn trên thiết bị.
           </Text>
+
           <Pressable
             testID="error-boundary-retry-btn"
             accessibilityRole="button"
             accessibilityLabel="Thử lại"
             onPress={this.handleReset}
-            className="px-6 py-3 rounded-xl active:opacity-80 shadow-sm"
-            style={{ backgroundColor: themeColors.primary }}
+            style={({ pressed }) => [
+              styles.retryBtn,
+              {
+                backgroundColor: themeColors.primary,
+                borderRadius: radii.md,
+                opacity: pressed ? 0.88 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
           >
-            <Text className="text-white text-sm font-semibold">Thử lại</Text>
+            <Text
+              className="text-sm font-semibold text-center"
+              style={{
+                color: themeColors.onPrimary,
+                fontFamily: 'BeVietnamPro-SemiBold',
+              }}
+            >
+              Thử lại
+            </Text>
           </Pressable>
         </View>
       );
@@ -120,3 +155,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  retryBtn: {
+    minHeight: 44,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
