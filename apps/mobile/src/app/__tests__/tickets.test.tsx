@@ -39,19 +39,23 @@ describe('TicketsScreen (Vé của tôi)', () => {
     cleanup();
   });
 
-  it('renders friendly empty state when no tickets are saved', async () => {
+  it('renders friendly empty state with ticket illustration and actions (T10.50)', async () => {
     const { getByTestId, getByText } = await render(<TicketsScreen />);
 
     expect(getByTestId('saved-tickets-empty')).toBeTruthy();
+    expect(getByTestId('tickets-empty-illustration')).toBeTruthy();
     expect(getByText('Chưa có vé nào được lưu')).toBeTruthy();
     expect(getByTestId('tickets-empty-check-btn')).toBeTruthy();
+    expect(getByText('Dò vé đầu tiên')).toBeTruthy();
+    expect(getByTestId('empty-import-btn')).toBeTruthy();
+    expect(getByText('Khôi phục từ file')).toBeTruthy();
     expect(getByTestId('tickets-privacy-notice')).toBeTruthy();
     expect(
       getByText('Vé chỉ lưu trên máy này, không gửi lên server.'),
     ).toBeTruthy();
   });
 
-  it('navigates to check tab when pressing "Dò vé ngay" from empty state', async () => {
+  it('navigates to check tab when pressing "Dò vé đầu tiên" from empty state', async () => {
     const router = useRouter();
     const { getByTestId } = await render(<TicketsScreen />);
 

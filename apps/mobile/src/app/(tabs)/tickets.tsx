@@ -23,6 +23,7 @@ import {
   Icon,
   TicketStatusBadge,
   SavedTicketsSummary,
+  TicketEmptyIllustration,
   type TicketFilterStatus,
 } from '@/components';
 import { usePendingTicketsRecheck } from '@/hooks';
@@ -389,12 +390,7 @@ export default function TicketsScreen() {
           testID="saved-tickets-empty"
           className="flex-1 items-center justify-center p-6 text-center"
         >
-          <View
-            className="w-16 h-16 rounded-full items-center justify-center mb-4"
-            style={{ backgroundColor: colors.surfaceSubtle }}
-          >
-            <Icon name="bookmark" size={28} color={colors.textMuted} />
-          </View>
+          <TicketEmptyIllustration testID="tickets-empty-illustration" />
           <Text
             className="text-lg font-bold text-center mb-2"
             style={{ color: colors.textMain }}
@@ -426,7 +422,7 @@ export default function TicketsScreen() {
             testID="empty-import-btn"
             onPress={handleImport}
             accessibilityRole="button"
-            accessibilityLabel={STRINGS.tickets.importBtn}
+            accessibilityLabel={STRINGS.tickets.emptyRestoreAction}
             className="mt-3 px-5 py-2.5 rounded-xl border flex-row items-center"
             style={{
               borderColor: colors.border,
@@ -438,7 +434,7 @@ export default function TicketsScreen() {
               className="text-xs font-semibold ml-1.5"
               style={{ color: colors.textMain }}
             >
-              Nhập vé từ file sao lưu
+              {STRINGS.tickets.emptyRestoreAction}
             </Text>
           </TouchableOpacity>
 

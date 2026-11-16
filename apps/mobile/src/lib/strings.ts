@@ -34,7 +34,8 @@ export const STRINGS = {
     emptyTitle: 'Chưa có vé nào được lưu',
     emptyDesc:
       'Khi dò vé, bạn có thể bấm nút "Lưu vé" để theo dõi và đối chiếu kết quả tại đây.',
-    emptyAction: 'Dò vé ngay',
+    emptyAction: 'Dò vé đầu tiên',
+    emptyRestoreAction: 'Khôi phục từ file',
     ticketCount: (count: number) => `${count} vé đã lưu`,
     drawDateGroup: (date: string) => `Kỳ quay ngày ${date}`,
     statusWon: 'Trúng thưởng',
