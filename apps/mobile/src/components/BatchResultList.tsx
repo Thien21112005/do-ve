@@ -183,6 +183,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                         item.ticket ?? '',
                         item.wins as any,
                       )}
+                      wins={item.wins as any}
                     />
                   ) : (
                     <Text

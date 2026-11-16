@@ -116,11 +116,12 @@ export function ResultCard({
         </Text>
       </View>
 
-      {/* 2. Hero Ticket Number: Nhân vật chính (T10.30) */}
+      {/* 2. Hero Ticket Number: Nhân vật chính (T10.30 & T10.32) */}
       <View className="py-2 items-start" testID="result-card-hero-ticket">
         <HighlightedTicket
           ticket={result.ticket ?? ''}
           matchedDigits={longestMatched}
+          wins={result.wins as any}
           size="lg"
         />
       </View>
