@@ -8,6 +8,8 @@ import { STRINGS } from '@/lib/strings';
 import {
   weekdayVN,
   WEEKLY_SCHEDULE,
+  getMostRecentDateForWeekday,
+  haptics,
   type ScheduledStation,
   type DaySchedule,
 } from '@/lib';
@@ -122,7 +124,7 @@ export default function ScheduleScreen() {
                       className="text-xs font-bold tracking-wide"
                       style={{ color: colors.primary }}
                     >
-                      HÔM NAY
+                      {STRINGS.schedule.todayTag}
                     </Text>
                   </View>
                 )}
@@ -130,48 +132,55 @@ export default function ScheduleScreen() {
 
               {/* Stations Grid */}
               <View className="pt-3 flex-row flex-wrap gap-2">
-                {day.stations.map((station) => (
-                  <Pressable
-                    key={station.code}
-                    testID={`schedule-station-${station.code}`}
-                    accessible
-                    accessibilityRole="button"
-                    accessibilityLabel={`Xem kết quả đài ${station.name}`}
-                    accessibilityHint="Mở màn hình kết quả của đài này"
-                    onPress={() =>
-                      router.push({
-                        pathname: '/(tabs)/results',
-                        params: { station: station.code },
-                      })
-                    }
-                    className="px-3 py-2 rounded-xl border flex-row items-center active:opacity-70"
-                    style={{
-                      backgroundColor: isToday
-                        ? `${colors.primary}0D`
-                        : colors.background,
-                      borderColor: isToday
-                        ? `${colors.primary}33`
-                        : colors.border,
-                    }}
-                  >
-                    <View
-                      className="w-2 h-2 rounded-full mr-2"
+                {day.stations.map((station) => {
+                  const nearestDate = getMostRecentDateForWeekday(day.dayOfWeek);
+                  return (
+                    <Pressable
+                      key={station.code}
+                      testID={`schedule-station-${station.code}`}
+                      accessible
+                      accessibilityRole="button"
+                      accessibilityLabel={`Xem kết quả đài ${station.name}`}
+                      accessibilityHint="Mở màn hình kết quả của kỳ quay gần nhất"
+                      onPress={() => {
+                        haptics.selection();
+                        router.push({
+                          pathname: '/(tabs)/results',
+                          params: {
+                            station: station.code,
+                            date: nearestDate,
+                          },
+                        });
+                      }}
+                      className="px-3 py-2 rounded-xl border flex-row items-center active:opacity-70"
                       style={{
                         backgroundColor: isToday
-                          ? colors.primary
-                          : colors.textMuted,
-                      }}
-                    />
-                    <Text
-                      className="text-xs font-semibold"
-                      style={{
-                        color: isToday ? colors.primary : colors.textMain,
+                          ? `${colors.primary}0D`
+                          : colors.background,
+                        borderColor: isToday
+                          ? `${colors.primary}33`
+                          : colors.border,
                       }}
                     >
-                      {station.name}
-                    </Text>
-                  </Pressable>
-                ))}
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{
+                          backgroundColor: isToday
+                            ? colors.primary
+                            : colors.textMuted,
+                        }}
+                      />
+                      <Text
+                        className="text-xs font-semibold"
+                        style={{
+                          color: isToday ? colors.primary : colors.textMain,
+                        }}
+                      >
+                        {station.name}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </View>
             </View>
           );

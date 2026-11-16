@@ -98,10 +98,10 @@ describe('ScheduleScreen', () => {
     expect(getByText('Đà Lạt (Lâm Đồng)')).toBeTruthy();
   });
 
-  it('highlights current weekday with Hôm nay badge', async () => {
+  it('highlights current weekday with Hôm nay badge (T10.53)', async () => {
     const { getByText, getByTestId } = await renderScheduleScreen();
     expect(getByTestId('schedule-today-badge')).toBeTruthy();
-    expect(getByText('HÔM NAY')).toBeTruthy();
+    expect(getByText('Hôm nay')).toBeTruthy();
   });
 
   it('selects correct Vietnam weekday across UTC boundary (T09.17)', async () => {
@@ -136,16 +136,22 @@ describe('ScheduleScreen', () => {
     expect(getByText(/Tết Nguyên Đán/i)).toBeTruthy();
   });
 
-  it('navigates to results with station param when a station is tapped (T09.33)', async () => {
+  it('navigates to results with station and nearest date param when a station is tapped (T09.33, T10.53)', async () => {
     const router = useRouter();
-    const { getByText } = await renderScheduleScreen();
+    const { getByTestId } = await renderScheduleScreen();
 
-    const stationBtn = getByText('Đồng Tháp');
+    const stationBtn = getByTestId('schedule-station-dong-thap');
+    expect(stationBtn.props.accessibilityRole).toBe('button');
+    expect(stationBtn.props.accessibilityLabel).toMatch(/Đồng Tháp/);
+
     fireEvent.press(stationBtn);
 
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/(tabs)/results',
-      params: { station: 'dong-thap' },
+      params: {
+        station: 'dong-thap',
+        date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      },
     });
   });
 });

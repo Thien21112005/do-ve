@@ -6,6 +6,7 @@ import {
   isLiveDrawingVN,
 } from '../date';
 import { formatDateVN } from '../format';
+import { getMostRecentDateForWeekday } from '../schedule';
 
 describe('Vietnam Timezone Date Helpers (T09.15)', () => {
   it('correctly resolves today in Vietnam timezone (Asia/Ho_Chi_Minh)', () => {
@@ -67,5 +68,18 @@ describe('Vietnam Timezone Date Helpers (T09.15)', () => {
     expect(isLiveDrawingVN(new Date('2026-11-15T09:40:00Z'))).toBe(true);
     // 16:41 VN -> 09:41 UTC -> false
     expect(isLiveDrawingVN(new Date('2026-11-15T09:41:00Z'))).toBe(false);
+  });
+
+  it('computes most recent date for a given weekday relative to base date (T10.53)', () => {
+    // Base date: 2026-11-16 (Monday, weekday = 1)
+    const baseMonday = '2026-11-16';
+    // Monday (1) -> same day 2026-11-16
+    expect(getMostRecentDateForWeekday(1, baseMonday)).toBe('2026-11-16');
+    // Sunday (7) -> yesterday 2026-11-15
+    expect(getMostRecentDateForWeekday(7, baseMonday)).toBe('2026-11-15');
+    // Saturday (6) -> 2 days ago 2026-11-14
+    expect(getMostRecentDateForWeekday(6, baseMonday)).toBe('2026-11-14');
+    // Tuesday (2) -> last Tuesday 2026-11-10
+    expect(getMostRecentDateForWeekday(2, baseMonday)).toBe('2026-11-10');
   });
 });

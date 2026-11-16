@@ -1,4 +1,5 @@
 import { STRINGS } from './strings';
+import { todayVN, weekdayVN, addDays } from './date';
 
 export interface ScheduledStation {
   code: string;
@@ -10,6 +11,20 @@ export interface DaySchedule {
   dayName: string;
   shortName: string;
   stations: ScheduledStation[];
+}
+
+/**
+ * Returns the most recent YYYY-MM-DD date for a given ISO weekday (1 = Monday ... 7 = Sunday)
+ * relative to a base date (defaults to todayVN()).
+ * If the target weekday is today, returns today's date.
+ */
+export function getMostRecentDateForWeekday(
+  targetDayOfWeek: number,
+  baseDate = todayVN(),
+): string {
+  const currentWeekday = weekdayVN(baseDate);
+  const diff = (currentWeekday - targetDayOfWeek + 7) % 7;
+  return addDays(baseDate, -diff);
 }
 
 export const WEEKLY_SCHEDULE: DaySchedule[] = [
