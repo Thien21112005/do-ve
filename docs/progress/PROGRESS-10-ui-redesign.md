@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 34 / 62 task hoàn thành
+- **Tổng quan:** 35 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -41,7 +41,7 @@
 | T10.31 | Bảng chi tiết giải trúng dễ đọc | DONE | 4fdf038 | 2026-11-16 | Mỗi giải 1 dòng thẳng cột, đối chiếu số trúng, tổng tiền to màu win, chú thích thuế TNCN |
 | T10.32 | Tô số khớp đúng cho giải phụ ĐB và khuyến khích | DONE | d8d373f | 2026-11-16 | Tô từng vị trí: vị trí khớp nền winTint, vị trí sai gạch chân textMuted, nhãn a11y chi tiết |
 | T10.33 | Thông tin "Chưa có kết quả" hữu ích hơn | DONE | cf37441 | 2026-11-16 | Hiện giờ dự kiến theo múi giờ VN ('Thường có lúc 16h35, còn N phút'), nút 'Lưu để tự dò lại' là Primary, 'Dò lại' là Secondary |
-| T10.34 | Kết quả dò hàng loạt dạng danh sách gọn | TODO | | | |
+| T10.34 | Kết quả dò hàng loạt dạng danh sách gọn | DONE | ca32d17 | 2026-11-16 | Thanh tóm tắt gọn, danh sách dòng phẳng số tabular + text trạng thái + tiền canh phải, đưa vé trúng lên đầu, bộ lọc 'Chỉ vé trúng' |
 | T10.35 | Lưu vé từ kết quả hàng loạt | TODO | | | |
 | T10.36 | Ô nhập hàng loạt dễ dùng | TODO | | | |
 | T10.37 | Khoảnh khắc trúng thưởng tinh tế (thay toast 🎉) | TODO | | | |
@@ -115,6 +115,7 @@
 - 2026-11-16 | T10.31 | Bảng chi tiết giải trúng dễ đọc | Nâng cấp bảng chi tiết giải trúng trong ResultCard: (1) Mỗi giải 1 dòng với tên giải tiếng Việt chuẩn, nhãn đối chiếu số trúng cụ thể ('Khớp N số cuối · XYZ'); (2) Số tiền thưởng thẳng cột căn phải với fontVariant tabular-nums; (3) Tổng tiền thưởng nổi bật (20px bold màu win); (4) Dòng chú thích pháp lý rõ ràng: 'Tiền thưởng trên vé mệnh giá 10.000đ, chưa trừ thuế TNCN'; (5) 7 unit tests xanh 100%.
 - 2026-11-16 | T10.32 | Tô số khớp đúng cho giải phụ ĐB và khuyến khích | Triển khai tô màu vị trí thông minh (position-aware digit highlighting) trong HighlightedTicket: (1) Hỗ trợ đầy đủ 3 loại đối chiếu: giải tiêu chuẩn (suffix), giải phụ Đặc biệt (sai số đầu, khớp 5 số cuối) và giải Khuyến khích (khớp số đầu, sai đúng 1 vị trí); (2) Vị trí khớp hiển thị nền winTint và chữ win; vị trí sai hiển thị màu textMuted kèm gạch chân tinh tế; (3) Cập nhật nhãn AccessibilityInfo thông báo chính xác ngữ cảnh trúng ('khớp 5 số cuối với giải Đặc biệt'); (4) 16 unit tests xanh 100%.
 - 2026-11-16 | T10.33 | Thông tin 'Chưa có kết quả' hữu ích hơn | Nâng cấp trạng thái Chưa có kết quả (RESULT_NOT_AVAILABLE) trong ResultCard: (1) Thêm hàm getEstimatedDrawTimeMessage() tính toán thời gian dự kiến có kết quả chuẩn giờ VN ('Thường có lúc 16h35, còn N phút' hoặc 'Thường có lúc 16h35 ngày DD/MM'); (2) Sắp xếp thứ tự hành động rõ ràng: nút 'Lưu để tự dò lại' là hành động chính (Primary button to, nền primary), nút 'Dò lại' là hành động phụ (Secondary ghost button); (3) Loại bỏ nút lưu vé trùng lặp ở chân thẻ khi pending; (4) 10 unit tests ResultCard và 10 unit tests format xanh 100%.
+- 2026-11-16 | T10.34 | Kết quả dò hàng loạt dạng danh sách gọn | Tái thiết kế BatchResultList: (1) Thanh tóm tắt gọn gàng (batch-summary-bar: đài · ngày, tóm tắt 'Dò N vé · K vé trúng · tổng tiền'); (2) Danh sách dòng phẳng (flat rows) thay thế card-in-card cồng kềnh; (3) Tự động sắp xếp các vé trúng thưởng lên đầu danh sách; (4) Bộ lọc linh hoạt 'Tất cả' / 'Chỉ vé trúng'; (5) Số vé tabular, hiển thị tên đài đầy đủ không hiển thị mã; (6) 7 unit tests xanh 100%.
 
 ## Vấn đề mở
 
