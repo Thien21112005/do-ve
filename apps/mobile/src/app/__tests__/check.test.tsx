@@ -18,6 +18,7 @@ jest.mock('@/lib/haptics', () => ({
     success: jest.fn(),
     warning: jest.fn(),
     error: jest.fn(),
+    selection: jest.fn(),
   },
 }));
 
@@ -84,6 +85,30 @@ describe('CheckScreen Form Composition', () => {
     // Past date chips should render a result indicator dot
     const pastDots = getAllByTestId('date-strip-chip-dot-past');
     expect(pastDots.length).toBeGreaterThan(0);
+  });
+
+  it('renders segmented control for single and batch modes with accessibility roles (T10.26)', async () => {
+    const { getByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    const tablist = getByTestId('mode-segmented');
+    expect(tablist.props.accessibilityRole).toBe('tablist');
+
+    const singleTab = getByTestId('mode-single-btn');
+    expect(singleTab.props.accessibilityRole).toBe('tab');
+    expect(singleTab.props.accessibilityState.selected).toBe(true);
+
+    const batchTab = getByTestId('mode-batch-btn');
+    expect(batchTab.props.accessibilityRole).toBe('tab');
+    expect(batchTab.props.accessibilityState.selected).toBe(false);
+
+    // Switch to batch mode
+    fireEvent.press(batchTab);
+    await waitFor(() => {
+      expect(getByTestId('mode-batch-btn').props.accessibilityState.selected).toBe(true);
+      expect(getByTestId('mode-single-btn').props.accessibilityState.selected).toBe(false);
+    });
   });
 
   it('enables submit button and calls check API when ticket is fully filled', async () => {

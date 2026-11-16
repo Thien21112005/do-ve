@@ -23,6 +23,7 @@ import {
   BatchTicketInput,
   parseBatchTickets,
   BatchResultList,
+  Segmented,
 } from '@/components';
 import { useTheme } from '@/theme';
 import { useQueryClient } from '@tanstack/react-query';
@@ -267,60 +268,21 @@ export default function CheckScreen() {
             />
           </View>
 
-          {/* Mode Selector: Dò từng vé / Dò hàng loạt */}
-          <View className="px-4 pt-3 pb-1">
-            <View
-              className="flex-row rounded-xl p-1 border"
-              style={{
-                backgroundColor: colors.surfaceSubtle,
-                borderColor: colors.border,
-              }}
-            >
-              <TouchableOpacity
-                testID="mode-single-btn"
-                onPress={() => setMode('single')}
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.check.modeSingle}
-                accessibilityState={{ selected: mode === 'single' }}
-                className="flex-1 py-2 rounded-lg items-center justify-center"
-                style={{
-                  backgroundColor:
-                    mode === 'single' ? colors.surface : 'transparent',
-                }}
-              >
-                <Text
-                  className={`text-xs ${mode === 'single' ? 'font-bold' : 'font-medium'}`}
-                  style={{
-                    color:
-                      mode === 'single' ? colors.primary : colors.textMuted,
-                  }}
-                >
-                  {STRINGS.check.modeSingle}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                testID="mode-batch-btn"
-                onPress={() => setMode('batch')}
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.check.modeBatch}
-                accessibilityState={{ selected: mode === 'batch' }}
-                className="flex-1 py-2 rounded-lg items-center justify-center"
-                style={{
-                  backgroundColor:
-                    mode === 'batch' ? colors.surface : 'transparent',
-                }}
-              >
-                <Text
-                  className={`text-xs ${mode === 'batch' ? 'font-bold' : 'font-medium'}`}
-                  style={{
-                    color: mode === 'batch' ? colors.primary : colors.textMuted,
-                  }}
-                >
-                  {STRINGS.check.modeBatch}
-                </Text>
-              </TouchableOpacity>
-            </View>
+          {/* Mode Selector: Dò từng vé / Dò hàng loạt (T10.26) */}
+          <View className="px-4 pt-2 pb-1">
+            <Segmented
+              testID="mode-segmented"
+              selectedKey={mode}
+              onChange={(key) => setMode(key as 'single' | 'batch')}
+              options={[
+                { key: 'single', label: 'Một vé', testID: 'mode-single-btn' },
+                {
+                  key: 'batch',
+                  label: 'Nhiều vé (tối đa 20)',
+                  testID: 'mode-batch-btn',
+                },
+              ]}
+            />
           </View>
 
           {/* Section: Nhập số vé */}

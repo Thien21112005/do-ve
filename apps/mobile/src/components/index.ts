@@ -16,3 +16,4 @@ export * from './BatchResultList';
 export * from './AppVersionGate';
 export * from './TicketStatusBadge';
 export * from './ErrorBoundary';
+export * from './ui/Segmented';
