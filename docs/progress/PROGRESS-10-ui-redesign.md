@@ -31,7 +31,7 @@
 | T10.21 | Skeleton đúng hình dạng cho Home | DONE | da48a08 | 2026-11-15 | Tạo primitive Skeleton & HomeDrawsSkeleton mô phỏng chuẩn xác 3 thẻ kết quả, triệt tiêu layout shift |
 | T10.22 | Ô nhập 6 số kiểu "tờ vé" | DONE | f3d714b | 2026-11-15 | 6 ô cao 56px, số tabular ticketLg, viền primary/error, nền surface, animation rung khi lỗi (tắt khi Reduce Motion), hidden TextInput hỗ trợ paste/autofill |
 | T10.23 | Ô nhập co giãn theo cỡ chữ hệ thống | DONE | 4233795 | 2026-11-16 | Hỗ trợ Dynamic Type: boxHeight co giãn theo PixelRatio.getFontScale() (tối đa 1.5x) với minHeight 56px, maxFontSizeMultiplier={1.4} tránh vỡ layout |
-| T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | TODO | | | |
+| T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | DONE | 874d647 | 2026-11-16 | Gộp Chọn ngày & Chọn đài vào card ngữ cảnh check-context-box tinh gọn (cao <= 1/3 iPhone SE), thêm dot chỉ báo kết quả trên chip ngày |
 | T10.25 | DateStrip tự cuộn tới ngày đang chọn | TODO | | | |
 | T10.26 | Segmented control "Một vé / Nhiều vé" | TODO | | | |
 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | TODO | | | |
@@ -105,6 +105,7 @@
 - 2026-11-15 | T10.21 | Skeleton đúng hình dạng cho Home | Triển khai primitive Skeleton và HomeDrawsSkeleton: (1) Component Skeleton hỗ trợ width, height, borderRadius và animation pulse mờ tỏ tôn trọng Reduce Motion; (2) HomeDrawsSkeleton mô phỏng trung thực hình dáng 3 thẻ kết quả đài (tiêu đề, badge, ô ĐB, dòng phụ G1/G8) thay thế ActivityIndicator, triệt tiêu hiện tượng giật nhảy layout (layout shift); (3) Hoàn tất 100% Nhóm C (4/4 tasks); (4) Unit tests xanh 100%.
 - 2026-11-15 | T10.22 | Ô nhập 6 số kiểu 'tờ vé' | Thiết kế lại TicketInput: (1) 6 ô vuông bo góc cao 56px, chữ số tabular kích thước ticketLg rõ ràng; (2) Ô đã nhập mang nền giấy surface, ô đang focus mang viền primary 2px, trạng thái lỗi viền error và animation rung ngang (tự động tắt khi bật Reduce Motion); (3) Tích hợp hidden TextInput hứng paste/autofill chuỗi 6 ký tự nguyên bản; (4) 12 unit tests xanh 100%.
 - 2026-11-16 | T10.23 | Ô nhập co giãn theo cỡ chữ hệ thống | Nâng cấp TicketInput hỗ trợ Dynamic Type: (1) Tính toán boxHeight linh hoạt theo PixelRatio.getFontScale() có trần chặn 1.5x để đảm bảo vừa vặn màn hình mà vẫn dễ đọc; (2) Thiết lập maxFontSizeMultiplier={1.4} cho các ô chữ số và hidden TextInput để triệt tiêu hiện tượng tràn hay cắt xén ký tự; (3) 13 unit tests xanh 100%.
+- 2026-11-16 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | Tái cấu trúc khối lựa chọn kỳ quay trên màn Dò vé: (1) Thay 2 tiêu đề và 2 hàng chip rời rạc bằng 1 card ngữ cảnh duy nhất (check-context-box) gồm header icon lịch + tiêu đề 'Kỳ mở thưởng', thanh chọn ngày DateStrip, đường kẻ mảnh và thanh chọn đài StationChips; (2) Tối ưu chiều cao tổng thể <= 1/3 màn hình iPhone SE (~150px); (3) Thêm chấm chỉ báo (dot) trên chip ngày báo hiệu các ngày đã có kết quả mở thưởng chính thức; (4) Unit tests xanh 100%.
 
 ## Vấn đề mở
 
