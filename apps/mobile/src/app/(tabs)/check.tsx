@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -30,6 +31,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
 import { useSavedTickets } from '@/store/ticketStore';
+import { useSettings } from '@/store/settings';
 import { getApiErrorMessage } from '@/api/client';
 import type { SavedTicketStatus } from '@/types';
 
@@ -55,6 +57,7 @@ export default function CheckScreen() {
   } = useCheckBatchTickets();
 
   const [savedTickets, { save: saveTicketToStore }] = useSavedTickets();
+  const [settings] = useSettings();
   const [justSaved, setJustSaved] = useState(false);
 
   // Initial state: today's date
@@ -159,12 +162,45 @@ export default function CheckScreen() {
     Boolean(selectedDate) &&
     !activeLoading;
 
+  const triggerSingleCheck = useCallback(
+    (ticketToSubmit: string) => {
+      if (
+        !selectedStation ||
+        !selectedDate ||
+        ticketToSubmit.length !== 6 ||
+        isLoading
+      ) {
+        return;
+      }
+      setJustSaved(false);
+      haptics.medium();
+      Keyboard.dismiss();
+      submitCheck(
+        {
+          ticket: ticketToSubmit,
+          stationCode: selectedStation,
+          drawDate: selectedDate,
+        },
+        {
+          onError: () => {
+            haptics.error();
+          },
+        },
+      );
+    },
+    [selectedStation, selectedDate, isLoading, submitCheck],
+  );
+
   const handleTicketChange = (val: string) => {
     setHasInteracted(true);
     setTicketNumber(val);
 
-    if (val.length === 5) {
-      haptics.warning();
+    if (result) resetSingle();
+    if (batchResult) resetBatch();
+
+    // Auto-submit when exactly 6 digits are typed, if enabled in settings (T10.28)
+    if (val.length === 6 && settings.autoSubmitEnabled && mode === 'single') {
+      triggerSingleCheck(val);
     }
   };
 
@@ -175,22 +211,11 @@ export default function CheckScreen() {
       haptics.warning();
       return;
     }
-    haptics.medium();
 
     if (mode === 'single') {
-      submitCheck(
-        {
-          ticket: ticketNumber,
-          stationCode: selectedStation,
-          drawDate: selectedDate,
-        },
-        {
-          onError: () => {
-            haptics.error();
-          },
-        },
-      );
+      triggerSingleCheck(ticketNumber);
     } else {
+      haptics.medium();
       submitBatchCheck(
         {
           stationCode: selectedStation,

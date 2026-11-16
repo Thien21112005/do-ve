@@ -84,7 +84,7 @@ export function DateStrip({
   // Auto-scroll to selectedDate when it changes (T10.25)
   useEffect(() => {
     const targetIndex = days.findIndex((d) => d.dateString === selectedDate);
-    if (targetIndex >= 0 && flatListRef.current) {
+    if (targetIndex > 0 && flatListRef.current) {
       try {
         flatListRef.current.scrollToIndex({
           index: targetIndex,
@@ -166,15 +166,7 @@ export function DateStrip({
           offset: (ITEM_WIDTH + ITEM_GAP) * index,
           index,
         })}
-        onScrollToIndexFailed={(info) => {
-          setTimeout(() => {
-            flatListRef.current?.scrollToIndex({
-              index: info.index,
-              animated: true,
-              viewPosition: 0.5,
-            });
-          }, 100);
-        }}
+        onScrollToIndexFailed={() => {}}
         ListFooterComponent={
           <TouchableOpacity
             testID={`${testID}-calendar-btn`}

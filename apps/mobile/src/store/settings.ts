@@ -8,6 +8,7 @@ export interface AppSettings {
   hapticsEnabled: boolean;
   themeMode: 'system' | 'light' | 'dark';
   reminderEnabled: boolean;
+  autoSubmitEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   hapticsEnabled: true,
   themeMode: 'system',
   reminderEnabled: false,
+  autoSubmitEnabled: true,
 };
 
 let currentSettings: AppSettings = { ...DEFAULT_SETTINGS };

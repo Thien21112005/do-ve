@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ReactNode } from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, configure } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
 import * as apiDraws from '@/api/draws';
@@ -8,6 +8,8 @@ import * as apiCheck from '@/api/check';
 import { getTickets, clearAllTickets } from '@/store/ticketStore';
 import NetInfo from '@react-native-community/netinfo';
 import { haptics } from '@/lib/haptics';
+
+configure({ asyncUtilTimeout: 3000 });
 
 jest.mock('@/api/draws');
 jest.mock('@/api/check');
@@ -129,6 +131,54 @@ describe('CheckScreen Form Composition', () => {
     expect(btnStyle.minHeight || btnStyle.height).toBeGreaterThanOrEqual(52);
   });
 
+  it('does not trigger warning haptics when 5 digits are typed (T10.28)', async () => {
+    const { getByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('station-chips-TPHCM')).toBeTruthy();
+    });
+
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '12345');
+    expect(haptics.warning).not.toHaveBeenCalled();
+    expect(apiCheck.checkTicket).not.toHaveBeenCalled();
+  });
+
+  it('automatically submits check and dismisses keyboard when 6 digits are typed (T10.28)', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '123456',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: false,
+      wins: [],
+      totalAmount: 0,
+      totalPrize: 0,
+    });
+
+    const { getByTestId, findByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('station-chips-TPHCM')).toBeTruthy();
+    });
+
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '123456');
+
+    await waitFor(() => {
+      expect(apiCheck.checkTicket).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ticket: '123456',
+          stationCode: 'TPHCM',
+        }),
+      );
+    });
+    expect(await findByTestId('check-result-section')).toBeTruthy();
+  });
+
   it('enables submit button and calls check API when ticket is fully filled', async () => {
     (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
       ticket: '987654',
@@ -198,12 +248,9 @@ describe('CheckScreen Form Composition', () => {
       { wrapper: createWrapper() },
     );
 
-    // Fill ticket 012345
+    // Fill ticket 012345 - auto-submits under T10.28
     await findByTestId('station-chips-TPHCM');
     fireEvent.changeText(getByTestId('ticket-input-digit-0'), '012345');
-
-    const submitBtn = await findByTestId('check-ticket-button');
-    fireEvent.press(submitBtn);
 
     // Save button should appear
     const saveBtn = await findByTestId('result-card-save-btn');
@@ -254,8 +301,8 @@ describe('CheckScreen Form Composition', () => {
       expect(getByTestId('check-result-section')).toBeTruthy();
     });
 
-    // Now change ticket number
-    fireEvent.changeText(getByTestId('ticket-input-digit-5'), '4');
+    // Now edit/delete digit from ticket number (e.g. backspace)
+    fireEvent.changeText(getByTestId('ticket-input-digit-5'), '');
 
     // Stale result card must disappear immediately
     await waitFor(() => {

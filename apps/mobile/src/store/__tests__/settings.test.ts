@@ -16,6 +16,7 @@ describe('Settings store', () => {
     expect(settings.celebrationEnabled).toBe(true);
     expect(settings.hapticsEnabled).toBe(true);
     expect(settings.themeMode).toBe('system');
+    expect(settings.autoSubmitEnabled).toBe(true);
   });
 
   it('updates settings and notifies subscribers', () => {
