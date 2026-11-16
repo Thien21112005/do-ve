@@ -61,7 +61,7 @@
 | T10.51 | Chỉ báo đang tự dò lại vé chờ | DONE | 65e1677 | 2026-11-16 | Hiển thị indicator 'Đang cập nhật N vé chờ…' kèm ActivityIndicator khi recheck và banner 'N vé vừa có kết quả' khi xong |
 | T10.52 | Màn Thêm dạng danh sách native | DONE | 413b3c4 | 2026-11-16 | Tái cấu trúc màn Thêm thành grouped list native bằng ListRow, phân nhóm Tiện ích / Ứng dụng, bỏ icon tint box, footer phiên bản 1 dòng |
 | T10.53 | Lịch quay thưởng bấm được và đúng | DONE | 416a0bc | 2026-11-16 | Mỗi đài là nút a11y riêng, bấm chuyển sang Kết quả đúng đài và ngày gần nhất (getMostRecentDateForWeekday), nhãn Hôm nay viết thường, haptics |
-| T10.54 | Cài đặt: switch chuẩn, nhóm rõ | TODO | | | |
+| T10.54 | Cài đặt: switch chuẩn, nhóm rõ | DONE | 53ff71e | 2026-11-16 | Thay toàn bộ mục cài đặt bằng ListRow native; Segmented cho chọn theme; Switch native trailing chuẩn a11y; thêm tuỳ chọn tự dò khi đủ 6 số |
 | T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | TODO | | | |
 | T10.56 | Màn bảo trì / cần cập nhật / lỗi theo hệ thống mới | TODO | | | |
 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | TODO | | | |
@@ -130,6 +130,9 @@
 - 2026-11-16 | T10.46 | Dòng vé gọn, tiêu đề nhóm dính (sticky) | Chuyển đổi danh sách vé sang SectionList với stickySectionHeadersEnabled: tiêu đề ngày mở thưởng dính đỉnh (section-header-YYYY-MM-DD) hiển thị ngày VN và số lượng vé; dòng vé gọn ListRow ~56px phẳng trên nền surface, số vé tabular 18px font-bold, badge TicketStatusBadge size 'sm', nút xoá hitSlop rộng; 10 unit tests xanh 100%.
 - 2026-11-16 | T10.47 | Vuốt để xoá + hoàn tác | Tích hợp Swipeable từ react-native-gesture-handler trên từng dòng vé: vuốt sang trái hiển thị nút Xoá màu đỏ (swipe-delete-btn-ID) kèm icon trash; khi xoá vé hiển thị Snackbar hoàn tác nổi bật (undo-delete-snackbar) 'Đã xóa vé 012345 · Hoàn tác' trong 5 giây thay cho hộp thoại Alert gây gián đoạn; bấm Hoàn tác khôi phục vé tức thì vào store và view; giữ nguyên action accessibility cho screen readers; 10 unit tests xanh 100%.
 - 2026-11-16 | T10.48 | Màn/Sheet chi tiết vé | Xây dựng Modal Bottom Sheet saved-ticket-detail-sheet khi chạm vào dòng vé: hiển thị thẻ vé số to rõ (số vé 32px tabular, đài, ngày VN, badge trạng thái), ô TextInput thêm/sửa ghi chú cá nhân (field note) lưu trực tiếp vào ticketStore, bộ 3 nút hành động (Xem bảng kết quả kỳ này, Dò lại vé này, Xóa vé khỏi máy); 11 unit tests xanh 100%.
+
+- 2026-11-16 | T10.53 | Lịch quay thưởng bấm được và đúng | Mỗi đài là nút a11y riêng, bấm chuyển sang Kết quả đúng đài và ngày gần nhất (getMostRecentDateForWeekday), nhãn Hôm nay viết thường, haptics.
+- 2026-11-16 | T10.54 | Cài đặt: switch chuẩn, nhóm rõ | Tái cấu trúc Cài đặt bằng ListRow native; Segmented cho chọn theme (Hệ thống · Sáng · Tối); các Switch native đặt ở trailing của ListRow có accessibilityRole='switch' và nhãn rõ ràng, loại bỏ button vô hình bọc ngoài; bổ sung tuỳ chọn 'Tự dò khi đủ 6 số' autoSubmitEnabled; 10 unit tests xanh 100%.
 
 ## Vấn đề mở
 
