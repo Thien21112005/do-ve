@@ -49,7 +49,7 @@
 | T10.39 | Bảng nhiều cột như XSMN in | DONE | b802ef8 | 2026-11-16 | Chế độ xem 'Cả ngày' 3-4 cột đài cạnh nhau (TP.HCM, Đồng Tháp, Cà Mau/Long An) cuộn ngang, giữ chế độ 'Từng đài' |
 | T10.40 | Ô "dò nhanh trong bảng" | DONE | bd9ca06 | 2026-11-16 | Ô nhập 2-6 số phía trên bảng kết quả, tô nền winTint tức thì cho các số khớp hậu tố mà không gọi API |
 | T10.41 | Trình bày số trong bảng | DONE | 00c8a96 | 2026-11-16 | Số tabular, cỡ chữ theo hạng giải (ĐB 22px màu special), G4 xếp lưới 2 cột cố định thẳng hàng, bỏ sọc xen kẽ |
-| T10.42 | Trạng thái Kết quả tách rõ | TODO | | | |
+| T10.42 | Trạng thái Kết quả tách rõ | DONE | ea5f27f | 2026-11-16 | Skeleton 9 dòng phẳng thay spinner, tách rõ 4 trạng thái (skeleton, chưa chọn đài, chưa có KQ kèm giờ dự kiến, lỗi mạng có nút thử lại) |
 | T10.43 | Chia sẻ kết quả | TODO | | | |
 | T10.44 | Thẻ tổng quan đầu danh sách | TODO | | | |
 | T10.45 | Bộ lọc trạng thái | TODO | | | |
@@ -123,6 +123,7 @@
 - 2026-11-16 | T10.39 | Bảng nhiều cột như XSMN in | Xây dựng MultiStationDrawTable hiển thị trọn vẹn 3-4 đài mở thưởng cùng ngày cạnh nhau dạng bảng nhiều cột khớp tờ kết quả XSMN truyền thống; hỗ trợ cuộn ngang mượt mà trên màn hình hẹp, tôn trọng thứ tự giải G8 -> ĐB; bổ sung hook useDailyDraws và bộ chọn Segmented 'Từng đài' / 'Cả ngày' trên ResultsScreen; 17 unit tests xanh 100%.
 - 2026-11-16 | T10.40 | Ô "dò nhanh trong bảng" | Tích hợp ô tìm kiếm nhanh (results-quick-search-input) 2–6 chữ số phía trên bảng kết quả; hỗ trợ tô sáng nền winTint và chữ win ngay lập tức cho các số trúng khớp hậu tố trên cả DrawTable và MultiStationDrawTable; nút xoá nhanh (results-quick-search-clear-btn); 20 unit tests xanh 100%.
 - 2026-11-16 | T10.41 | Trình bày số trong bảng | Nâng cấp trình bày bảng kết quả: định dạng số tabular, cỡ chữ theo cấp bậc giải (ĐB 22px leading-7 màu special, G1 18px, G8 20px), G4 xếp lưới 2 cột cố định w-1/2 giúp 7 số trúng thẳng cột hoàn hảo; loại bỏ hoàn toàn các sọc xen kẽ sặc sỡ, dùng divider mảnh phẳng chuẩn Direction A; 13 unit tests xanh 100%.
+- 2026-11-16 | T10.42 | Trạng thái Kết quả tách rõ | Dùng DrawTableSkeleton 9 dòng phẳng thay spinner, phân tách rõ 4 trạng thái (skeleton, chưa chọn đài với icon mapPin, chưa có kết quả kèm badge giờ dự kiến VN, lỗi mạng có nút Thử lại), fix an toàn null-check cho mapDrawResponseToUi; 9 unit tests xanh 100%.
 
 ## Vấn đề mở
 
