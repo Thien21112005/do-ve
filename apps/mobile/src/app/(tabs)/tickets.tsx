@@ -62,6 +62,9 @@ export default function TicketsScreen() {
   const [noteDraft, setNoteDraft] = useState('');
   const [isSavingNote, setIsSavingNote] = useState(false);
 
+  // Header overflow menu state (T10.49)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   useEffect(() => {
     return () => {
       if (undoTimeoutRef.current) {
@@ -350,16 +353,35 @@ export default function TicketsScreen() {
       testID="tickets-screen"
     >
       {/* Screen Header */}
-      <View className="px-4 pt-4 pb-2">
-        <Text
-          className="text-2xl font-bold mb-1"
-          style={{ color: colors.textMain }}
+      <View className="px-4 pt-4 pb-2 flex-row items-center justify-between">
+        <View className="flex-1 mr-2">
+          <Text
+            className="text-2xl font-bold mb-1"
+            style={{ color: colors.textMain }}
+          >
+            {STRINGS.tickets.screenTitle}
+          </Text>
+          <Text className="text-xs mb-1" style={{ color: colors.textMuted }}>
+            {STRINGS.tickets.subtitle}
+          </Text>
+        </View>
+        <TouchableOpacity
+          testID="tickets-menu-btn"
+          onPress={() => {
+            haptics.light();
+            setIsMenuOpen(true);
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Tùy chọn vé"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="w-10 h-10 rounded-full items-center justify-center border"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
         >
-          {STRINGS.tickets.screenTitle}
-        </Text>
-        <Text className="text-xs mb-1" style={{ color: colors.textMuted }}>
-          {STRINGS.tickets.subtitle}
-        </Text>
+          <Icon name="more" size={20} color={colors.textMain} />
+        </TouchableOpacity>
       </View>
 
       {sortedTickets.length === 0 ? (
@@ -553,60 +575,7 @@ export default function TicketsScreen() {
                 >
                   {STRINGS.tickets.ticketCount(filteredTickets.length)}
                 </Text>
-
-              <View className="flex-row items-center">
-                <TouchableOpacity
-                  testID="export-tickets-btn"
-                  onPress={handleExport}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.exportBtn}
-                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
-                  className="flex-row items-center px-2 py-1 rounded-lg mr-1.5"
-                >
-                  <Icon name="upload" size={13} color={colors.primary} />
-                  <Text
-                    className="text-xs font-semibold ml-1"
-                    style={{ color: colors.primary }}
-                  >
-                    {STRINGS.tickets.exportBtn}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  testID="import-tickets-btn"
-                  onPress={handleImport}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.importBtn}
-                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
-                  className="flex-row items-center px-2 py-1 rounded-lg mr-1.5"
-                >
-                  <Icon name="download" size={13} color={colors.primary} />
-                  <Text
-                    className="text-xs font-semibold ml-1"
-                    style={{ color: colors.primary }}
-                  >
-                    {STRINGS.tickets.importBtn}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  testID="clear-all-tickets-btn"
-                  onPress={handleClearAll}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.clearAll}
-                  hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }}
-                  className="flex-row items-center px-2 py-1 rounded-lg"
-                >
-                  <Icon name="trash" size={13} color={colors.error} />
-                  <Text
-                    className="text-xs font-semibold ml-1"
-                    style={{ color: colors.error }}
-                  >
-                    {STRINGS.tickets.clearAll}
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </View>
             </View>
           }
           ListEmptyComponent={
@@ -947,6 +916,136 @@ export default function TicketsScreen() {
             </View>
           )}
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Overflow Menu Modal (T10.49) */}
+      <Modal
+        visible={isMenuOpen}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsMenuOpen(false)}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setIsMenuOpen(false)}
+          className="flex-1 justify-end sm:justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            testID="tickets-overflow-menu"
+            className="rounded-2xl border p-4 shadow-xl mb-4 sm:mb-0"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            }}
+          >
+            <View
+              className="flex-row items-center justify-between pb-3 border-b mb-2"
+              style={{ borderColor: colors.border }}
+            >
+              <Text
+                className="text-base font-bold"
+                style={{ color: colors.textMain }}
+              >
+                Tùy chọn vé
+              </Text>
+              <TouchableOpacity
+                testID="tickets-menu-close-btn"
+                onPress={() => {
+                  haptics.light();
+                  setIsMenuOpen(false);
+                }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityRole="button"
+                accessibilityLabel="Đóng menu"
+                className="w-8 h-8 rounded-full items-center justify-center"
+              >
+                <Icon name="x" size={18} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Export */}
+            <TouchableOpacity
+              testID="export-tickets-btn"
+              onPress={() => {
+                setIsMenuOpen(false);
+                handleExport();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={STRINGS.tickets.exportBtn}
+              className="flex-row items-center py-3 px-2 rounded-xl"
+            >
+              <Icon name="upload" size={18} color={colors.primary} />
+              <View className="ml-3">
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: colors.textMain }}
+                >
+                  {STRINGS.tickets.exportBtn}
+                </Text>
+                <Text className="text-xs" style={{ color: colors.textMuted }}>
+                  Lưu danh sách vé thành file JSON
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Import */}
+            <TouchableOpacity
+              testID="import-tickets-btn"
+              onPress={() => {
+                setIsMenuOpen(false);
+                handleImport();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={STRINGS.tickets.importBtn}
+              className="flex-row items-center py-3 px-2 rounded-xl"
+            >
+              <Icon name="download" size={18} color={colors.primary} />
+              <View className="ml-3">
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: colors.textMain }}
+                >
+                  {STRINGS.tickets.importBtn}
+                </Text>
+                <Text className="text-xs" style={{ color: colors.textMuted }}>
+                  Nạp vé đã lưu từ file dự phòng
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <View
+              className="h-[1px] my-1"
+              style={{ backgroundColor: colors.border }}
+            />
+
+            {/* Clear all */}
+            <TouchableOpacity
+              testID="clear-all-tickets-btn"
+              onPress={() => {
+                setIsMenuOpen(false);
+                handleClearAll();
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={STRINGS.tickets.clearAll}
+              className="flex-row items-center py-3 px-2 rounded-xl"
+            >
+              <Icon name="trash" size={18} color={colors.error} />
+              <View className="ml-3">
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: colors.error }}
+                >
+                  {STRINGS.tickets.clearAll}
+                </Text>
+                <Text className="text-xs" style={{ color: colors.textMuted }}>
+                  Xóa toàn bộ vé đang lưu trên máy
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     </SafeAreaView>
   );

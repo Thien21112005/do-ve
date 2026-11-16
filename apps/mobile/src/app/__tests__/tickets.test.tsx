@@ -189,8 +189,19 @@ describe('TicketsScreen (Vé của tôi)', () => {
 
     const { getByTestId } = await render(<TicketsScreen />);
 
-    const clearAllBtn = getByTestId('clear-all-tickets-btn');
-    expect(clearAllBtn).toBeTruthy();
+    // Open header overflow menu (T10.49)
+    let menuBtn: any;
+    await waitFor(() => {
+      menuBtn = getByTestId('tickets-menu-btn');
+      expect(menuBtn).toBeTruthy();
+    });
+    fireEvent.press(menuBtn);
+
+    let clearAllBtn: any;
+    await waitFor(() => {
+      clearAllBtn = getByTestId('clear-all-tickets-btn');
+      expect(clearAllBtn).toBeTruthy();
+    });
 
     fireEvent.press(clearAllBtn);
 
@@ -211,6 +222,46 @@ describe('TicketsScreen (Vé của tôi)', () => {
     });
 
     expect(getByTestId('saved-tickets-empty')).toBeTruthy();
+  });
+
+  it('moves backup, restore and clear actions into header overflow menu (T10.49)', async () => {
+    await saveTicket({
+      ticket: '123456',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+
+    const screen = await render(<TicketsScreen />);
+    const { getByTestId, queryByTestId, getByText } = screen;
+
+    // Header has menu button
+    const menuBtn = getByTestId('tickets-menu-btn');
+    expect(menuBtn).toBeTruthy();
+
+    // Menu is initially closed
+    expect(queryByTestId('tickets-overflow-menu')).toBeNull();
+
+    // Open menu
+    fireEvent.press(menuBtn);
+    await waitFor(() => {
+      expect(getByTestId('tickets-overflow-menu')).toBeTruthy();
+    });
+
+    // 3 options are present
+    expect(getByTestId('export-tickets-btn')).toBeTruthy();
+    expect(getByTestId('import-tickets-btn')).toBeTruthy();
+    const clearBtn = getByTestId('clear-all-tickets-btn');
+    expect(clearBtn).toBeTruthy();
+    expect(getByText(/Xóa tất cả/)).toBeTruthy();
+
+    // Close menu
+    fireEvent.press(getByTestId('tickets-menu-close-btn'));
+    await waitFor(() => {
+      expect(queryByTestId('tickets-overflow-menu')).toBeNull();
+    });
   });
 
   it('supports pull-to-refresh on saved tickets list (T09.45)', async () => {
