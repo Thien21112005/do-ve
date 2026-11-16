@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,12 @@ import { useRouter } from 'expo-router';
 import { useSavedTickets } from '@/store/ticketStore';
 import { exportTicketsToJson, importTicketsFromJson } from '@/store';
 import { useTheme } from '@/theme';
-import { Icon, TicketStatusBadge } from '@/components';
+import {
+  Icon,
+  TicketStatusBadge,
+  SavedTicketsSummary,
+  type TicketFilterStatus,
+} from '@/components';
 import { usePendingTicketsRecheck } from '@/hooks';
 import { formatCurrency, formatDateVN } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
@@ -28,6 +33,30 @@ export default function TicketsScreen() {
   // Manual pull-to-refresh & recheck status (T09.45)
   const { isRechecking, refetchPending } = usePendingTicketsRecheck();
 
+  // Filter state for summary cards (T10.44 & T10.45)
+  const [activeFilter, setActiveFilter] = useState<TicketFilterStatus>('ALL');
+
+  // Summary statistics for header card (T10.44)
+  const summaryStats = useMemo(() => {
+    let pending = 0;
+    let won = 0;
+    let totalWonPrize = 0;
+    for (const t of tickets) {
+      if (t.status === 'PENDING') {
+        pending++;
+      } else if (t.status === 'WON') {
+        won++;
+        totalWonPrize += t.totalPrize || 0;
+      }
+    }
+    return {
+      total: tickets.length,
+      pending,
+      won,
+      totalWonPrize,
+    };
+  }, [tickets]);
+
   // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
     return [...tickets].sort((a, b) => {
@@ -36,6 +65,12 @@ export default function TicketsScreen() {
       return b.createdAt.localeCompare(a.createdAt);
     });
   }, [tickets]);
+
+  // Filtered tickets based on activeFilter
+  const filteredTickets = useMemo(() => {
+    if (activeFilter === 'ALL') return sortedTickets;
+    return sortedTickets.filter((t) => t.status === activeFilter);
+  }, [sortedTickets, activeFilter]);
 
   const handleDeleteTicket = (id: string, ticketNumber: string) => {
     Alert.alert(
@@ -104,7 +139,7 @@ export default function TicketsScreen() {
   };
 
   const renderItem = ({ item, index }: ListRenderItemInfo<SavedTicket>) => {
-    const prevItem = index > 0 ? sortedTickets[index - 1] : null;
+    const prevItem = index > 0 ? filteredTickets[index - 1] : null;
     const isNewDateGroup = !prevItem || prevItem.drawDate !== item.drawDate;
     const isWon = item.status === 'WON';
     const isPending = item.status === 'PENDING';
@@ -311,7 +346,7 @@ export default function TicketsScreen() {
       ) : (
         <FlatList
           testID="saved-tickets-list"
-          data={sortedTickets}
+          data={filteredTickets}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           refreshControl={
@@ -329,16 +364,27 @@ export default function TicketsScreen() {
             paddingBottom: 40,
           }}
           ListHeaderComponent={
-            <View
-              className="py-2.5 flex-row justify-between items-center border-b mb-1"
-              style={{ borderColor: colors.border }}
-            >
-              <Text
-                className="text-xs font-medium"
-                style={{ color: colors.textMuted }}
+            <View className="mb-1">
+              {/* Summary Stats Header (T10.44) */}
+              <SavedTicketsSummary
+                totalTickets={summaryStats.total}
+                pendingCount={summaryStats.pending}
+                wonCount={summaryStats.won}
+                totalWonPrize={summaryStats.totalWonPrize}
+                activeFilter={activeFilter}
+                onSelectFilter={setActiveFilter}
+              />
+
+              <View
+                className="py-2.5 flex-row justify-between items-center border-b mb-1"
+                style={{ borderColor: colors.border }}
               >
-                {STRINGS.tickets.ticketCount(sortedTickets.length)}
-              </Text>
+                <Text
+                  className="text-xs font-medium"
+                  style={{ color: colors.textMuted }}
+                >
+                  {STRINGS.tickets.ticketCount(filteredTickets.length)}
+                </Text>
 
               <View className="flex-row items-center">
                 <TouchableOpacity
@@ -392,6 +438,7 @@ export default function TicketsScreen() {
                   </Text>
                 </TouchableOpacity>
               </View>
+            </View>
             </View>
           }
           ListFooterComponent={

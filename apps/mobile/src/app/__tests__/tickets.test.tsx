@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import TicketsScreen from '../(tabs)/tickets';
 import { saveTicket, clearAllTickets, getTickets } from '@/store/ticketStore';
@@ -188,6 +188,77 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(list.props.refreshControl).toBeTruthy();
     expect(list.props.refreshControl.props.refreshing).toBe(false);
     expect(typeof list.props.refreshControl.props.onRefresh).toBe('function');
+  });
+
+  it('renders summary header with 3 stats (total, pending, won) and filters list on tap (T10.44)', async () => {
+    await saveTicket({
+      ticket: '012345',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 2000000000,
+    });
+    await saveTicket({
+      ticket: '654321',
+      station: 'BD',
+      stationName: 'Bình Dương',
+      drawDate: '2026-11-14',
+      status: 'LOST',
+      totalPrize: 0,
+    });
+    await saveTicket({
+      ticket: '888999',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+
+    const { getByTestId, getByText, queryByText } = await render(<TicketsScreen />);
+
+    // Verify summary card presence
+    expect(getByTestId('saved-tickets-summary')).toBeTruthy();
+    expect(getByTestId('summary-stat-total')).toBeTruthy();
+    expect(getByTestId('summary-stat-pending')).toBeTruthy();
+    expect(getByTestId('summary-stat-won')).toBeTruthy();
+
+    // Verify summary numbers
+    expect(within(getByTestId('summary-stat-total')).getByText('3')).toBeTruthy();
+    expect(within(getByTestId('summary-stat-pending')).getByText('1')).toBeTruthy();
+    expect(
+      within(getByTestId('summary-stat-won')).getByText('2.000.000.000 đ'),
+    ).toBeTruthy();
+
+    // Initially all 3 tickets are displayed
+    expect(getByText('012345')).toBeTruthy();
+    expect(getByText('654321')).toBeTruthy();
+    expect(getByText('888999')).toBeTruthy();
+
+    // Tap "Đang chờ" stat to filter by pending
+    fireEvent.press(getByTestId('summary-stat-pending'));
+    await waitFor(() => {
+      expect(getByText('888999')).toBeTruthy();
+      expect(queryByText('012345')).toBeNull();
+      expect(queryByText('654321')).toBeNull();
+    });
+
+    // Tap "Tiền trúng" stat to filter by won
+    fireEvent.press(getByTestId('summary-stat-won'));
+    await waitFor(() => {
+      expect(getByText('012345')).toBeTruthy();
+      expect(queryByText('888999')).toBeNull();
+      expect(queryByText('654321')).toBeNull();
+    });
+
+    // Tap "Tổng vé" stat to reset to all
+    fireEvent.press(getByTestId('summary-stat-total'));
+    await waitFor(() => {
+      expect(getByText('012345')).toBeTruthy();
+      expect(getByText('654321')).toBeTruthy();
+      expect(getByText('888999')).toBeTruthy();
+    });
   });
 });
 
