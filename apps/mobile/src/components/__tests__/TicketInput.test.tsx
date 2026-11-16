@@ -185,4 +185,31 @@ describe('TicketInput Component', () => {
     expect(onChangeText).toHaveBeenCalledWith('654321');
     expect(onComplete).toHaveBeenCalledWith('654321');
   });
+
+  it('scales box dimensions and sets maxFontSizeMultiplier for dynamic type (T10.23)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { PixelRatio } = require('react-native');
+    const spyFontScale = jest.spyOn(PixelRatio, 'getFontScale').mockReturnValue(2.0);
+
+    try {
+      const { getByTestId } = await render(
+        <TicketInput value="123456" onChangeText={jest.fn()} />,
+      );
+
+      const digitInput = getByTestId('ticket-input-digit-0');
+      // maxFontSizeMultiplier should be capped reasonably (between 1.2 and 1.5) to prevent clipping
+      expect(digitInput.props.maxFontSizeMultiplier).toBeDefined();
+      expect(digitInput.props.maxFontSizeMultiplier).toBeLessThanOrEqual(1.5);
+      expect(digitInput.props.maxFontSizeMultiplier).toBeGreaterThanOrEqual(1.2);
+
+      // Box height scales with dynamic type (greater than base 56px when fontScale is 2.0)
+      const box0 = digitInput.parent;
+      const boxStyles = Array.isArray(box0?.props.style)
+        ? Object.assign({}, ...box0?.props.style)
+        : box0?.props.style;
+      expect(boxStyles?.height).toBeGreaterThan(56);
+    } finally {
+      spyFontScale.mockRestore();
+    }
+  });
 });

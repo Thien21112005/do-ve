@@ -4,6 +4,7 @@ import {
   TextInput,
   Animated,
   AccessibilityInfo,
+  PixelRatio,
   type NativeSyntheticEvent,
 } from 'react-native';
 import { useTheme } from '@/theme';
@@ -137,6 +138,10 @@ export function TicketInput({
     }
   };
 
+  // Dynamic type font scaling: cap fontScale to 1.5 to prevent layout breaking
+  const fontScale = PixelRatio.getFontScale ? PixelRatio.getFontScale() : 1;
+  const boxHeight = Math.max(56, Math.round(56 * Math.min(fontScale, 1.5)));
+
   return (
     <Animated.View
       testID={testID}
@@ -156,6 +161,7 @@ export function TicketInput({
         keyboardType="number-pad"
         maxLength={TICKET_LENGTH}
         editable={!disabled}
+        maxFontSizeMultiplier={1.4}
         style={{
           position: 'absolute',
           width: 1,
@@ -185,12 +191,12 @@ export function TicketInput({
         return (
           <View
             key={index}
-            className="w-12 h-14 min-h-[56px] rounded-xl items-center justify-center border shadow-xs"
+            className="w-12 rounded-xl items-center justify-center border shadow-xs"
             style={{
               borderColor,
               borderWidth,
               backgroundColor: isFilled ? colors.surface : colors.surfaceSubtle,
-              height: 56,
+              height: boxHeight,
               minHeight: 56,
             }}
           >
@@ -214,6 +220,7 @@ export function TicketInput({
               editable={!disabled}
               autoFocus={autoFocus && index === 0}
               selectTextOnFocus
+              maxFontSizeMultiplier={1.4}
               accessibilityLabel={`Chữ số thứ ${index + 1}`}
               accessibilityHint="Nhập chữ số từ 0 đến 9"
               accessibilityState={{ disabled }}
