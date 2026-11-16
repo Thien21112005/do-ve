@@ -69,34 +69,50 @@ describe('ResultCard Component', () => {
     totalPrize: 0,
   };
 
-  it('renders winning state with congratulation message, prize list, and total amount', async () => {
-    const { getByText, getByTestId } = await render(
+  it('renders winning state with hero ticket number, context line, prize list, and 22px status title (T10.30)', async () => {
+    const { getByText, getByTestId, queryByText } = await render(
       <ResultCard result={winningResult} />,
     );
 
     expect(getByTestId('result-card')).toBeTruthy();
-    expect(getByText(/CHÚC MỪNG/i)).toBeTruthy();
+
+    // 1. Context Line: Đài · Ngày
+    const contextLine = getByTestId('result-card-context-line');
+    expect(contextLine).toBeTruthy();
+    expect(getByText(/TP\. Hồ Chí Minh · 14\/11\/2026/)).toBeTruthy();
+
+    // 2. Hero Ticket Number (Nhân vật chính)
+    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
+    expect(getByTestId('ticket-segment-matched')).toBeTruthy();
+    expect(getByText('456')).toBeTruthy();
+    expect(getByText('123')).toBeTruthy();
+
+    // 3. Status title 22px bold
+    const statusTitle = getByTestId('result-card-status-title');
+    expect(statusTitle).toBeTruthy();
     expect(getByText('Trúng 2 giải')).toBeTruthy();
+
+    // 4. Duplicate badges removed
+    expect(queryByText('TRÚNG')).toBeNull();
+
+    // 5. Prize list & total
     expect(getByText('Giải bảy')).toBeTruthy();
     expect(getByText('200.000 đ')).toBeTruthy();
     expect(getByText('Giải tám')).toBeTruthy();
     expect(getByText('100.000 đ')).toBeTruthy();
     expect(getByText('300.000 đ')).toBeTruthy();
-    expect(getByTestId('ticket-segment-matched')).toBeTruthy();
-    expect(getByText('456')).toBeTruthy();
-    expect(getByText('123')).toBeTruthy();
-    expect(getByText(/TP. Hồ Chí Minh/)).toBeTruthy();
-    expect(getByText(/14\/11\/2026/)).toBeTruthy();
   });
 
-  it('renders non-winning state with polite message and 0 đ', async () => {
+  it('renders non-winning state with hero ticket and clean status (T10.30)', async () => {
     const { getByText, getByTestId, queryByText } = await render(
       <ResultCard result={losingResult} />,
     );
 
     expect(getByTestId('result-card')).toBeTruthy();
-    expect(getByText(/không trúng giải/i)).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
     expect(getByText('654321')).toBeTruthy();
+    expect(getByTestId('result-card-status-title')).toBeTruthy();
+    expect(getByText('Không trúng')).toBeTruthy();
     expect(queryByText('Trúng 2 giải')).toBeNull();
   });
 

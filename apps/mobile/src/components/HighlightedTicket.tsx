@@ -72,8 +72,9 @@ export function HighlightedTicket({
   const { colors } = useTheme();
   const segments = computeMatchedSegments(ticket, matchedDigits);
 
+  const isLg = size === 'lg';
   const textSizeClass =
-    size === 'lg' ? 'text-2xl' : size === 'sm' ? 'text-base' : 'text-xl';
+    size === 'lg' ? 'text-[32px] leading-10' : size === 'sm' ? 'text-base' : 'text-xl';
 
   const accessibilityLabel = `Số vé ${ticket}${
     matchedDigits
@@ -95,15 +96,18 @@ export function HighlightedTicket({
             <View
               key={`seg-${index}`}
               testID="ticket-segment-matched"
-              className="px-1 py-0.5 rounded border"
+              className={`${isLg ? 'px-1.5 py-1 rounded-lg' : 'px-1 py-0.5 rounded'} border`}
               style={{
-                backgroundColor: colors.winBg,
+                backgroundColor: colors.winTint || `${colors.win}15`,
                 borderColor: colors.winBorder,
               }}
             >
               <Text
                 className={`${textSizeClass} font-bold tracking-widest`}
-                style={{ color: colors.win }}
+                style={{
+                  color: colors.win,
+                  fontVariant: ['tabular-nums'],
+                }}
               >
                 {segment.text}
               </Text>
@@ -119,7 +123,10 @@ export function HighlightedTicket({
           >
             <Text
               className={`${textSizeClass} font-bold tracking-widest`}
-              style={{ color: colors.textMuted }}
+              style={{
+                color: colors.textMain,
+                fontVariant: ['tabular-nums'],
+              }}
             >
               {segment.text}
             </Text>

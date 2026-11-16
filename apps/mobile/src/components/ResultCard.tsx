@@ -103,136 +103,65 @@ export function ResultCard({
           borderColor: cardBorder,
         },
       ]}
-      className="mt-6 mx-5 p-5 rounded-2xl border shadow-sm"
+      className="mt-4 mx-4 p-5 rounded-2xl border shadow-xs"
     >
-      {/* Header status */}
-      <View
-        className="flex-row items-center justify-between pb-3 border-b"
-        style={{ borderColor: colors.border }}
-      >
-        <View className="flex-row items-center space-x-2.5">
-          <View
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{
-              backgroundColor: isPending
-                ? `${colors.pending}1A`
-                : isWon
-                  ? `${colors.win}1A`
-                  : colors.surfaceSubtle,
-            }}
-          >
-            <Icon
-              name={isPending ? 'clock' : isWon ? 'trophy' : 'info'}
-              size={20}
-              color={
-                isPending
-                  ? colors.pending
-                  : isWon
-                    ? colors.win
-                    : colors.textMuted
-              }
-            />
-          </View>
-          <View className="ml-3">
-            <Text
-              className="text-base font-bold tracking-tight"
-              style={{
-                color: isPending
-                  ? colors.pending
-                  : isWon
-                    ? colors.win
-                    : colors.textMain,
-              }}
-            >
-              {isPending
-                ? STRINGS.check.resultPendingTitle
-                : isWon
-                  ? STRINGS.check.resultWonTitle
-                  : STRINGS.check.resultLostTitle}
-            </Text>
-            <Text className="text-xs" style={{ color: colors.textMuted }}>
-              {isPending
-                ? STRINGS.check.resultPendingSubtitle
-                : isWon
-                  ? STRINGS.check.resultWonCount(winCount)
-                  : STRINGS.check.resultLostSubtitle}
-            </Text>
-          </View>
-        </View>
-
-        {isWon && (
-          <View
-            className="px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: `${colors.win}20` }}
-          >
-            <Text
-              className="text-xs font-semibold"
-              style={{ color: colors.win }}
-            >
-              {STRINGS.check.resultWonBadge}
-            </Text>
-          </View>
-        )}
-
-        {isPending && (
-          <View
-            className="px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: `${colors.pending}20` }}
-          >
-            <Text
-              className="text-xs font-semibold"
-              style={{ color: colors.pending }}
-            >
-              {STRINGS.check.resultPendingBadge}
-            </Text>
-          </View>
-        )}
+      {/* 1. Context Line: Đài · Ngày (T10.30) */}
+      <View className="flex-row items-center justify-between pb-1">
+        <Text
+          testID="result-card-context-line"
+          className="text-xs font-semibold tracking-wide"
+          style={{ color: colors.textMuted }}
+        >
+          {stationName ? `${stationName} · ` : ''}{formattedDate}
+        </Text>
       </View>
 
-      {/* Ticket Details */}
-      <View
-        className="my-3.5 p-3 rounded-xl flex-row justify-between items-center"
-        style={{ backgroundColor: colors.surfaceSubtle }}
-      >
-        <View>
-          <Text className="text-xs mb-0.5" style={{ color: colors.textMuted }}>
-            {STRINGS.check.ticketNumberLabel}
-          </Text>
-          <HighlightedTicket
-            ticket={result.ticket ?? ''}
-            matchedDigits={longestMatched}
-            size="md"
-          />
-        </View>
-        <View className="items-end">
-          <Text
-            className="text-xs font-medium"
-            style={{ color: colors.textMain }}
-          >
-            {stationName}
-          </Text>
-          <Text className="text-xs mt-0.5" style={{ color: colors.textMuted }}>
-            Ngày {formattedDate}
-          </Text>
-        </View>
+      {/* 2. Hero Ticket Number: Nhân vật chính (T10.30) */}
+      <View className="py-2 items-start" testID="result-card-hero-ticket">
+        <HighlightedTicket
+          ticket={result.ticket ?? ''}
+          matchedDigits={longestMatched}
+          size="lg"
+        />
       </View>
 
-      {/* Body: Pending notice, Wins list, or non-winning notice */}
+      {/* 3. Status Title 22px bold (T10.30) */}
+      <View className="mt-1 mb-3">
+        <Text
+          testID="result-card-status-title"
+          className="text-[22px] leading-7 font-bold tracking-tight"
+          style={{
+            color: isPending
+              ? colors.pending
+              : isWon
+                ? colors.win
+                : colors.textMain,
+          }}
+        >
+          {isPending
+            ? 'Chưa có kết quả'
+            : isWon
+              ? (winCount > 1 ? `Trúng ${winCount} giải` : 'Trúng 1 giải')
+              : 'Không trúng'}
+        </Text>
+        <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>
+          {isPending
+            ? 'Chưa có kết quả, thường có sau 16h35'
+            : isWon
+              ? `Vé số ${result.ticket} trùng khớp giải mở thưởng`
+              : 'Vé không trùng với các bộ số mở thưởng kỳ này'}
+        </Text>
+      </View>
+
+      {/* 4. Body: Pending notice, Wins list, or non-winning notice */}
       {isPending ? (
-        <View className="py-2.5 mb-2">
-          <Text
-            className="text-sm leading-relaxed"
-            style={{ color: colors.textMain }}
-          >
-            {STRINGS.check.pendingNotice}
-          </Text>
-
+        <View className="py-2 mb-2">
           {/* Dò lại button */}
           {onCheckAgain && (
             <TouchableOpacity
               testID="result-card-retry-btn"
               onPress={onCheckAgain}
-              className="mt-3.5 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
+              className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
               style={{
                 borderColor: colors.pending,
                 backgroundColor: `${colors.pending}15`,
@@ -308,16 +237,7 @@ export function ResultCard({
             </Text>
           </View>
         </View>
-      ) : (
-        <View className="py-2 mb-2">
-          <Text
-            className="text-sm text-center leading-relaxed"
-            style={{ color: colors.textMuted }}
-          >
-            {STRINGS.check.lostNotice(result.ticket ?? '')}
-          </Text>
-        </View>
-      )}
+      ) : null}
 
       {/* Save ticket button if callback provided */}
       {onSaveTicket && (
