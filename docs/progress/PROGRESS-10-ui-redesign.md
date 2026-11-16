@@ -65,7 +65,7 @@
 | T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | DONE | 3f6f158 | 2026-11-16 | Email/website dùng Linking.openURL bấm được; tiêu đề mục chữ thường; phiên bản và build dynamic; bỏ card bao quanh đoạn văn dài |
 | T10.56 | Màn bảo trì / cần cập nhật / lỗi theo hệ thống mới | DONE | d8728fd | 2026-11-16 | Tái cấu trúc AppVersionGate và ErrorBoundary bằng Button primitive và theme token, hỗ trợ 2 theme |
 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | DONE | 83fe52b | 2026-11-16 | Thống nhất trạng thái (Chờ kết quả / Đã có kết quả), bỏ badge chữ hoa, dời toàn bộ chuỗi inline vào strings.ts |
-| T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | TODO | | | |
+| T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | DONE | 6011232 | 2026-11-16 | Rà soát minHeight 44pt hoặc hitSlop cho toàn bộ nút; tích hợp kiểm tra Reduce Motion native trong ResultCard |
 | T10.59 | Motion có hệ thống | TODO | | | |
 | T10.60 | Haptic tinh tế, tôn trọng cài đặt | DONE | 3fe955f | 2026-11-15 | Bọc haptics helper kiểm tra settings.hapticsEnabled, bổ sung haptics.selection (đồng bộ T09.46) |
 | T10.61 | Hỗ trợ màn hình lớn tối thiểu | TODO | | | |
@@ -136,6 +136,7 @@
 - 2026-11-16 | T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | Nâng cấp màn Giới thiệu: liên kết email và website bấm được kích hoạt Linking.openURL (mailto:... và https://...) kèm phản hồi xúc giác haptics.selection; chuyển tiêu đề các mục sang chữ thường/sentence case có trọng lượng semibold; bỏ card bao quanh các đoạn văn bản dài; phiên bản và build lấy động từ Expo config; 4 unit tests xanh 100%.
 - 2026-11-16 | T10.56 | Màn bảo trì / cần cập nhật / lỗi theo hệ thống mới | Tái cấu trúc AppVersionGate và ErrorBoundary: áp dụng đầy đủ Button primitive và các semantic token màu theo Hướng A (Tờ vé giấy), kiểm tra động Appearance ở cả 2 theme; hoàn tất 100% Nhóm G (5/5 tasks); 10 unit tests xanh 100%.
 - 2026-11-16 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | Thống nhất thuật ngữ trạng thái ('Chờ kết quả', 'Đã có kết quả'); bỏ hoàn toàn chữ in hoa cho các badge tiếng Việt ('Trúng', 'Không trúng', 'Chờ kết quả'); xoá thuật ngữ kỹ thuật 'PENDING' khỏi UI; dời toàn bộ các chuỗi tiếng Việt hardcode trong .tsx vào strings.ts; 4 unit tests strings.test.ts và component tests xanh 100%.
+- 2026-11-16 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | Thiết lập vùng chạm tối thiểu 44×44pt qua minHeight và hitSlop cho các nút bấm (nút retry banner, nút xem tất cả, nút reset quick check, các nút lưu và dò lại); tích hợp AccessibilityInfo.isReduceMotionEnabled() trong ResultCard tự động tắt animation trượt; 9 unit tests accessibility.test.tsx xanh 100%.
 
 ## Vấn đề mở
 
