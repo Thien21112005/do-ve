@@ -7,6 +7,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useTheme } from '@/theme';
+import { motion } from '@/theme/tokens';
 import { Icon } from './Icon';
 import {
   HighlightedTicket,
@@ -64,13 +65,16 @@ export function ResultCard({
       translateY.value = 0;
       return;
     }
+    const [x1, y1, x2, y2] = motion.easing.outQuart;
+    const easingOutQuart = Easing.bezier(x1, y1, x2, y2);
+
     opacity.value = withTiming(1, {
-      duration: 250,
-      easing: Easing.out(Easing.ease),
+      duration: motion.duration.slow,
+      easing: easingOutQuart,
     });
     translateY.value = withTiming(0, {
-      duration: 250,
-      easing: Easing.out(Easing.ease),
+      duration: motion.duration.slow,
+      easing: easingOutQuart,
     });
   }, [opacity, translateY, reduceMotion]);
 

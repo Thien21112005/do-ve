@@ -135,3 +135,25 @@ export const typeScale = {
 } as const;
 
 export type TextVariant = keyof typeof typeScale;
+
+/**
+ * Disciplined motion tokens (T10.59):
+ * 3 standard durations (120/200/320ms) + 2 standard easings (out-quart & spring).
+ * No scattered durations like 250, 300, 350, 800.
+ */
+export const motion = {
+  duration: {
+    fast: 120, // Button press, toggle, subtle feedback
+    normal: 200, // Segmented control, tabs, chip transitions
+    slow: 320, // Card entrance reveal, sheet, modal transition
+  },
+  easing: {
+    outQuart: [0.25, 1, 0.5, 1] as const,
+    spring: {
+      damping: 15,
+      stiffness: 150,
+      mass: 0.8,
+    },
+  },
+} as const;
+

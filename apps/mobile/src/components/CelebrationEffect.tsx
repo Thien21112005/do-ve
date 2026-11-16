@@ -12,6 +12,7 @@ import Animated, {
 import { useSettings } from '@/store';
 import { haptics } from '@/lib';
 import { useTheme } from '@/theme';
+import { motion } from '@/theme/tokens';
 import { Icon } from './Icon';
 
 export interface CelebrationEffectProps {
@@ -45,17 +46,20 @@ export function CelebrationEffect({
           haptics.success();
         }
 
+        const [x1, y1, x2, y2] = motion.easing.outQuart;
+        const easingOutQuart = Easing.bezier(x1, y1, x2, y2);
+
         opacity.value = withSequence(
-          withTiming(1, { duration: 250, easing: Easing.out(Easing.ease) }),
+          withTiming(1, { duration: motion.duration.normal, easing: easingOutQuart }),
           withDelay(
             1200,
-            withTiming(0, { duration: 350, easing: Easing.in(Easing.ease) }),
+            withTiming(0, { duration: motion.duration.slow, easing: Easing.in(Easing.ease) }),
           ),
         );
 
         scale.value = withSequence(
-          withTiming(1.1, { duration: 300, easing: Easing.out(Easing.ease) }),
-          withTiming(1, { duration: 200 }),
+          withTiming(1.1, { duration: motion.duration.slow, easing: easingOutQuart }),
+          withTiming(1, { duration: motion.duration.normal }),
         );
 
         const timer = setTimeout(() => {
