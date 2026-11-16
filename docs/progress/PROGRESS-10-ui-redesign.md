@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 52 / 62 task hoàn thành
+- **Tổng quan:** 53 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -60,7 +60,7 @@
 | T10.50 | Trạng thái rỗng có minh hoạ | DONE | df5780a | 2026-11-16 | Thêm component TicketEmptyIllustration chuẩn SVG tờ vé giấy ngà ấm, nút chính 'Dò vé đầu tiên', nút phụ 'Khôi phục từ file' |
 | T10.51 | Chỉ báo đang tự dò lại vé chờ | DONE | 65e1677 | 2026-11-16 | Hiển thị indicator 'Đang cập nhật N vé chờ…' kèm ActivityIndicator khi recheck và banner 'N vé vừa có kết quả' khi xong |
 | T10.52 | Màn Thêm dạng danh sách native | DONE | 413b3c4 | 2026-11-16 | Tái cấu trúc màn Thêm thành grouped list native bằng ListRow, phân nhóm Tiện ích / Ứng dụng, bỏ icon tint box, footer phiên bản 1 dòng |
-| T10.53 | Lịch quay thưởng bấm được và đúng | TODO | | | |
+| T10.53 | Lịch quay thưởng bấm được và đúng | DONE | 416a0bc | 2026-11-16 | Mỗi đài là nút a11y riêng, bấm chuyển sang Kết quả đúng đài và ngày gần nhất (getMostRecentDateForWeekday), nhãn Hôm nay viết thường, haptics |
 | T10.54 | Cài đặt: switch chuẩn, nhóm rõ | TODO | | | |
 | T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | TODO | | | |
 | T10.56 | Màn bảo trì / cần cập nhật / lỗi theo hệ thống mới | TODO | | | |
