@@ -19,8 +19,8 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
-| 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 0 / 72 | TODO | 10 P0 · 29 P1 · 30 P2 · 3 P3 — ưu tiên nhóm A (hợp đồng API) và T09.57 (admin key) |
-| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 0 / 62 | TODO | Baseline Nielsen 21/40, audit native 10/20; cần chốt hướng thị giác T10.02 |
+| 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 38 / 62 | DOING | Hướng A 'Tờ vé giấy' đã duyệt; hoàn tất 100% Nhóm A, B, C, D |
 
 ## Mốc
 
