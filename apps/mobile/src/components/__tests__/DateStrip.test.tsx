@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { DateStrip, getPastDays } from '../DateStrip';
 import { colors } from '@/theme';
 
@@ -75,6 +75,52 @@ describe('DateStrip Component', () => {
           backgroundColor: colors.light.primary,
         }),
       );
+    });
+
+    it('opens date picker modal with up to 60 days when calendar button is pressed (T10.25)', async () => {
+      const onSelectDate = jest.fn();
+      const { getByTestId, queryByTestId, findByTestId } = await render(
+        <DateStrip selectedDate="2026-11-14" onSelectDate={onSelectDate} />,
+      );
+
+      // Calendar button should be present
+      const calendarBtn = getByTestId('date-strip-calendar-btn');
+      expect(calendarBtn).toBeTruthy();
+
+      // Modal should initially be closed
+      expect(queryByTestId('date-picker-modal')).toBeNull();
+
+      // Open modal
+      fireEvent.press(calendarBtn);
+      const modal = await findByTestId('date-picker-modal');
+      expect(modal).toBeTruthy();
+
+      // Modal has a close button
+      const closeBtn = getByTestId('date-picker-close-btn');
+      expect(closeBtn).toBeTruthy();
+    });
+
+    it('selects date from modal picker within 60 days (T10.25)', async () => {
+      const onSelectDate = jest.fn();
+      const past60Days = getPastDays(60);
+      const olderDate = past60Days[30].dateString; // 30 days ago
+
+      const { getByTestId, findByTestId, queryByTestId } = await render(
+        <DateStrip selectedDate="2026-11-14" onSelectDate={onSelectDate} />,
+      );
+
+      // Open calendar modal
+      fireEvent.press(getByTestId('date-strip-calendar-btn'));
+      await findByTestId('date-picker-modal');
+
+      // Pick the older date
+      const olderItem = getByTestId(`date-picker-item-${olderDate}`);
+      fireEvent.press(olderItem);
+
+      expect(onSelectDate).toHaveBeenCalledWith(olderDate);
+      await waitFor(() => {
+        expect(queryByTestId('date-picker-modal')).toBeNull();
+      });
     });
   });
 });
