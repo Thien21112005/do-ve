@@ -20,7 +20,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
-| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 40 / 62 | DOING | Hướng A 'Tờ vé giấy' đã duyệt; hoàn tất 100% Nhóm A, B, C, D; đang triển khai Nhóm E |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 41 / 62 | DOING | Hướng A 'Tờ vé giấy' đã duyệt; hoàn tất 100% Nhóm A, B, C, D; đang triển khai Nhóm E |
 
 ## Mốc
 
