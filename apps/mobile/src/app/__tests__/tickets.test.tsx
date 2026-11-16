@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-import TicketsScreen from '../(tabs)/tickets';
+import TicketsScreen, { resetSessionSavedTicketFilter } from '../(tabs)/tickets';
 import { saveTicket, clearAllTickets, getTickets } from '@/store/ticketStore';
 import { useRouter } from 'expo-router';
 
@@ -9,6 +9,7 @@ describe('TicketsScreen (Vé của tôi)', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     await clearAllTickets();
+    resetSessionSavedTicketFilter();
   });
 
   it('renders friendly empty state when no tickets are saved', async () => {
@@ -259,6 +260,130 @@ describe('TicketsScreen (Vé của tôi)', () => {
       expect(getByText('654321')).toBeTruthy();
       expect(getByText('888999')).toBeTruthy();
     });
+  });
+
+  it('filters saved tickets using status filter chips (All, Won, Pending, Lost) and remembers choice (T10.45)', async () => {
+    await saveTicket({
+      ticket: '111111',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+    await saveTicket({
+      ticket: '222222',
+      station: 'BD',
+      stationName: 'Bình Dương',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+    await saveTicket({
+      ticket: '333333',
+      station: 'TN',
+      stationName: 'Tây Ninh',
+      drawDate: '2026-11-14',
+      status: 'LOST',
+      totalPrize: 0,
+    });
+    await saveTicket({
+      ticket: '444444',
+      station: 'AG',
+      stationName: 'An Giang',
+      drawDate: '2026-11-14',
+      status: 'LOST',
+      totalPrize: 0,
+    });
+
+    const { getByTestId, getByText, queryByText } = await render(
+      <TicketsScreen />,
+    );
+
+    // Verify chips presence
+    expect(getByTestId('tickets-filter-chips')).toBeTruthy();
+    expect(getByTestId('ticket-filter-chip-ALL')).toBeTruthy();
+    expect(getByTestId('ticket-filter-chip-WON')).toBeTruthy();
+    expect(getByTestId('ticket-filter-chip-PENDING')).toBeTruthy();
+    expect(getByTestId('ticket-filter-chip-LOST')).toBeTruthy();
+
+    // Initially all 4 tickets are visible
+    expect(getByText('111111')).toBeTruthy();
+    expect(getByText('222222')).toBeTruthy();
+    expect(getByText('333333')).toBeTruthy();
+    expect(getByText('444444')).toBeTruthy();
+
+    // 1. Filter LOST (Không trúng)
+    fireEvent.press(getByTestId('ticket-filter-chip-LOST'));
+    await waitFor(() => {
+      expect(getByText('333333')).toBeTruthy();
+      expect(getByText('444444')).toBeTruthy();
+      expect(queryByText('111111')).toBeNull();
+      expect(queryByText('222222')).toBeNull();
+    });
+
+    // 2. Filter WON (Trúng thưởng)
+    fireEvent.press(getByTestId('ticket-filter-chip-WON'));
+    await waitFor(() => {
+      expect(getByText('111111')).toBeTruthy();
+      expect(queryByText('222222')).toBeNull();
+      expect(queryByText('333333')).toBeNull();
+      expect(queryByText('444444')).toBeNull();
+    });
+
+    // 3. Filter PENDING (Chờ kết quả)
+    fireEvent.press(getByTestId('ticket-filter-chip-PENDING'));
+    await waitFor(() => {
+      expect(getByText('222222')).toBeTruthy();
+      expect(queryByText('111111')).toBeNull();
+      expect(queryByText('333333')).toBeNull();
+      expect(queryByText('444444')).toBeNull();
+    });
+
+    // 4. Reset back to ALL
+    fireEvent.press(getByTestId('ticket-filter-chip-ALL'));
+    await waitFor(() => {
+      expect(getByText('111111')).toBeTruthy();
+      expect(getByText('222222')).toBeTruthy();
+      expect(getByText('333333')).toBeTruthy();
+      expect(getByText('444444')).toBeTruthy();
+    });
+  });
+
+  it('remembers active filter choice across screen mounts in the same session (T10.45)', async () => {
+    await saveTicket({
+      ticket: '111111',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+    });
+    await saveTicket({
+      ticket: '222222',
+      station: 'BD',
+      stationName: 'Bình Dương',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+
+    // First mount: set filter to PENDING
+    const screen1 = await render(<TicketsScreen />);
+    fireEvent.press(screen1.getByTestId('ticket-filter-chip-PENDING'));
+    await waitFor(() => {
+      expect(screen1.getByText('222222')).toBeTruthy();
+    });
+    screen1.unmount();
+
+    // Second mount in same session: initial state should be PENDING
+    const screen2 = await render(<TicketsScreen />);
+    await waitFor(() => {
+      expect(screen2.getByText('222222')).toBeTruthy();
+      expect(screen2.queryByText('111111')).toBeNull();
+    });
+
+    screen2.unmount();
   });
 });
 

@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
   FlatList,
+  ScrollView,
   TouchableOpacity,
   Alert,
   RefreshControl,
@@ -25,6 +26,13 @@ import { haptics } from '@/lib/haptics';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
 
+// Session memory for ticket status filter across tabs in the same session (T10.45)
+let sessionSavedTicketFilter: TicketFilterStatus = 'ALL';
+
+export function resetSessionSavedTicketFilter() {
+  sessionSavedTicketFilter = 'ALL';
+}
+
 export default function TicketsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
@@ -33,8 +41,14 @@ export default function TicketsScreen() {
   // Manual pull-to-refresh & recheck status (T09.45)
   const { isRechecking, refetchPending } = usePendingTicketsRecheck();
 
-  // Filter state for summary cards (T10.44 & T10.45)
-  const [activeFilter, setActiveFilter] = useState<TicketFilterStatus>('ALL');
+  // Filter state for summary cards with session memory (T10.44 & T10.45)
+  const [activeFilter, setActiveFilterState] =
+    useState<TicketFilterStatus>(sessionSavedTicketFilter);
+
+  const setActiveFilter = useCallback((filter: TicketFilterStatus) => {
+    sessionSavedTicketFilter = filter;
+    setActiveFilterState(filter);
+  }, []);
 
   // Summary statistics for header card (T10.44)
   const summaryStats = useMemo(() => {
@@ -54,6 +68,24 @@ export default function TicketsScreen() {
       pending,
       won,
       totalWonPrize,
+    };
+  }, [tickets]);
+
+  // Counts per status for filter chips (T10.45)
+  const filterCounts = useMemo(() => {
+    let won = 0;
+    let pending = 0;
+    let lost = 0;
+    for (const t of tickets) {
+      if (t.status === 'WON') won++;
+      else if (t.status === 'PENDING') pending++;
+      else if (t.status === 'LOST') lost++;
+    }
+    return {
+      ALL: tickets.length,
+      WON: won,
+      PENDING: pending,
+      LOST: lost,
     };
   }, [tickets]);
 
@@ -375,6 +407,80 @@ export default function TicketsScreen() {
                 onSelectFilter={setActiveFilter}
               />
 
+              {/* Status Filter Chips (T10.45) */}
+              <View
+                testID="tickets-filter-chips"
+                className="flex-row items-center pt-1 pb-2"
+              >
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 8 }}
+                >
+                  {(
+                    [
+                      { key: 'ALL', label: STRINGS.tickets.filterAll },
+                      { key: 'WON', label: STRINGS.tickets.filterWon },
+                      { key: 'PENDING', label: STRINGS.tickets.filterPending },
+                      { key: 'LOST', label: STRINGS.tickets.filterLost },
+                    ] as const
+                  ).map((opt) => {
+                    const isSelected = activeFilter === opt.key;
+                    const count = filterCounts[opt.key];
+                    return (
+                      <TouchableOpacity
+                        key={opt.key}
+                        testID={`ticket-filter-chip-${opt.key}`}
+                        onPress={() => {
+                          haptics.selection();
+                          setActiveFilter(opt.key);
+                        }}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${opt.label} (${count})`}
+                        accessibilityState={{ selected: isSelected }}
+                        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                        className="px-3 py-1.5 rounded-full border flex-row items-center"
+                        style={{
+                          backgroundColor: isSelected
+                            ? colors.primary
+                            : colors.surface,
+                          borderColor: isSelected
+                            ? colors.primary
+                            : colors.border,
+                        }}
+                      >
+                        <Text
+                          className="text-xs font-semibold"
+                          style={{
+                            color: isSelected ? '#ffffff' : colors.textMain,
+                          }}
+                        >
+                          {opt.label}
+                        </Text>
+                        <View
+                          className="ml-1.5 px-1.5 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: isSelected
+                              ? 'rgba(255, 255, 255, 0.25)'
+                              : colors.surfaceSubtle,
+                          }}
+                        >
+                          <Text
+                            className="text-[10px] font-bold"
+                            style={{
+                              color: isSelected ? '#ffffff' : colors.textMuted,
+                              fontVariant: ['tabular-nums'],
+                            }}
+                          >
+                            {count}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              </View>
+
               <View
                 className="py-2.5 flex-row justify-between items-center border-b mb-1"
                 style={{ borderColor: colors.border }}
@@ -440,6 +546,45 @@ export default function TicketsScreen() {
               </View>
             </View>
             </View>
+          }
+          ListEmptyComponent={
+            sortedTickets.length > 0 ? (
+              <View
+                testID="tickets-filter-empty"
+                className="p-6 items-center justify-center rounded-2xl border my-4"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                }}
+              >
+                <Icon name="search" size={24} color={colors.textMuted} />
+                <Text
+                  className="text-sm font-bold mt-2 text-center"
+                  style={{ color: colors.textMain }}
+                >
+                  {STRINGS.tickets.filterEmptyTitle}
+                </Text>
+                <Text
+                  className="text-xs text-center mt-1"
+                  style={{ color: colors.textMuted }}
+                >
+                  {STRINGS.tickets.filterEmptyDesc}
+                </Text>
+                <TouchableOpacity
+                  testID="tickets-filter-empty-reset-btn"
+                  onPress={() => {
+                    haptics.selection();
+                    setActiveFilter('ALL');
+                  }}
+                  className="mt-3 px-4 py-2 rounded-xl"
+                  style={{ backgroundColor: colors.primary }}
+                >
+                  <Text className="text-white text-xs font-semibold">
+                    {STRINGS.tickets.filterEmptyReset}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : undefined
           }
           ListFooterComponent={
             <View
