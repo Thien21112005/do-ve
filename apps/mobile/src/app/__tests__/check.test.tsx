@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ReactNode } from 'react';
+import { AccessibilityInfo } from 'react-native';
 import { render, fireEvent, waitFor, configure } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
@@ -177,6 +178,40 @@ describe('CheckScreen Form Composition', () => {
       );
     });
     expect(await findByTestId('check-result-section')).toBeTruthy();
+  });
+
+  it('scrolls to check result and announces result for accessibility (T10.29)', async () => {
+    const announceSpy = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
+      ticket: '778899',
+      stationCode: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: true,
+      wins: [{ tier: 'FIRST', prizeAmount: 30000000, matchedNumber: '78899' }],
+      totalAmount: 30000000,
+    });
+
+    const { getByTestId, findByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('station-chips-TPHCM')).toBeTruthy();
+    });
+
+    fireEvent.changeText(getByTestId('ticket-input-digit-0'), '778899');
+    expect(await findByTestId('check-result-section')).toBeTruthy();
+
+    await waitFor(() => {
+      expect(announceSpy).toHaveBeenCalledWith(
+        expect.stringContaining('778899'),
+      );
+    });
+
+    expect(getByTestId('check-scroll-view')).toBeTruthy();
+    announceSpy.mockRestore();
   });
 
   it('enables submit button and calls check API when ticket is fully filled', async () => {

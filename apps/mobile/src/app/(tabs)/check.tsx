@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   Keyboard,
+  AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -83,6 +84,52 @@ export default function CheckScreen() {
       resetBatch();
     }
   }, [batchText, selectedStation, selectedDate, resetBatch]);
+
+  const scrollViewRef = useRef<any>(null);
+  const resultLayoutY = useRef<number>(0);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then(setReduceMotion)
+      .catch(() => {});
+    const sub = AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      setReduceMotion,
+    );
+    return () => sub?.remove();
+  }, []);
+
+  // Auto-scroll to check result and announce for accessibility (T10.29)
+  useEffect(() => {
+    const hasSingleResult = mode === 'single' && result && !isLoading;
+    const hasBatchResult = mode === 'batch' && batchResult && !isBatchLoading;
+
+    if (hasSingleResult || hasBatchResult) {
+      const timer = setTimeout(() => {
+        if (resultLayoutY.current > 0) {
+          scrollViewRef.current?.scrollTo({
+            y: Math.max(0, resultLayoutY.current - 16),
+            animated: !reduceMotion,
+          });
+        } else {
+          scrollViewRef.current?.scrollToEnd({ animated: !reduceMotion });
+        }
+
+        if (hasSingleResult && result) {
+          const announcement = result.won
+            ? `Đã có kết quả dò vé: Chúc mừng! Vé ${result.ticket} trúng thưởng!`
+            : `Đã có kết quả dò vé: Rất tiếc, vé ${result.ticket} không trúng giải.`;
+          AccessibilityInfo.announceForAccessibility(announcement);
+        } else if (hasBatchResult && batchResult) {
+          const announcement = `Đã có kết quả dò vé hàng loạt: ${batchResult.totalWonTickets ?? 0} vé trúng.`;
+          AccessibilityInfo.announceForAccessibility(announcement);
+        }
+      }, 50);
+
+      return () => clearTimeout(timer);
+    }
+  }, [result, batchResult, isLoading, isBatchLoading, mode, reduceMotion]);
 
   // Retry offline: refetch background data (schedule, stations) instead of submitting check form (T09.21)
   const handleOfflineRetry = () => {
@@ -241,6 +288,8 @@ export default function CheckScreen() {
         className="flex-1"
       >
         <ScrollView
+          ref={scrollViewRef}
+          testID="check-scroll-view"
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
           className="flex-1"
@@ -418,18 +467,30 @@ export default function CheckScreen() {
 
           {/* Single Result Card */}
           {mode === 'single' && result && !isLoading && (
-            <ResultCard
-              result={result}
-              testID="check-result-section"
-              onCheckAgain={handleSubmit}
-              onSaveTicket={handleSaveTicket}
-              isSaved={isResultSaved}
-            />
+            <View
+              onLayout={(e) => {
+                resultLayoutY.current = e.nativeEvent.layout.y;
+              }}
+            >
+              <ResultCard
+                result={result}
+                testID="check-result-section"
+                onCheckAgain={handleSubmit}
+                onSaveTicket={handleSaveTicket}
+                isSaved={isResultSaved}
+              />
+            </View>
           )}
 
           {/* Batch Result List */}
           {mode === 'batch' && batchResult && !isBatchLoading && (
-            <View testID="batch-results-section" className="mt-4 px-4">
+            <View
+              testID="batch-results-section"
+              className="mt-4 px-4"
+              onLayout={(e) => {
+                resultLayoutY.current = e.nativeEvent.layout.y;
+              }}
+            >
               <BatchResultList
                 batchResult={batchResult}
                 onCheckAgain={() => {
