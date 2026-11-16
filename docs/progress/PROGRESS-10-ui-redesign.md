@@ -34,7 +34,7 @@
 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | DONE | 874d647 | 2026-11-16 | Gộp Chọn ngày & Chọn đài vào card ngữ cảnh check-context-box tinh gọn (cao <= 1/3 iPhone SE), thêm dot chỉ báo kết quả trên chip ngày |
 | T10.25 | DateStrip tự cuộn tới ngày đang chọn | DONE | 1ba33be | 2026-11-16 | Chuyển DateStrip sang FlatList scrollToIndex khi selectedDate đổi, thêm nút Lịch mở Modal chọn trong 60 ngày gần nhất |
 | T10.26 | Segmented control "Một vé / Nhiều vé" | DONE | 6cf177b | 2026-11-16 | Dùng primitive Segmented với animation trượt 200ms, haptic selection và a11y role tab/tablist |
-| T10.27 | Nút Dò cố định đáy màn (sticky CTA) | TODO | | | |
+| T10.27 | Nút Dò cố định đáy màn (sticky CTA) | DONE | 161d705 | 2026-11-16 | Chuyển nút Dò vé ra sticky-cta-bar cao 52px cố định phía trên bàn phím, hiển thị lý do cụ thể khi disable |
 | T10.28 | Tự dò khi nhập đủ 6 số | TODO | | | |
 | T10.29 | Tự cuộn tới kết quả | TODO | | | |
 | T10.30 | Thẻ kết quả: số vé là nhân vật chính | TODO | | | |
@@ -108,6 +108,7 @@
 - 2026-11-16 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | Tái cấu trúc khối lựa chọn kỳ quay trên màn Dò vé: (1) Thay 2 tiêu đề và 2 hàng chip rời rạc bằng 1 card ngữ cảnh duy nhất (check-context-box) gồm header icon lịch + tiêu đề 'Kỳ mở thưởng', thanh chọn ngày DateStrip, đường kẻ mảnh và thanh chọn đài StationChips; (2) Tối ưu chiều cao tổng thể <= 1/3 màn hình iPhone SE (~150px); (3) Thêm chấm chỉ báo (dot) trên chip ngày báo hiệu các ngày đã có kết quả mở thưởng chính thức; (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.25 | DateStrip tự cuộn tới ngày đang chọn | Nâng cấp DateStrip: (1) Dùng FlatList và scrollToIndex tự động cuộn chip ngày được chọn vào giữa màn hình khi selectedDate thay đổi; (2) Thêm nút 'Lịch' ở cuối danh sách mở Modal chọn ngày (date-picker-modal) hiển thị đầy đủ 60 ngày gần nhất với nhãn thứ/ngày và dot kết quả; (3) Tự động mở rộng danh sách ngày nếu ngày được chọn nằm ngoài 14 ngày mặc định; (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.26 | Segmented control "Một vé / Nhiều vé" | Chuyển đổi bộ chọn chế độ dò vé: (1) Thay thế toggle thủ công bằng primitive Segmented dùng tablist/tab theo chuẩn a11y, nhãn ngắn 'Một vé' / 'Nhiều vé (tối đa 20)'; (2) Bổ sung animation trượt nền mượt mà 200ms với Animated.timing (tự động tắt khi Reduce Motion); (3) Tích hợp haptics.selection() khi đổi tab; (4) Unit tests xanh 100%.
+- 2026-11-16 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | Thiết kế lại vị trí và trải nghiệm nút Dò vé: (1) Tách nút Dò vé ra khỏi ScrollView, đặt vào thanh cố định đáy màn hình (sticky-cta-bar) ngay trên bàn phím và vùng an toàn; (2) Chiều cao chuẩn 52px (minHeight: 52), full-width với padding gọn; (3) Trạng thái disabled phản ánh lý do hành động cụ thể ('Nhập đủ 6 số (x/6)', 'Chọn đài quay'); (4) Unit tests xanh 100%.
 
 ## Vấn đề mở
 
