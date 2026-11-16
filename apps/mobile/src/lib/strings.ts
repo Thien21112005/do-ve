@@ -92,6 +92,7 @@ export const STRINGS = {
     matchedPrefix: 'Khớp',
     matchedSuffix: 'số cuối',
     totalPrizeLabel: 'Tổng thưởng:',
+    taxNote: 'Tiền thưởng trên vé mệnh giá 10.000đ, chưa trừ thuế TNCN',
     checkAgain: 'Dò lại',
     ticketNumberLabel: 'Số vé dò',
     disclaimer:

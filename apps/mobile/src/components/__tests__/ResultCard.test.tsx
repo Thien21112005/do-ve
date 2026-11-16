@@ -103,6 +103,25 @@ describe('ResultCard Component', () => {
     expect(getByText('300.000 đ')).toBeTruthy();
   });
 
+  it('renders clearer prize breakdown with matched details, aligned prize, and tax note (T10.31)', async () => {
+    const { getByText, getByTestId } = await render(
+      <ResultCard result={winningResult} />,
+    );
+
+    // Prize match comparison label
+    expect(getByText(/khớp 3 số cuối · 456/i)).toBeTruthy();
+    expect(getByText(/khớp 2 số cuối · 56/i)).toBeTruthy();
+
+    // Total prize text
+    expect(getByTestId('result-card-total-prize')).toBeTruthy();
+    expect(getByText('300.000 đ')).toBeTruthy();
+
+    // Tax disclaimer note
+    const taxNote = getByTestId('result-card-tax-note');
+    expect(taxNote).toBeTruthy();
+    expect(taxNote.props.children).toContain('chưa trừ thuế TNCN');
+  });
+
   it('renders non-winning state with hero ticket and clean status (T10.30)', async () => {
     const { getByText, getByTestId, queryByText } = await render(
       <ResultCard result={losingResult} />,

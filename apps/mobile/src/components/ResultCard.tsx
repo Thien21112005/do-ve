@@ -180,62 +180,88 @@ export function ResultCard({
           )}
         </View>
       ) : isWon && result.wins && result.wins.length > 0 ? (
-        <View className="space-y-2 mb-3">
+        <View className="space-y-1 mb-3">
           <Text
             className="text-xs font-semibold uppercase tracking-wider mb-1"
             style={{ color: colors.textMuted }}
           >
             {STRINGS.check.prizeDetails}
           </Text>
-          {result.wins.map((win, idx) => (
-            <View
-              key={`${win.tier}-${idx}`}
-              className="flex-row justify-between items-center py-1.5"
-            >
-              <View className="flex-row items-center">
-                <Text
-                  className="text-sm font-medium"
-                  style={{ color: colors.textMain }}
-                >
-                  {(win as any).tierName || win.tier}
-                </Text>
-                {((win as any).matchedDigits || (win as any).matchedNumber) ? (
-                  <Text
-                    className="text-xs ml-2 px-1.5 py-0.5 rounded"
-                    style={{
-                      color: colors.primary,
-                      backgroundColor: colors.primarySubtle,
-                      fontVariant: ['tabular-nums'],
-                    }}
-                  >
-                    ({(win as any).matchedDigits || (win as any).matchedNumber})
-                  </Text>
-                ) : null}
-              </View>
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: colors.textMain }}
-              >
-                {formatCurrency(win.prizeAmount ?? 0)}
-              </Text>
-            </View>
-          ))}
+          {result.wins.map((win, idx) => {
+            const digits = (win as any).matchedDigits || (win as any).matchedNumber || '';
+            const matchLabel = digits
+              ? digits.length === 6
+                ? `Trùng khớp 6 số · ${digits}`
+                : `Khớp ${digits.length} số cuối · ${digits}`
+              : '';
 
-          {/* Total prize line */}
+            return (
+              <View
+                key={`${win.tier}-${idx}`}
+                className="flex-row justify-between items-center py-2 border-b"
+                style={{ borderColor: colors.surfaceSubtle }}
+                testID={`prize-row-${idx}`}
+              >
+                <View className="flex-1 pr-3">
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: colors.textMain }}
+                  >
+                    {(win as any).tierName || win.tier}
+                  </Text>
+                  {matchLabel ? (
+                    <Text
+                      className="text-xs mt-0.5"
+                      style={{ color: colors.textMuted }}
+                    >
+                      {matchLabel}
+                    </Text>
+                  ) : null}
+                </View>
+                <Text
+                  className="text-sm font-bold text-right"
+                  style={{
+                    color: colors.textMain,
+                    fontVariant: ['tabular-nums'],
+                  }}
+                >
+                  {formatCurrency(win.prizeAmount ?? 0)}
+                </Text>
+              </View>
+            );
+          })}
+
+          {/* Total prize line (T10.31) */}
           <View
-            className="mt-2 pt-3 border-t flex-row justify-between items-center"
+            className="mt-2 pt-3 border-t flex-row justify-between items-baseline"
             style={{ borderColor: colors.border }}
           >
             <Text
-              className="text-base font-bold"
-              style={{ color: colors.textMain }}
+              className="text-sm font-semibold"
+              style={{ color: colors.textMuted }}
             >
-              {STRINGS.check.totalPrizeLabel}{' '}
-              <Text className="text-lg font-bold" style={{ color: colors.win }}>
-                {formatCurrency(totalPrize)}
-              </Text>
+              Tổng tiền thưởng
+            </Text>
+            <Text
+              testID="result-card-total-prize"
+              className="text-xl font-bold text-right"
+              style={{
+                color: colors.win,
+                fontVariant: ['tabular-nums'],
+              }}
+            >
+              {formatCurrency(totalPrize)}
             </Text>
           </View>
+
+          {/* Tax note (T10.31) */}
+          <Text
+            testID="result-card-tax-note"
+            className="text-[11px] mt-1 text-right italic"
+            style={{ color: colors.textMuted }}
+          >
+            {STRINGS.check.taxNote}
+          </Text>
         </View>
       ) : null}
 
