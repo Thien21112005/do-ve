@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 48 / 62 task hoàn thành
+- **Tổng quan:** 49 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -56,7 +56,7 @@
 | T10.46 | Dòng vé gọn, tiêu đề nhóm dính (sticky) | DONE | ebd47b4 | 2026-11-16 | SectionList tiêu đề ngày dính (sticky) kèm số lượng vé, dòng vé gọn phẳng ~56px số tabular to, badge sm, xoá nhanh |
 | T10.47 | Vuốt để xoá + hoàn tác | DONE | 7b904f5 | 2026-11-16 | Vuốt trái hiện nút Xoá đỏ, snackbar 'Đã xoá vé 012345 · Hoàn tác' 5s thay thế Alert, giữ a11y action |
 | T10.48 | Màn/Sheet chi tiết vé | DONE | 33dcbce | 2026-11-16 | Chạm vào vé mở bottom sheet chi tiết (số tabular 32px, đài, ngày), sửa và lưu ghi chú cá nhân (field note), nút xem KQ kỳ này, dò lại, xoá |
-| T10.49 | Sao lưu/Khôi phục chuyển vào menu | TODO | | | |
+| T10.49 | Sao lưu/Khôi phục chuyển vào menu | DONE | 056180a | 2026-11-16 | Đưa 3 nút thao tác (sao lưu/khôi phục/xoá tất cả) vào menu ba chấm trên header, nút xoá màu đỏ destructive, làm sạch header |
 | T10.50 | Trạng thái rỗng có minh hoạ | TODO | | | |
 | T10.51 | Chỉ báo đang tự dò lại vé chờ | TODO | | | |
 | T10.52 | Màn Thêm dạng danh sách native | TODO | | | |
