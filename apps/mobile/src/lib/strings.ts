@@ -142,6 +142,8 @@ export const STRINGS = {
     viewModeSingle: 'Từng đài',
     viewModeAll: 'Cả ngày',
     allStationsSummary: (count: number) => `Bảng tổng hợp ${count} đài mở thưởng`,
+    quickSearchPlaceholder: 'Dò nhanh trong bảng (nhập 2-6 số)...',
+    quickSearchClear: 'Xóa tìm kiếm',
     dateLabel: 'Chọn ngày mở thưởng',
     stationLabel: 'Đài mở thưởng',
     loading: 'Đang tải kết quả...',

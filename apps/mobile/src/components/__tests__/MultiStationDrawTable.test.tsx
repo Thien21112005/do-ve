@@ -172,4 +172,17 @@ describe('MultiStationDrawTable (T10.39)', () => {
     const row0 = getByTestId('multi-station-row-0');
     expect(row0.props.accessibilityLabel).toContain('Đặc biệt');
   });
+
+  it('highlights matching numbers ending with query (T10.40)', async () => {
+    const { getAllByTestId, getByText } = await render(
+      <MultiStationDrawTable
+        draws={mockDrawsSaturday4Stations}
+        highlightQuery="01"
+      />,
+    );
+
+    const matched = getAllByTestId('draw-number-matched');
+    expect(matched.length).toBeGreaterThan(0);
+    expect(getByText('44401')).toBeTruthy();
+  });
 });

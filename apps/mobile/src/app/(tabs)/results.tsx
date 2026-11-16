@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
@@ -47,6 +48,7 @@ export default function ResultsScreen() {
 
   const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single');
+  const [quickQuery, setQuickQuery] = useState('');
 
   const {
     draws: dailyDraws,
@@ -159,6 +161,47 @@ export default function ResultsScreen() {
           </>
         )}
 
+        {/* Quick Search within Table (T10.40) */}
+        <View className="mx-4 mt-3 mb-1" testID="results-quick-search-box">
+          <View
+            className="flex-row items-center px-3 py-2 rounded-xl border"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: quickQuery ? colors.primary : colors.border,
+            }}
+          >
+            <Icon name="search" size={16} color={colors.textMuted} />
+            <TextInput
+              testID="results-quick-search-input"
+              value={quickQuery}
+              onChangeText={(text) =>
+                setQuickQuery(text.replace(/\D/g, '').slice(0, 6))
+              }
+              placeholder={STRINGS.results.quickSearchPlaceholder}
+              placeholderTextColor={colors.textMuted}
+              keyboardType="number-pad"
+              maxLength={6}
+              className="flex-1 ml-2 text-sm p-0"
+              style={{
+                color: colors.textMain,
+                fontVariant: ['tabular-nums'],
+              }}
+            />
+            {quickQuery.length > 0 && (
+              <TouchableOpacity
+                testID="results-quick-search-clear-btn"
+                onPress={() => setQuickQuery('')}
+                accessibilityRole="button"
+                accessibilityLabel={STRINGS.results.quickSearchClear}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                className="p-1"
+              >
+                <Icon name="x" size={16} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
         {/* Draw details container */}
         <View testID="results-draw-container" className="mt-4 mx-4">
           {viewMode === 'all' ? (
@@ -256,7 +299,10 @@ export default function ResultsScreen() {
                     {formattedDate}
                   </Text>
                 </View>
-                <MultiStationDrawTable draws={dailyDraws} />
+                <MultiStationDrawTable
+                  draws={dailyDraws}
+                  highlightQuery={quickQuery}
+                />
               </View>
             )
           ) : showLoading ? (
@@ -375,9 +421,13 @@ export default function ResultsScreen() {
                 </View>
               </View>
 
-              {/* Detailed DrawTable (T06.24) */}
+              {/* Detailed DrawTable (T06.24 & T10.40) */}
               <View className="mt-3">
-                <DrawTable prizes={draw.prizes} numbers={draw.numbers} />
+                <DrawTable
+                  prizes={draw.prizes}
+                  numbers={draw.numbers}
+                  highlightQuery={quickQuery}
+                />
               </View>
             </View>
           )}

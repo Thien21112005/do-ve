@@ -55,6 +55,17 @@ describe('DrawTable', () => {
     expect(lastRow.props.accessibilityLabel).toContain('Giải tám');
   });
 
+  it('highlights numbers matching suffix query with winTint (T10.40)', async () => {
+    const { getAllByTestId, getByText } = await render(
+      <DrawTable prizes={mockPrizes} highlightQuery="21" />,
+    );
+
+    // SPECIAL is 654321, ends with 21
+    const matched = getAllByTestId('draw-number-matched');
+    expect(matched.length).toBe(1);
+    expect(getByText('654321')).toBeTruthy();
+  });
+
   it('supports reading drawTableOrder from settings when order prop is not passed (T10.38)', async () => {
     updateSettings({ drawTableOrder: 'special_to_g8' });
     const { getByTestId } = await render(<DrawTable prizes={mockPrizes} />);

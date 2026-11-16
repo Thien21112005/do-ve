@@ -8,12 +8,14 @@ import type { UiDrawView } from '@/api/mappers';
 export interface MultiStationDrawTableProps {
   draws: UiDrawView[];
   order?: DrawTableOrder;
+  highlightQuery?: string;
   testID?: string;
 }
 
 export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
   draws,
   order: propOrder,
+  highlightQuery,
   testID = 'multi-station-draw-table',
 }) => {
   const { colors } = useTheme();
@@ -160,24 +162,53 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                     >
                       {numbers.length > 0 ? (
                         <View className="flex-row flex-wrap justify-center items-center gap-x-2 gap-y-1">
-                          {numbers.map((num, nIdx) => (
-                            <Text
-                              key={`num-${d.stationCode}-${tier.key}-${nIdx}-${num}`}
-                              className={`text-center font-bold tracking-wider ${
-                                isSpecial
-                                  ? 'text-lg'
-                                  : tier.digits >= 5
-                                    ? 'text-sm'
-                                    : 'text-base'
-                              }`}
-                              style={{
-                                color: isSpecial ? specialColor : colors.textMain,
-                                fontVariant: ['tabular-nums'],
-                              }}
-                            >
-                              {num}
-                            </Text>
-                          ))}
+                          {numbers.map((num, nIdx) => {
+                            const isMatched = Boolean(
+                              highlightQuery &&
+                                highlightQuery.trim().length >= 2 &&
+                                num.endsWith(highlightQuery.trim()),
+                            );
+
+                            return (
+                              <View
+                                key={`num-${d.stationCode}-${tier.key}-${nIdx}-${num}`}
+                                testID={isMatched ? 'draw-number-matched' : undefined}
+                                className={
+                                  isMatched
+                                    ? 'px-1 py-0.5 rounded border'
+                                    : 'px-0.5 py-0.5'
+                                }
+                                style={{
+                                  backgroundColor: isMatched
+                                    ? colors.winTint || `${colors.win}15`
+                                    : 'transparent',
+                                  borderColor: isMatched
+                                    ? colors.winBorder
+                                    : 'transparent',
+                                }}
+                              >
+                                <Text
+                                  className={`text-center font-bold tracking-wider ${
+                                    isSpecial
+                                      ? 'text-lg'
+                                      : tier.digits >= 5
+                                        ? 'text-sm'
+                                        : 'text-base'
+                                  }`}
+                                  style={{
+                                    color: isMatched
+                                      ? colors.win
+                                      : isSpecial
+                                        ? specialColor
+                                        : colors.textMain,
+                                    fontVariant: ['tabular-nums'],
+                                  }}
+                                >
+                                  {num}
+                                </Text>
+                              </View>
+                            );
+                          })}
                         </View>
                       ) : (
                         <Text

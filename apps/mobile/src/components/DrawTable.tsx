@@ -87,6 +87,7 @@ export interface DrawTableProps {
   prizes?: Record<string, string[]> | null;
   numbers?: Record<string, string[]> | null;
   order?: DrawTableOrder;
+  highlightQuery?: string;
   testID?: string;
 }
 
@@ -94,6 +95,7 @@ export const DrawTable: React.FC<DrawTableProps> = ({
   prizes,
   numbers,
   order: propOrder,
+  highlightQuery,
   testID = 'draw-table',
 }) => {
   const { colors } = useTheme();
@@ -163,24 +165,53 @@ export const DrawTable: React.FC<DrawTableProps> = ({
             {/* Right Numbers Content Area */}
             <View className="flex-1 py-2.5 px-3 flex-row flex-wrap justify-center items-center gap-x-4 gap-y-1.5">
               {tierNumbers.length > 0 ? (
-                tierNumbers.map((num, numIdx) => (
-                  <Text
-                    key={`${tier.key}-${numIdx}-${num}`}
-                    className={`text-center font-bold tracking-wider ${
-                      isSpecial
-                        ? 'text-xl'
-                        : tier.digits >= 5
-                          ? 'text-base'
-                          : 'text-lg'
-                    }`}
-                    style={{
-                      color: isSpecial ? specialColor : colors.textMain,
-                      fontVariant: ['tabular-nums'],
-                    }}
-                  >
-                    {num}
-                  </Text>
-                ))
+                tierNumbers.map((num, numIdx) => {
+                  const isMatched = Boolean(
+                    highlightQuery &&
+                      highlightQuery.trim().length >= 2 &&
+                      num.endsWith(highlightQuery.trim()),
+                  );
+
+                  return (
+                    <View
+                      key={`${tier.key}-${numIdx}-${num}`}
+                      testID={isMatched ? 'draw-number-matched' : undefined}
+                      className={
+                        isMatched
+                          ? 'px-1.5 py-0.5 rounded border'
+                          : 'px-0.5 py-0.5'
+                      }
+                      style={{
+                        backgroundColor: isMatched
+                          ? colors.winTint || `${colors.win}15`
+                          : 'transparent',
+                        borderColor: isMatched
+                          ? colors.winBorder
+                          : 'transparent',
+                      }}
+                    >
+                      <Text
+                        className={`text-center font-bold tracking-wider ${
+                          isSpecial
+                            ? 'text-xl'
+                            : tier.digits >= 5
+                              ? 'text-base'
+                              : 'text-lg'
+                        }`}
+                        style={{
+                          color: isMatched
+                            ? colors.win
+                            : isSpecial
+                              ? specialColor
+                              : colors.textMain,
+                          fontVariant: ['tabular-nums'],
+                        }}
+                      >
+                        {num}
+                      </Text>
+                    </View>
+                  );
+                })
               ) : (
                 <Text
                   className="text-base font-semibold"

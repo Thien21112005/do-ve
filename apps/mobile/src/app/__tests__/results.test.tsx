@@ -220,4 +220,35 @@ describe('ResultsScreen', () => {
     expect(retryBtn).toBeTruthy();
     expect(queryByText(STRINGS.results.emptyTitle)).toBeNull();
   });
+
+  it('highlights matching numbers when typing into quick search bar (T10.40)', async () => {
+    const { getByTestId, getAllByTestId, queryByTestId } = await render(
+      <ResultsScreen />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('results-quick-search-input')).toBeTruthy();
+    });
+
+    const searchInput = getByTestId('results-quick-search-input');
+    // Type '56' (ends with 56 in mockDrawTPHCM: SPECIAL 123456)
+    fireEvent.changeText(searchInput, '56');
+
+    await waitFor(() => {
+      expect(
+        getAllByTestId('draw-number-matched').length,
+      ).toBeGreaterThanOrEqual(1);
+    });
+
+    // Clear search
+    const clearBtn = getByTestId('results-quick-search-clear-btn');
+    fireEvent.press(clearBtn);
+
+    await waitFor(() => {
+      expect(queryByTestId('draw-number-matched')).toBeNull();
+    });
+  });
 });
