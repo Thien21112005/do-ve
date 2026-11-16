@@ -339,49 +339,6 @@ export default function CheckScreen() {
             </View>
           )}
 
-          {/* Action button: Dò vé */}
-          <View className="mt-8 px-5 w-full max-w-[360px] self-center">
-            <TouchableOpacity
-              testID="check-ticket-button"
-              disabled={!isFormValid}
-              onPress={handleSubmit}
-              accessibilityRole="button"
-              accessibilityLabel={
-                mode === 'single'
-                  ? STRINGS.check.accessibilityCheckBtnSingle
-                  : STRINGS.check.accessibilityCheckBtnBatch
-              }
-              accessibilityState={{ disabled: !isFormValid }}
-              className="py-3.5 px-6 rounded-xl items-center justify-center shadow-sm flex-row"
-              style={{
-                backgroundColor: isFormValid
-                  ? colors.primary
-                  : colors.surfaceSubtle,
-                opacity: isFormValid ? 1 : 0.6,
-              }}
-            >
-              {activeLoading && (
-                <ActivityIndicator
-                  size="small"
-                  color="#ffffff"
-                  className="mr-2"
-                />
-              )}
-              <Text
-                className="text-base font-bold"
-                style={{
-                  color: isFormValid ? '#ffffff' : colors.textMuted,
-                }}
-              >
-                {activeLoading
-                  ? STRINGS.check.btnChecking
-                  : mode === 'single'
-                    ? STRINGS.check.btnCheck
-                    : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
           {/* API Error Notification */}
           {activeError && (
             <View
@@ -458,6 +415,62 @@ export default function CheckScreen() {
             </View>
           )}
         </ScrollView>
+
+        {/* Sticky Bottom CTA Bar (T10.27) */}
+        <View
+          testID="sticky-cta-bar"
+          className="px-4 py-2 border-t"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+          <TouchableOpacity
+            testID="check-ticket-button"
+            disabled={!isFormValid}
+            onPress={handleSubmit}
+            accessibilityRole="button"
+            accessibilityLabel={
+              mode === 'single'
+                ? STRINGS.check.accessibilityCheckBtnSingle
+                : STRINGS.check.accessibilityCheckBtnBatch
+            }
+            accessibilityState={{ disabled: !isFormValid }}
+            className="w-full rounded-xl items-center justify-center flex-row shadow-sm"
+            style={{
+              height: 52,
+              minHeight: 52,
+              backgroundColor: isFormValid ? colors.primary : colors.surfaceSubtle,
+              borderColor: isFormValid ? colors.primary : colors.border,
+              borderWidth: 1,
+              opacity: isFormValid ? 1 : 0.85,
+            }}
+          >
+            {activeLoading && (
+              <ActivityIndicator
+                size="small"
+                color="#ffffff"
+                className="mr-2"
+              />
+            )}
+            <Text
+              className="text-base font-bold"
+              style={{
+                color: isFormValid ? '#ffffff' : colors.textMuted,
+              }}
+            >
+              {activeLoading
+                ? STRINGS.check.btnChecking
+                : !isFormValid && mode === 'single' && ticketNumber.length < 6
+                  ? `Nhập đủ 6 số (${ticketNumber.length}/6)`
+                  : !isFormValid && !selectedStation
+                    ? 'Chọn đài quay'
+                    : mode === 'single'
+                      ? STRINGS.check.btnCheck
+                      : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
 
       {/* Subtle celebration when ticket wins (T09.23: scoped to current active mode) */}

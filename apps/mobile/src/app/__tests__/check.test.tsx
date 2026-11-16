@@ -111,6 +111,24 @@ describe('CheckScreen Form Composition', () => {
     });
   });
 
+  it('renders sticky bottom check CTA with reason when disabled (T10.27)', async () => {
+    const { getByTestId, getByText } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    const ctaBar = getByTestId('sticky-cta-bar');
+    expect(ctaBar).toBeTruthy();
+
+    const submitBtn = getByTestId('check-ticket-button');
+    expect(submitBtn.props.accessibilityState.disabled).toBe(true);
+    expect(getByText(/Nhập đủ 6 số/)).toBeTruthy();
+
+    const btnStyle = Array.isArray(submitBtn.props.style)
+      ? Object.assign({}, ...submitBtn.props.style)
+      : submitBtn.props.style;
+    expect(btnStyle.minHeight || btnStyle.height).toBeGreaterThanOrEqual(52);
+  });
+
   it('enables submit button and calls check API when ticket is fully filled', async () => {
     (apiCheck.checkTicket as jest.Mock).mockResolvedValue({
       ticket: '987654',
