@@ -1,15 +1,42 @@
 import React from 'react';
-import { render, fireEvent, waitFor, within } from '@testing-library/react-native';
+import {
+  render,
+  fireEvent,
+  waitFor,
+  within,
+  cleanup,
+} from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import TicketsScreen, { resetSessionSavedTicketFilter } from '../(tabs)/tickets';
-import { saveTicket, clearAllTickets, getTickets } from '@/store/ticketStore';
+import {
+  saveTicket,
+  saveManyTickets,
+  clearAllTickets,
+  getTickets,
+} from '@/store/ticketStore';
 import { useRouter } from 'expo-router';
+
+const mockRefetchPending = jest.fn();
+jest.mock('@/hooks', () => {
+  const actual = jest.requireActual('@/hooks');
+  return {
+    ...actual,
+    usePendingTicketsRecheck: () => ({
+      isRechecking: false,
+      refetchPending: mockRefetchPending,
+    }),
+  };
+});
 
 describe('TicketsScreen (Vé của tôi)', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     await clearAllTickets();
     resetSessionSavedTicketFilter();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders friendly empty state when no tickets are saved', async () => {
@@ -375,6 +402,7 @@ describe('TicketsScreen (Vé của tôi)', () => {
       expect(screen1.getByText('222222')).toBeTruthy();
     });
     screen1.unmount();
+    await new Promise((r) => setTimeout(r, 50));
 
     // Second mount in same session: initial state should be PENDING
     const screen2 = await render(<TicketsScreen />);
@@ -384,6 +412,91 @@ describe('TicketsScreen (Vé của tôi)', () => {
     });
 
     screen2.unmount();
+    await new Promise((r) => setTimeout(r, 50));
+  });
+
+  it('renders compact ticket rows grouped by sticky date section headers (T10.46)', async () => {
+    // Seed 7 tickets spanning 2 draw dates (4 on 2026-11-14, 3 on 2026-11-13)
+    const ticketsData = [
+      {
+        ticket: '100001',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'WON' as const,
+        totalPrize: 100000,
+      },
+      {
+        ticket: '100002',
+        station: 'TPHCM',
+        stationName: 'TP. Hồ Chí Minh',
+        drawDate: '2026-11-14',
+        status: 'LOST' as const,
+        totalPrize: 0,
+      },
+      {
+        ticket: '100003',
+        station: 'BD',
+        stationName: 'Bình Dương',
+        drawDate: '2026-11-14',
+        status: 'PENDING' as const,
+        totalPrize: 0,
+      },
+      {
+        ticket: '100004',
+        station: 'BD',
+        stationName: 'Bình Dương',
+        drawDate: '2026-11-14',
+        status: 'LOST' as const,
+        totalPrize: 0,
+      },
+      {
+        ticket: '200001',
+        station: 'TG',
+        stationName: 'Tiền Giang',
+        drawDate: '2026-11-13',
+        status: 'WON' as const,
+        totalPrize: 2000000,
+      },
+      {
+        ticket: '200002',
+        station: 'TG',
+        stationName: 'Tiền Giang',
+        drawDate: '2026-11-13',
+        status: 'LOST' as const,
+        totalPrize: 0,
+      },
+      {
+        ticket: '200003',
+        station: 'KG',
+        stationName: 'Kiên Giang',
+        drawDate: '2026-11-13',
+        status: 'PENDING' as const,
+        totalPrize: 0,
+      },
+    ];
+
+    await saveManyTickets(ticketsData);
+
+    const { getByTestId, getByText } = await render(<TicketsScreen />);
+
+    // Verify list presence after async storage loads
+    await waitFor(() => {
+      expect(getByTestId('saved-tickets-list')).toBeTruthy();
+      expect(getByTestId('section-header-2026-11-14')).toBeTruthy();
+      expect(getByTestId('section-header-2026-11-13')).toBeTruthy();
+    });
+
+    expect(getByText(/14\/11\/2026/)).toBeTruthy();
+    expect(getByText(/13\/11\/2026/)).toBeTruthy();
+
+    // Verify all 7 compact ticket rows are rendered
+    for (const t of ticketsData) {
+      expect(getByText(t.ticket)).toBeTruthy();
+      expect(
+        getByTestId(`saved-ticket-item-${t.station}_${t.drawDate}_${t.ticket}`),
+      ).toBeTruthy();
+    }
   });
 });
 

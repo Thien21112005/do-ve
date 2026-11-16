@@ -2,12 +2,11 @@ import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
-  FlatList,
+  SectionList,
   ScrollView,
   TouchableOpacity,
   Alert,
   RefreshControl,
-  type ListRenderItemInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -21,7 +20,7 @@ import {
   type TicketFilterStatus,
 } from '@/components';
 import { usePendingTicketsRecheck } from '@/hooks';
-import { formatCurrency, formatDateVN } from '@/lib/format';
+import { formatDateVN } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
@@ -92,9 +91,13 @@ export default function TicketsScreen() {
   // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
     return [...tickets].sort((a, b) => {
-      const dateCmp = b.drawDate.localeCompare(a.drawDate);
+      const aDate = a.drawDate || '';
+      const bDate = b.drawDate || '';
+      const dateCmp = bDate.localeCompare(aDate);
       if (dateCmp !== 0) return dateCmp;
-      return b.createdAt.localeCompare(a.createdAt);
+      const aCreated = a.createdAt || '';
+      const bCreated = b.createdAt || '';
+      return bCreated.localeCompare(aCreated);
     });
   }, [tickets]);
 
@@ -103,6 +106,21 @@ export default function TicketsScreen() {
     if (activeFilter === 'ALL') return sortedTickets;
     return sortedTickets.filter((t) => t.status === activeFilter);
   }, [sortedTickets, activeFilter]);
+
+  // Group filtered tickets into date sections for SectionList (T10.46)
+  const ticketSections = useMemo(() => {
+    const sectionsMap = new Map<string, SavedTicket[]>();
+    for (const ticket of filteredTickets) {
+      const list = sectionsMap.get(ticket.drawDate) || [];
+      list.push(ticket);
+      sectionsMap.set(ticket.drawDate, list);
+    }
+    return Array.from(sectionsMap.entries()).map(([drawDate, data]) => ({
+      title: formatDateVN(drawDate),
+      drawDate,
+      data,
+    }));
+  }, [filteredTickets]);
 
   const handleDeleteTicket = (id: string, ticketNumber: string) => {
     Alert.alert(
@@ -170,114 +188,83 @@ export default function TicketsScreen() {
     }
   };
 
-  const renderItem = ({ item, index }: ListRenderItemInfo<SavedTicket>) => {
-    const prevItem = index > 0 ? filteredTickets[index - 1] : null;
-    const isNewDateGroup = !prevItem || prevItem.drawDate !== item.drawDate;
-    const isWon = item.status === 'WON';
-    const isPending = item.status === 'PENDING';
-
-    return (
-      <View>
-        {isNewDateGroup && (
-          <View className="pt-4 pb-2 px-1 flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <Icon name="calendar" size={14} color={colors.textMuted} />
-              <Text
-                className="text-xs font-bold uppercase tracking-wider ml-1.5"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.tickets.drawDateGroup(formatDateVN(item.drawDate))}
-              </Text>
-            </View>
-          </View>
-        )}
-
-        <View
-          testID={`saved-ticket-item-${item.id}`}
-          accessible={true}
-          accessibilityRole="text"
-          className="mb-3 p-4 rounded-2xl border shadow-sm"
-          style={{
-            backgroundColor: isPending
-              ? colors.pendingBg
-              : isWon
-                ? colors.winBg
-                : colors.surface,
-            borderColor: isPending
-              ? colors.pendingBorder
-              : isWon
-                ? colors.winBorder
-                : colors.border,
-          }}
+  const renderSectionHeader = ({
+    section,
+  }: {
+    section: { title: string; drawDate: string; data: SavedTicket[] };
+  }) => (
+    <View
+      testID={`section-header-${section.drawDate}`}
+      className="pt-3 pb-1.5 px-1 flex-row items-center justify-between"
+      style={{ backgroundColor: colors.background }}
+    >
+      <View className="flex-row items-center">
+        <Icon name="calendar" size={13} color={colors.textMuted} />
+        <Text
+          className="text-xs font-bold uppercase tracking-wider ml-1.5"
+          style={{ color: colors.textMuted }}
         >
-          {/* Top row: Station & Draw Date */}
-          <View
-            className="flex-row items-center justify-between pb-2.5 border-b"
-            style={{ borderColor: colors.border }}
+          {STRINGS.tickets.drawDateGroup(section.title)}
+        </Text>
+      </View>
+      <Text
+        className="text-[11px] font-medium"
+        style={{ color: colors.textMuted }}
+      >
+        {STRINGS.tickets.ticketCount(section.data.length)}
+      </Text>
+    </View>
+  );
+
+  const renderItem = ({ item }: { item: SavedTicket }) => {
+    return (
+      <View
+        testID={`saved-ticket-item-${item.id}`}
+        accessible={true}
+        accessibilityRole="text"
+        className="mb-2 p-3 rounded-xl border flex-row items-center justify-between"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        }}
+      >
+        {/* Left: Tabular ticket number & station name */}
+        <View className="flex-1 mr-2">
+          <Text
+            className="text-lg font-bold tracking-wider"
+            style={{
+              color: colors.textMain,
+              fontVariant: ['tabular-nums'],
+            }}
           >
-            <View className="flex-row items-center">
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: colors.textMain }}
-              >
-                {item.stationName || item.station}
-              </Text>
-            </View>
+            {item.ticket}
+          </Text>
+          <Text
+            className="text-xs mt-0.5"
+            style={{ color: colors.textMuted }}
+            numberOfLines={1}
+          >
+            {item.stationName || item.station}
+          </Text>
+        </View>
 
-            {/* Status Badge & Delete action */}
-            <View className="flex-row items-center">
-              <TicketStatusBadge
-                status={item.status}
-                totalPrize={item.totalPrize}
-                size="sm"
-              />
-              <TouchableOpacity
-                testID={`delete-ticket-btn-${item.id}`}
-                onPress={() => handleDeleteTicket(item.id, item.ticket)}
-                accessibilityRole="button"
-                accessibilityLabel={`Xóa vé ${item.ticket}`}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                className="ml-2.5 p-1 rounded-full"
-              >
-                <Icon name="trash" size={15} color={colors.textMuted} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Ticket Number & Prize Info */}
-          <View className="mt-3 flex-row items-center justify-between">
-            <View>
-              <Text
-                className="text-xs font-medium"
-                style={{ color: colors.textMuted }}
-              >
-                Số vé
-              </Text>
-              <Text
-                className="text-2xl font-bold tracking-widest mt-0.5"
-                style={{ color: colors.textMain, fontVariant: ['tabular-nums'] }}
-              >
-                {item.ticket}
-              </Text>
-            </View>
-
-            {isWon && (
-              <View className="items-end">
-                <Text
-                  className="text-xs font-medium"
-                  style={{ color: colors.win }}
-                >
-                  {STRINGS.tickets.totalPrizePrefix}
-                </Text>
-                <Text
-                  className="text-lg font-bold mt-0.5"
-                  style={{ color: colors.win }}
-                >
-                  {formatCurrency(item.totalPrize)}
-                </Text>
-              </View>
-            )}
-          </View>
+        {/* Right: TicketStatusBadge & Delete button */}
+        <View className="flex-row items-center">
+          <TicketStatusBadge
+            status={item.status}
+            totalPrize={item.totalPrize}
+            size="sm"
+          />
+          <TouchableOpacity
+            testID={`delete-ticket-btn-${item.id}`}
+            onPress={() => handleDeleteTicket(item.id, item.ticket)}
+            accessibilityRole="button"
+            accessibilityLabel={`Xóa vé ${item.ticket}`}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            className="ml-2 p-1.5 rounded-full"
+          >
+            <Icon name="trash" size={15} color={colors.textMuted} />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -376,11 +363,13 @@ export default function TicketsScreen() {
           </View>
         </View>
       ) : (
-        <FlatList
+        <SectionList
           testID="saved-tickets-list"
-          data={filteredTickets}
+          sections={ticketSections}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+          stickySectionHeadersEnabled={true}
           refreshControl={
             <RefreshControl
               testID="tickets-refresh-control"
