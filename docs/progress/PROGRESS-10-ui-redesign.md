@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 29 / 62 task hoàn thành
+- **Tổng quan:** 30 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -36,7 +36,7 @@
 | T10.26 | Segmented control "Một vé / Nhiều vé" | DONE | 6cf177b | 2026-11-16 | Dùng primitive Segmented với animation trượt 200ms, haptic selection và a11y role tab/tablist |
 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | DONE | 161d705 | 2026-11-16 | Chuyển nút Dò vé ra sticky-cta-bar cao 52px cố định phía trên bàn phím, hiển thị lý do cụ thể khi disable |
 | T10.28 | Tự dò khi nhập đủ 6 số | DONE | c33a972 | 2026-11-16 | Tự động submit khi nhập đủ 6 số, dismiss bàn phím, có setting autoSubmitEnabled trong store, bỏ warning haptic ở số thứ 5 |
-| T10.29 | Tự cuộn tới kết quả | TODO | | | |
+| T10.29 | Tự cuộn tới kết quả | DONE | 1f929fe | 2026-11-16 | Tự động scrollTo kết quả dò, thông báo a11y announceForAccessibility, tôn trọng Reduce Motion |
 | T10.30 | Thẻ kết quả: số vé là nhân vật chính | TODO | | | |
 | T10.31 | Bảng chi tiết giải trúng dễ đọc | TODO | | | |
 | T10.32 | Tô số khớp đúng cho giải phụ ĐB và khuyến khích | TODO | | | |
@@ -110,6 +110,7 @@
 - 2026-11-16 | T10.26 | Segmented control "Một vé / Nhiều vé" | Chuyển đổi bộ chọn chế độ dò vé: (1) Thay thế toggle thủ công bằng primitive Segmented dùng tablist/tab theo chuẩn a11y, nhãn ngắn 'Một vé' / 'Nhiều vé (tối đa 20)'; (2) Bổ sung animation trượt nền mượt mà 200ms với Animated.timing (tự động tắt khi Reduce Motion); (3) Tích hợp haptics.selection() khi đổi tab; (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | Thiết kế lại vị trí và trải nghiệm nút Dò vé: (1) Tách nút Dò vé ra khỏi ScrollView, đặt vào thanh cố định đáy màn hình (sticky-cta-bar) ngay trên bàn phím và vùng an toàn; (2) Chiều cao chuẩn 52px (minHeight: 52), full-width với padding gọn; (3) Trạng thái disabled phản ánh lý do hành động cụ thể ('Nhập đủ 6 số (x/6)', 'Chọn đài quay'); (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.28 | Tự dò khi nhập đủ 6 số | Tự động kích hoạt dò vé (auto-submit) khi người dùng nhập đủ 6 chữ số hợp lệ trên ô vé đơn và đã có đài/ngày; ẩn bàn phím (Keyboard.dismiss()); thêm thiết lập autoSubmitEnabled trong store Settings (mặc định bật); loại bỏ haptic warning gây hiểu lầm khi nhập đến chữ số thứ 5; 12 unit tests xanh 100%.
+- 2026-11-16 | T10.29 | Tự cuộn tới kết quả | Thêm ref trên ScrollView và onLayout trên container kết quả; tự động cuộn xuống kết quả khi có dữ liệu (scrollTo/scrollToEnd); gửi thông báo AccessibilityInfo.announceForAccessibility() cho VoiceOver/TalkBack; tôn trọng tùy chọn Reduce Motion; 13 unit tests xanh 100%.
 
 ## Vấn đề mở
 
