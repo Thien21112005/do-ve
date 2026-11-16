@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Icon } from './Icon';
 import {
@@ -23,6 +23,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
   testID = 'batch-result-list',
 }) => {
   const { colors } = useTheme();
+  const [filterWonOnly, setFilterWonOnly] = useState(false);
 
   const totalTickets = batchResult.results?.length || 0;
   const wonTickets =
@@ -44,236 +45,222 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
         ? (batchResult as any).totalAmount
         : 0;
 
+  // T10.34: Sort winning tickets to the top and filter by won state
+  const displayResults = useMemo(() => {
+    const rawList = (batchResult.results || []).map((item, originalIndex) => ({
+      ...item,
+      originalIndex,
+    }));
+
+    const sorted = [...rawList].sort((a, b) => {
+      const aWon = a.won === true ? 1 : 0;
+      const bWon = b.won === true ? 1 : 0;
+      return bWon - aWon;
+    });
+
+    if (filterWonOnly) {
+      return sorted.filter((item) => item.won === true);
+    }
+    return sorted;
+  }, [batchResult.results, filterWonOnly]);
+
   return (
     <View testID={testID} className="w-full">
-      {/* Summary Header Card */}
+      {/* 1. Compact Summary Bar (T10.34) */}
       <View
-        className="p-5 rounded-2xl border mb-4 shadow-sm"
+        testID="batch-summary-bar"
+        className="p-4 rounded-xl border mb-3"
         style={{
           backgroundColor: hasWon ? colors.winBg : colors.surface,
           borderColor: hasWon ? colors.winBorder : colors.border,
         }}
       >
-        <View
-          className="flex-row items-center justify-between pb-3 border-b"
-          style={{ borderColor: colors.border }}
-        >
-          <View>
-            <Text
-              className="text-base font-bold"
-              style={{ color: colors.textMain }}
-            >
-              {STRINGS.check.batchResultTitle}
-            </Text>
-            <Text
-              className="text-xs mt-0.5"
-              style={{ color: colors.textMuted }}
-            >
-              Đài {stationName} • Ngày {formattedDrawDate}
-            </Text>
-          </View>
-          <View
-            className="px-2.5 py-1 rounded-full flex-row items-center"
-            style={{
-              backgroundColor: hasWon
-                ? `${colors.win}1A`
-                : `${colors.border}66`,
-            }}
-          >
-            {hasWon ? (
-              <Icon name="trophy" size={13} color={colors.win} />
-            ) : (
-              <Icon name="ticket" size={13} color={colors.textMuted} />
-            )}
-            <Text
-              className="text-xs font-bold ml-1"
-              style={{ color: hasWon ? colors.win : colors.textMuted }}
-            >
-              {hasWon
-                ? STRINGS.check.batchWonCount(wonTickets)
-                : STRINGS.check.batchNotWon}
-            </Text>
-          </View>
-        </View>
-
-        {/* Total Prize & Stats */}
-        <View className="pt-3.5 flex-row items-center justify-between">
-          <View>
-            <Text
-              className="text-xs font-medium"
-              style={{ color: colors.textMuted }}
-            >
-              {STRINGS.check.batchTotalPrize}
-            </Text>
-            <Text
-              className="text-2xl font-bold mt-0.5"
-              style={{
-                color: hasWon ? colors.win : colors.textMain,
-                fontVariant: ['tabular-nums'],
-              }}
-            >
-              {formatCurrency(totalPrize)}
-            </Text>
-          </View>
-
-          <View className="items-end">
-            <Text
-              className="text-xs font-medium"
-              style={{ color: colors.textMuted }}
-            >
-              {STRINGS.check.batchCheckedCountLabel}
-            </Text>
-            <Text
-              className="text-base font-bold mt-0.5"
-              style={{ color: colors.textMain }}
-            >
-              {totalTickets} vé
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* List of checked tickets */}
-      <View className="mb-4">
         <Text
-          className="text-sm font-bold mb-2.5 px-1"
+          className="text-xs font-semibold tracking-wide"
+          style={{ color: colors.textMuted }}
+        >
+          Đài {stationName} · {formattedDrawDate}
+        </Text>
+        <Text
+          className="text-sm font-medium mt-1 leading-5"
           style={{ color: colors.textMain }}
         >
-          {STRINGS.check.batchTicketDetails(totalTickets)}
+          Dò {totalTickets} vé ·{' '}
+          <Text
+            className="font-bold"
+            style={{ color: hasWon ? colors.win : colors.textMain }}
+          >
+            {wonTickets} vé trúng
+          </Text>
+          {' · '}
+          <Text
+            className="font-bold"
+            style={{
+              color: hasWon ? colors.win : colors.textMain,
+              fontVariant: ['tabular-nums'],
+            }}
+          >
+            {formatCurrency(totalPrize)}
+          </Text>
         </Text>
+      </View>
 
-        {(batchResult.results || []).map((item, index) => {
+      {/* 2. Filter Bar (T10.34: Chỉ vé trúng) */}
+      {hasWon && (
+        <View className="flex-row items-center space-x-2 mb-3">
+          <Pressable
+            testID="batch-filter-all"
+            onPress={() => setFilterWonOnly(false)}
+            className="px-3 py-1.5 rounded-full border mr-2"
+            style={{
+              backgroundColor: !filterWonOnly ? colors.primary : colors.surface,
+              borderColor: !filterWonOnly ? colors.primary : colors.border,
+            }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: !filterWonOnly }}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: !filterWonOnly ? '#FFFFFF' : colors.textMain }}
+            >
+              Tất cả ({totalTickets})
+            </Text>
+          </Pressable>
+
+          <Pressable
+            testID="batch-filter-won"
+            onPress={() => setFilterWonOnly(true)}
+            className="px-3 py-1.5 rounded-full border"
+            style={{
+              backgroundColor: filterWonOnly ? colors.win : colors.surface,
+              borderColor: filterWonOnly ? colors.win : colors.border,
+            }}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filterWonOnly }}
+          >
+            <Text
+              className="text-xs font-semibold"
+              style={{ color: filterWonOnly ? '#FFFFFF' : colors.win }}
+            >
+              Chỉ vé trúng ({wonTickets})
+            </Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* 3. Flat Rows List (T10.34) */}
+      <View
+        className="rounded-xl border overflow-hidden mb-4"
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        }}
+      >
+        {displayResults.map((item) => {
           const isItemWon = item.won === true;
           const isNotAvailable = item.status === 'RESULT_NOT_AVAILABLE';
+          const itemTotalPrize =
+            typeof (item as any).totalPrize === 'number'
+              ? (item as any).totalPrize
+              : typeof (item as any).totalAmount === 'number'
+                ? (item as any).totalAmount
+                : 0;
 
           return (
             <View
-              key={`${item.ticket}-${index}`}
+              key={`batch-item-${item.ticket}`}
               testID={`batch-item-${item.ticket}`}
-              className="p-4 rounded-2xl border mb-2.5 shadow-sm"
-              style={{
-                backgroundColor: isItemWon
-                  ? colors.winBg
-                  : isNotAvailable
-                    ? colors.pendingBg
-                    : colors.surface,
-                borderColor: isItemWon
-                  ? colors.winBorder
-                  : isNotAvailable
-                    ? colors.pendingBorder
-                    : colors.border,
-              }}
+              className="p-3 border-b flex-row items-center justify-between"
+              style={{ borderColor: colors.surfaceSubtle }}
             >
-              {/* Item Header */}
-              <View
-                className="flex-row items-center justify-between pb-2 border-b"
-                style={{ borderColor: colors.border }}
-              >
-                <View className="flex-row items-center">
-                  <Text
-                    className="text-xs font-semibold mr-2"
-                    style={{ color: colors.textMuted }}
-                  >
-                    #{index + 1}
-                  </Text>
-                  {isItemWon && item.wins && item.wins.length > 0 ? (
-                    <HighlightedTicket
-                      ticket={item.ticket ?? ''}
-                      matchedDigits={getLongestMatchedSuffix(
-                        item.ticket ?? '',
-                        item.wins as any,
-                      )}
-                      wins={item.wins as any}
-                    />
-                  ) : (
-                    <Text
-                      className="text-lg font-bold tracking-widest"
-                      style={{
-                        color: colors.textMain,
-                        fontVariant: ['tabular-nums'],
-                      }}
-                    >
-                      {item.ticket}
-                    </Text>
-                  )}
-                </View>
-
-                {/* Status Badge */}
-                <View
-                  className="px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: isItemWon
-                      ? `${colors.win}20`
-                      : isNotAvailable
-                        ? `${colors.pending}20`
-                        : `${colors.border}66`,
-                  }}
+              {/* Left: Index & Ticket Number */}
+              <View className="flex-row items-center flex-1 pr-2">
+                <Text
+                  className="text-xs font-medium mr-2 w-6 text-right"
+                  style={{ color: colors.textMuted }}
                 >
+                  #{item.originalIndex + 1}
+                </Text>
+                {isItemWon && item.wins && item.wins.length > 0 ? (
+                  <HighlightedTicket
+                    ticket={item.ticket ?? ''}
+                    matchedDigits={getLongestMatchedSuffix(
+                      item.ticket ?? '',
+                      item.wins as any,
+                    )}
+                    wins={item.wins as any}
+                    size="sm"
+                  />
+                ) : (
                   <Text
-                    className="text-xs font-bold"
+                    className="text-base font-bold tracking-wider"
                     style={{
-                      color: isItemWon
-                        ? colors.win
-                        : isNotAvailable
-                          ? colors.pending
-                          : colors.textMuted,
+                      color: colors.textMain,
+                      fontVariant: ['tabular-nums'],
                     }}
                   >
-                    {isItemWon
-                      ? STRINGS.check.batchItemWonBadge(item.wins ? item.wins.length : 0)
-                      : isNotAvailable
-                        ? STRINGS.check.batchItemPendingBadge
-                        : STRINGS.check.batchItemNotWonBadge}
+                    {item.ticket}
                   </Text>
-                </View>
+                )}
               </View>
 
-              {/* Item Content */}
-              {isItemWon && item.wins && (
-                <View className="pt-2">
-                  {item.wins.map((win, winIdx) => (
-                    <View
-                      key={`${win.tier}-${winIdx}`}
-                      className="flex-row items-center justify-between py-1"
-                    >
+              {/* Middle: Match Status Text */}
+              <View className="flex-1 px-2 items-start">
+                {isItemWon && item.wins && (
+                  <View className="space-y-0.5">
+                    {item.wins.map((win, winIdx) => (
                       <Text
+                        key={`${win.tier}-${winIdx}`}
                         className="text-xs font-semibold"
                         style={{ color: colors.win }}
                       >
                         {(win as any).tierName || win.tier}
                       </Text>
-                      <Text
-                        className="text-xs font-bold"
-                        style={{
-                          color: colors.win,
-                          fontVariant: ['tabular-nums'],
-                        }}
-                      >
-                        {formatCurrency((win as any).prizeAmount ?? 0)}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-
-              {!isItemWon && !isNotAvailable && (
-                <View className="pt-2">
-                  <Text className="text-xs" style={{ color: colors.textMuted }}>
-                    {STRINGS.check.batchItemNotWonNotice}
-                  </Text>
-                </View>
-              )}
-
-              {isNotAvailable && (
-                <View className="pt-2">
+                    ))}
+                  </View>
+                )}
+                {isNotAvailable && (
                   <Text
                     className="text-xs font-medium"
                     style={{ color: colors.pending }}
                   >
-                    {STRINGS.check.batchItemPendingNotice}
+                    Chưa có kết quả
                   </Text>
-                </View>
-              )}
+                )}
+                {!isItemWon && !isNotAvailable && (
+                  <Text
+                    className="text-xs"
+                    style={{ color: colors.textMuted }}
+                  >
+                    Không trúng
+                  </Text>
+                )}
+              </View>
+
+              {/* Right: Tabular Prize Amount */}
+              <View className="items-end min-w-[70px]">
+                {isItemWon ? (
+                  <Text
+                    className="text-sm font-bold text-right"
+                    style={{
+                      color: colors.win,
+                      fontVariant: ['tabular-nums'],
+                    }}
+                  >
+                    {formatCurrency(itemTotalPrize)}
+                  </Text>
+                ) : (
+                  <Text
+                    className="text-sm text-right font-medium"
+                    style={{
+                      color: colors.textMuted,
+                      fontVariant: ['tabular-nums'],
+                    }}
+                  >
+                    —
+                  </Text>
+                )}
+              </View>
             </View>
           );
         })}
@@ -287,7 +274,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
             accessibilityRole="button"
             accessibilityLabel={STRINGS.check.batchCheckAgain}
             onPress={onCheckAgain}
-            className="py-3.5 px-5 rounded-xl border flex-row items-center justify-center active:opacity-70"
+            className="py-3 px-5 rounded-xl border flex-row items-center justify-center active:opacity-70"
             style={{
               borderColor: colors.border,
               backgroundColor: colors.surface,
@@ -307,7 +294,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       {/* Disclaimer */}
       <View className="mt-4 px-2">
         <Text
-          className="text-xs text-center leading-relaxed"
+          className="text-xs text-center leading-relaxed italic"
           style={{ color: colors.textMuted }}
         >
           {STRINGS.check.disclaimer}
