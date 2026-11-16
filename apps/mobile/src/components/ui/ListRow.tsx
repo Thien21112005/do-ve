@@ -19,6 +19,8 @@ export interface ListRowProps {
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   destructive?: boolean;
+  testID?: string;
+  accessibilityLabel?: string;
 }
 
 export function ListRow({
@@ -30,6 +32,8 @@ export function ListRow({
   onPress,
   style,
   destructive = false,
+  testID,
+  accessibilityLabel,
 }: ListRowProps) {
   const { colors } = useTheme();
 
@@ -43,7 +47,9 @@ export function ListRow({
 
   return (
     <Pressable
+      testID={testID}
       accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={accessibilityLabel || title}
       disabled={!onPress}
       onPress={handlePress}
       style={({ pressed }) => [

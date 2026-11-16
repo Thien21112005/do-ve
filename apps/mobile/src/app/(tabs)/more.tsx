@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '@/components';
+import { Icon, ListRow } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 import { CURRENT_APP_VERSION } from '@/lib/version';
@@ -10,30 +10,6 @@ import { CURRENT_APP_VERSION } from '@/lib/version';
 export default function MoreScreen() {
   const { colors } = useTheme();
   const router = useRouter();
-
-  const menuItems = [
-    {
-      testID: 'more-menu-schedule',
-      title: STRINGS.more.scheduleTitle,
-      subtitle: STRINGS.more.scheduleDesc,
-      icon: 'calendar' as const,
-      onPress: () => router.push('/schedule'),
-    },
-    {
-      testID: 'more-menu-settings',
-      title: STRINGS.more.settingsTitle,
-      subtitle: STRINGS.more.settingsDesc,
-      icon: 'settings' as const,
-      onPress: () => router.push('/settings'),
-    },
-    {
-      testID: 'more-menu-about',
-      title: STRINGS.more.aboutTitle,
-      subtitle: STRINGS.more.aboutDesc,
-      icon: 'info' as const,
-      onPress: () => router.push('/about'),
-    },
-  ];
 
   return (
     <SafeAreaView
@@ -51,57 +27,70 @@ export default function MoreScreen() {
         >
           {STRINGS.more.screenTitle}
         </Text>
-        <Text className="text-xs mb-5" style={{ color: colors.textMuted }}>
+        <Text className="text-xs mb-4" style={{ color: colors.textMuted }}>
           {STRINGS.more.subtitle}
         </Text>
 
+        {/* Section 1: Tiện ích */}
+        <Text
+          className="text-xs font-semibold tracking-wider mb-2 px-1 uppercase"
+          style={{ color: colors.textMuted }}
+        >
+          {STRINGS.more.sectionUtilities}
+        </Text>
         <View
-          className="rounded-2xl border overflow-hidden shadow-sm"
+          className="rounded-2xl border overflow-hidden mb-6"
           style={{
             backgroundColor: colors.surface,
             borderColor: colors.border,
           }}
         >
-          {menuItems.map((item, index) => {
-            const isLast = index === menuItems.length - 1;
-            return (
-              <Pressable
-                key={item.testID}
-                testID={item.testID}
-                accessibilityRole="button"
-                accessibilityLabel={item.title}
-                onPress={item.onPress}
-                className="p-4 flex-row items-center border-b active:opacity-70"
-                style={{
-                  borderColor: colors.border,
-                  borderBottomWidth: isLast ? 0 : 1,
-                }}
-              >
-                <View
-                  className="w-10 h-10 rounded-xl items-center justify-center mr-3.5"
-                  style={{ backgroundColor: `${colors.primary}1A` }}
-                >
-                  <Icon name={item.icon} size={20} color={colors.primary} />
-                </View>
-                <View className="flex-1 mr-2">
-                  <Text
-                    className="text-base font-bold mb-0.5"
-                    style={{ color: colors.textMain }}
-                  >
-                    {item.title}
-                  </Text>
-                  <Text className="text-xs" style={{ color: colors.textMuted }}>
-                    {item.subtitle}
-                  </Text>
-                </View>
-                <Icon name="chevronRight" size={18} color={colors.textMuted} />
-              </Pressable>
-            );
-          })}
+          <ListRow
+            testID="more-menu-schedule"
+            title={STRINGS.more.scheduleTitle}
+            subtitle={STRINGS.more.scheduleDesc}
+            icon={<Icon name="calendar" size={20} color={colors.textMain} />}
+            showChevron={true}
+            onPress={() => router.push('/schedule')}
+            style={{ borderBottomWidth: 0 }}
+          />
         </View>
 
-        {/* Privacy & Disclaimer Note */}
-        <View className="mt-8 px-2 items-center">
+        {/* Section 2: Ứng dụng */}
+        <Text
+          className="text-xs font-semibold tracking-wider mb-2 px-1 uppercase"
+          style={{ color: colors.textMuted }}
+        >
+          {STRINGS.more.sectionApp}
+        </Text>
+        <View
+          className="rounded-2xl border overflow-hidden mb-8"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }}
+        >
+          <ListRow
+            testID="more-menu-settings"
+            title={STRINGS.more.settingsTitle}
+            subtitle={STRINGS.more.settingsDesc}
+            icon={<Icon name="settings" size={20} color={colors.textMain} />}
+            showChevron={true}
+            onPress={() => router.push('/settings')}
+          />
+          <ListRow
+            testID="more-menu-about"
+            title={STRINGS.more.aboutTitle}
+            subtitle={STRINGS.more.aboutDesc}
+            icon={<Icon name="info" size={20} color={colors.textMain} />}
+            showChevron={true}
+            onPress={() => router.push('/about')}
+            style={{ borderBottomWidth: 0 }}
+          />
+        </View>
+
+        {/* Privacy Notice & Single-line Version Footer */}
+        <View className="items-center px-4 mt-auto">
           <View
             testID="more-privacy-notice"
             className="flex-row items-center justify-center py-2 px-3 rounded-xl mb-3"
@@ -116,20 +105,14 @@ export default function MoreScreen() {
             </Text>
           </View>
           <Text
-            className="text-xs text-center leading-relaxed"
+            testID="more-version-footer"
+            className="text-xs text-center font-medium"
             style={{ color: colors.textMuted }}
           >
-            {STRINGS.more.copyright}
-          </Text>
-          <Text
-            className="text-xs mt-2 font-medium"
-            style={{ color: colors.textMuted }}
-          >
-            {STRINGS.more.versionPrefix} {CURRENT_APP_VERSION}
+            DoVe phiên bản {CURRENT_APP_VERSION} · Dò vé số kiến thiết miền Nam
           </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-

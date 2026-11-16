@@ -245,6 +245,8 @@ export const STRINGS = {
   more: {
     screenTitle: 'Thêm',
     subtitle: 'Lịch quay số, Giới thiệu và Cài đặt ứng dụng',
+    sectionUtilities: 'Tiện ích',
+    sectionApp: 'Ứng dụng',
     scheduleTitle: 'Lịch quay thưởng',
     scheduleDesc: 'Lịch mở thưởng 21 đài miền Nam theo thứ trong tuần',
     settingsTitle: 'Cài đặt',

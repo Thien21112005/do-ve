@@ -18,5 +18,6 @@ export * from './AppVersionGate';
 export * from './TicketStatusBadge';
 export * from './ErrorBoundary';
 export * from './ui/Segmented';
+export * from './ui/ListRow';
 export * from './SavedTicketsSummary';
 export * from './TicketEmptyIllustration';
