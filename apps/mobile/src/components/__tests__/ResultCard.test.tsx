@@ -166,6 +166,62 @@ describe('ResultCard Component', () => {
     expect(getByText(/tham khảo/i)).toBeTruthy();
   });
 
+  it('renders actionable pending state with estimated time, primary save-to-recheck button, and secondary retry button (T10.33)', async () => {
+    const onCheckAgain = jest.fn();
+    const onSaveTicket = jest.fn();
+
+    const { getByText, getByTestId } = await render(
+      <ResultCard
+        result={notAvailableResult}
+        onCheckAgain={onCheckAgain}
+        onSaveTicket={onSaveTicket}
+      />,
+    );
+
+    expect(getByTestId('result-card')).toBeTruthy();
+    expect(getByText('Chưa có kết quả')).toBeTruthy();
+
+    // 1. Estimated time message (T10.33)
+    const estimateBox = getByTestId('result-card-pending-estimate');
+    expect(estimateBox).toBeTruthy();
+    expect(getByText(/thường có lúc 16h35/i)).toBeTruthy();
+
+    // 2. Action buttons order: Primary Save button above Secondary Retry button
+    const saveBtn = getByTestId('result-card-save-btn');
+    const retryBtn = getByTestId('result-card-retry-btn');
+    expect(saveBtn).toBeTruthy();
+    expect(retryBtn).toBeTruthy();
+
+    expect(getByText('Lưu để tự dò lại')).toBeTruthy();
+    expect(getByText('Dò lại')).toBeTruthy();
+  });
+
+  it('triggers onSaveTicket callback when pressing save-to-recheck button in pending state (T10.33)', async () => {
+    const onSaveTicket = jest.fn();
+    const { getByTestId } = await render(
+      <ResultCard
+        result={notAvailableResult}
+        onSaveTicket={onSaveTicket}
+      />,
+    );
+
+    const saveBtn = getByTestId('result-card-save-btn');
+    fireEvent.press(saveBtn);
+    expect(onSaveTicket).toHaveBeenCalledWith(notAvailableResult);
+  });
+
+  it('displays saved state for pending ticket (T10.33)', async () => {
+    const { getByText } = await render(
+      <ResultCard
+        result={notAvailableResult}
+        isSaved={true}
+        onSaveTicket={jest.fn()}
+      />,
+    );
+
+    expect(getByText('Đã lưu để tự dò lại')).toBeTruthy();
+  });
+
   it('renders RESULT_NOT_AVAILABLE state with 16h30 notice and retry button', async () => {
     const onCheckAgain = jest.fn();
     const { getByText, getByTestId } = await render(

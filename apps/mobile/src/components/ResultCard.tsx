@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,7 +12,11 @@ import {
   HighlightedTicket,
   getLongestMatchedSuffix,
 } from './HighlightedTicket';
-import { formatCurrency, formatDateVN } from '@/lib/format';
+import {
+  formatCurrency,
+  formatDateVN,
+  getEstimatedDrawTimeMessage,
+} from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
 import type { CheckTicketResponse } from '@/types';
@@ -156,28 +160,83 @@ export function ResultCard({
 
       {/* 4. Body: Pending notice, Wins list, or non-winning notice */}
       {isPending ? (
-        <View className="py-2 mb-2">
-          {/* Dò lại button */}
-          {onCheckAgain && (
-            <TouchableOpacity
-              testID="result-card-retry-btn"
-              onPress={onCheckAgain}
-              className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
-              style={{
-                borderColor: colors.pending,
-                backgroundColor: `${colors.pending}15`,
+        <View className="py-2 mb-2" testID="result-card-pending-section">
+          {/* Estimated time notice (T10.33) */}
+          <View
+            testID="result-card-pending-estimate"
+            className="p-3 rounded-xl border flex-row items-center mb-3"
+            style={{
+              backgroundColor: colors.surfaceSubtle,
+              borderColor: colors.border,
+            }}
+          >
+            <Icon name="clock" size={16} color={colors.pending} />
+            <Text
+              className="text-xs font-medium ml-2 flex-1 leading-4"
+              style={{ color: colors.textMain }}
+            >
+              {getEstimatedDrawTimeMessage(result.drawDate)}
+            </Text>
+          </View>
+
+          {/* Primary Action: Lưu để tự dò lại (T10.33) */}
+          {onSaveTicket && (
+            <Pressable
+              testID="result-card-save-btn"
+              onPress={() => {
+                haptics.light();
+                onSaveTicket(result);
               }}
+              className="py-3 px-4 rounded-xl flex-row items-center justify-center space-x-2 shadow-xs"
+              style={{
+                backgroundColor: isSaved ? `${colors.win}15` : colors.primary,
+                borderWidth: isSaved ? 1 : 0,
+                borderColor: isSaved ? colors.win : 'transparent',
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isSaved ? 'Đã lưu để tự dò lại' : 'Lưu để tự dò lại'
+              }
+            >
+              <Icon
+                name={isSaved ? 'check' : 'bookmark'}
+                size={16}
+                color={isSaved ? colors.win : '#FFFFFF'}
+              />
+              <Text
+                className="text-sm font-semibold ml-2"
+                style={{ color: isSaved ? colors.win : '#FFFFFF' }}
+              >
+                {isSaved ? 'Đã lưu để tự dò lại' : 'Lưu để tự dò lại'}
+              </Text>
+            </Pressable>
+          )}
+
+          {/* Secondary Action: Dò lại (T10.33) */}
+          {onCheckAgain && (
+            <Pressable
+              testID="result-card-retry-btn"
+              onPress={() => {
+                haptics.light();
+                onCheckAgain();
+              }}
+              className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
+              style={({ pressed }) => ({
+                borderColor: colors.border,
+                backgroundColor: pressed ? colors.surfaceSubtle : colors.surface,
+                opacity: pressed ? 0.8 : 1,
+              })}
               accessibilityRole="button"
               accessibilityLabel="Dò lại kết quả"
             >
-              <Icon name="refresh" size={16} color={colors.pending} />
+              <Icon name="refresh" size={16} color={colors.textMuted} />
               <Text
-                className="text-sm font-semibold ml-2"
-                style={{ color: colors.pending }}
+                className="text-sm font-medium ml-2"
+                style={{ color: colors.textMuted }}
               >
                 {STRINGS.check.checkAgain}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       ) : isWon && result.wins && result.wins.length > 0 ? (
@@ -266,8 +325,8 @@ export function ResultCard({
         </View>
       ) : null}
 
-      {/* Save ticket button if callback provided */}
-      {onSaveTicket && (
+      {/* Save ticket button for WON / LOST state */}
+      {!isPending && onSaveTicket && (
         <Pressable
           testID="result-card-save-btn"
           onPress={() => {
@@ -293,11 +352,7 @@ export function ResultCard({
             className="text-sm font-medium ml-1.5"
             style={{ color: isSaved ? colors.win : colors.textMain }}
           >
-            {isSaved
-              ? STRINGS.check.savedTicket
-              : isPending
-                ? STRINGS.check.savePendingTicket
-                : STRINGS.check.saveTicket}
+            {isSaved ? STRINGS.check.savedTicket : STRINGS.check.saveTicket}
           </Text>
         </Pressable>
       )}

@@ -19,3 +19,55 @@ export function formatDateVN(dateStr: string): string {
   const [, year, month, day] = match;
   return `${day}/${month}/${year}`;
 }
+
+/**
+ * Calculates estimated draw time message for Southern Vietnam lottery draws.
+ * Official draw results are typically finalized at 16:35 VN time (UTC+7).
+ */
+export function getEstimatedDrawTimeMessage(
+  drawDateStr?: string,
+  nowOverride?: Date,
+): string {
+  const now = nowOverride || new Date();
+
+  // Convert now to Vietnam timezone (UTC+7)
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  const vnNow = new Date(utcMs + 7 * 3600000);
+
+  const currentYear = vnNow.getFullYear();
+  const currentMonth = String(vnNow.getMonth() + 1).padStart(2, '0');
+  const currentDate = String(vnNow.getDate()).padStart(2, '0');
+  const todayVnStr = `${currentYear}-${currentMonth}-${currentDate}`;
+
+  const targetDateStr = drawDateStr || todayVnStr;
+
+  // If draw date is in the future
+  if (targetDateStr > todayVnStr) {
+    const parts = targetDateStr.split('-');
+    if (parts.length === 3) {
+      return `Thường có lúc 16h35 ngày ${parts[2]}/${parts[1]}`;
+    }
+  }
+
+  // If draw date is in the past
+  if (targetDateStr < todayVnStr) {
+    return 'Thường có lúc 16h35, hệ thống đang cập nhật kết quả kỳ quay này';
+  }
+
+  // Today in VN: target time is 16:35 (995 minutes)
+  const currentMinutes = vnNow.getHours() * 60 + vnNow.getMinutes();
+  const targetMinutes = 16 * 60 + 35;
+
+  if (currentMinutes < targetMinutes) {
+    const diff = targetMinutes - currentMinutes;
+    if (diff > 60) {
+      const hours = Math.floor(diff / 60);
+      const mins = diff % 60;
+      return `Thường có lúc 16h35, còn khoảng ${hours}h${mins > 0 ? `${mins}p` : ''}`;
+    }
+    return `Thường có lúc 16h35, còn ${diff} phút`;
+  }
+
+  // At or after 16:35 today
+  return 'Thường có lúc 16h35, hệ thống đang cập nhật kết quả';
+}

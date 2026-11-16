@@ -1,4 +1,8 @@
-import { formatCurrency, formatDateVN } from '../format';
+import {
+  formatCurrency,
+  formatDateVN,
+  getEstimatedDrawTimeMessage,
+} from '../format';
 
 describe('format utilities', () => {
   describe('formatCurrency', () => {
@@ -30,6 +34,34 @@ describe('format utilities', () => {
 
     it('returns original string if format is invalid', () => {
       expect(formatDateVN('invalid')).toBe('invalid');
+    });
+  });
+
+  describe('getEstimatedDrawTimeMessage (T10.33)', () => {
+    it('returns minutes remaining when current time is 16:23 today (12 minutes before 16:35)', () => {
+      // 16:23 VN = 09:23 UTC
+      const mockNow = new Date('2026-11-16T09:23:00.000Z');
+      const msg = getEstimatedDrawTimeMessage('2026-11-16', mockNow);
+      expect(msg).toBe('Thường có lúc 16h35, còn 12 phút');
+    });
+
+    it('returns hours and minutes remaining when early in the morning', () => {
+      // 10:00 VN = 03:00 UTC
+      const mockNow = new Date('2026-11-16T03:00:00.000Z');
+      const msg = getEstimatedDrawTimeMessage('2026-11-16', mockNow);
+      expect(msg).toBe('Thường có lúc 16h35, còn khoảng 6h35p');
+    });
+
+    it('returns future date format when draw date is tomorrow', () => {
+      const mockNow = new Date('2026-11-16T03:00:00.000Z');
+      const msg = getEstimatedDrawTimeMessage('2026-11-17', mockNow);
+      expect(msg).toBe('Thường có lúc 16h35 ngày 17/11');
+    });
+
+    it('returns updating message when draw date is in the past', () => {
+      const mockNow = new Date('2026-11-16T03:00:00.000Z');
+      const msg = getEstimatedDrawTimeMessage('2026-11-10', mockNow);
+      expect(msg).toContain('hệ thống đang cập nhật');
     });
   });
 });
