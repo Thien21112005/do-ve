@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 30 / 62 task hoàn thành
+- **Tổng quan:** 31 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -37,7 +37,7 @@
 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | DONE | 161d705 | 2026-11-16 | Chuyển nút Dò vé ra sticky-cta-bar cao 52px cố định phía trên bàn phím, hiển thị lý do cụ thể khi disable |
 | T10.28 | Tự dò khi nhập đủ 6 số | DONE | c33a972 | 2026-11-16 | Tự động submit khi nhập đủ 6 số, dismiss bàn phím, có setting autoSubmitEnabled trong store, bỏ warning haptic ở số thứ 5 |
 | T10.29 | Tự cuộn tới kết quả | DONE | 1f929fe | 2026-11-16 | Tự động scrollTo kết quả dò, thông báo a11y announceForAccessibility, tôn trọng Reduce Motion |
-| T10.30 | Thẻ kết quả: số vé là nhân vật chính | TODO | | | |
+| T10.30 | Thẻ kết quả: số vé là nhân vật chính | DONE | 205bba1 | 2026-11-16 | Số vé ticketLg nổi bật, highlight winTint, tiêu đề 22px bold, bỏ card-in-card và badge lặp |
 | T10.31 | Bảng chi tiết giải trúng dễ đọc | TODO | | | |
 | T10.32 | Tô số khớp đúng cho giải phụ ĐB và khuyến khích | TODO | | | |
 | T10.33 | Thông tin "Chưa có kết quả" hữu ích hơn | TODO | | | |
@@ -111,6 +111,7 @@
 - 2026-11-16 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | Thiết kế lại vị trí và trải nghiệm nút Dò vé: (1) Tách nút Dò vé ra khỏi ScrollView, đặt vào thanh cố định đáy màn hình (sticky-cta-bar) ngay trên bàn phím và vùng an toàn; (2) Chiều cao chuẩn 52px (minHeight: 52), full-width với padding gọn; (3) Trạng thái disabled phản ánh lý do hành động cụ thể ('Nhập đủ 6 số (x/6)', 'Chọn đài quay'); (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.28 | Tự dò khi nhập đủ 6 số | Tự động kích hoạt dò vé (auto-submit) khi người dùng nhập đủ 6 chữ số hợp lệ trên ô vé đơn và đã có đài/ngày; ẩn bàn phím (Keyboard.dismiss()); thêm thiết lập autoSubmitEnabled trong store Settings (mặc định bật); loại bỏ haptic warning gây hiểu lầm khi nhập đến chữ số thứ 5; 12 unit tests xanh 100%.
 - 2026-11-16 | T10.29 | Tự cuộn tới kết quả | Thêm ref trên ScrollView và onLayout trên container kết quả; tự động cuộn xuống kết quả khi có dữ liệu (scrollTo/scrollToEnd); gửi thông báo AccessibilityInfo.announceForAccessibility() cho VoiceOver/TalkBack; tôn trọng tùy chọn Reduce Motion; 13 unit tests xanh 100%.
+- 2026-11-16 | T10.30 | Thẻ kết quả: số vé là nhân vật chính | Tái cấu trúc ResultCard theo Hướng A (Tờ vé giấy): (1) Dòng ngữ cảnh context-line (Đài · Ngày) thanh mảnh; (2) Số vé cỡ ticketLg (32px tabular font-bold) nổi bật trên mặt thẻ phẳng, phần khớp tô winTint + chữ win, phần chưa khớp mang màu mực textMain đậm nét (bỏ card-in-card); (3) Tiêu đề trạng thái 22px bold ('Trúng N giải' / 'Không trúng' / 'Chưa có kết quả'); (4) Loại bỏ các badge lặp nghĩa gây rác thị giác; (5) 6 unit tests xanh 100%.
 
 ## Vấn đề mở
 
