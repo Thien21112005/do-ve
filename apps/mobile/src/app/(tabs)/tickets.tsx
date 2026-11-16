@@ -13,8 +13,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-// eslint-disable-next-line import/no-unresolved
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets, updateTicket } from '@/store/ticketStore';

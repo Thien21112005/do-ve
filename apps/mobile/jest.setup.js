@@ -208,3 +208,16 @@ jest.mock('react-native-gesture-handler/Swipeable', () => {
   };
 }, { virtual: true });
 
+jest.mock('react-native-gesture-handler/ReanimatedSwipeable', () => {
+  const { View } = require('react-native');
+  return function MockSwipeable({ children, renderRightActions, renderLeftActions, testID }) {
+    return (
+      <View testID={testID}>
+        {renderLeftActions && renderLeftActions()}
+        {children}
+        {renderRightActions && renderRightActions()}
+      </View>
+    );
+  };
+}, { virtual: true });
+
