@@ -510,5 +510,77 @@ describe('TicketsScreen (Vé của tôi)', () => {
       ).toBeTruthy();
     }
   });
+
+  it('opens ticket detail sheet with note editing, navigation and delete actions (T10.48)', async () => {
+    const router = useRouter();
+
+    const ticket = await saveTicket({
+      ticket: '998877',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'WON',
+      totalPrize: 100000,
+      note: 'Vé chú Bảy tặng',
+    });
+
+    const { getByTestId, queryByTestId } = await render(
+      <TicketsScreen />,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('saved-tickets-list')).toBeTruthy();
+    });
+
+    // 1. Press row to open detail sheet
+    const row = getByTestId(`saved-ticket-item-${ticket.id}`);
+    fireEvent.press(row);
+
+    // Verify detail sheet is visible
+    await waitFor(() => {
+      expect(getByTestId('saved-ticket-detail-sheet')).toBeTruthy();
+    });
+    const sheet = getByTestId('saved-ticket-detail-sheet');
+    expect(getByTestId('detail-sheet-ticket-number')).toBeTruthy();
+    expect(getByTestId('detail-sheet-ticket-number').props.children).toBe('998877');
+    expect(within(sheet).getByText(/TP. Hồ Chí Minh/)).toBeTruthy();
+    expect(within(sheet).getByText(/14\/11\/2026/)).toBeTruthy();
+
+    // Verify existing note is displayed
+    const noteInput = getByTestId('detail-sheet-note-input');
+    expect(noteInput.props.value).toBe('Vé chú Bảy tặng');
+
+    // 2. Edit note and save
+    fireEvent.changeText(noteInput, 'Vé trúng thưởng giải 8');
+    await waitFor(() => {
+      expect(noteInput.props.value).toBe('Vé trúng thưởng giải 8');
+    });
+    fireEvent.press(getByTestId('detail-sheet-save-note-btn'));
+
+    // Wait for note update in storage
+    await waitFor(async () => {
+      const tickets = await getTickets();
+      const updated = tickets.find((t) => t.id === ticket.id);
+      expect(updated?.note).toBe('Vé trúng thưởng giải 8');
+    });
+
+    // 3. Navigation: "Xem bảng kết quả kỳ này"
+    fireEvent.press(getByTestId('detail-sheet-view-draw-btn'));
+    expect(router.push).toHaveBeenCalledWith(
+      expect.stringContaining('/(tabs)/results'),
+    );
+
+    // 4. Navigation: "Dò lại vé này"
+    fireEvent.press(getByTestId('detail-sheet-recheck-btn'));
+    expect(router.push).toHaveBeenCalledWith(
+      expect.stringContaining('/(tabs)/check'),
+    );
+
+    // 5. Close sheet button
+    fireEvent.press(getByTestId('detail-sheet-close-btn'));
+    await waitFor(() => {
+      expect(queryByTestId('saved-ticket-detail-sheet')).toBeNull();
+    });
+  });
 });
 

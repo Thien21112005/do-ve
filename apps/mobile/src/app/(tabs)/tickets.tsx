@@ -7,12 +7,16 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 // eslint-disable-next-line import/no-unresolved
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useSavedTickets } from '@/store/ticketStore';
+import { useSavedTickets, updateTicket } from '@/store/ticketStore';
 import { exportTicketsToJson, importTicketsFromJson } from '@/store';
 import { useTheme } from '@/theme';
 import {
@@ -51,6 +55,12 @@ export default function TicketsScreen() {
     useState<SavedTicket | null>(null);
   const [isUndoVisible, setIsUndoVisible] = useState(false);
   const undoTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Ticket detail sheet state (T10.48)
+  const [selectedDetailTicket, setSelectedDetailTicket] =
+    useState<SavedTicket | null>(null);
+  const [noteDraft, setNoteDraft] = useState('');
+  const [isSavingNote, setIsSavingNote] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -167,6 +177,19 @@ export default function TicketsScreen() {
     setLastDeletedTicket(null);
   };
 
+  const handleSaveNote = async () => {
+    if (!selectedDetailTicket) return;
+    setIsSavingNote(true);
+    const updated = await updateTicket(selectedDetailTicket.id, {
+      note: noteDraft.trim(),
+    });
+    setIsSavingNote(false);
+    if (updated) {
+      haptics.success();
+      setSelectedDetailTicket(updated);
+    }
+  };
+
   const handleClearAll = () => {
     Alert.alert(
       STRINGS.tickets.clearAllConfirmTitle,
@@ -260,10 +283,17 @@ export default function TicketsScreen() {
         renderRightActions={renderRightActions}
         testID={`swipeable-${item.id}`}
       >
-        <View
+        <TouchableOpacity
           testID={`saved-ticket-item-${item.id}`}
+          onPress={() => {
+            haptics.light();
+            setSelectedDetailTicket(item);
+            setNoteDraft(item.note || '');
+          }}
+          activeOpacity={0.7}
           accessible={true}
-          accessibilityRole="text"
+          accessibilityRole="button"
+          accessibilityLabel={`Chi tiết vé ${item.ticket}, đài ${item.stationName || item.station}`}
           className="mb-2 p-3 rounded-xl border flex-row items-center justify-between"
           style={{
             backgroundColor: colors.surface,
@@ -308,7 +338,7 @@ export default function TicketsScreen() {
               <Icon name="trash" size={15} color={colors.textMuted} />
             </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       </Swipeable>
     );
   };
@@ -686,6 +716,238 @@ export default function TicketsScreen() {
           </View>
         </View>
       )}
+
+      {/* Saved Ticket Detail Bottom Sheet (T10.48) */}
+      <Modal
+        visible={!!selectedDetailTicket}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setSelectedDetailTicket(null)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          className="flex-1 justify-end"
+        >
+          <TouchableOpacity
+            testID="detail-sheet-backdrop"
+            activeOpacity={1}
+            onPress={() => setSelectedDetailTicket(null)}
+            className="flex-1 bg-black/50"
+          />
+          {selectedDetailTicket && (
+            <View
+              testID="saved-ticket-detail-sheet"
+              className="p-5 rounded-t-3xl border-t shadow-2xl"
+              style={{
+                backgroundColor: colors.background,
+                borderColor: colors.border,
+              }}
+            >
+              {/* Drag indicator */}
+              <View
+                className="w-10 h-1 rounded-full self-center mb-4"
+                style={{ backgroundColor: colors.border }}
+              />
+
+              {/* Header */}
+              <View
+                className="flex-row items-center justify-between pb-3 border-b mb-4"
+                style={{ borderColor: colors.border }}
+              >
+                <View>
+                  <Text
+                    className="text-base font-bold"
+                    style={{ color: colors.textMain }}
+                  >
+                    Chi tiết vé đã lưu
+                  </Text>
+                  <Text
+                    className="text-xs mt-0.5"
+                    style={{ color: colors.textMuted }}
+                  >
+                    Lưu trên máy này · Đã đối soát
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  testID="detail-sheet-close-btn"
+                  onPress={() => setSelectedDetailTicket(null)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Đóng chi tiết vé"
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  className="p-1 rounded-full"
+                >
+                  <Icon name="x" size={20} color={colors.textMuted} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Ticket Card Info */}
+              <View
+                className="p-4 rounded-2xl border mb-4"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                }}
+              >
+                <View className="flex-row items-center justify-between mb-2">
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: colors.textMain }}
+                  >
+                    {selectedDetailTicket.stationName ||
+                      selectedDetailTicket.station}
+                  </Text>
+                  <Text className="text-xs" style={{ color: colors.textMuted }}>
+                    {formatDateVN(selectedDetailTicket.drawDate)}
+                  </Text>
+                </View>
+
+                <View
+                  className="flex-row items-center justify-between pt-2 border-t"
+                  style={{ borderColor: colors.border }}
+                >
+                  <View>
+                    <Text
+                      className="text-xs"
+                      style={{ color: colors.textMuted }}
+                    >
+                      Số vé
+                    </Text>
+                    <Text
+                      testID="detail-sheet-ticket-number"
+                      className="text-3xl font-bold tracking-widest mt-0.5"
+                      style={{
+                        color: colors.textMain,
+                        fontVariant: ['tabular-nums'],
+                      }}
+                    >
+                      {selectedDetailTicket.ticket}
+                    </Text>
+                  </View>
+                  <TicketStatusBadge
+                    status={selectedDetailTicket.status}
+                    totalPrize={selectedDetailTicket.totalPrize}
+                    size="md"
+                  />
+                </View>
+              </View>
+
+              {/* Note Section */}
+              <View className="mb-4">
+                <Text
+                  className="text-xs font-semibold mb-1.5"
+                  style={{ color: colors.textMuted }}
+                >
+                  Ghi chú cá nhân
+                </Text>
+                <View className="flex-row items-center">
+                  <TextInput
+                    testID="detail-sheet-note-input"
+                    value={noteDraft}
+                    onChangeText={setNoteDraft}
+                    placeholder="Thêm ghi chú (ví dụ: vé mua chung, nơi mua...)"
+                    placeholderTextColor={colors.textMuted}
+                    maxLength={100}
+                    className="flex-1 px-3 py-2.5 rounded-xl border text-sm"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      color: colors.textMain,
+                    }}
+                  />
+                  <TouchableOpacity
+                    testID="detail-sheet-save-note-btn"
+                    onPress={handleSaveNote}
+                    disabled={isSavingNote}
+                    accessibilityRole="button"
+                    accessibilityLabel="Lưu ghi chú"
+                    className="ml-2 px-3 py-2.5 rounded-xl"
+                    style={{ backgroundColor: colors.primary }}
+                  >
+                    <Text className="text-white text-xs font-bold">
+                      {isSavingNote ? 'Đang lưu' : 'Lưu'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Actions */}
+              <View className="gap-2 pt-2">
+                <TouchableOpacity
+                  testID="detail-sheet-view-draw-btn"
+                  onPress={() => {
+                    const t = selectedDetailTicket;
+                    setSelectedDetailTicket(null);
+                    router.push(
+                      `/(tabs)/results?station=${t.station}&date=${t.drawDate}`,
+                    );
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Xem bảng kết quả kỳ này"
+                  className="w-full py-3 rounded-xl border flex-row items-center justify-center"
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <Icon name="calendar" size={16} color={colors.textMain} />
+                  <Text
+                    className="text-sm font-semibold ml-2"
+                    style={{ color: colors.textMain }}
+                  >
+                    Xem bảng kết quả kỳ này
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  testID="detail-sheet-recheck-btn"
+                  onPress={() => {
+                    const t = selectedDetailTicket;
+                    setSelectedDetailTicket(null);
+                    router.push(
+                      `/(tabs)/check?ticket=${t.ticket}&station=${t.station}&date=${t.drawDate}`,
+                    );
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Dò lại vé này"
+                  className="w-full py-3 rounded-xl border flex-row items-center justify-center"
+                  style={{
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <Icon name="search" size={16} color={colors.textMain} />
+                  <Text
+                    className="text-sm font-semibold ml-2"
+                    style={{ color: colors.textMain }}
+                  >
+                    Dò lại vé này
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  testID="detail-sheet-delete-btn"
+                  onPress={() => {
+                    const t = selectedDetailTicket;
+                    setSelectedDetailTicket(null);
+                    handleDeleteTicket(t);
+                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Xóa vé này"
+                  className="w-full py-2.5 rounded-xl flex-row items-center justify-center mt-1"
+                >
+                  <Icon name="trash" size={15} color={colors.error} />
+                  <Text
+                    className="text-xs font-semibold ml-1.5"
+                    style={{ color: colors.error }}
+                  >
+                    Xóa vé khỏi máy
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
