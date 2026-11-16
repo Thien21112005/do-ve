@@ -1,13 +1,26 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Pressable, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
-import { CURRENT_APP_VERSION, CURRENT_BUILD_NUMBER } from '@/lib/version';
+import { getAppVersion, getBuildNumber } from '@/lib/version';
+import { haptics } from '@/lib/haptics';
 
 export default function AboutScreen() {
   const { colors } = useTheme();
+  const appVersion = getAppVersion();
+  const buildNumber = getBuildNumber();
+
+  const handleOpenEmail = () => {
+    haptics.selection();
+    Linking.openURL(`mailto:${STRINGS.about.contactEmail}`).catch(() => {});
+  };
+
+  const handleOpenWebsite = () => {
+    haptics.selection();
+    Linking.openURL(STRINGS.about.contactWebsite).catch(() => {});
+  };
 
   return (
     <SafeAreaView
@@ -22,7 +35,7 @@ export default function AboutScreen() {
       >
         {/* App Branding Card */}
         <View
-          className="rounded-2xl p-5 mb-5 border items-center shadow-sm"
+          className="rounded-2xl p-5 mb-6 border items-center shadow-sm"
           style={{
             backgroundColor: colors.surface,
             borderColor: colors.border,
@@ -58,127 +71,113 @@ export default function AboutScreen() {
               className="text-xs font-bold"
               style={{ color: colors.primary }}
             >
-              {STRINGS.about.versionLabel} {CURRENT_APP_VERSION} (Build{' '}
-              {CURRENT_BUILD_NUMBER})
+              {STRINGS.about.versionLabel} {appVersion} (Build {buildNumber})
             </Text>
           </View>
         </View>
 
-        {/* Disclaimer Section */}
-        <Text
-          className="text-xs font-bold mb-2 uppercase px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.about.disclaimerHeader}
-        </Text>
-        <View
-          testID="about-disclaimer-card"
-          className="rounded-2xl p-4 mb-5 border shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          <View className="flex-row items-start mb-2">
-            <View className="mt-0.5 mr-2">
-              <Icon name="alertCircle" size={18} color="#d97706" />
-            </View>
+        {/* Disclaimer Section - Flat without card border (T10.55) */}
+        <View testID="about-disclaimer-card" className="mb-6 px-1" style={{ borderWidth: 0 }}>
+          <View className="flex-row items-center mb-2">
+            <Icon name="alertCircle" size={16} color="#d97706" />
             <Text
-              className="text-xs flex-1 leading-relaxed"
+              className="text-sm font-semibold ml-2"
               style={{ color: colors.textMain }}
             >
-              {STRINGS.about.disclaimerText}
+              {STRINGS.about.disclaimerHeader}
             </Text>
           </View>
+          <Text
+            className="text-xs leading-relaxed"
+            style={{ color: colors.textMuted }}
+          >
+            {STRINGS.about.disclaimerText}
+          </Text>
         </View>
 
-        {/* Data Source Section */}
-        <Text
-          className="text-xs font-bold mb-2 uppercase px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.about.dataSourceHeader}
-        </Text>
-        <View
-          testID="about-datasource-card"
-          className="rounded-2xl p-4 mb-5 border shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          <View className="flex-row items-start mb-2">
-            <View className="mt-0.5 mr-2">
-              <Icon name="checkCircle" size={18} color={colors.primary} />
-            </View>
+        {/* Data Source Section - Flat without card border (T10.55) */}
+        <View testID="about-datasource-card" className="mb-6 px-1" style={{ borderWidth: 0 }}>
+          <View className="flex-row items-center mb-2">
+            <Icon name="checkCircle" size={16} color={colors.primary} />
             <Text
-              className="text-xs flex-1 leading-relaxed"
+              className="text-sm font-semibold ml-2"
               style={{ color: colors.textMain }}
             >
-              {STRINGS.about.dataSourceText}
+              {STRINGS.about.dataSourceHeader}
             </Text>
           </View>
+          <Text
+            className="text-xs leading-relaxed"
+            style={{ color: colors.textMuted }}
+          >
+            {STRINGS.about.dataSourceText}
+          </Text>
         </View>
 
-        {/* Privacy Section */}
-        <Text
-          className="text-xs font-bold mb-2 uppercase px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.about.privacyHeader}
-        </Text>
-        <View
-          testID="about-privacy-card"
-          className="rounded-2xl p-4 mb-5 border shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          <View className="flex-row items-start mb-2">
-            <View className="mt-0.5 mr-2">
-              <Icon name="bookmark" size={18} color={colors.primary} />
-            </View>
+        {/* Privacy Section - Flat without card border (T10.55) */}
+        <View testID="about-privacy-card" className="mb-6 px-1" style={{ borderWidth: 0 }}>
+          <View className="flex-row items-center mb-2">
+            <Icon name="bookmark" size={16} color={colors.primary} />
             <Text
-              className="text-xs flex-1 leading-relaxed"
+              className="text-sm font-semibold ml-2"
               style={{ color: colors.textMain }}
             >
-              {STRINGS.about.privacyText}
+              {STRINGS.about.privacyHeader}
             </Text>
           </View>
+          <Text
+            className="text-xs leading-relaxed"
+            style={{ color: colors.textMuted }}
+          >
+            {STRINGS.about.privacyText}
+          </Text>
         </View>
 
-        {/* Contact & Support Section */}
+        {/* Contact & Support Section (T10.55) */}
         <Text
-          className="text-xs font-bold mb-2 uppercase px-1"
-          style={{ color: colors.textMuted }}
+          className="text-sm font-semibold mb-2 px-1"
+          style={{ color: colors.textMain }}
         >
           {STRINGS.about.contactHeader}
         </Text>
         <View
           testID="about-contact-card"
-          className="rounded-2xl p-4 mb-6 border shadow-sm"
+          className="rounded-2xl border overflow-hidden mb-6 shadow-sm"
           style={{
             backgroundColor: colors.surface,
             borderColor: colors.border,
           }}
         >
-          <View className="flex-row items-center justify-between py-1.5 border-b" style={{ borderColor: colors.border }}>
-            <Text className="text-xs" style={{ color: colors.textMuted }}>
+          <Pressable
+            testID="about-contact-email"
+            accessibilityRole="link"
+            accessibilityLabel={`Email hỗ trợ: ${STRINGS.about.contactEmail}`}
+            onPress={handleOpenEmail}
+            className="flex-row items-center justify-between p-4 border-b active:opacity-75"
+            style={{ borderColor: colors.border }}
+          >
+            <Text className="text-xs font-medium" style={{ color: colors.textMuted }}>
               Email hỗ trợ:
             </Text>
             <Text className="text-xs font-bold" style={{ color: colors.primary }}>
               {STRINGS.about.contactEmail}
             </Text>
-          </View>
-          <View className="flex-row items-center justify-between py-1.5 pt-2">
-            <Text className="text-xs" style={{ color: colors.textMuted }}>
+          </Pressable>
+
+          <Pressable
+            testID="about-contact-website"
+            accessibilityRole="link"
+            accessibilityLabel={`Trang thông tin: ${STRINGS.about.contactWebsite}`}
+            onPress={handleOpenWebsite}
+            className="flex-row items-center justify-between p-4 active:opacity-75"
+          >
+            <Text className="text-xs font-medium" style={{ color: colors.textMuted }}>
               Trang thông tin:
             </Text>
             <Text className="text-xs font-bold" style={{ color: colors.primary }}>
               {STRINGS.about.contactWebsite}
             </Text>
-          </View>
+          </Pressable>
         </View>
 
         {/* Footer */}
@@ -192,4 +191,3 @@ export default function AboutScreen() {
     </SafeAreaView>
   );
 }
-
