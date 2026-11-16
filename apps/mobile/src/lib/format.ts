@@ -71,3 +71,37 @@ export function getEstimatedDrawTimeMessage(
   // At or after 16:35 today
   return 'Thường có lúc 16h35, hệ thống đang cập nhật kết quả';
 }
+
+/**
+ * Smooth count-up animation helper from 0 to target value over duration (ms).
+ * Returns cleanup function to cancel the interval.
+ */
+export function animateCountUp(
+  target: number,
+  duration: number,
+  onTick: (val: number) => void,
+  onComplete?: () => void,
+): () => void {
+  if (duration <= 0 || target <= 0) {
+    onTick(target);
+    onComplete?.();
+    return () => {};
+  }
+
+  const startTime = Date.now();
+  const timer = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = progress * (2 - progress); // easeOutQuad
+    const current = Math.round(eased * target);
+    onTick(current);
+
+    if (progress >= 1) {
+      clearInterval(timer);
+      onTick(target);
+      onComplete?.();
+    }
+  }, 30);
+
+  return () => clearInterval(timer);
+}

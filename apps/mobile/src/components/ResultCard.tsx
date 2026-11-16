@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, Pressable, AccessibilityInfo } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,6 +16,7 @@ import {
   formatCurrency,
   formatDateVN,
   getEstimatedDrawTimeMessage,
+  animateCountUp,
 } from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
@@ -75,6 +76,45 @@ export function ResultCard({
     (result as any).stationCode ||
     '';
 
+  // In-card reveal and haptic celebration (T10.37)
+  const hasTriggeredHapticsRef = useRef(false);
+  const [displayPrize, setDisplayPrize] = useState(() => totalPrize);
+
+  useEffect(() => {
+    if (isWon && !hasTriggeredHapticsRef.current) {
+      hasTriggeredHapticsRef.current = true;
+      haptics.success();
+    }
+  }, [isWon]);
+
+  useEffect(() => {
+    if (!isWon || totalPrize <= 0 || process.env.NODE_ENV === 'test') {
+      setDisplayPrize(totalPrize);
+      return;
+    }
+
+    let isMounted = true;
+    let cancelTimer: (() => void) | undefined;
+
+    AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
+      if (!isMounted) return;
+      if (reduced) {
+        setDisplayPrize(totalPrize);
+        return;
+      }
+
+      setDisplayPrize(0);
+      cancelTimer = animateCountUp(totalPrize, 600, (current) => {
+        if (isMounted) setDisplayPrize(current);
+      });
+    });
+
+    return () => {
+      isMounted = false;
+      cancelTimer?.();
+    };
+  }, [isWon, totalPrize]);
+
   const cardBg = isPending
     ? colors.pendingBg
     : isWon
@@ -87,10 +127,11 @@ export function ResultCard({
       ? colors.winBorder
       : colors.border;
 
+  const formattedPrizeA11y = formatCurrency(totalPrize).replace(/\s*đ$/, ' đồng');
   const a11ySummary = isPending
     ? `${STRINGS.check.resultPendingTitle}. ${STRINGS.check.resultPendingSubtitle}`
     : isWon
-      ? `${STRINGS.check.resultWonTitle}. ${STRINGS.check.resultWonCount(winCount)}. ${STRINGS.check.totalPrizeLabel} ${formatCurrency(totalPrize)}`
+      ? `Chúc mừng, vé trúng ${winCount} giải, tổng ${formattedPrizeA11y}`
       : `${STRINGS.check.resultLostTitle}. ${STRINGS.check.resultLostSubtitle}`;
 
   return (
@@ -120,12 +161,13 @@ export function ResultCard({
         </Text>
       </View>
 
-      {/* 2. Hero Ticket Number: Nhân vật chính (T10.30 & T10.32) */}
+      {/* 2. Hero Ticket Number: Nhân vật chính (T10.30 & T10.32 & T10.37) */}
       <View className="py-2 items-start" testID="result-card-hero-ticket">
         <HighlightedTicket
           ticket={result.ticket ?? ''}
           matchedDigits={longestMatched}
           wins={result.wins as any}
+          animated={isWon}
           size="lg"
         />
       </View>
@@ -310,7 +352,7 @@ export function ResultCard({
                 fontVariant: ['tabular-nums'],
               }}
             >
-              {formatCurrency(totalPrize)}
+              {formatCurrency(displayPrize)}
             </Text>
           </View>
 

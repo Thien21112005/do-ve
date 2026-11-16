@@ -247,7 +247,7 @@ export const STRINGS = {
     themeDarkDesc: 'Tông màu tối, dịu mắt và tiết kiệm pin',
     experienceSection: 'TRẢI NGHIỆM',
     celebrationTitle: 'Hiệu ứng khi trúng thưởng',
-    celebrationDesc: 'Bắn pháo hoa rực rỡ khi phát hiện vé trúng',
+    celebrationDesc: 'Hiệu ứng mở số và đếm thưởng tinh tế khi trúng vé',
     hapticsTitle: 'Phản hồi xúc giác (rung)',
     hapticsDesc: 'Rung nhẹ khi chạm phím và kiểm tra số',
     reminderTitle: 'Nhắc dò vé PENDING (16h45)',

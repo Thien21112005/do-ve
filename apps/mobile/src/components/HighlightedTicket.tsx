@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withDelay,
+  withSpring,
+} from 'react-native-reanimated';
 import { useTheme } from '@/theme';
 
 export interface MatchedSegment {
@@ -211,7 +217,71 @@ export interface HighlightedTicketProps {
   tier?: string | null;
   specialNumber?: string | null;
   size?: 'sm' | 'md' | 'lg';
+  animated?: boolean;
   testID?: string;
+}
+
+function MatchedSegmentView({
+  segmentText,
+  index,
+  isLg,
+  textSizeClass,
+  winColor,
+  winTint,
+  winBorder,
+  animated,
+}: {
+  segmentText: string;
+  index: number;
+  isLg: boolean;
+  textSizeClass: string;
+  winColor: string;
+  winTint: string;
+  winBorder: string;
+  animated?: boolean;
+}) {
+  const scale = useSharedValue(animated && process.env.NODE_ENV !== 'test' ? 0.8 : 1);
+  const opacity = useSharedValue(animated && process.env.NODE_ENV !== 'test' ? 0 : 1);
+
+  useEffect(() => {
+    if (animated && process.env.NODE_ENV !== 'test') {
+      const delay = index * 60;
+      scale.value = withDelay(delay, withSpring(1, { damping: 14, stiffness: 120 }));
+      opacity.value = withDelay(delay, withSpring(1));
+    } else {
+      scale.value = 1;
+      opacity.value = 1;
+    }
+  }, [animated, index, opacity, scale]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View
+      testID="ticket-segment-matched"
+      style={[
+        {
+          backgroundColor: winTint,
+          borderColor: winBorder,
+        },
+        animated && process.env.NODE_ENV !== 'test' ? animatedStyle : undefined,
+      ]}
+      className={`${isLg ? 'px-1.5 py-1 rounded-lg' : 'px-1 py-0.5 rounded'} border`}
+    >
+      <Text
+        className={`${textSizeClass} font-bold tracking-widest`}
+        style={{
+          color: winColor,
+          fontVariant: ['tabular-nums'],
+        }}
+      >
+        {segmentText}
+      </Text>
+    </Animated.View>
+  );
 }
 
 export function HighlightedTicket({
@@ -221,6 +291,7 @@ export function HighlightedTicket({
   tier,
   specialNumber,
   size = 'md',
+  animated = false,
   testID = 'highlighted-ticket',
 }: HighlightedTicketProps) {
   const { colors } = useTheme();
@@ -250,25 +321,17 @@ export function HighlightedTicket({
       {segments.map((segment, index) => {
         if (segment.isMatched) {
           return (
-            <View
+            <MatchedSegmentView
               key={`seg-${index}`}
-              testID="ticket-segment-matched"
-              className={`${isLg ? 'px-1.5 py-1 rounded-lg' : 'px-1 py-0.5 rounded'} border`}
-              style={{
-                backgroundColor: colors.winTint || `${colors.win}15`,
-                borderColor: colors.winBorder,
-              }}
-            >
-              <Text
-                className={`${textSizeClass} font-bold tracking-widest`}
-                style={{
-                  color: colors.win,
-                  fontVariant: ['tabular-nums'],
-                }}
-              >
-                {segment.text}
-              </Text>
-            </View>
+              segmentText={segment.text}
+              index={index}
+              isLg={isLg}
+              textSizeClass={textSizeClass}
+              winColor={colors.win}
+              winTint={colors.winTint || `${colors.win}15`}
+              winBorder={colors.winBorder}
+              animated={animated}
+            />
           );
         }
 

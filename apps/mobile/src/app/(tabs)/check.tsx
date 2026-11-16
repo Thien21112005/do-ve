@@ -19,7 +19,6 @@ import {
   Icon,
   ResultSkeleton,
   ResultCard,
-  CelebrationEffect,
   OfflineBanner,
   getPastDays,
   BatchTicketInput,
@@ -617,15 +616,6 @@ export default function CheckScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-
-      {/* Subtle celebration when ticket wins (T09.23: scoped to current active mode) */}
-      <CelebrationEffect
-        active={
-          mode === 'single'
-            ? Boolean(result?.won)
-            : Boolean(batchResult?.results?.some((r) => r.won))
-        }
-      />
     </SafeAreaView>
   );
 }

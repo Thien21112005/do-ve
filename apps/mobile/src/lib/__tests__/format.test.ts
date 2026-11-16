@@ -2,6 +2,7 @@ import {
   formatCurrency,
   formatDateVN,
   getEstimatedDrawTimeMessage,
+  animateCountUp,
 } from '../format';
 
 describe('format utilities', () => {
@@ -62,6 +63,64 @@ describe('format utilities', () => {
       const mockNow = new Date('2026-11-16T03:00:00.000Z');
       const msg = getEstimatedDrawTimeMessage('2026-11-10', mockNow);
       expect(msg).toContain('hệ thống đang cập nhật');
+    });
+  });
+
+  describe('animateCountUp (T10.37)', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('immediately calls onTick and onComplete if target or duration <= 0', () => {
+      const onTick = jest.fn();
+      const onComplete = jest.fn();
+
+      animateCountUp(0, 600, onTick, onComplete);
+      expect(onTick).toHaveBeenCalledWith(0);
+      expect(onComplete).toHaveBeenCalledTimes(1);
+
+      const onTick2 = jest.fn();
+      const onComplete2 = jest.fn();
+      animateCountUp(500000, 0, onTick2, onComplete2);
+      expect(onTick2).toHaveBeenCalledWith(500000);
+      expect(onComplete2).toHaveBeenCalledTimes(1);
+    });
+
+    it('interpolates values progressively over duration and finishes at target', () => {
+      const onTick = jest.fn();
+      const onComplete = jest.fn();
+
+      animateCountUp(300000, 600, onTick, onComplete);
+
+      // Advance by 300ms (half duration)
+      jest.advanceTimersByTime(300);
+      expect(onTick).toHaveBeenCalled();
+      const intermediateVal = onTick.mock.calls[onTick.mock.calls.length - 1][0];
+      expect(intermediateVal).toBeGreaterThan(0);
+      expect(intermediateVal).toBeLessThan(300000);
+
+      // Advance past duration
+      jest.advanceTimersByTime(350);
+      expect(onTick).toHaveBeenLastCalledWith(300000);
+      expect(onComplete).toHaveBeenCalledTimes(1);
+    });
+
+    it('cancels the interval when cleanup function is invoked', () => {
+      const onTick = jest.fn();
+      const onComplete = jest.fn();
+
+      const cancel = animateCountUp(1000000, 600, onTick, onComplete);
+      jest.advanceTimersByTime(90);
+      const callCountBefore = onTick.mock.calls.length;
+
+      cancel();
+      jest.advanceTimersByTime(600);
+      expect(onTick.mock.calls.length).toBe(callCountBefore);
+      expect(onComplete).not.toHaveBeenCalled();
     });
   });
 });

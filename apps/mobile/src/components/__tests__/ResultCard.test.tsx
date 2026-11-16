@@ -122,6 +122,17 @@ describe('ResultCard Component', () => {
     expect(taxNote.props.children).toContain('chưa trừ thuế TNCN');
   });
 
+  it('triggers haptics.success once on winning reveal in-card and provides polite a11y announcement (T10.37)', async () => {
+    (haptics.success as jest.Mock).mockClear();
+    const { getByTestId } = await render(<ResultCard result={winningResult} />);
+    expect(haptics.success).toHaveBeenCalledTimes(1);
+
+    const card = getByTestId('result-card');
+    expect(card.props.accessibilityLabel).toBe(
+      'Chúc mừng, vé trúng 2 giải, tổng 300.000 đồng',
+    );
+  });
+
   it('renders non-winning state with hero ticket and clean status (T10.30)', async () => {
     const { getByText, getByTestId, queryByText } = await render(
       <ResultCard result={losingResult} />,
