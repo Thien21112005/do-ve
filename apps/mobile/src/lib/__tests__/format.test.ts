@@ -3,6 +3,8 @@ import {
   formatDateVN,
   getEstimatedDrawTimeMessage,
   animateCountUp,
+  formatDrawForShare,
+  formatDailyDrawsForShare,
 } from '../format';
 
 describe('format utilities', () => {
@@ -121,6 +123,57 @@ describe('format utilities', () => {
       jest.advanceTimersByTime(600);
       expect(onTick.mock.calls.length).toBe(callCountBefore);
       expect(onComplete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('formatDrawForShare (T10.43)', () => {
+    const mockDraw = {
+      stationCode: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      numbers: {
+        SPECIAL: ['123456'],
+        FIRST: ['65432'],
+        SECOND: ['78901'],
+        THIRD: ['11223', '44556'],
+        FOURTH: ['11111', '22222', '33333', '44444', '55555', '66666', '77777'],
+        FIFTH: ['8888'],
+        SIXTH: ['999', '111', '222'],
+        SEVENTH: ['333'],
+        EIGHTH: ['44'],
+      },
+    };
+
+    it('formats single draw result into clear readable text with special and other tiers', () => {
+      const text = formatDrawForShare(mockDraw, '14/11/2026');
+      expect(text).toContain('XSMN 14/11/2026 – TP. Hồ Chí Minh');
+      expect(text).toContain('ĐB: 123456');
+      expect(text).toContain('G.1: 65432');
+      expect(text).toContain('G.8: 44');
+      expect(text).toContain('G.3: 11223 - 44556');
+    });
+
+    it('handles empty or missing draw gracefully', () => {
+      expect(formatDrawForShare(null as any)).toBe('');
+    });
+
+    it('formats daily draws list for multi-station share', () => {
+      const mockDraw2 = {
+        stationCode: 'DONG_THAP',
+        stationName: 'Đồng Tháp',
+        drawDate: '2026-11-14',
+        numbers: {
+          SPECIAL: ['999999'],
+          EIGHTH: ['88'],
+        },
+      };
+
+      const text = formatDailyDrawsForShare([mockDraw, mockDraw2], '14/11/2026');
+      expect(text).toContain('XSMN 14/11/2026');
+      expect(text).toContain('TP. Hồ Chí Minh');
+      expect(text).toContain('ĐB: 123456');
+      expect(text).toContain('Đồng Tháp');
+      expect(text).toContain('ĐB: 999999');
     });
   });
 });

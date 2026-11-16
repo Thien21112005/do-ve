@@ -157,6 +157,8 @@ export const STRINGS = {
     statusPending: 'ĐANG CHỜ',
     drawDatePrefix: 'Kỳ quay ngày',
     noDataYet: 'Chưa có',
+    shareA11y: 'Chia sẻ kết quả mở thưởng',
+    shareTitle: (station: string, date: string) => `Kết quả XSMN ${station} ngày ${date}`,
     prizes: {
       special: 'Đặc biệt',
       specialShort: 'ĐB',

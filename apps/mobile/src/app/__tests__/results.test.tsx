@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ReactNode } from 'react';
+import { Share } from 'react-native';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ResultsScreen from '../(tabs)/results';
@@ -264,5 +265,35 @@ describe('ResultsScreen', () => {
       expect(getByTestId('results-empty-estimated-time')).toBeTruthy();
       expect(getByText(STRINGS.results.emptyTitle)).toBeTruthy();
     });
+  });
+
+  it('shares draw result as text via React Native Share when pressing share button (T10.43)', async () => {
+    const shareSpy = jest.spyOn(Share, 'share').mockResolvedValue({
+      action: 'sharedAction',
+    } as any);
+
+    const { findByTestId } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    const shareBtn = await findByTestId('results-share-btn');
+    expect(shareBtn).toBeTruthy();
+
+    fireEvent.press(shareBtn);
+
+    await waitFor(() => {
+      expect(shareSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('TP. Hồ Chí Minh'),
+        }),
+      );
+      expect(shareSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: expect.stringContaining('ĐB: 123456'),
+        }),
+      );
+    });
+
+    shareSpy.mockRestore();
   });
 });

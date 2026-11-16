@@ -6,6 +6,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   TextInput,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
@@ -21,7 +22,13 @@ import {
 } from '@/components';
 import { useDraw, useSchedule, useDailyDraws } from '@/hooks';
 import { useTheme } from '@/theme';
-import { formatDateVN, getEstimatedDrawTimeMessage } from '@/lib/format';
+import {
+  formatDateVN,
+  getEstimatedDrawTimeMessage,
+  formatDrawForShare,
+  formatDailyDrawsForShare,
+} from '@/lib/format';
+import { haptics } from '@/lib/haptics';
 import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 import { getApiErrorMessage } from '@/api/client';
@@ -87,6 +94,37 @@ export default function ResultsScreen() {
   }, [viewMode, refetch, refetchDaily]);
 
   const formattedDate = formatDateVN(selectedDate);
+
+  const handleShare = useCallback(async () => {
+    if (!draw) return;
+    try {
+      haptics.selection();
+      const message = formatDrawForShare(draw, formattedDate);
+      await Share.share({
+        message,
+        title: STRINGS.results.shareTitle(
+          draw.stationName || draw.stationCode,
+          formattedDate,
+        ),
+      });
+    } catch {
+      // share cancelled or dismissed
+    }
+  }, [draw, formattedDate]);
+
+  const handleShareDaily = useCallback(async () => {
+    if (!dailyDraws || dailyDraws.length === 0) return;
+    try {
+      haptics.selection();
+      const message = formatDailyDrawsForShare(dailyDraws, formattedDate);
+      await Share.share({
+        message,
+        title: STRINGS.results.shareTitle('Miền Nam', formattedDate),
+      });
+    } catch {
+      // share cancelled or dismissed
+    }
+  }, [dailyDraws, formattedDate]);
 
   return (
     <SafeAreaView
@@ -300,12 +338,28 @@ export default function ResultsScreen() {
                   >
                     {STRINGS.results.allStationsSummary(dailyDraws.length)}
                   </Text>
-                  <Text
-                    className="text-xs font-medium"
-                    style={{ color: colors.textMuted }}
-                  >
-                    {formattedDate}
-                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: colors.textMuted }}
+                    >
+                      {formattedDate}
+                    </Text>
+                    <TouchableOpacity
+                      testID="results-share-daily-btn"
+                      onPress={handleShareDaily}
+                      accessibilityRole="button"
+                      accessibilityLabel={STRINGS.results.shareA11y}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      className="p-1.5 rounded-lg border items-center justify-center"
+                      style={{
+                        backgroundColor: colors.surfaceSubtle,
+                        borderColor: colors.border,
+                      }}
+                    >
+                      <Icon name="share" size={14} color={colors.textMain} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 <MultiStationDrawTable
                   draws={dailyDraws}
@@ -423,7 +477,7 @@ export default function ResultsScreen() {
                 className="flex-row items-center justify-between pb-3 border-b"
                 style={{ borderColor: colors.border }}
               >
-                <View>
+                <View className="flex-1 mr-2">
                   <Text
                     className="text-base font-bold"
                     style={{ color: colors.textMain }}
@@ -437,26 +491,42 @@ export default function ResultsScreen() {
                     {STRINGS.results.drawDatePrefix} {formattedDate}
                   </Text>
                 </View>
-                <View
-                  className="px-2.5 py-1 rounded-full"
-                  style={{
-                    backgroundColor:
-                      draw.status === 'FINAL' || draw.isComplete
-                        ? `${colors.win}1A`
-                        : `${colors.pending}1A`,
-                  }}
-                >
-                  <Text
-                    className="text-xs font-semibold"
+                <View className="flex-row items-center gap-2">
+                  <View
+                    className="px-2.5 py-1 rounded-full"
                     style={{
-                      color:
-                        draw.status === 'FINAL' || draw.isComplete ? colors.win : colors.pending,
+                      backgroundColor:
+                        draw.status === 'FINAL' || draw.isComplete
+                          ? `${colors.win}1A`
+                          : `${colors.pending}1A`,
                     }}
                   >
-                    {draw.status === 'FINAL' || draw.isComplete
-                      ? STRINGS.results.statusFinal
-                      : STRINGS.results.statusPending}
-                  </Text>
+                    <Text
+                      className="text-xs font-semibold"
+                      style={{
+                        color:
+                          draw.status === 'FINAL' || draw.isComplete ? colors.win : colors.pending,
+                      }}
+                    >
+                      {draw.status === 'FINAL' || draw.isComplete
+                        ? STRINGS.results.statusFinal
+                        : STRINGS.results.statusPending}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    testID="results-share-btn"
+                    onPress={handleShare}
+                    accessibilityRole="button"
+                    accessibilityLabel={STRINGS.results.shareA11y}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    className="p-1.5 rounded-lg border items-center justify-center"
+                    style={{
+                      backgroundColor: colors.surfaceSubtle,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <Icon name="share" size={16} color={colors.textMain} />
+                  </TouchableOpacity>
                 </View>
               </View>
 

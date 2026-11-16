@@ -105,3 +105,71 @@ export function animateCountUp(
 
   return () => clearInterval(timer);
 }
+
+/**
+ * Format a draw result into clean text suitable for sharing via SMS/Zalo/Messenger.
+ */
+export function formatDrawForShare(
+  draw?: {
+    stationName?: string;
+    stationCode?: string;
+    drawDate?: string;
+    numbers?: Record<string, string[]>;
+    prizes?: Record<string, string[]>;
+  } | null,
+  dateVN?: string,
+): string {
+  if (!draw) return '';
+  const station = draw.stationName || draw.stationCode || 'Miền Nam';
+  const dateFormatted = dateVN || (draw.drawDate ? formatDateVN(draw.drawDate) : '');
+  const title = dateFormatted ? `XSMN ${dateFormatted} – ${station}` : `XSMN – ${station}`;
+  const lines: string[] = [title];
+
+  const nums = draw.numbers || draw.prizes || {};
+  const tiers: { key: string; label: string }[] = [
+    { key: 'SPECIAL', label: 'ĐB' },
+    { key: 'FIRST', label: 'G.1' },
+    { key: 'SECOND', label: 'G.2' },
+    { key: 'THIRD', label: 'G.3' },
+    { key: 'FOURTH', label: 'G.4' },
+    { key: 'FIFTH', label: 'G.5' },
+    { key: 'SIXTH', label: 'G.6' },
+    { key: 'SEVENTH', label: 'G.7' },
+    { key: 'EIGHTH', label: 'G.8' },
+  ];
+
+  for (const { key, label } of tiers) {
+    const list = nums[key];
+    if (list && list.length > 0) {
+      lines.push(`${label}: ${list.join(' - ')}`);
+    }
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format multiple draw results into combined text for daily share.
+ */
+export function formatDailyDrawsForShare(
+  draws?:
+    | {
+        stationName?: string;
+        stationCode?: string;
+        drawDate?: string;
+        numbers?: Record<string, string[]>;
+        prizes?: Record<string, string[]>;
+      }[]
+    | null,
+  dateVN?: string,
+): string {
+  if (!draws || draws.length === 0) return '';
+  const dateFormatted = dateVN || (draws[0]?.drawDate ? formatDateVN(draws[0].drawDate) : '');
+  const lines: string[] = [`XSMN ${dateFormatted}`];
+
+  for (const draw of draws) {
+    lines.push('\n' + formatDrawForShare(draw, dateFormatted));
+  }
+
+  return lines.join('\n');
+}
