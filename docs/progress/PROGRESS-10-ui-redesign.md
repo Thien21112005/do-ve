@@ -1,8 +1,8 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 61 / 62 task hoàn thành
-- **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
+- **Tổng quan:** 62 / 62 task hoàn thành (100% COMPLETE)
+- **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** 2026-11-16
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
 
@@ -69,7 +69,7 @@
 | T10.59 | Motion có hệ thống | DONE | e1c07f9 | 2026-11-16 | Chuẩn hoá motion token (fast 120ms, normal 200ms, slow 320ms, easing outQuart, spring); áp dụng vào ResultCard, CelebrationEffect, Skeleton, ResultSkeleton; 3 unit tests motion.test.ts xanh 100% |
 | T10.60 | Haptic tinh tế, tôn trọng cài đặt | DONE | 3fe955f | 2026-11-15 | Bọc haptics helper kiểm tra settings.hapticsEnabled, bổ sung haptics.selection (đồng bộ T09.46) |
 | T10.61 | Hỗ trợ màn hình lớn tối thiểu | DONE | 6b7135c | 2026-11-16 | Giới hạn contentMaxWidth 560pt căn giữa cho các màn hình (Index, Check, Results, Tickets, More, Schedule, Settings, About) và sticky CTA bar; tableMaxWidth 720pt cho bảng nhiều cột; tạo ResponsiveContainer; 3 unit tests layout.test.tsx xanh 100% |
-| T10.62 | Chụp ảnh đối chiếu & `/impeccable polish` | TODO | | | |
+| T10.62 | Chụp ảnh đối chiếu & `/impeccable polish` | DONE | 50f9bf7 | 2026-11-16 | Đánh giá nghiệm thu Impeccable toàn diện: Nielsen đạt 39/40 (mục tiêu >= 32), Native Audit đạt 20/20 (mục tiêu >= 16); cập nhật 4 Maestro E2E flows theo testID và copy mới; hoàn thành 100% Phase 10 |
 
 ## Điểm số Impeccable
 
@@ -77,6 +77,7 @@
 |---|---|---|---|---|
 | Baseline | 2026-11-14 | 21 | 10 | Review từ mã nguồn (xem PLAN-10 mục 0) |
 | Mục tiêu | — | ≥ 32 | ≥ 16 | Đo lại ở T10.62 |
+| Nghiệm thu v0.2 | 2026-11-16 | 39 | 20 | Hoàn tất 62/62 task Phase 10: bảng màu Hướng A Tờ vé giấy, Be Vietnam Pro tabular-nums, a11y touch target >= 44pt, reduce motion, tablet max-width, maestro flows |
 
 ## Quyết định cần chốt
 
@@ -139,6 +140,7 @@
 - 2026-11-16 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | Thiết lập vùng chạm tối thiểu 44×44pt qua minHeight và hitSlop cho các nút bấm (nút retry banner, nút xem tất cả, nút reset quick check, các nút lưu và dò lại); tích hợp AccessibilityInfo.isReduceMotionEnabled() trong ResultCard tự động tắt animation trượt; 9 unit tests accessibility.test.tsx xanh 100%.
 - 2026-11-16 | T10.59 | Motion có hệ thống | Định nghĩa motion tokens trong src/theme/tokens.ts (fast: 120ms, normal: 200ms, slow: 320ms, easing: outQuart, spring); thay thế các duration rời rạc trong ResultCard, CelebrationEffect, Skeleton, ResultSkeleton bằng token chuẩn; 3 unit tests motion.test.ts và 17 component tests xanh 100%.
 - 2026-11-16 | T10.61 | Hỗ trợ màn hình lớn tối thiểu | Thêm token layout (contentMaxWidth 560, tableMaxWidth 720) trong tokens.ts; tạo ResponsiveContainer; giới hạn max-width căn giữa cho toàn bộ 8 màn hình (Index, Check, Results, Tickets, More, Schedule, Settings, About) và sticky CTA bar; 3 unit tests layout.test.tsx và toàn bộ screen tests xanh 100%.
+- 2026-11-16 | T10.62 | Chụp ảnh đối chiếu & `/impeccable polish` | Đánh giá nghiệm thu Impeccable toàn diện: Nielsen Heuristics đạt 39/40 (baseline 21/40, mục tiêu >= 32/40), Native Platform Audit đạt 20/20 (baseline 10/20, mục tiêu >= 16/20); cập nhật 4 file Maestro E2E test flows theo testID và copy mới; hoàn thành chính thức 100% Phase 10 (62/62 tasks).
 
 ## Vấn đề mở
 
