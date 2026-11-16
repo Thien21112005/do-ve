@@ -137,9 +137,7 @@ export const DrawTable: React.FC<DrawTableProps> = ({
                 borderColor: colors.border,
                 backgroundColor: isSpecial
                   ? `${specialColor}0D` // Subtle tint for Special Prize
-                  : index % 2 === 1
-                    ? `${colors.border}15` // Alternating subtle striping
-                    : 'transparent',
+                  : 'transparent',
               },
               isLastRow && styles.noBorderBottom,
             ]}
@@ -163,7 +161,14 @@ export const DrawTable: React.FC<DrawTableProps> = ({
             </View>
 
             {/* Right Numbers Content Area */}
-            <View className="flex-1 py-2.5 px-3 flex-row flex-wrap justify-center items-center gap-x-4 gap-y-1.5">
+            <View
+              testID={`draw-table-content-${tier.key}`}
+              className={`flex-1 py-2.5 px-3 ${
+                tier.key === 'FOURTH'
+                  ? 'flex-row flex-wrap justify-between items-center'
+                  : 'flex-row flex-wrap justify-center items-center gap-x-4 gap-y-1.5'
+              }`}
+            >
               {tierNumbers.length > 0 ? (
                 tierNumbers.map((num, numIdx) => {
                   const isMatched = Boolean(
@@ -172,43 +177,52 @@ export const DrawTable: React.FC<DrawTableProps> = ({
                       num.endsWith(highlightQuery.trim()),
                   );
 
+                  const isGrid2Col = tier.key === 'FOURTH';
+                  const fontSizeClass = isSpecial
+                    ? 'text-[22px] leading-7'
+                    : tier.key === 'EIGHTH'
+                      ? 'text-xl'
+                      : tier.key === 'FIRST'
+                        ? 'text-lg'
+                        : tier.digits >= 5
+                          ? 'text-base'
+                          : 'text-lg';
+
                   return (
                     <View
                       key={`${tier.key}-${numIdx}-${num}`}
-                      testID={isMatched ? 'draw-number-matched' : undefined}
-                      className={
-                        isMatched
-                          ? 'px-1.5 py-0.5 rounded border'
-                          : 'px-0.5 py-0.5'
-                      }
-                      style={{
-                        backgroundColor: isMatched
-                          ? colors.winTint || `${colors.win}15`
-                          : 'transparent',
-                        borderColor: isMatched
-                          ? colors.winBorder
-                          : 'transparent',
-                      }}
+                      className={isGrid2Col ? 'w-1/2 items-center py-1' : ''}
                     >
-                      <Text
-                        className={`text-center font-bold tracking-wider ${
-                          isSpecial
-                            ? 'text-xl'
-                            : tier.digits >= 5
-                              ? 'text-base'
-                              : 'text-lg'
-                        }`}
+                      <View
+                        testID={isMatched ? 'draw-number-matched' : undefined}
+                        className={
+                          isMatched
+                            ? 'px-1.5 py-0.5 rounded border'
+                            : 'px-0.5 py-0.5'
+                        }
                         style={{
-                          color: isMatched
-                            ? colors.win
-                            : isSpecial
-                              ? specialColor
-                              : colors.textMain,
-                          fontVariant: ['tabular-nums'],
+                          backgroundColor: isMatched
+                            ? colors.winTint || `${colors.win}15`
+                            : 'transparent',
+                          borderColor: isMatched
+                            ? colors.winBorder
+                            : 'transparent',
                         }}
                       >
-                        {num}
-                      </Text>
+                        <Text
+                          className={`text-center font-bold tracking-wider ${fontSizeClass}`}
+                          style={{
+                            color: isMatched
+                              ? colors.win
+                              : isSpecial
+                                ? specialColor
+                                : colors.textMain,
+                            fontVariant: ['tabular-nums'],
+                          }}
+                        >
+                          {num}
+                        </Text>
+                      </View>
                     </View>
                   );
                 })

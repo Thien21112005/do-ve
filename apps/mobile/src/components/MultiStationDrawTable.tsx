@@ -120,9 +120,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                     borderColor: colors.border,
                     backgroundColor: isSpecial
                       ? `${specialColor}0D`
-                      : rIdx % 2 === 1
-                        ? `${colors.border}12`
-                        : 'transparent',
+                      : 'transparent',
                   },
                   isLastRow && styles.noBorderBottom,
                 ]}

@@ -66,6 +66,29 @@ describe('DrawTable', () => {
     expect(getByText('654321')).toBeTruthy();
   });
 
+  it('renders Fourth prize (7 numbers) in fixed 2-column tabular grid without alternating striping (T10.41)', async () => {
+    const { getByTestId } = await render(<DrawTable prizes={mockPrizes} />);
+
+    // Row G4 has 2-column grid container
+    const g4Container = getByTestId('draw-table-content-FOURTH');
+    expect(g4Container).toBeTruthy();
+
+    // Check no alternating row striping: normal rows have transparent background
+    const rowG8 = getByTestId('draw-table-row-0');
+    expect(rowG8.props.style).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ backgroundColor: 'transparent' }),
+      ]),
+    );
+
+    const rowG7 = getByTestId('draw-table-row-1');
+    expect(rowG7.props.style).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ backgroundColor: 'transparent' }),
+      ]),
+    );
+  });
+
   it('supports reading drawTableOrder from settings when order prop is not passed (T10.38)', async () => {
     updateSettings({ drawTableOrder: 'special_to_g8' });
     const { getByTestId } = await render(<DrawTable prizes={mockPrizes} />);
