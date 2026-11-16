@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 60 / 62 task hoàn thành
+- **Tổng quan:** 61 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -68,7 +68,7 @@
 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | DONE | 6011232 | 2026-11-16 | Rà soát minHeight 44pt hoặc hitSlop cho toàn bộ nút; tích hợp kiểm tra Reduce Motion native trong ResultCard |
 | T10.59 | Motion có hệ thống | DONE | e1c07f9 | 2026-11-16 | Chuẩn hoá motion token (fast 120ms, normal 200ms, slow 320ms, easing outQuart, spring); áp dụng vào ResultCard, CelebrationEffect, Skeleton, ResultSkeleton; 3 unit tests motion.test.ts xanh 100% |
 | T10.60 | Haptic tinh tế, tôn trọng cài đặt | DONE | 3fe955f | 2026-11-15 | Bọc haptics helper kiểm tra settings.hapticsEnabled, bổ sung haptics.selection (đồng bộ T09.46) |
-| T10.61 | Hỗ trợ màn hình lớn tối thiểu | TODO | | | |
+| T10.61 | Hỗ trợ màn hình lớn tối thiểu | DONE | 6b7135c | 2026-11-16 | Giới hạn contentMaxWidth 560pt căn giữa cho các màn hình (Index, Check, Results, Tickets, More, Schedule, Settings, About) và sticky CTA bar; tableMaxWidth 720pt cho bảng nhiều cột; tạo ResponsiveContainer; 3 unit tests layout.test.tsx xanh 100% |
 | T10.62 | Chụp ảnh đối chiếu & `/impeccable polish` | TODO | | | |
 
 ## Điểm số Impeccable
@@ -138,6 +138,7 @@
 - 2026-11-16 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | Thống nhất thuật ngữ trạng thái ('Chờ kết quả', 'Đã có kết quả'); bỏ hoàn toàn chữ in hoa cho các badge tiếng Việt ('Trúng', 'Không trúng', 'Chờ kết quả'); xoá thuật ngữ kỹ thuật 'PENDING' khỏi UI; dời toàn bộ các chuỗi tiếng Việt hardcode trong .tsx vào strings.ts; 4 unit tests strings.test.ts và component tests xanh 100%.
 - 2026-11-16 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | Thiết lập vùng chạm tối thiểu 44×44pt qua minHeight và hitSlop cho các nút bấm (nút retry banner, nút xem tất cả, nút reset quick check, các nút lưu và dò lại); tích hợp AccessibilityInfo.isReduceMotionEnabled() trong ResultCard tự động tắt animation trượt; 9 unit tests accessibility.test.tsx xanh 100%.
 - 2026-11-16 | T10.59 | Motion có hệ thống | Định nghĩa motion tokens trong src/theme/tokens.ts (fast: 120ms, normal: 200ms, slow: 320ms, easing: outQuart, spring); thay thế các duration rời rạc trong ResultCard, CelebrationEffect, Skeleton, ResultSkeleton bằng token chuẩn; 3 unit tests motion.test.ts và 17 component tests xanh 100%.
+- 2026-11-16 | T10.61 | Hỗ trợ màn hình lớn tối thiểu | Thêm token layout (contentMaxWidth 560, tableMaxWidth 720) trong tokens.ts; tạo ResponsiveContainer; giới hạn max-width căn giữa cho toàn bộ 8 màn hình (Index, Check, Results, Tickets, More, Schedule, Settings, About) và sticky CTA bar; 3 unit tests layout.test.tsx và toàn bộ screen tests xanh 100%.
 
 ## Vấn đề mở
 
