@@ -5,6 +5,7 @@ import {
   waitFor,
   within,
   cleanup,
+  act,
 } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import TicketsScreen, { resetSessionSavedTicketFilter } from '../(tabs)/tickets';
@@ -16,21 +17,29 @@ import {
 } from '@/store/ticketStore';
 import { useRouter } from 'expo-router';
 
+let mockIsRechecking = false;
+let mockOnRecheckComplete: ((count: number) => void) | undefined;
 const mockRefetchPending = jest.fn();
+
 jest.mock('@/hooks', () => {
   const actual = jest.requireActual('@/hooks');
   return {
     ...actual,
-    usePendingTicketsRecheck: () => ({
-      isRechecking: false,
-      refetchPending: mockRefetchPending,
-    }),
+    usePendingTicketsRecheck: (options?: any) => {
+      mockOnRecheckComplete = options?.onRecheckComplete;
+      return {
+        isRechecking: mockIsRechecking,
+        refetchPending: mockRefetchPending,
+      };
+    },
   };
 });
 
 describe('TicketsScreen (Vé của tôi)', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockIsRechecking = false;
+    mockOnRecheckComplete = undefined;
     await clearAllTickets();
     resetSessionSavedTicketFilter();
   });
@@ -283,6 +292,48 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(list.props.refreshControl).toBeTruthy();
     expect(list.props.refreshControl.props.refreshing).toBe(false);
     expect(typeof list.props.refreshControl.props.onRefresh).toBe('function');
+  });
+
+  it('displays pending recheck indicator while checking and success banner when done (T10.51)', async () => {
+    await saveTicket({
+      ticket: '111111',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+    await saveTicket({
+      ticket: '222222',
+      station: 'BD',
+      stationName: 'Bình Dương',
+      drawDate: '2026-11-14',
+      status: 'PENDING',
+      totalPrize: 0,
+    });
+
+    // 1. While isRechecking is true
+    mockIsRechecking = true;
+    const { getByTestId, queryByTestId, getByText, rerender } = await render(
+      <TicketsScreen />,
+    );
+
+    expect(getByTestId('pending-recheck-indicator')).toBeTruthy();
+    expect(getByText(/Đang cập nhật 2 vé chờ…/)).toBeTruthy();
+
+    // 2. When recheck completes with updated count
+    await act(async () => {
+      mockIsRechecking = false;
+      mockOnRecheckComplete?.(2);
+    });
+
+    rerender(<TicketsScreen />);
+
+    await waitFor(() => {
+      expect(queryByTestId('pending-recheck-indicator')).toBeNull();
+      expect(getByTestId('pending-recheck-banner')).toBeTruthy();
+      expect(getByText(/2 vé vừa có kết quả/)).toBeTruthy();
+    });
   });
 
   it('renders summary header with 3 stats (total, pending, won) and filters list on tap (T10.44)', async () => {

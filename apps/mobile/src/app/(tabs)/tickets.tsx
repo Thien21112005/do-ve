@@ -11,6 +11,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 // eslint-disable-next-line import/no-unresolved
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -44,8 +45,25 @@ export default function TicketsScreen() {
   const { colors } = useTheme();
   const [tickets, { save, remove, clearAll }] = useSavedTickets();
 
-  // Manual pull-to-refresh & recheck status (T09.45)
-  const { isRechecking, refetchPending } = usePendingTicketsRecheck();
+  // Recheck notice banner state (T10.51)
+  const [recheckBannerMessage, setRecheckBannerMessage] = useState<string | null>(null);
+  const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleRecheckComplete = useCallback((updatedCount: number) => {
+    haptics.success();
+    setRecheckBannerMessage(`${updatedCount} vé vừa có kết quả`);
+    if (bannerTimeoutRef.current) {
+      clearTimeout(bannerTimeoutRef.current);
+    }
+    bannerTimeoutRef.current = setTimeout(() => {
+      setRecheckBannerMessage(null);
+    }, 4000);
+  }, []);
+
+  // Manual pull-to-refresh & recheck status (T09.45 & T10.51)
+  const { isRechecking, refetchPending } = usePendingTicketsRecheck({
+    onRecheckComplete: handleRecheckComplete,
+  });
 
   // Filter state for summary cards with session memory (T10.44 & T10.45)
   const [activeFilter, setActiveFilterState] =
@@ -70,6 +88,9 @@ export default function TicketsScreen() {
     return () => {
       if (undoTimeoutRef.current) {
         clearTimeout(undoTimeoutRef.current);
+      }
+      if (bannerTimeoutRef.current) {
+        clearTimeout(bannerTimeoutRef.current);
       }
     };
   }, []);
@@ -384,6 +405,55 @@ export default function TicketsScreen() {
           <Icon name="more" size={20} color={colors.textMain} />
         </TouchableOpacity>
       </View>
+
+      {/* Recheck Progress & Result Banners (T10.51) */}
+      {(isRechecking || recheckBannerMessage) && (
+        <View className="px-4 pt-1 pb-1">
+          {isRechecking && (
+            <View
+              testID="pending-recheck-indicator"
+              className="flex-row items-center justify-center py-2 px-3 mb-1.5 rounded-xl border"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              }}
+            >
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text
+                className="text-xs font-medium ml-2"
+                style={{ color: colors.textMain }}
+              >
+                {summaryStats.pending > 0
+                  ? `Đang cập nhật ${summaryStats.pending} vé chờ…`
+                  : 'Đang kiểm tra kết quả mới…'}
+              </Text>
+            </View>
+          )}
+
+          {recheckBannerMessage && (
+            <View
+              testID="pending-recheck-banner"
+              className="flex-row items-center justify-center py-2 px-3 mb-1.5 rounded-xl border"
+              style={{
+                backgroundColor: colors.winTint || `${colors.primary}15`,
+                borderColor: colors.win || colors.primary,
+              }}
+            >
+              <Icon
+                name="checkCircle"
+                size={16}
+                color={colors.win || colors.primary}
+              />
+              <Text
+                className="text-xs font-semibold ml-2"
+                style={{ color: colors.win || colors.primary }}
+              >
+                {recheckBannerMessage}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
 
       {sortedTickets.length === 0 ? (
         <View
