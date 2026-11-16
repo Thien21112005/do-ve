@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 47 / 62 task hoàn thành
+- **Tổng quan:** 48 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -55,7 +55,7 @@
 | T10.45 | Bộ lọc trạng thái | DONE | bf6fc77 | 2026-11-16 | Chip lọc (Tất cả / Trúng / Chờ kết quả / Không trúng) kèm số lượng, nhớ lựa chọn trong phiên, empty view khi lọc |
 | T10.46 | Dòng vé gọn, tiêu đề nhóm dính (sticky) | DONE | ebd47b4 | 2026-11-16 | SectionList tiêu đề ngày dính (sticky) kèm số lượng vé, dòng vé gọn phẳng ~56px số tabular to, badge sm, xoá nhanh |
 | T10.47 | Vuốt để xoá + hoàn tác | DONE | 7b904f5 | 2026-11-16 | Vuốt trái hiện nút Xoá đỏ, snackbar 'Đã xoá vé 012345 · Hoàn tác' 5s thay thế Alert, giữ a11y action |
-| T10.48 | Màn/Sheet chi tiết vé | TODO | | | |
+| T10.48 | Màn/Sheet chi tiết vé | DONE | 33dcbce | 2026-11-16 | Chạm vào vé mở bottom sheet chi tiết (số tabular 32px, đài, ngày), sửa và lưu ghi chú cá nhân (field note), nút xem KQ kỳ này, dò lại, xoá |
 | T10.49 | Sao lưu/Khôi phục chuyển vào menu | TODO | | | |
 | T10.50 | Trạng thái rỗng có minh hoạ | TODO | | | |
 | T10.51 | Chỉ báo đang tự dò lại vé chờ | TODO | | | |
@@ -129,6 +129,7 @@
 - 2026-11-16 | T10.45 | Bộ lọc trạng thái | Xây dựng thanh chip lọc ngang tickets-filter-chips (Tất cả · Trúng thưởng · Chờ kết quả · Không trúng) kèm bộ đếm số lượng, lưu trữ bộ lọc trong biến phiên sessionSavedTicketFilter giúp giữ nguyên trạng thái khi đổi tab, bổ sung view rỗng tickets-filter-empty khi không có vé phù hợp; 9 unit tests xanh 100%.
 - 2026-11-16 | T10.46 | Dòng vé gọn, tiêu đề nhóm dính (sticky) | Chuyển đổi danh sách vé sang SectionList với stickySectionHeadersEnabled: tiêu đề ngày mở thưởng dính đỉnh (section-header-YYYY-MM-DD) hiển thị ngày VN và số lượng vé; dòng vé gọn ListRow ~56px phẳng trên nền surface, số vé tabular 18px font-bold, badge TicketStatusBadge size 'sm', nút xoá hitSlop rộng; 10 unit tests xanh 100%.
 - 2026-11-16 | T10.47 | Vuốt để xoá + hoàn tác | Tích hợp Swipeable từ react-native-gesture-handler trên từng dòng vé: vuốt sang trái hiển thị nút Xoá màu đỏ (swipe-delete-btn-ID) kèm icon trash; khi xoá vé hiển thị Snackbar hoàn tác nổi bật (undo-delete-snackbar) 'Đã xóa vé 012345 · Hoàn tác' trong 5 giây thay cho hộp thoại Alert gây gián đoạn; bấm Hoàn tác khôi phục vé tức thì vào store và view; giữ nguyên action accessibility cho screen readers; 10 unit tests xanh 100%.
+- 2026-11-16 | T10.48 | Màn/Sheet chi tiết vé | Xây dựng Modal Bottom Sheet saved-ticket-detail-sheet khi chạm vào dòng vé: hiển thị thẻ vé số to rõ (số vé 32px tabular, đài, ngày VN, badge trạng thái), ô TextInput thêm/sửa ghi chú cá nhân (field note) lưu trực tiếp vào ticketStore, bộ 3 nút hành động (Xem bảng kết quả kỳ này, Dò lại vé này, Xóa vé khỏi máy); 11 unit tests xanh 100%.
 
 ## Vấn đề mở
 
