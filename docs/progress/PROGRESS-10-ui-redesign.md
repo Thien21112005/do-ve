@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 38 / 62 task hoàn thành
+- **Tổng quan:** 39 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -45,7 +45,7 @@
 | T10.35 | Lưu vé từ kết quả hàng loạt | DONE | 5810089 | 2026-11-16 | Nút 'Lưu tất cả' ở thanh tóm tắt, nút bookmark nhỏ từng dòng kèm haptic nhẹ, đổi icon check khi đã lưu |
 | T10.36 | Ô nhập hàng loạt dễ dùng | DONE | 150c866 | 2026-11-16 | Danh sách chip token hoá nhận diện tức thì (hợp lệ / sai định dạng / trùng), nút Dán từ clipboard, bộ đếm K/20 vé, bàn phím số có phím xuống dòng |
 | T10.37 | Khoảnh khắc trúng thưởng tinh tế (thay toast 🎉) | DONE | 1f09c1d | 2026-11-16 | Thay overlay bằng in-card reveal (lật số stagger 60ms, count-up 600ms, haptic success 1 lần, a11y announcement, sửa copy Cài đặt) |
-| T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | TODO | | | |
+| T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | DONE | f15dad2 | 2026-11-16 | Đổi thứ tự mặc định G8→ĐB khớp tờ dò giấy, nhãn gọn G.8…ĐB, tuỳ chọn Cài đặt drawTableOrder Segmented |
 | T10.39 | Bảng nhiều cột như XSMN in | TODO | | | |
 | T10.40 | Ô "dò nhanh trong bảng" | TODO | | | |
 | T10.41 | Trình bày số trong bảng | TODO | | | |
@@ -81,7 +81,7 @@
 ## Quyết định cần chốt
 
 - [x] T10.02 — Hướng thị giác: A "Tờ vé giấy" (đề xuất) hay B "Bảng điện tử" (đã chốt hướng A theo ADR-006)
-- [ ] T10.38 — Thứ tự mặc định bảng kết quả G8 → ĐB
+- [x] T10.38 — Thứ tự mặc định bảng kết quả G8 → ĐB (đã chọn mặc định G8 → ĐB khớp tờ dò, có tuỳ chọn ĐB → G8)
 - [x] T10.28 — Mặc định bật "tự dò khi đủ 6 số"
 
 ## Nhật ký
@@ -119,6 +119,7 @@
 - 2026-11-16 | T10.35 | Lưu vé từ kết quả hàng loạt | Tích hợp tính năng lưu vé hàng loạt và đơn lẻ trong BatchResultList: (1) Thêm nút 'Lưu tất cả' ngay tại thanh tóm tắt batch-summary-bar hỗ trợ lưu trọn gói danh sách kết quả vào ticketStore; (2) Thêm nút bookmark nhỏ trên mỗi dòng vé cho phép lưu riêng lẻ từng vé với phản hồi xúc giác nhẹ (haptics.light()); (3) Tự động đối soát và đổi icon bookmark sang icon check màu win khi vé đã lưu trong thiết bị; (4) Kết nối toàn diện callbacks trên màn hình Dò vé check.tsx; (5) 9 unit tests BatchResultList và 13 tests check.tsx xanh 100%.
 - 2026-11-16 | T10.36 | Ô nhập hàng loạt dễ dùng | Nâng cấp toàn diện BatchTicketInput: (1) Danh sách chip token hoá (batch-token-chips) hiển thị tức thì mọi vé được nhận diện phân loại rõ ràng (hợp lệ nền surfaceSubtle / sai định dạng kèm nhãn (sai) / trùng lặp kèm nhãn (trùng)); (2) Thêm nút 'Dán' từ clipboard tiện lợi trên thanh header ô nhập; (3) Bộ đếm số lượng vé k/20; (4) Bàn phím số hỗ trợ xuống dòng tự nhiên; (5) 11 unit tests BatchTicketInput và 3 tests Icon xanh 100%.
 - 2026-11-16 | T10.37 | Khoảnh khắc trúng thưởng tinh tế (thay toast 🎉) | Thay overlay toàn màn hình bằng in-card reveal trên ResultCard: lật số khớp stagger 60ms spring nhẹ, tổng tiền đếm lên 600ms (animateCountUp), haptics.success rung 1 lần, thông báo a11y đầy đủ ('Chúc mừng, vé trúng N giải, tổng X đồng'), tôn trọng Reduce Motion, sửa copy Cài đặt chuẩn mực; hoàn tất 100% Nhóm D (15/15 tasks).
+- 2026-11-16 | T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | Chuyển đổi thứ tự bảng kết quả DrawTable mặc định từ Giải 8 đến Đặc biệt (G8 → ĐB) theo đúng thói quen dò vé giấy truyền thống; nhãn giải viết gọn 'G.8 … ĐB', giải Đặc biệt tô màu đỏ son special; bổ sung tuỳ chọn thứ tự trong Cài đặt bằng Segmented control và hỗ trợ prop order; 28 unit tests xanh 100%.
 
 ## Vấn đề mở
 
