@@ -33,7 +33,7 @@
 | T10.23 | Ô nhập co giãn theo cỡ chữ hệ thống | DONE | 4233795 | 2026-11-16 | Hỗ trợ Dynamic Type: boxHeight co giãn theo PixelRatio.getFontScale() (tối đa 1.5x) với minHeight 56px, maxFontSizeMultiplier={1.4} tránh vỡ layout |
 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | DONE | 874d647 | 2026-11-16 | Gộp Chọn ngày & Chọn đài vào card ngữ cảnh check-context-box tinh gọn (cao <= 1/3 iPhone SE), thêm dot chỉ báo kết quả trên chip ngày |
 | T10.25 | DateStrip tự cuộn tới ngày đang chọn | DONE | 1ba33be | 2026-11-16 | Chuyển DateStrip sang FlatList scrollToIndex khi selectedDate đổi, thêm nút Lịch mở Modal chọn trong 60 ngày gần nhất |
-| T10.26 | Segmented control "Một vé / Nhiều vé" | TODO | | | |
+| T10.26 | Segmented control "Một vé / Nhiều vé" | DONE | 6cf177b | 2026-11-16 | Dùng primitive Segmented với animation trượt 200ms, haptic selection và a11y role tab/tablist |
 | T10.27 | Nút Dò cố định đáy màn (sticky CTA) | TODO | | | |
 | T10.28 | Tự dò khi nhập đủ 6 số | TODO | | | |
 | T10.29 | Tự cuộn tới kết quả | TODO | | | |
@@ -107,6 +107,7 @@
 - 2026-11-16 | T10.23 | Ô nhập co giãn theo cỡ chữ hệ thống | Nâng cấp TicketInput hỗ trợ Dynamic Type: (1) Tính toán boxHeight linh hoạt theo PixelRatio.getFontScale() có trần chặn 1.5x để đảm bảo vừa vặn màn hình mà vẫn dễ đọc; (2) Thiết lập maxFontSizeMultiplier={1.4} cho các ô chữ số và hidden TextInput để triệt tiêu hiện tượng tràn hay cắt xén ký tự; (3) 13 unit tests xanh 100%.
 - 2026-11-16 | T10.24 | Gộp chọn ngày + đài thành 1 khối ngữ cảnh | Tái cấu trúc khối lựa chọn kỳ quay trên màn Dò vé: (1) Thay 2 tiêu đề và 2 hàng chip rời rạc bằng 1 card ngữ cảnh duy nhất (check-context-box) gồm header icon lịch + tiêu đề 'Kỳ mở thưởng', thanh chọn ngày DateStrip, đường kẻ mảnh và thanh chọn đài StationChips; (2) Tối ưu chiều cao tổng thể <= 1/3 màn hình iPhone SE (~150px); (3) Thêm chấm chỉ báo (dot) trên chip ngày báo hiệu các ngày đã có kết quả mở thưởng chính thức; (4) Unit tests xanh 100%.
 - 2026-11-16 | T10.25 | DateStrip tự cuộn tới ngày đang chọn | Nâng cấp DateStrip: (1) Dùng FlatList và scrollToIndex tự động cuộn chip ngày được chọn vào giữa màn hình khi selectedDate thay đổi; (2) Thêm nút 'Lịch' ở cuối danh sách mở Modal chọn ngày (date-picker-modal) hiển thị đầy đủ 60 ngày gần nhất với nhãn thứ/ngày và dot kết quả; (3) Tự động mở rộng danh sách ngày nếu ngày được chọn nằm ngoài 14 ngày mặc định; (4) Unit tests xanh 100%.
+- 2026-11-16 | T10.26 | Segmented control "Một vé / Nhiều vé" | Chuyển đổi bộ chọn chế độ dò vé: (1) Thay thế toggle thủ công bằng primitive Segmented dùng tablist/tab theo chuẩn a11y, nhãn ngắn 'Một vé' / 'Nhiều vé (tối đa 20)'; (2) Bổ sung animation trượt nền mượt mà 200ms với Animated.timing (tự động tắt khi Reduce Motion); (3) Tích hợp haptics.selection() khi đổi tab; (4) Unit tests xanh 100%.
 
 ## Vấn đề mở
 
