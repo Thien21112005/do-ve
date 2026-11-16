@@ -62,7 +62,7 @@
 | T10.52 | Màn Thêm dạng danh sách native | DONE | 413b3c4 | 2026-11-16 | Tái cấu trúc màn Thêm thành grouped list native bằng ListRow, phân nhóm Tiện ích / Ứng dụng, bỏ icon tint box, footer phiên bản 1 dòng |
 | T10.53 | Lịch quay thưởng bấm được và đúng | DONE | 416a0bc | 2026-11-16 | Mỗi đài là nút a11y riêng, bấm chuyển sang Kết quả đúng đài và ngày gần nhất (getMostRecentDateForWeekday), nhãn Hôm nay viết thường, haptics |
 | T10.54 | Cài đặt: switch chuẩn, nhóm rõ | DONE | 53ff71e | 2026-11-16 | Thay toàn bộ mục cài đặt bằng ListRow native; Segmented cho chọn theme; Switch native trailing chuẩn a11y; thêm tuỳ chọn tự dò khi đủ 6 số |
-| T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | TODO | | | |
+| T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | DONE | 3f6f158 | 2026-11-16 | Email/website dùng Linking.openURL bấm được; tiêu đề mục chữ thường; phiên bản và build dynamic; bỏ card bao quanh đoạn văn dài |
 | T10.56 | Màn bảo trì / cần cập nhật / lỗi theo hệ thống mới | TODO | | | |
 | T10.57 | Chuẩn hoá copy với `/impeccable clarify` | TODO | | | |
 | T10.58 | Vùng chạm ≥ 44pt và Reduce Motion | TODO | | | |
@@ -133,6 +133,7 @@
 
 - 2026-11-16 | T10.53 | Lịch quay thưởng bấm được và đúng | Mỗi đài là nút a11y riêng, bấm chuyển sang Kết quả đúng đài và ngày gần nhất (getMostRecentDateForWeekday), nhãn Hôm nay viết thường, haptics.
 - 2026-11-16 | T10.54 | Cài đặt: switch chuẩn, nhóm rõ | Tái cấu trúc Cài đặt bằng ListRow native; Segmented cho chọn theme (Hệ thống · Sáng · Tối); các Switch native đặt ở trailing của ListRow có accessibilityRole='switch' và nhãn rõ ràng, loại bỏ button vô hình bọc ngoài; bổ sung tuỳ chọn 'Tự dò khi đủ 6 số' autoSubmitEnabled; 10 unit tests xanh 100%.
+- 2026-11-16 | T10.55 | Giới thiệu: liên kết bấm được, bỏ uppercase | Nâng cấp màn Giới thiệu: liên kết email và website bấm được kích hoạt Linking.openURL (mailto:... và https://...) kèm phản hồi xúc giác haptics.selection; chuyển tiêu đề các mục sang chữ thường/sentence case có trọng lượng semibold; bỏ card bao quanh các đoạn văn bản dài; phiên bản và build lấy động từ Expo config; 4 unit tests xanh 100%.
 
 ## Vấn đề mở
 
