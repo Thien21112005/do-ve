@@ -8,22 +8,30 @@ import {
 import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
-import type { BatchCheckResponse } from '../types';
+import { haptics } from '../lib/haptics';
+import { useSavedTickets } from '../store/ticketStore';
+import type { BatchCheckResponse, SavedTicketStatus } from '../types';
 import { getStationName, type UiBatchResult } from '../api/mappers';
 
 export interface BatchResultListProps {
   batchResult: UiBatchResult | BatchCheckResponse;
   onCheckAgain?: () => void;
+  onSaveTicket?: (item: any) => void;
+  onSaveAllTickets?: (items: any[]) => void;
   testID?: string;
 }
 
 export const BatchResultList: React.FC<BatchResultListProps> = ({
   batchResult,
   onCheckAgain,
+  onSaveTicket,
+  onSaveAllTickets,
   testID = 'batch-result-list',
 }) => {
   const { colors } = useTheme();
   const [filterWonOnly, setFilterWonOnly] = useState(false);
+  const [savedTickets, { save: saveTicketToStore, saveMany: saveManyTicketsToStore }] =
+    useSavedTickets();
 
   const totalTickets = batchResult.results?.length || 0;
   const wonTickets =
@@ -44,6 +52,85 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       : typeof (batchResult as any).totalAmount === 'number'
         ? (batchResult as any).totalAmount
         : 0;
+
+  // Check if a specific ticket is saved
+  const isTicketSaved = (ticketNumber: string) => {
+    return savedTickets.some(
+      (t) =>
+        t.ticket === ticketNumber &&
+        t.drawDate === (batchResult.drawDate || '') &&
+        (t.station.toLowerCase() === rawStation.toLowerCase() ||
+          t.stationName === stationName),
+    );
+  };
+
+  const areAllTicketsSaved =
+    totalTickets > 0 &&
+    (batchResult.results || []).every((item) => isTicketSaved(item.ticket ?? ''));
+
+  // Handler to save a single ticket (T10.35)
+  const handleSaveItem = async (item: any) => {
+    haptics.light();
+    if (onSaveTicket) {
+      onSaveTicket(item);
+      return;
+    }
+    const status: SavedTicketStatus =
+      item.status === 'RESULT_NOT_AVAILABLE'
+        ? 'PENDING'
+        : item.won
+          ? 'WON'
+          : 'LOST';
+    const itemTotalPrize =
+      typeof item.totalPrize === 'number'
+        ? item.totalPrize
+        : typeof item.totalAmount === 'number'
+          ? item.totalAmount
+          : 0;
+
+    await saveTicketToStore({
+      ticket: item.ticket,
+      station: rawStation,
+      stationName,
+      drawDate: batchResult.drawDate || item.drawDate || '',
+      status,
+      totalPrize: itemTotalPrize,
+      wins: item.wins || [],
+    });
+  };
+
+  // Handler to save all tickets in batch (T10.35)
+  const handleSaveAll = async () => {
+    haptics.light();
+    if (onSaveAllTickets) {
+      onSaveAllTickets(batchResult.results || []);
+      return;
+    }
+    const toSave = (batchResult.results || []).map((item) => {
+      const status: SavedTicketStatus =
+        item.status === 'RESULT_NOT_AVAILABLE'
+          ? 'PENDING'
+          : item.won
+            ? 'WON'
+            : 'LOST';
+      const itemTotalPrize =
+        typeof (item as any).totalPrize === 'number'
+          ? (item as any).totalPrize
+          : typeof (item as any).totalAmount === 'number'
+            ? (item as any).totalAmount
+            : 0;
+      return {
+        ticket: item.ticket || '',
+        station: rawStation,
+        stationName,
+        drawDate: batchResult.drawDate || item.drawDate || '',
+        status,
+        totalPrize: itemTotalPrize,
+        wins: (item.wins || []) as any,
+      };
+    });
+    await saveManyTicketsToStore(toSave);
+  };
 
   // T10.34: Sort winning tickets to the top and filter by won state
   const displayResults = useMemo(() => {
@@ -66,7 +153,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
 
   return (
     <View testID={testID} className="w-full">
-      {/* 1. Compact Summary Bar (T10.34) */}
+      {/* 1. Compact Summary Bar (T10.34 & T10.35) */}
       <View
         testID="batch-summary-bar"
         className="p-4 rounded-xl border mb-3"
@@ -103,6 +190,44 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
             {formatCurrency(totalPrize)}
           </Text>
         </Text>
+
+        {/* Save All Button (T10.35) */}
+        <View
+          className="flex-row items-center justify-between mt-3 pt-2.5 border-t"
+          style={{ borderColor: colors.surfaceSubtle }}
+        >
+          <Pressable
+            testID="batch-save-all-btn"
+            onPress={handleSaveAll}
+            className="px-3 py-1.5 rounded-lg border flex-row items-center"
+            style={{
+              backgroundColor: areAllTicketsSaved
+                ? `${colors.win}15`
+                : colors.surface,
+              borderColor: areAllTicketsSaved ? colors.win : colors.border,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={
+              areAllTicketsSaved ? 'Đã lưu tất cả vé' : 'Lưu tất cả vé'
+            }
+          >
+            <Icon
+              name={areAllTicketsSaved ? 'check' : 'bookmark'}
+              size={14}
+              color={areAllTicketsSaved ? colors.win : colors.textMain}
+            />
+            <Text
+              className="text-xs font-semibold ml-1.5"
+              style={{
+                color: areAllTicketsSaved ? colors.win : colors.textMain,
+              }}
+            >
+              {areAllTicketsSaved
+                ? 'Đã lưu tất cả'
+                : `Lưu tất cả (${totalTickets})`}
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* 2. Filter Bar (T10.34: Chỉ vé trúng) */}
@@ -148,7 +273,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
         </View>
       )}
 
-      {/* 3. Flat Rows List (T10.34) */}
+      {/* 3. Flat Rows List (T10.34 & T10.35) */}
       <View
         className="rounded-xl border overflow-hidden mb-4"
         style={{
@@ -165,6 +290,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               : typeof (item as any).totalAmount === 'number'
                 ? (item as any).totalAmount
                 : 0;
+          const isSaved = isTicketSaved(item.ticket ?? '');
 
           return (
             <View
@@ -237,29 +363,48 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                 )}
               </View>
 
-              {/* Right: Tabular Prize Amount */}
-              <View className="items-end min-w-[70px]">
-                {isItemWon ? (
-                  <Text
-                    className="text-sm font-bold text-right"
-                    style={{
-                      color: colors.win,
-                      fontVariant: ['tabular-nums'],
-                    }}
-                  >
-                    {formatCurrency(itemTotalPrize)}
-                  </Text>
-                ) : (
-                  <Text
-                    className="text-sm text-right font-medium"
-                    style={{
-                      color: colors.textMuted,
-                      fontVariant: ['tabular-nums'],
-                    }}
-                  >
-                    —
-                  </Text>
-                )}
+              {/* Right: Tabular Prize Amount & Row Bookmark Button (T10.35) */}
+              <View className="flex-row items-center">
+                <View className="items-end min-w-[70px]">
+                  {isItemWon ? (
+                    <Text
+                      className="text-sm font-bold text-right"
+                      style={{
+                        color: colors.win,
+                        fontVariant: ['tabular-nums'],
+                      }}
+                    >
+                      {formatCurrency(itemTotalPrize)}
+                    </Text>
+                  ) : (
+                    <Text
+                      className="text-sm text-right font-medium"
+                      style={{
+                        color: colors.textMuted,
+                        fontVariant: ['tabular-nums'],
+                      }}
+                    >
+                      —
+                    </Text>
+                  )}
+                </View>
+
+                {/* Bookmark Button (T10.35) */}
+                <Pressable
+                  testID={`batch-save-ticket-${item.ticket}`}
+                  onPress={() => handleSaveItem(item)}
+                  className="p-1.5 ml-2 rounded-lg"
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    isSaved ? 'Đã lưu vé' : `Lưu vé ${item.ticket}`
+                  }
+                >
+                  <Icon
+                    name={isSaved ? 'check' : 'bookmark'}
+                    size={15}
+                    color={isSaved ? colors.win : colors.textMuted}
+                  />
+                </Pressable>
               </View>
             </View>
           );

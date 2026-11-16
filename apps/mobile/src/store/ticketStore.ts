@@ -288,6 +288,7 @@ export function useSavedTickets(): [
   SavedTicket[],
   {
     save: typeof saveTicket;
+    saveMany: typeof saveManyTickets;
     remove: typeof removeTicket;
     clearAll: typeof clearAllTickets;
     refresh: typeof getTickets;
@@ -316,6 +317,7 @@ export function useSavedTickets(): [
     tickets,
     {
       save: saveTicket,
+      saveMany: saveManyTickets,
       remove: removeTicket,
       clearAll: clearAllTickets,
       refresh: getTickets,

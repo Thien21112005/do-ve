@@ -57,7 +57,10 @@ export default function CheckScreen() {
     reset: resetBatch,
   } = useCheckBatchTickets();
 
-  const [savedTickets, { save: saveTicketToStore }] = useSavedTickets();
+  const [
+    savedTickets,
+    { save: saveTicketToStore, saveMany: saveManyTicketsToStore },
+  ] = useSavedTickets();
   const [settings] = useSettings();
   const [justSaved, setJustSaved] = useState(false);
 
@@ -187,6 +190,45 @@ export default function CheckScreen() {
         wins: ticketResult.wins || [],
       });
       setJustSaved(true);
+    } catch {
+      Alert.alert(
+        STRINGS.common.error,
+        STRINGS.check.saveTicketError,
+      );
+    }
+  };
+
+  const handleSaveAllBatchTickets = async (ticketsList: any[]) => {
+    try {
+      const station = batchResult?.stationCode || selectedStation;
+      const stationName = (batchResult as any)?.stationName || station;
+      const drawDate = batchResult?.drawDate || selectedDate;
+
+      const toSave = ticketsList.map((ticketResult) => {
+        let status: SavedTicketStatus = 'LOST';
+        if (ticketResult.status === 'RESULT_NOT_AVAILABLE') {
+          status = 'PENDING';
+        } else if (ticketResult.won) {
+          status = 'WON';
+        }
+        const totalPrize =
+          typeof ticketResult.totalPrize === 'number'
+            ? ticketResult.totalPrize
+            : typeof ticketResult.totalAmount === 'number'
+              ? ticketResult.totalAmount
+              : 0;
+        return {
+          ticket: ticketResult.ticket,
+          station,
+          stationName,
+          drawDate,
+          status,
+          totalPrize,
+          wins: ticketResult.wins || [],
+        };
+      });
+
+      await saveManyTicketsToStore(toSave);
     } catch {
       Alert.alert(
         STRINGS.common.error,
@@ -493,6 +535,8 @@ export default function CheckScreen() {
             >
               <BatchResultList
                 batchResult={batchResult}
+                onSaveTicket={handleSaveTicket}
+                onSaveAllTickets={handleSaveAllBatchTickets}
                 onCheckAgain={() => {
                   resetBatch();
                   setBatchText('');

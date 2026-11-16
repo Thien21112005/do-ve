@@ -1,7 +1,18 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { BatchResultList } from '../BatchResultList';
+import { haptics } from '@/lib/haptics';
 import type { UiBatchResult } from '@/api/mappers';
+
+jest.mock('@/lib/haptics', () => ({
+  haptics: {
+    light: jest.fn(),
+    medium: jest.fn(),
+    success: jest.fn(),
+    warning: jest.fn(),
+    error: jest.fn(),
+  },
+}));
 
 const mockBatchResult: UiBatchResult = {
   stationCode: 'TPHCM',
@@ -185,5 +196,40 @@ describe('BatchResultList Component', () => {
     );
 
     expect(getByText(/Đài TP\. Hồ Chí Minh/)).toBeTruthy();
+  });
+
+  it('saves a single ticket with bookmark button and haptics (T10.35)', async () => {
+    const onSave = jest.fn();
+    const { getByTestId } = await render(
+      <BatchResultList
+        batchResult={mockBatchResult}
+        onSaveTicket={onSave}
+      />,
+    );
+
+    const bookmarkBtn = getByTestId('batch-save-ticket-123456');
+    expect(bookmarkBtn).toBeTruthy();
+
+    fireEvent.press(bookmarkBtn);
+    expect(haptics.light).toHaveBeenCalled();
+    expect(onSave).toHaveBeenCalled();
+  });
+
+  it('saves all tickets when clicking save-all button (T10.35)', async () => {
+    const onSaveAll = jest.fn();
+    const { getByTestId, getByText } = await render(
+      <BatchResultList
+        batchResult={mockBatchResult}
+        onSaveAllTickets={onSaveAll}
+      />,
+    );
+
+    const saveAllBtn = getByTestId('batch-save-all-btn');
+    expect(saveAllBtn).toBeTruthy();
+    expect(getByText(/Lưu tất cả/)).toBeTruthy();
+
+    fireEvent.press(saveAllBtn);
+    expect(haptics.light).toHaveBeenCalled();
+    expect(onSaveAll).toHaveBeenCalled();
   });
 });
