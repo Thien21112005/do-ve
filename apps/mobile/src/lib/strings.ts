@@ -139,6 +139,9 @@ export const STRINGS = {
 
   results: {
     screenTitle: 'Kết quả xổ số',
+    viewModeSingle: 'Từng đài',
+    viewModeAll: 'Cả ngày',
+    allStationsSummary: (count: number) => `Bảng tổng hợp ${count} đài mở thưởng`,
     dateLabel: 'Chọn ngày mở thưởng',
     stationLabel: 'Đài mở thưởng',
     loading: 'Đang tải kết quả...',

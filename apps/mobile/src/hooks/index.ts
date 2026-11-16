@@ -5,6 +5,7 @@ export * from './useSchedule';
 export * from './useCheckTicket';
 export * from './useNetworkStatus';
 export * from './useDraw';
+export * from './useDailyDraws';
 export * from './useLatestDraws';
 export * from './useCheckBatchTickets';
 export * from './useAppConfig';

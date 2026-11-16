@@ -128,6 +128,30 @@ describe('ResultsScreen', () => {
     });
   });
 
+  it('switches to all-stations multi-column view and renders MultiStationDrawTable (T10.39)', async () => {
+    (apiDraws.fetchLatestDayDraws as jest.Mock).mockResolvedValue([
+      mockDrawTPHCM,
+      mockDrawDongThap,
+    ]);
+
+    const { getByTestId, getByText, getAllByText } = await render(
+      <ResultsScreen />,
+      {
+        wrapper: createWrapper(),
+      },
+    );
+
+    const allModeBtn = getByTestId('results-view-mode-all');
+    fireEvent.press(allModeBtn);
+
+    await waitFor(() => {
+      expect(getByTestId('multi-station-draw-table')).toBeTruthy();
+      expect(getByText(/Bảng tổng hợp 2 đài/i)).toBeTruthy();
+      expect(getAllByText(/TP. Hồ Chí Minh/i).length).toBeGreaterThanOrEqual(1);
+      expect(getAllByText(/Đồng Tháp/i).length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   it('triggers pull-to-refresh on results screen and refetches draw data', async () => {
     const { getByTestId } = await render(<ResultsScreen />, {
       wrapper: createWrapper(),

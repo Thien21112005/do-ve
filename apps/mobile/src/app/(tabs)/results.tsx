@@ -15,8 +15,10 @@ import {
   OfflineBanner,
   Icon,
   DrawTable,
+  MultiStationDrawTable,
+  Segmented,
 } from '@/components';
-import { useDraw, useSchedule } from '@/hooks';
+import { useDraw, useSchedule, useDailyDraws } from '@/hooks';
 import { useTheme } from '@/theme';
 import { formatDateVN } from '@/lib/format';
 import { todayVN } from '@/lib';
@@ -44,6 +46,16 @@ export default function ResultsScreen() {
   }, [params.date]);
 
   const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
+  const [viewMode, setViewMode] = useState<'single' | 'all'>('single');
+
+  const {
+    draws: dailyDraws,
+    isLoading: isDailyLoading,
+    isError: isDailyError,
+    error: dailyError,
+    refetch: refetchDaily,
+  } = useDailyDraws(selectedDate, stations);
+
   const { draw, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
     selectedStation,
@@ -52,18 +64,25 @@ export default function ResultsScreen() {
   // T09.29: Avoid empty state flash before station chips are loaded and auto-selected
   const isWaitingForStation =
     !selectedStation && (isScheduleLoading || stations.length > 0);
-  const showLoading = isWaitingForStation || (Boolean(selectedStation) && isLoading);
+  const showLoading =
+    viewMode === 'all'
+      ? isDailyLoading
+      : isWaitingForStation || (Boolean(selectedStation) && isLoading);
 
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      await refetch();
+      if (viewMode === 'all') {
+        await refetchDaily();
+      } else {
+        await refetch();
+      }
     } finally {
       setRefreshing(false);
     }
-  }, [refetch]);
+  }, [viewMode, refetch, refetchDaily]);
 
   const formattedDate = formatDateVN(selectedDate);
 
@@ -103,21 +122,144 @@ export default function ResultsScreen() {
           }}
         />
 
-        {/* Section: Chọn đài quay */}
-        <View className="pt-2 px-4 pb-1">
-          <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
-            {STRINGS.results.stationLabel}
-          </Text>
+        {/* Section: Chế độ xem Từng đài / Cả ngày (T10.39) */}
+        <View className="px-4 pt-3 pb-1">
+          <Segmented
+            testID="results-view-mode-segmented"
+            selectedKey={viewMode}
+            onChange={(key) => setViewMode(key as 'single' | 'all')}
+            options={[
+              {
+                key: 'single',
+                label: STRINGS.results.viewModeSingle,
+                testID: 'results-view-mode-single',
+              },
+              {
+                key: 'all',
+                label: STRINGS.results.viewModeAll,
+                testID: 'results-view-mode-all',
+              },
+            ]}
+          />
         </View>
-        <StationChips
-          selectedDate={selectedDate}
-          selectedStation={selectedStation}
-          onSelectStation={setSelectedStation}
-        />
+
+        {viewMode === 'single' && (
+          <>
+            {/* Section: Chọn đài quay */}
+            <View className="pt-2 px-4 pb-1">
+              <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                {STRINGS.results.stationLabel}
+              </Text>
+            </View>
+            <StationChips
+              selectedDate={selectedDate}
+              selectedStation={selectedStation}
+              onSelectStation={setSelectedStation}
+            />
+          </>
+        )}
 
         {/* Draw details container */}
         <View testID="results-draw-container" className="mt-4 mx-4">
-          {showLoading ? (
+          {viewMode === 'all' ? (
+            showLoading ? (
+              <View className="py-12 items-center justify-center">
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text
+                  className="mt-3 text-sm"
+                  style={{ color: colors.textMuted }}
+                >
+                  {STRINGS.results.loading}
+                </Text>
+              </View>
+            ) : isDailyError ? (
+              <View
+                testID="results-error-container"
+                className="p-5 rounded-2xl border items-center text-center mt-2"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.error,
+                }}
+              >
+                <Icon name="alertCircle" size={32} color={colors.error} />
+                <Text
+                  className="text-base font-bold mt-2.5 text-center"
+                  style={{ color: colors.error }}
+                >
+                  {getApiErrorMessage(
+                    dailyError,
+                    'Không thể tải kết quả mở thưởng',
+                  )}
+                </Text>
+                <TouchableOpacity
+                  testID="results-error-retry-btn"
+                  onPress={() => refetchDaily()}
+                  className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center"
+                  style={{
+                    borderColor: colors.error,
+                    backgroundColor: `${colors.error}15`,
+                  }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: colors.error }}
+                  >
+                    Thử lại
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : dailyDraws.length === 0 ? (
+              <View
+                testID="results-empty-container"
+                className="p-5 rounded-2xl border items-center text-center mt-2"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                }}
+              >
+                <Icon name="clock" size={32} color={colors.pending} />
+                <Text
+                  className="text-base font-bold mt-2.5 text-center"
+                  style={{ color: colors.textMain }}
+                >
+                  {STRINGS.results.emptyTitle}
+                </Text>
+                <Text
+                  className="text-xs text-center mt-1 leading-5"
+                  style={{ color: colors.textMuted }}
+                >
+                  {STRINGS.results.emptyMessage(formattedDate)}
+                </Text>
+              </View>
+            ) : (
+              <View
+                className="p-3 rounded-2xl border"
+                style={{
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                }}
+              >
+                <View
+                  className="flex-row items-center justify-between pb-2 mb-2 border-b"
+                  style={{ borderColor: colors.border }}
+                >
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: colors.textMain }}
+                  >
+                    {STRINGS.results.allStationsSummary(dailyDraws.length)}
+                  </Text>
+                  <Text
+                    className="text-xs font-medium"
+                    style={{ color: colors.textMuted }}
+                  >
+                    {formattedDate}
+                  </Text>
+                </View>
+                <MultiStationDrawTable draws={dailyDraws} />
+              </View>
+            )
+          ) : showLoading ? (
             <View className="py-12 items-center justify-center">
               <ActivityIndicator size="large" color={colors.primary} />
               <Text
