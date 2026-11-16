@@ -20,7 +20,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
-| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 42 / 62 | DOING | Hướng A 'Tờ vé giấy' đã duyệt; hoàn tất 100% Nhóm A, B, C, D; đang triển khai Nhóm E |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | Hướng A 'Tờ vé giấy' hoàn tất 100% (62/62 tasks), Nielsen 39/40, Native Audit 20/20 |
 
 ## Mốc
 
@@ -32,6 +32,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | M4 Dò được trên app | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 06 (33/33 task Mobile Core & Tra cứu) |
 | M5 MVP | 2026-11-14 | 2026-11-14 | Hoàn thành Phase 07 (Vé của tôi & On-device Experience hoàn thiện toàn diện MVP) |
 | M6 Phát hành v0.1.0 | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 08 (25/25 task), nghiệm thu 100% 179 task dự án, tag v0.1.0 sẵn sàng sản xuất |
+| M7 Impeccable Mobile v0.2 | 2026-11-16 | 2026-11-16 | Hoàn thành toàn bộ Phase 10 (62/62 task Redesign giao diện mobile Hướng A Tờ vé giấy) |
 
 ## Quyết định cần chốt (ADR)
 
