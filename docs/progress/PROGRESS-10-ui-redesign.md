@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 41 / 62 task hoàn thành
+- **Tổng quan:** 42 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -48,7 +48,7 @@
 | T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | DONE | f15dad2 | 2026-11-16 | Đổi thứ tự mặc định G8→ĐB khớp tờ dò giấy, nhãn gọn G.8…ĐB, tuỳ chọn Cài đặt drawTableOrder Segmented |
 | T10.39 | Bảng nhiều cột như XSMN in | DONE | b802ef8 | 2026-11-16 | Chế độ xem 'Cả ngày' 3-4 cột đài cạnh nhau (TP.HCM, Đồng Tháp, Cà Mau/Long An) cuộn ngang, giữ chế độ 'Từng đài' |
 | T10.40 | Ô "dò nhanh trong bảng" | DONE | bd9ca06 | 2026-11-16 | Ô nhập 2-6 số phía trên bảng kết quả, tô nền winTint tức thì cho các số khớp hậu tố mà không gọi API |
-| T10.41 | Trình bày số trong bảng | TODO | | | |
+| T10.41 | Trình bày số trong bảng | DONE | 00c8a96 | 2026-11-16 | Số tabular, cỡ chữ theo hạng giải (ĐB 22px màu special), G4 xếp lưới 2 cột cố định thẳng hàng, bỏ sọc xen kẽ |
 | T10.42 | Trạng thái Kết quả tách rõ | TODO | | | |
 | T10.43 | Chia sẻ kết quả | TODO | | | |
 | T10.44 | Thẻ tổng quan đầu danh sách | TODO | | | |
@@ -122,6 +122,7 @@
 - 2026-11-16 | T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | Chuyển đổi thứ tự bảng kết quả DrawTable mặc định từ Giải 8 đến Đặc biệt (G8 → ĐB) theo đúng thói quen dò vé giấy truyền thống; nhãn giải viết gọn 'G.8 … ĐB', giải Đặc biệt tô màu đỏ son special; bổ sung tuỳ chọn thứ tự trong Cài đặt bằng Segmented control và hỗ trợ prop order; 28 unit tests xanh 100%.
 - 2026-11-16 | T10.39 | Bảng nhiều cột như XSMN in | Xây dựng MultiStationDrawTable hiển thị trọn vẹn 3-4 đài mở thưởng cùng ngày cạnh nhau dạng bảng nhiều cột khớp tờ kết quả XSMN truyền thống; hỗ trợ cuộn ngang mượt mà trên màn hình hẹp, tôn trọng thứ tự giải G8 -> ĐB; bổ sung hook useDailyDraws và bộ chọn Segmented 'Từng đài' / 'Cả ngày' trên ResultsScreen; 17 unit tests xanh 100%.
 - 2026-11-16 | T10.40 | Ô "dò nhanh trong bảng" | Tích hợp ô tìm kiếm nhanh (results-quick-search-input) 2–6 chữ số phía trên bảng kết quả; hỗ trợ tô sáng nền winTint và chữ win ngay lập tức cho các số trúng khớp hậu tố trên cả DrawTable và MultiStationDrawTable; nút xoá nhanh (results-quick-search-clear-btn); 20 unit tests xanh 100%.
+- 2026-11-16 | T10.41 | Trình bày số trong bảng | Nâng cấp trình bày bảng kết quả: định dạng số tabular, cỡ chữ theo cấp bậc giải (ĐB 22px leading-7 màu special, G1 18px, G8 20px), G4 xếp lưới 2 cột cố định w-1/2 giúp 7 số trúng thẳng cột hoàn hảo; loại bỏ hoàn toàn các sọc xen kẽ sặc sỡ, dùng divider mảnh phẳng chuẩn Direction A; 13 unit tests xanh 100%.
 
 ## Vấn đề mở
 
