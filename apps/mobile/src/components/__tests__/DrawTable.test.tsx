@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { DrawTable, DRAW_TIERS } from '../DrawTable';
 import { REAL_DRAW_PAYLOAD } from '@/api/__fixtures__/realBackendPayloads';
+import { updateSettings, resetSettings } from '@/store/settings';
 
 const mockPrizes: Record<string, string[]> = {
   SPECIAL: ['654321'],
@@ -16,26 +17,50 @@ const mockPrizes: Record<string, string[]> = {
 };
 
 describe('DrawTable', () => {
-  it('renders all 9 prize tiers in order from SPECIAL down to EIGHTH', async () => {
+  beforeEach(() => {
+    resetSettings();
+  });
+
+  it('renders all 9 prize tiers in printed sheet order by default (G8 down to SPECIAL) (T10.38)', async () => {
     const { getByTestId, getByText } = await render(
       <DrawTable prizes={mockPrizes} />,
     );
 
     expect(getByTestId('draw-table')).toBeTruthy();
     expect(DRAW_TIERS).toHaveLength(9);
-    expect(DRAW_TIERS[0].key).toBe('SPECIAL');
-    expect(DRAW_TIERS[8].key).toBe('EIGHTH');
+    expect(DRAW_TIERS[0].key).toBe('EIGHTH');
+    expect(DRAW_TIERS[8].key).toBe('SPECIAL');
 
-    // Labels for all tiers
-    expect(getByText('Đặc biệt')).toBeTruthy();
-    expect(getByText('Giải nhất')).toBeTruthy();
-    expect(getByText('Giải nhì')).toBeTruthy();
-    expect(getByText('Giải ba')).toBeTruthy();
-    expect(getByText('Giải tư')).toBeTruthy();
-    expect(getByText('Giải năm')).toBeTruthy();
-    expect(getByText('Giải sáu')).toBeTruthy();
-    expect(getByText('Giải bảy')).toBeTruthy();
-    expect(getByText('Giải tám')).toBeTruthy();
+    // Compact labels like printed sheets: G.8 ... ĐB
+    expect(getByText('G.8')).toBeTruthy();
+    expect(getByText('G.7')).toBeTruthy();
+    expect(getByText('G.6')).toBeTruthy();
+    expect(getByText('G.5')).toBeTruthy();
+    expect(getByText('G.4')).toBeTruthy();
+    expect(getByText('G.3')).toBeTruthy();
+    expect(getByText('G.2')).toBeTruthy();
+    expect(getByText('G.1')).toBeTruthy();
+    expect(getByText('ĐB')).toBeTruthy();
+  });
+
+  it('supports reversing order from SPECIAL to G8 via order prop (T10.38)', async () => {
+    const { getByTestId } = await render(
+      <DrawTable prizes={mockPrizes} order="special_to_g8" />,
+    );
+
+    const firstRow = getByTestId('draw-table-row-0');
+    expect(firstRow.props.accessibilityLabel).toContain('Đặc biệt');
+
+    const lastRow = getByTestId('draw-table-row-8');
+    expect(lastRow.props.accessibilityLabel).toContain('Giải tám');
+  });
+
+  it('supports reading drawTableOrder from settings when order prop is not passed (T10.38)', async () => {
+    updateSettings({ drawTableOrder: 'special_to_g8' });
+    const { getByTestId } = await render(<DrawTable prizes={mockPrizes} />);
+
+    const firstRow = getByTestId('draw-table-row-0');
+    expect(firstRow.props.accessibilityLabel).toContain('Đặc biệt');
   });
 
   it('renders all winning numbers accurately with preserved leading zeros', async () => {

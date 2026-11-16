@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 import { useSettings } from '@/store/settings';
 import { STRINGS } from '@/lib/strings';
+import { Segmented } from '@/components/ui/Segmented';
 import {
   requestNotificationPermission,
   hasNotificationPermission,
@@ -202,6 +203,50 @@ export default function SettingsScreen() {
             borderColor: colors.border,
           }}
         >
+          {/* Draw Table Order setting (T10.38) */}
+          <View
+            testID="settings-draw-order-row"
+            className="p-4 border-b"
+            style={{
+              borderColor: colors.border,
+              borderBottomWidth: 1,
+            }}
+          >
+            <View className="mb-2.5">
+              <Text
+                className="text-base font-semibold mb-0.5"
+                style={{ color: colors.textMain }}
+              >
+                {STRINGS.settings.drawTableOrderTitle}
+              </Text>
+              <Text
+                className="text-xs leading-relaxed"
+                style={{ color: colors.textMuted }}
+              >
+                {STRINGS.settings.drawTableOrderDesc}
+              </Text>
+            </View>
+            <Segmented
+              testID="settings-draw-order-segmented"
+              selectedKey={settings.drawTableOrder || 'g8_to_special'}
+              onChange={(key) =>
+                updateSettings({ drawTableOrder: key as any })
+              }
+              options={[
+                {
+                  key: 'g8_to_special',
+                  label: STRINGS.settings.drawTableOrderG8First,
+                  testID: 'settings-draw-order-g8-first',
+                },
+                {
+                  key: 'special_to_g8',
+                  label: STRINGS.settings.drawTableOrderSpecialFirst,
+                  testID: 'settings-draw-order-special-first',
+                },
+              ]}
+            />
+          </View>
+
           {/* Celebration toggle */}
           <Pressable
             testID="settings-celebration-switch"

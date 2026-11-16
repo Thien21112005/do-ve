@@ -17,6 +17,7 @@ describe('Settings store', () => {
     expect(settings.hapticsEnabled).toBe(true);
     expect(settings.themeMode).toBe('system');
     expect(settings.autoSubmitEnabled).toBe(true);
+    expect(settings.drawTableOrder).toBe('g8_to_special');
   });
 
   it('updates settings and notifies subscribers', () => {

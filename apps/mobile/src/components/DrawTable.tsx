@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../theme';
 import { STRINGS } from '../lib/strings';
+import { getSettings, type DrawTableOrder } from '../store/settings';
 
 export interface PrizeTierConfig {
   key: string;
@@ -12,86 +13,93 @@ export interface PrizeTierConfig {
   highlight?: boolean;
 }
 
+/**
+ * Standard printed lottery result sheet order (G8 -> Special Prize) (T10.38).
+ */
 export const DRAW_TIERS: PrizeTierConfig[] = [
   {
-    key: 'SPECIAL',
-    name: STRINGS.results.prizes.special,
-    shortName: STRINGS.results.prizes.specialShort,
-    digits: 6,
-    count: 1,
-    highlight: true,
-  },
-  {
-    key: 'FIRST',
-    name: STRINGS.results.prizes.first,
-    shortName: STRINGS.results.prizes.firstShort,
-    digits: 5,
+    key: 'EIGHTH',
+    name: STRINGS.results.prizes.eighth,
+    shortName: STRINGS.results.prizes.eighthShort, // 'G.8'
+    digits: 2,
     count: 1,
   },
   {
-    key: 'SECOND',
-    name: STRINGS.results.prizes.second,
-    shortName: STRINGS.results.prizes.secondShort,
-    digits: 5,
-    count: 1,
-  },
-  {
-    key: 'THIRD',
-    name: STRINGS.results.prizes.third,
-    shortName: STRINGS.results.prizes.thirdShort,
-    digits: 5,
-    count: 2,
-  },
-  {
-    key: 'FOURTH',
-    name: STRINGS.results.prizes.fourth,
-    shortName: STRINGS.results.prizes.fourthShort,
-    digits: 5,
-    count: 7,
-  },
-  {
-    key: 'FIFTH',
-    name: STRINGS.results.prizes.fifth,
-    shortName: STRINGS.results.prizes.fifthShort,
-    digits: 4,
+    key: 'SEVENTH',
+    name: STRINGS.results.prizes.seventh,
+    shortName: STRINGS.results.prizes.seventhShort, // 'G.7'
+    digits: 3,
     count: 1,
   },
   {
     key: 'SIXTH',
     name: STRINGS.results.prizes.sixth,
-    shortName: STRINGS.results.prizes.sixthShort,
+    shortName: STRINGS.results.prizes.sixthShort, // 'G.6'
     digits: 4,
     count: 3,
   },
   {
-    key: 'SEVENTH',
-    name: STRINGS.results.prizes.seventh,
-    shortName: STRINGS.results.prizes.seventhShort,
-    digits: 3,
+    key: 'FIFTH',
+    name: STRINGS.results.prizes.fifth,
+    shortName: STRINGS.results.prizes.fifthShort, // 'G.5'
+    digits: 4,
     count: 1,
   },
   {
-    key: 'EIGHTH',
-    name: STRINGS.results.prizes.eighth,
-    shortName: STRINGS.results.prizes.eighthShort,
-    digits: 2,
+    key: 'FOURTH',
+    name: STRINGS.results.prizes.fourth,
+    shortName: STRINGS.results.prizes.fourthShort, // 'G.4'
+    digits: 5,
+    count: 7,
+  },
+  {
+    key: 'THIRD',
+    name: STRINGS.results.prizes.third,
+    shortName: STRINGS.results.prizes.thirdShort, // 'G.3'
+    digits: 5,
+    count: 2,
+  },
+  {
+    key: 'SECOND',
+    name: STRINGS.results.prizes.second,
+    shortName: STRINGS.results.prizes.secondShort, // 'G.2'
+    digits: 5,
     count: 1,
+  },
+  {
+    key: 'FIRST',
+    name: STRINGS.results.prizes.first,
+    shortName: STRINGS.results.prizes.firstShort, // 'G.1'
+    digits: 5,
+    count: 1,
+  },
+  {
+    key: 'SPECIAL',
+    name: STRINGS.results.prizes.special,
+    shortName: STRINGS.results.prizes.specialShort, // 'ĐB'
+    digits: 6,
+    count: 1,
+    highlight: true,
   },
 ];
 
 export interface DrawTableProps {
   prizes?: Record<string, string[]> | null;
   numbers?: Record<string, string[]> | null;
+  order?: DrawTableOrder;
   testID?: string;
 }
 
 export const DrawTable: React.FC<DrawTableProps> = ({
   prizes,
   numbers,
+  order: propOrder,
   testID = 'draw-table',
 }) => {
   const { colors } = useTheme();
   const data = numbers || prizes;
+  const currentOrder = propOrder || getSettings().drawTableOrder || 'g8_to_special';
+  const tiers = currentOrder === 'special_to_g8' ? [...DRAW_TIERS].reverse() : DRAW_TIERS;
 
   return (
     <View
@@ -102,18 +110,22 @@ export const DrawTable: React.FC<DrawTableProps> = ({
         borderColor: colors.border,
       }}
     >
-      {DRAW_TIERS.map((tier, index) => {
+      {tiers.map((tier, index) => {
         const tierNumbers = data?.[tier.key] || [];
         const isSpecial = tier.highlight;
-        const isLastRow = index === DRAW_TIERS.length - 1;
+        const isLastRow = index === tiers.length - 1;
         const numbersString =
           tierNumbers.length > 0
             ? tierNumbers.join(', ')
             : STRINGS.results.noDataYet;
 
+        const specialColor = colors.special || colors.primary;
+        const specialTint = colors.specialTint || `${specialColor}15`;
+
         return (
           <View
             key={tier.key}
+            testID={`draw-table-row-${index}`}
             accessible
             accessibilityRole="text"
             accessibilityLabel={`${tier.name}: ${numbersString}`}
@@ -122,9 +134,9 @@ export const DrawTable: React.FC<DrawTableProps> = ({
               {
                 borderColor: colors.border,
                 backgroundColor: isSpecial
-                  ? `${colors.primary}0D` // Subtle primary tint for Special Prize
+                  ? `${specialColor}0D` // Subtle tint for Special Prize
                   : index % 2 === 1
-                    ? `${colors.border}22` // Alternating subtle striping
+                    ? `${colors.border}15` // Alternating subtle striping
                     : 'transparent',
               },
               isLastRow && styles.noBorderBottom,
@@ -132,21 +144,19 @@ export const DrawTable: React.FC<DrawTableProps> = ({
           >
             {/* Left Label Column */}
             <View
-              className="w-24 py-3 px-3 justify-center items-center border-r"
+              className="w-20 py-3 px-2 justify-center items-center border-r"
               style={{
                 borderColor: colors.border,
-                backgroundColor: isSpecial
-                  ? `${colors.primary}15`
-                  : 'transparent',
+                backgroundColor: isSpecial ? specialTint : 'transparent',
               }}
             >
               <Text
                 className={`text-xs text-center ${isSpecial ? 'font-bold' : 'font-medium'}`}
                 style={{
-                  color: isSpecial ? colors.primary : colors.textMuted,
+                  color: isSpecial ? specialColor : colors.textMuted,
                 }}
               >
-                {tier.name}
+                {tier.shortName}
               </Text>
             </View>
 
@@ -164,7 +174,7 @@ export const DrawTable: React.FC<DrawTableProps> = ({
                           : 'text-lg'
                     }`}
                     style={{
-                      color: isSpecial ? colors.primary : colors.textMain,
+                      color: isSpecial ? specialColor : colors.textMain,
                       fontVariant: ['tabular-nums'],
                     }}
                   >

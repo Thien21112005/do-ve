@@ -27,6 +27,7 @@ describe('SettingsScreen (Cài đặt)', () => {
     expect(getByTestId('settings-theme-light')).toBeTruthy();
     expect(getByTestId('settings-theme-dark')).toBeTruthy();
     expect(getByTestId('settings-celebration-switch')).toBeTruthy();
+    expect(getByTestId('settings-draw-order-segmented')).toBeTruthy();
     expect(getByTestId('settings-haptics-switch')).toBeTruthy();
     expect(getByTestId('settings-reminder-switch')).toBeTruthy();
   });
@@ -59,6 +60,22 @@ describe('SettingsScreen (Cài đặt)', () => {
     await waitFor(async () => {
       const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
       expect(JSON.parse(stored!).celebrationEnabled).toBe(false);
+    });
+  });
+
+  it('changes drawTableOrder via Segmented control and persists to AsyncStorage (T10.38)', async () => {
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    expect(getSettings().drawTableOrder).toBe('g8_to_special');
+    const specialFirstBtn = getByTestId('settings-draw-order-special-first');
+    fireEvent.press(specialFirstBtn);
+
+    expect(getSettings().drawTableOrder).toBe('special_to_g8');
+
+    await waitFor(async () => {
+      const stored = await AsyncStorage.getItem(SETTINGS_STORAGE_KEY);
+      expect(stored).not.toBeNull();
+      expect(JSON.parse(stored!).drawTableOrder).toBe('special_to_g8');
     });
   });
 

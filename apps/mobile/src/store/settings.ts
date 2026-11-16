@@ -3,12 +3,15 @@ import { useSyncExternalStore } from 'react';
 
 export const SETTINGS_STORAGE_KEY = 'dove.settings.v1';
 
+export type DrawTableOrder = 'g8_to_special' | 'special_to_g8';
+
 export interface AppSettings {
   celebrationEnabled: boolean;
   hapticsEnabled: boolean;
   themeMode: 'system' | 'light' | 'dark';
   reminderEnabled: boolean;
   autoSubmitEnabled: boolean;
+  drawTableOrder: DrawTableOrder;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -17,6 +20,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   themeMode: 'system',
   reminderEnabled: false,
   autoSubmitEnabled: true,
+  drawTableOrder: 'g8_to_special',
 };
 
 let currentSettings: AppSettings = { ...DEFAULT_SETTINGS };
