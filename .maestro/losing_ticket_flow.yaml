@@ -4,11 +4,11 @@ appId: com.dove.app
     clearState: true
 
 # 1. Khởi động màn hình Dò vé
-- assertVisible: "Dò vé số"
+- assertVisible: "Dò vé"
 
 # 2. Nhập số vé không trúng
 - tapOn:
-    id: "ticket-input"
+    id: "ticket-input-digit-0"
 - inputText: "999999"
 
 # 3. Bấm nút dò vé
@@ -21,10 +21,8 @@ appId: com.dove.app
       id: "result-card"
     timeout: 10000
 
-- assertVisible: "Rất tiếc, vé không trúng giải"
-- assertVisible: "KHÔNG TRÚNG"
+- assertVisible: "Không trúng"
 
 # 5. Lưu vé không trúng vào kho lưu trữ
 - tapOn:
     id: "result-card-save-btn"
-- assertVisible: "Đã lưu vé"

@@ -4,21 +4,16 @@ appId: com.dove.app
     clearState: true
 
 # 1. Khởi động màn hình Dò vé
-- assertVisible: "Dò vé số"
+- assertVisible: "Dò vé"
 
 # 2. Nhập số vé chưa đủ 6 chữ số (ví dụ: 123)
 - tapOn:
-    id: "ticket-input"
+    id: "ticket-input-digit-0"
 - inputText: "123"
 
-# 3. Bấm nút dò vé
-- tapOn:
-    id: "check-ticket-button"
+# 3. Nút dò vé ở trạng thái disabled hiển thị thông báo validation
+- assertVisible: "Số vé phải có đủ 6 chữ số (hiện có 3/6)"
 
-# 4. Kiểm tra cảnh báo validation xuất hiện
-- assertVisible:
-    id: "ticket-validation-error"
-
-# 5. Thẻ kết quả tuyệt đối không được hiển thị khi input không hợp lệ
+# 4. Thẻ kết quả tuyệt đối không được hiển thị khi input không hợp lệ
 - assertNotVisible:
     id: "result-card"

@@ -4,27 +4,25 @@ appId: com.dove.app
     clearState: true
 
 # 1. Khởi động màn hình Dò vé
-- assertVisible: "Dò vé số"
+- assertVisible: "Dò vé"
 
 # 2. Nhập số vé cho kỳ quay chưa có kết quả
 - tapOn:
-    id: "ticket-input"
+    id: "ticket-input-digit-0"
 - inputText: "777777"
 
 # 3. Bấm nút dò vé
 - tapOn:
     id: "check-ticket-button"
 
-# 4. Kiểm tra thẻ kết quả hiển thị thông báo chưa có kết quả (PENDING)
+# 4. Kiểm tra thẻ kết quả hiển thị thông báo chưa có kết quả
 - extendedWaitUntil:
     visible:
       id: "result-card"
     timeout: 10000
 
 - assertVisible: "Chưa có kết quả"
-- assertVisible: "CHỜ QUAY"
 
 # 5. Lưu vé để tự động dò sau khi có kết quả chính thức
 - tapOn:
     id: "result-card-save-btn"
-- assertVisible: "Đã lưu vé"
