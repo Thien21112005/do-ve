@@ -212,9 +212,12 @@ export function mapBatchResponseToUi(
 }
 
 export function mapDrawResponseToUi(
-  dto: DrawResponse,
+  dto?: DrawResponse | null,
   stationsList?: StationResponse[],
 ): UiDrawView {
+  if (!dto) {
+    return null as any;
+  }
   const stationCode = dto.stationCode || '';
   const stationName = dto.stationName || getStationName(stationCode, stationsList);
   const numbers: Record<string, string[]> = dto.numbers || {};

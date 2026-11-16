@@ -5,11 +5,11 @@ import { mapDrawResponseToUi, type UiDrawView } from '@/api/mappers';
 export const DRAW_QUERY_KEY = 'draw' as const;
 
 export function useDraw(date: string, station: string) {
-  const query = useQuery<UiDrawView, Error>({
+  const query = useQuery<UiDrawView | null, Error>({
     queryKey: [DRAW_QUERY_KEY, date, station],
     queryFn: async () => {
       const raw = await fetchDraw(date, station);
-      return mapDrawResponseToUi(raw);
+      return raw ? mapDrawResponseToUi(raw) : null;
     },
     enabled: Boolean(date && station),
     staleTime: 1000 * 60 * 30, // 30 minutes

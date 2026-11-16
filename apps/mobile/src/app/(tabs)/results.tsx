@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
   TextInput,
@@ -18,10 +17,11 @@ import {
   DrawTable,
   MultiStationDrawTable,
   Segmented,
+  DrawTableSkeleton,
 } from '@/components';
 import { useDraw, useSchedule, useDailyDraws } from '@/hooks';
 import { useTheme } from '@/theme';
-import { formatDateVN } from '@/lib/format';
+import { formatDateVN, getEstimatedDrawTimeMessage } from '@/lib/format';
 import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 import { getApiErrorMessage } from '@/api/client';
@@ -206,15 +206,7 @@ export default function ResultsScreen() {
         <View testID="results-draw-container" className="mt-4 mx-4">
           {viewMode === 'all' ? (
             showLoading ? (
-              <View className="py-12 items-center justify-center">
-                <ActivityIndicator size="large" color={colors.primary} />
-                <Text
-                  className="mt-3 text-sm"
-                  style={{ color: colors.textMuted }}
-                >
-                  {STRINGS.results.loading}
-                </Text>
-              </View>
+              <DrawTableSkeleton testID="draw-table-skeleton" />
             ) : isDailyError ? (
               <View
                 testID="results-error-container"
@@ -267,8 +259,24 @@ export default function ResultsScreen() {
                 >
                   {STRINGS.results.emptyTitle}
                 </Text>
+                {/* Estimated time notice (T10.42) */}
+                <View
+                  testID="results-empty-estimated-time"
+                  className="mt-2.5 px-3 py-1.5 rounded-lg border flex-row items-center"
+                  style={{
+                    backgroundColor: colors.surfaceSubtle,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: colors.pending }}
+                  >
+                    {getEstimatedDrawTimeMessage(selectedDate)}
+                  </Text>
+                </View>
                 <Text
-                  className="text-xs text-center mt-1 leading-5"
+                  className="text-xs text-center mt-2 leading-5"
                   style={{ color: colors.textMuted }}
                 >
                   {STRINGS.results.emptyMessage(formattedDate)}
@@ -306,15 +314,7 @@ export default function ResultsScreen() {
               </View>
             )
           ) : showLoading ? (
-            <View className="py-12 items-center justify-center">
-              <ActivityIndicator size="large" color={colors.primary} />
-              <Text
-                className="mt-3 text-sm"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.results.loading}
-              </Text>
-            </View>
+            <DrawTableSkeleton testID="draw-table-skeleton" />
           ) : isError ? (
             <View
               testID="results-error-container"
@@ -348,6 +348,29 @@ export default function ResultsScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+          ) : !selectedStation ? (
+            <View
+              testID="results-no-station-container"
+              className="p-6 rounded-2xl border items-center text-center mt-2"
+              style={{
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              }}
+            >
+              <Icon name="mapPin" size={32} color={colors.primary} />
+              <Text
+                className="text-base font-bold mt-2.5 text-center"
+                style={{ color: colors.textMain }}
+              >
+                {STRINGS.results.noStationSelectedTitle}
+              </Text>
+              <Text
+                className="text-xs text-center mt-1.5 leading-5 px-2"
+                style={{ color: colors.textMuted }}
+              >
+                {STRINGS.results.noStationSelectedDesc(formattedDate)}
+              </Text>
+            </View>
           ) : !draw ? (
             <View
               testID="results-empty-container"
@@ -364,8 +387,24 @@ export default function ResultsScreen() {
               >
                 {STRINGS.results.emptyTitle}
               </Text>
+              {/* Estimated time notice (T10.42) */}
+              <View
+                testID="results-empty-estimated-time"
+                className="mt-2.5 px-3 py-1.5 rounded-lg border flex-row items-center"
+                style={{
+                  backgroundColor: colors.surfaceSubtle,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: colors.pending }}
+                >
+                  {getEstimatedDrawTimeMessage(selectedDate)}
+                </Text>
+              </View>
               <Text
-                className="text-xs text-center mt-1 leading-5"
+                className="text-xs text-center mt-2 leading-5"
                 style={{ color: colors.textMuted }}
               >
                 {STRINGS.results.emptyMessage(formattedDate)}

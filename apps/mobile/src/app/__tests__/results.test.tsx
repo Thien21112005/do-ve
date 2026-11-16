@@ -251,4 +251,18 @@ describe('ResultsScreen', () => {
       expect(queryByTestId('draw-number-matched')).toBeNull();
     });
   });
+
+  it('renders distinct empty state with estimated draw time badge when draw is null (T10.42)', async () => {
+    (apiDraws.fetchDraw as jest.Mock).mockResolvedValue(null);
+
+    const { getByTestId, getByText } = await render(<ResultsScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('results-empty-container')).toBeTruthy();
+      expect(getByTestId('results-empty-estimated-time')).toBeTruthy();
+      expect(getByText(STRINGS.results.emptyTitle)).toBeTruthy();
+    });
+  });
 });

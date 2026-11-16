@@ -138,3 +138,72 @@ export function HomeDrawsSkeleton({
   );
 }
 
+export interface DrawTableSkeletonProps {
+  testID?: string;
+  rowCount?: number;
+}
+
+export function DrawTableSkeleton({
+  testID = 'draw-table-skeleton',
+  rowCount = 9,
+}: DrawTableSkeletonProps) {
+  const { colors } = useTheme();
+
+  return (
+    <View
+      testID={testID}
+      className="p-4 rounded-2xl border"
+      style={{
+        backgroundColor: colors.surface,
+        borderColor: colors.border,
+      }}
+    >
+      {/* Header bar */}
+      <View
+        className="flex-row items-center justify-between pb-3 border-b"
+        style={{ borderColor: colors.border }}
+      >
+        <View>
+          <Skeleton width={140} height={18} borderRadius={6} />
+          <View className="mt-1.5">
+            <Skeleton width={90} height={12} borderRadius={4} />
+          </View>
+        </View>
+        <Skeleton width={80} height={22} borderRadius={11} />
+      </View>
+
+      {/* Table grid skeleton */}
+      <View
+        className="mt-3 rounded-2xl border overflow-hidden"
+        style={{ borderColor: colors.border }}
+      >
+        {Array.from({ length: rowCount }).map((_, rIdx) => (
+          <View
+            key={`skel-row-${rIdx}`}
+            className="flex-row items-center border-b py-2.5 px-3"
+            style={{
+              borderColor: colors.border,
+              borderBottomWidth: rIdx === rowCount - 1 ? 0 : 1,
+            }}
+          >
+            <View className="w-16 items-center">
+              <Skeleton width={36} height={14} borderRadius={4} />
+            </View>
+            <View
+              className="mx-2 w-[1px] h-6"
+              style={{ backgroundColor: colors.border }}
+            />
+            <View className="flex-1 flex-row justify-center items-center gap-2">
+              <Skeleton
+                width={rIdx === rowCount - 1 ? 120 : 80}
+                height={18}
+                borderRadius={4}
+              />
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+

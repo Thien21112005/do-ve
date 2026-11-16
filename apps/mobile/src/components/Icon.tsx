@@ -25,6 +25,7 @@ import {
   ListOrdered,
   ScanSearch,
   Clipboard,
+  MapPin,
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react-native';
@@ -55,6 +56,7 @@ export const iconMap = {
   listOrdered: ListOrdered,
   scanSearch: ScanSearch,
   clipboard: Clipboard,
+  mapPin: MapPin,
 } as const;
 
 export type IconName = keyof typeof iconMap;

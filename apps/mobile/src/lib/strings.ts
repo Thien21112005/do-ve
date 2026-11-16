@@ -148,6 +148,9 @@ export const STRINGS = {
     stationLabel: 'Đài mở thưởng',
     loading: 'Đang tải kết quả...',
     emptyTitle: 'Chưa có kết quả mở thưởng',
+    noStationSelectedTitle: 'Chưa chọn đài mở thưởng',
+    noStationSelectedDesc: (date: string) =>
+      `Vui lòng chọn một đài quay thưởng ngày ${date} để xem chi tiết kết quả.`,
     emptyMessage: (date: string) =>
       `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có từ 16h15 đến 16h35 hàng ngày.`,
     statusFinal: 'ĐÃ CÔNG BỐ',
