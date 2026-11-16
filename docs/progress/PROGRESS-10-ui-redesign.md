@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 50 / 62 task hoàn thành
+- **Tổng quan:** 51 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -58,7 +58,7 @@
 | T10.48 | Màn/Sheet chi tiết vé | DONE | 33dcbce | 2026-11-16 | Chạm vào vé mở bottom sheet chi tiết (số tabular 32px, đài, ngày), sửa và lưu ghi chú cá nhân (field note), nút xem KQ kỳ này, dò lại, xoá |
 | T10.49 | Sao lưu/Khôi phục chuyển vào menu | DONE | 056180a | 2026-11-16 | Đưa 3 nút thao tác (sao lưu/khôi phục/xoá tất cả) vào menu ba chấm trên header, nút xoá màu đỏ destructive, làm sạch header |
 | T10.50 | Trạng thái rỗng có minh hoạ | DONE | df5780a | 2026-11-16 | Thêm component TicketEmptyIllustration chuẩn SVG tờ vé giấy ngà ấm, nút chính 'Dò vé đầu tiên', nút phụ 'Khôi phục từ file' |
-| T10.51 | Chỉ báo đang tự dò lại vé chờ | TODO | | | |
+| T10.51 | Chỉ báo đang tự dò lại vé chờ | DONE | 65e1677 | 2026-11-16 | Hiển thị indicator 'Đang cập nhật N vé chờ…' kèm ActivityIndicator khi recheck và banner 'N vé vừa có kết quả' khi xong |
 | T10.52 | Màn Thêm dạng danh sách native | TODO | | | |
 | T10.53 | Lịch quay thưởng bấm được và đúng | TODO | | | |
 | T10.54 | Cài đặt: switch chuẩn, nhóm rõ | TODO | | | |
