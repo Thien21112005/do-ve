@@ -1,7 +1,7 @@
 # PROGRESS 10 — Cải thiện giao diện mobile (Impeccable)
 
 - **Plan:** [`plans/PLAN-10-ui-redesign.md`](../plans/PLAN-10-ui-redesign.md)
-- **Tổng quan:** 39 / 62 task hoàn thành
+- **Tổng quan:** 40 / 62 task hoàn thành
 - **Bắt đầu:** 2026-11-15  |  **Hoàn thành:** —
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -46,7 +46,7 @@
 | T10.36 | Ô nhập hàng loạt dễ dùng | DONE | 150c866 | 2026-11-16 | Danh sách chip token hoá nhận diện tức thì (hợp lệ / sai định dạng / trùng), nút Dán từ clipboard, bộ đếm K/20 vé, bàn phím số có phím xuống dòng |
 | T10.37 | Khoảnh khắc trúng thưởng tinh tế (thay toast 🎉) | DONE | 1f09c1d | 2026-11-16 | Thay overlay bằng in-card reveal (lật số stagger 60ms, count-up 600ms, haptic success 1 lần, a11y announcement, sửa copy Cài đặt) |
 | T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | DONE | f15dad2 | 2026-11-16 | Đổi thứ tự mặc định G8→ĐB khớp tờ dò giấy, nhãn gọn G.8…ĐB, tuỳ chọn Cài đặt drawTableOrder Segmented |
-| T10.39 | Bảng nhiều cột như XSMN in | TODO | | | |
+| T10.39 | Bảng nhiều cột như XSMN in | DONE | b802ef8 | 2026-11-16 | Chế độ xem 'Cả ngày' 3-4 cột đài cạnh nhau (TP.HCM, Đồng Tháp, Cà Mau/Long An) cuộn ngang, giữ chế độ 'Từng đài' |
 | T10.40 | Ô "dò nhanh trong bảng" | TODO | | | |
 | T10.41 | Trình bày số trong bảng | TODO | | | |
 | T10.42 | Trạng thái Kết quả tách rõ | TODO | | | |
@@ -120,6 +120,7 @@
 - 2026-11-16 | T10.36 | Ô nhập hàng loạt dễ dùng | Nâng cấp toàn diện BatchTicketInput: (1) Danh sách chip token hoá (batch-token-chips) hiển thị tức thì mọi vé được nhận diện phân loại rõ ràng (hợp lệ nền surfaceSubtle / sai định dạng kèm nhãn (sai) / trùng lặp kèm nhãn (trùng)); (2) Thêm nút 'Dán' từ clipboard tiện lợi trên thanh header ô nhập; (3) Bộ đếm số lượng vé k/20; (4) Bàn phím số hỗ trợ xuống dòng tự nhiên; (5) 11 unit tests BatchTicketInput và 3 tests Icon xanh 100%.
 - 2026-11-16 | T10.37 | Khoảnh khắc trúng thưởng tinh tế (thay toast 🎉) | Thay overlay toàn màn hình bằng in-card reveal trên ResultCard: lật số khớp stagger 60ms spring nhẹ, tổng tiền đếm lên 600ms (animateCountUp), haptics.success rung 1 lần, thông báo a11y đầy đủ ('Chúc mừng, vé trúng N giải, tổng X đồng'), tôn trọng Reduce Motion, sửa copy Cài đặt chuẩn mực; hoàn tất 100% Nhóm D (15/15 tasks).
 - 2026-11-16 | T10.38 | Bảng kết quả theo thứ tự tờ dò (G8 → ĐB) | Chuyển đổi thứ tự bảng kết quả DrawTable mặc định từ Giải 8 đến Đặc biệt (G8 → ĐB) theo đúng thói quen dò vé giấy truyền thống; nhãn giải viết gọn 'G.8 … ĐB', giải Đặc biệt tô màu đỏ son special; bổ sung tuỳ chọn thứ tự trong Cài đặt bằng Segmented control và hỗ trợ prop order; 28 unit tests xanh 100%.
+- 2026-11-16 | T10.39 | Bảng nhiều cột như XSMN in | Xây dựng MultiStationDrawTable hiển thị trọn vẹn 3-4 đài mở thưởng cùng ngày cạnh nhau dạng bảng nhiều cột khớp tờ kết quả XSMN truyền thống; hỗ trợ cuộn ngang mượt mà trên màn hình hẹp, tôn trọng thứ tự giải G8 -> ĐB; bổ sung hook useDailyDraws và bộ chọn Segmented 'Từng đài' / 'Cả ngày' trên ResultsScreen; 17 unit tests xanh 100%.
 
 ## Vấn đề mở
 
