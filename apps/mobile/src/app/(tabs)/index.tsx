@@ -446,7 +446,8 @@ export default function HomeScreen() {
                       testID="home-save-ticket-btn"
                       onPress={handleSaveResultTicket}
                       disabled={saved}
-                      className="px-3 py-1.5 rounded-lg mr-2 border"
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      className="px-3 py-1.5 rounded-lg mr-2 border min-h-[44px] justify-center items-center"
                       style={{
                         backgroundColor: saved ? colors.surfaceSubtle : colors.surface,
                         borderColor: colors.border,
@@ -463,11 +464,12 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     testID="home-reset-check-btn"
                     onPress={handleResetQuickCheck}
-                    className="px-3 py-1.5 rounded-lg"
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    className="px-3 py-1.5 rounded-lg min-h-[44px] justify-center items-center"
                     style={{ backgroundColor: colors.primary }}
                   >
                     <Text className="text-xs font-semibold text-white">
-                      Dò vé khác
+                      {STRINGS.check.checkAgain}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -552,13 +554,17 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Pressable
+              testID="home-view-all-draws-btn"
+              accessibilityRole="button"
+              accessibilityLabel={STRINGS.home.viewAll}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               onPress={() =>
                 router.push({
                   pathname: '/(tabs)/results',
                   params: draws[0]?.drawDate ? { date: draws[0].drawDate } : undefined,
                 })
               }
-              className="flex-row items-center"
+              className="flex-row items-center min-h-[44px] justify-center"
             >
               <Text
                 className="text-xs font-semibold mr-0.5"

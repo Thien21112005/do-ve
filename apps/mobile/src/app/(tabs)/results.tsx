@@ -267,7 +267,8 @@ export default function ResultsScreen() {
                 <TouchableOpacity
                   testID="results-error-retry-btn"
                   onPress={() => refetchDaily()}
-                  className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center"
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center justify-center min-h-[44px]"
                   style={{
                     borderColor: colors.error,
                     backgroundColor: `${colors.error}15`,
@@ -388,7 +389,8 @@ export default function ResultsScreen() {
               <TouchableOpacity
                 testID="results-error-retry-btn"
                 onPress={() => refetch()}
-                className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                className="mt-3.5 px-4 py-2 rounded-xl border flex-row items-center justify-center min-h-[44px]"
                 style={{
                   borderColor: colors.error,
                   backgroundColor: `${colors.error}15`,

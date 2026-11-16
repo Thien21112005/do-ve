@@ -147,11 +147,43 @@ describe('Accessibility (a11y) Verification', () => {
   });
 
   it('OfflineBanner has alert role and polite live region', async () => {
-    const { getByTestId } = await render(<OfflineBanner isOffline={true} />);
+    const { getByTestId } = await render(<OfflineBanner isOffline={true} onRetry={jest.fn()} />);
     const banner = getByTestId('offline-banner');
 
     expect(banner.props.accessibilityRole).toBe('alert');
     expect(banner.props.accessibilityLiveRegion).toBe('polite');
+
+    const retryBtn = getByTestId('offline-banner-retry-btn');
+    expect(retryBtn.props.hitSlop).toBeDefined();
+  });
+
+  it('enforces min 44pt touch targets or hitSlop on ResultCard action buttons (T10.58)', async () => {
+    const pendingResult: any = {
+      ticket: '777888',
+      stationCode: 'TPHCM',
+      station: 'TPHCM',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'RESULT_NOT_AVAILABLE',
+      won: false,
+      wins: [],
+      totalAmount: 0,
+      totalPrize: 0,
+    };
+
+    const { getByTestId } = await render(
+      <ResultCard
+        result={pendingResult}
+        onSaveTicket={jest.fn()}
+        onCheckAgain={jest.fn()}
+      />,
+    );
+
+    const saveBtn = getByTestId('result-card-save-btn');
+    const retryBtn = getByTestId('result-card-retry-btn');
+
+    expect(saveBtn.props.hitSlop).toBeDefined();
+    expect(retryBtn.props.hitSlop).toBeDefined();
   });
 
   it('CheckScreen has accessible headers, mode selector, and action buttons', async () => {

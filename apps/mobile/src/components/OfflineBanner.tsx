@@ -55,7 +55,8 @@ export function OfflineBanner({
         <TouchableOpacity
           testID="offline-banner-retry-btn"
           onPress={onRetry}
-          className="px-2.5 py-1 rounded-lg border flex-row items-center"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          className="px-2.5 py-1.5 rounded-lg border flex-row items-center justify-center min-h-[44px]"
           style={{
             borderColor: colors.pending,
             backgroundColor: `${colors.pending}15`,

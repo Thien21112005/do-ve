@@ -39,6 +39,7 @@ export function ResultCard({
   testID = 'result-card',
 }: ResultCardProps) {
   const { colors } = useTheme();
+  const [reduceMotion, setReduceMotion] = useState(false);
   const isPending = result.status === 'RESULT_NOT_AVAILABLE';
   const isWon = !isPending && Boolean(result.won);
 
@@ -46,6 +47,23 @@ export function ResultCard({
   const translateY = useSharedValue(12);
 
   useEffect(() => {
+    let isMounted = true;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((enabled) => {
+        if (isMounted) setReduceMotion(enabled);
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      opacity.value = 1;
+      translateY.value = 0;
+      return;
+    }
     opacity.value = withTiming(1, {
       duration: 250,
       easing: Easing.out(Easing.ease),
@@ -54,7 +72,7 @@ export function ResultCard({
       duration: 250,
       easing: Easing.out(Easing.ease),
     });
-  }, [opacity, translateY]);
+  }, [opacity, translateY, reduceMotion]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -221,7 +239,7 @@ export function ResultCard({
             </Text>
           </View>
 
-          {/* Primary Action: Lưu để tự dò lại (T10.33) */}
+          {/* Primary Action: Lưu để tự dò lại (T10.33 & T10.58) */}
           {onSaveTicket && (
             <Pressable
               testID="result-card-save-btn"
@@ -229,7 +247,8 @@ export function ResultCard({
                 haptics.light();
                 onSaveTicket(result);
               }}
-              className="py-3 px-4 rounded-xl flex-row items-center justify-center space-x-2 shadow-xs"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="py-3 px-4 rounded-xl flex-row items-center justify-center space-x-2 shadow-xs min-h-[44px]"
               style={{
                 backgroundColor: isSaved ? `${colors.win}15` : colors.primary,
                 borderWidth: isSaved ? 1 : 0,
@@ -254,7 +273,7 @@ export function ResultCard({
             </Pressable>
           )}
 
-          {/* Secondary Action: Dò lại (T10.33) */}
+          {/* Secondary Action: Dò lại (T10.33 & T10.58) */}
           {onCheckAgain && (
             <Pressable
               testID="result-card-retry-btn"
@@ -262,7 +281,8 @@ export function ResultCard({
                 haptics.light();
                 onCheckAgain();
               }}
-              className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border min-h-[44px]"
               style={({ pressed }) => ({
                 borderColor: colors.border,
                 backgroundColor: pressed ? colors.surfaceSubtle : colors.surface,
@@ -375,7 +395,8 @@ export function ResultCard({
             haptics.light();
             onSaveTicket(result);
           }}
-          className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center space-x-2 border"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center space-x-2 border min-h-[44px]"
           style={{
             borderColor: isSaved ? colors.win : colors.border,
             backgroundColor: isSaved ? `${colors.win}10` : colors.surface,
