@@ -8,6 +8,35 @@ export interface ScreenProps extends ViewProps {
   safe?: boolean;
   edges?: Edge[];
   children?: React.ReactNode;
+  contentMaxWidth?: number;
+}
+
+export interface ResponsiveContainerProps extends ViewProps {
+  maxWidth?: number;
+  children?: React.ReactNode;
+}
+
+/**
+ * ResponsiveContainer for large screens / foldable / tablet (T10.61).
+ * Constrains content width to maxWidth (default 560pt) and centers it.
+ */
+export function ResponsiveContainer({
+  maxWidth = 560,
+  style,
+  children,
+  ...props
+}: ResponsiveContainerProps) {
+  return (
+    <View
+      style={[
+        { width: '100%', maxWidth, alignSelf: 'center' },
+        style,
+      ]}
+      {...props}
+    >
+      {children}
+    </View>
+  );
 }
 
 /**
@@ -17,6 +46,7 @@ export interface ScreenProps extends ViewProps {
 export function Screen({
   safe = true,
   edges = ['top', 'left', 'right'],
+  contentMaxWidth,
   style,
   children,
   ...props
@@ -32,7 +62,13 @@ export function Screen({
   const content = (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      {children}
+      {contentMaxWidth ? (
+        <ResponsiveContainer maxWidth={contentMaxWidth} style={{ flex: 1 }}>
+          {children}
+        </ResponsiveContainer>
+      ) : (
+        children
+      )}
     </>
   );
 

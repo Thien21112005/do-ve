@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon, ListRow } from '@/components';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 import { CURRENT_APP_VERSION } from '@/lib/version';
 
@@ -18,7 +18,13 @@ export default function MoreScreen() {
       className="flex-1 bg-slate-50 dark:bg-slate-900"
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 40,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
         className="flex-1 px-4 pt-4"
       >
         <Text

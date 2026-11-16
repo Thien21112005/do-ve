@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/components';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 import {
   weekdayVN,
@@ -35,7 +35,13 @@ export default function ScheduleScreen() {
       style={{ backgroundColor: colors.background }}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 40,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
         className="flex-1 px-4 pt-3"
       >
         {/* Info Banner */}

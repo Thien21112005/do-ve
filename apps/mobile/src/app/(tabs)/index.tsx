@@ -16,7 +16,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Icon, OfflineBanner, HomeDrawsSkeleton } from '@/components';
 import { useLatestDraws, useCheckTicket } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import { formatDateVN, formatCurrency } from '@/lib/format';
 import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
@@ -177,7 +177,13 @@ export default function HomeScreen() {
     >
       <ScrollView
         testID="home-scroll-view"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 40,
+          width: '100%',
+          maxWidth: layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
         className="flex-1"
         refreshControl={
           <RefreshControl

@@ -21,7 +21,7 @@ import {
   DrawTableSkeleton,
 } from '@/components';
 import { useDraw, useSchedule, useDailyDraws } from '@/hooks';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import {
   formatDateVN,
   getEstimatedDrawTimeMessage,
@@ -134,7 +134,13 @@ export default function ResultsScreen() {
     >
       <ScrollView
         testID="results-scroll-view"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: 40,
+          width: '100%',
+          maxWidth: viewMode === 'all' ? layout.tableMaxWidth : layout.contentMaxWidth,
+          alignSelf: 'center',
+        }}
         className="flex-1"
         refreshControl={
           <RefreshControl

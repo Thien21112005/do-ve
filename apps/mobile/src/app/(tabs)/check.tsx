@@ -26,7 +26,7 @@ import {
   BatchResultList,
   Segmented,
 } from '@/components';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
@@ -346,7 +346,13 @@ export default function CheckScreen() {
           ref={scrollViewRef}
           testID="check-scroll-view"
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 32 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingBottom: 32,
+            width: '100%',
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
+          }}
           className="flex-1"
         >
           {/* Offline indicator banner */}
@@ -569,51 +575,53 @@ export default function CheckScreen() {
             borderColor: colors.border,
           }}
         >
-          <TouchableOpacity
-            testID="check-ticket-button"
-            disabled={!isFormValid}
-            onPress={handleSubmit}
-            accessibilityRole="button"
-            accessibilityLabel={
-              mode === 'single'
-                ? STRINGS.check.accessibilityCheckBtnSingle
-                : STRINGS.check.accessibilityCheckBtnBatch
-            }
-            accessibilityState={{ disabled: !isFormValid }}
-            className="w-full rounded-xl items-center justify-center flex-row shadow-sm"
-            style={{
-              height: 52,
-              minHeight: 52,
-              backgroundColor: isFormValid ? colors.primary : colors.surfaceSubtle,
-              borderColor: isFormValid ? colors.primary : colors.border,
-              borderWidth: 1,
-              opacity: isFormValid ? 1 : 0.85,
-            }}
-          >
-            {activeLoading && (
-              <ActivityIndicator
-                size="small"
-                color="#ffffff"
-                className="mr-2"
-              />
-            )}
-            <Text
-              className="text-base font-bold"
+          <View style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}>
+            <TouchableOpacity
+              testID="check-ticket-button"
+              disabled={!isFormValid}
+              onPress={handleSubmit}
+              accessibilityRole="button"
+              accessibilityLabel={
+                mode === 'single'
+                  ? STRINGS.check.accessibilityCheckBtnSingle
+                  : STRINGS.check.accessibilityCheckBtnBatch
+              }
+              accessibilityState={{ disabled: !isFormValid }}
+              className="w-full rounded-xl items-center justify-center flex-row shadow-sm"
               style={{
-                color: isFormValid ? '#ffffff' : colors.textMuted,
+                height: 52,
+                minHeight: 52,
+                backgroundColor: isFormValid ? colors.primary : colors.surfaceSubtle,
+                borderColor: isFormValid ? colors.primary : colors.border,
+                borderWidth: 1,
+                opacity: isFormValid ? 1 : 0.85,
               }}
             >
-              {activeLoading
-                ? STRINGS.check.btnChecking
-                : !isFormValid && mode === 'single' && ticketNumber.length < 6
-                  ? STRINGS.check.validationIncomplete(ticketNumber.length)
-                  : !isFormValid && !selectedStation
-                    ? STRINGS.check.selectStationPrompt
-                    : mode === 'single'
-                      ? STRINGS.check.btnCheck
-                      : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}
-            </Text>
-          </TouchableOpacity>
+              {activeLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color="#ffffff"
+                  className="mr-2"
+                />
+              )}
+              <Text
+                className="text-base font-bold"
+                style={{
+                  color: isFormValid ? '#ffffff' : colors.textMuted,
+                }}
+              >
+                {activeLoading
+                  ? STRINGS.check.btnChecking
+                  : !isFormValid && mode === 'single' && ticketNumber.length < 6
+                    ? STRINGS.check.validationIncomplete(ticketNumber.length)
+                    : !isFormValid && !selectedStation
+                      ? STRINGS.check.selectStationPrompt
+                      : mode === 'single'
+                        ? STRINGS.check.btnCheck
+                        : STRINGS.check.btnCheckBatch(parsedBatch.validTickets.length)}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

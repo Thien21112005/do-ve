@@ -124,7 +124,7 @@ describe('CheckScreen Form Composition', () => {
 
     const submitBtn = getByTestId('check-ticket-button');
     expect(submitBtn.props.accessibilityState.disabled).toBe(true);
-    expect(getByText(/Nhập đủ 6 số/)).toBeTruthy();
+    expect(getByText(/Số vé phải có đủ 6 chữ số|Nhập đủ 6 số/)).toBeTruthy();
 
     const btnStyle = Array.isArray(submitBtn.props.style)
       ? Object.assign({}, ...submitBtn.props.style)

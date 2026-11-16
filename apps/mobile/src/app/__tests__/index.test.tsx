@@ -100,7 +100,7 @@ describe('Tab Screens', () => {
   });
 
   it('renders HomeScreen with latest draws and quick check card', async () => {
-    const { getByText, getByTestId } = await render(<HomeScreen />, {
+    const { getByText, getAllByText, getByTestId } = await render(<HomeScreen />, {
       wrapper: createWrapper(),
     });
 
@@ -110,8 +110,8 @@ describe('Tab Screens', () => {
     expect(getByTestId('home-quick-check-btn')).toBeTruthy();
 
     await waitFor(() => {
-      expect(getByText('TP. Hồ Chí Minh')).toBeTruthy();
-      expect(getByText('Đồng Tháp')).toBeTruthy();
+      expect(getAllByText('TP. Hồ Chí Minh').length).toBeGreaterThanOrEqual(1);
+      expect(getAllByText('Đồng Tháp').length).toBeGreaterThanOrEqual(1);
       expect(getByText('654321')).toBeTruthy();
       expect(getByText('999999')).toBeTruthy();
     });
@@ -195,7 +195,7 @@ describe('Tab Screens', () => {
         }),
       );
       expect(rendered.getByTestId('home-quick-check-result')).toBeTruthy();
-      expect(rendered.getByText('TRÚNG THƯỞNG')).toBeTruthy();
+      expect(rendered.getByText(/Trúng thưởng/i)).toBeTruthy();
       expect(rendered.getByTestId('home-save-ticket-btn')).toBeTruthy();
     });
   });

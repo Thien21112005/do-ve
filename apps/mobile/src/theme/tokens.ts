@@ -157,3 +157,13 @@ export const motion = {
   },
 } as const;
 
+/**
+ * Disciplined layout constraint tokens (T10.61):
+ * Max width 560pt on tablet / foldable screens for readable content and no awkward stretching.
+ * Table view can expand up to 720pt to utilize wider landscape space for 3-4 columns.
+ */
+export const layout = {
+  contentMaxWidth: 560,
+  tableMaxWidth: 720,
+} as const;
+

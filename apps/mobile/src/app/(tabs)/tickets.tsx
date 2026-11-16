@@ -19,7 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useSavedTickets, updateTicket } from '@/store/ticketStore';
 import { exportTicketsToJson, importTicketsFromJson } from '@/store';
-import { useTheme } from '@/theme';
+import { useTheme, layout } from '@/theme';
 import {
   Icon,
   TicketStatusBadge,
@@ -375,7 +375,10 @@ export default function TicketsScreen() {
       testID="tickets-screen"
     >
       {/* Screen Header */}
-      <View className="px-4 pt-4 pb-2 flex-row items-center justify-between">
+      <View
+        className="px-4 pt-4 pb-2 flex-row items-center justify-between"
+        style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
+      >
         <View className="flex-1 mr-2">
           <Text
             className="text-2xl font-bold mb-1"
@@ -408,7 +411,10 @@ export default function TicketsScreen() {
 
       {/* Recheck Progress & Result Banners (T10.51) */}
       {(isRechecking || recheckBannerMessage) && (
-        <View className="px-4 pt-1 pb-1">
+        <View
+          className="px-4 pt-1 pb-1"
+          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
+        >
           {isRechecking && (
             <View
               testID="pending-recheck-indicator"
@@ -459,6 +465,7 @@ export default function TicketsScreen() {
         <View
           testID="saved-tickets-empty"
           className="flex-1 items-center justify-center p-6 text-center"
+          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
         >
           <TicketEmptyIllustration testID="tickets-empty-illustration" />
           <Text
@@ -544,6 +551,9 @@ export default function TicketsScreen() {
             paddingHorizontal: 16,
             paddingTop: 8,
             paddingBottom: 40,
+            width: '100%',
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
           }}
           ListHeaderComponent={
             <View className="mb-1">
@@ -710,6 +720,8 @@ export default function TicketsScreen() {
           className="absolute bottom-6 left-4 right-4 p-3.5 rounded-xl flex-row items-center justify-between shadow-lg"
           style={{
             backgroundColor: colors.textMain,
+            maxWidth: layout.contentMaxWidth,
+            alignSelf: 'center',
           }}
         >
           <View className="flex-row items-center flex-1 mr-2">
