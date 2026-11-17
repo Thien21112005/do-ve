@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 1 / 53 task hoàn thành
+- **Tổng quan:** 2 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -11,7 +11,7 @@
 | T11.01 | Thêm `babel.config.js` cho NativeWind v4 | DOING | 0c75ff7 | 2026-11-17 | Code xong: thêm babel.config.js, bundle Android (expo export) xác nhận className được biên dịch qua css-interop. Chưa DONE vì còn thiếu ảnh máy thật (DoD §0.4), chờ người dùng chụp |
 | T11.02 | Chụp baseline thật (before) toàn app | BLOCKED | cf01385 | 2026-11-17 | Đã thêm .maestro/screenshots.yaml và README baseline (vấn đề xác minh qua bundle). Bị chặn: không có thiết bị/emulator để chụp 32 ảnh, cần người dùng chạy Maestro |
 | T11.03 | Kiểm chứng theme sáng/tối của NativeWind theo cài đặt app | DONE | 736f2a7 | 2026-11-17 | Bundle Android chứng minh khối .dark không sinh biến dark. Chuyển sang vars() sinh từ colors.ts ở ThemeVarsRoot; global.css không còn màu. Test cssVars/ThemeVarsRoot. Cần kiểm lại bằng mắt trên máy khi đổi theme |
-| T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | TODO | | | |
+| T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | DONE | 977693b | 2026-11-17 | npm test 417/417 xanh, Jest tự thoát (rò do mock useFocusEffect không chạy cleanup + timer TanStack). Mâu thuẫn test T10.28 ↔ FR-CHK-07 giải bằng cách hoãn lỗi inline 600ms. Nhãn CTA khi thiếu số: 'Nhập đủ 6 số' (test T10.27 đòi có lý do), không lặp câu inline |
 | T11.05 | Dọn 4 cảnh báo `exhaustive-deps` | TODO | | | |
 | T11.06 | Guard test "ratchet" chặn tái phát | TODO | | | |
 | T11.07 | [P0] Mất toàn bộ vé khi đọc storage lỗi | TODO | | | |
