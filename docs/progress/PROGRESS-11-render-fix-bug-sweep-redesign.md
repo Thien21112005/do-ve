@@ -8,8 +8,8 @@
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T11.01 | Thêm `babel.config.js` cho NativeWind v4 | DOING | 0c75ff7 | 2026-11-17 | Code xong: thêm babel.config.js, bundle Android (expo export) xác nhận className được biên dịch qua css-interop. Chưa DONE vì còn thiếu ảnh máy thật (DoD §0.4), chờ người dùng chụp |
-| T11.02 | Chụp baseline thật (before) toàn app | BLOCKED | cf01385 | 2026-11-17 | Đã thêm .maestro/screenshots.yaml và README baseline (vấn đề xác minh qua bundle). Bị chặn: không có thiết bị/emulator để chụp 32 ảnh, cần người dùng chạy Maestro |
+| T11.01 | Thêm `babel.config.js` cho NativeWind v4 | DOING | 0c75ff7 | 2026-11-17 | Đã có ảnh máy thật (tối) trong baseline/after-t1101: 6 ô số nằm ngang, NativeWind chạy. Ảnh lộ 3 lỗi phát sinh, đã sửa: 05106a5 (async-storage 2.2.0 cho Expo Go), d111ada (Pressable style hàm), 58ec061 (nền slate→token). Còn thiếu ảnh theme Sáng để DONE |
+| T11.02 | Chụp baseline thật (before) toàn app | DOING | cf01385, d216716 | 2026-11-17 | Có 7 ảnh tối after-t1101 (người dùng chụp) + README quan sát. Còn thiếu: theme Sáng, màn Lịch quay, bộ before/ |
 | T11.03 | Kiểm chứng theme sáng/tối của NativeWind theo cài đặt app | DONE | 736f2a7 | 2026-11-17 | Bundle Android chứng minh khối .dark không sinh biến dark. Chuyển sang vars() sinh từ colors.ts ở ThemeVarsRoot; global.css không còn màu. Test cssVars/ThemeVarsRoot. Cần kiểm lại bằng mắt trên máy khi đổi theme |
 | T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | DONE | 977693b | 2026-11-17 | npm test 417/417 xanh, Jest tự thoát (rò do mock useFocusEffect không chạy cleanup + timer TanStack). Mâu thuẫn test T10.28 ↔ FR-CHK-07 giải bằng cách hoãn lỗi inline 600ms. Nhãn CTA khi thiếu số: 'Nhập đủ 6 số' (test T10.27 đòi có lý do), không lặp câu inline |
 | T11.05 | Dọn 4 cảnh báo `exhaustive-deps` | DONE | c2323c2 | 2026-11-17 | results.tsx: bỏ 2 effect đồng bộ param, so với param trước trong lúc render; thêm resultsParams.test. 2 cảnh báo ở check.tsx được dọn cùng T11.13 (cùng gốc) |
