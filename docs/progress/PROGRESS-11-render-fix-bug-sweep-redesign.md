@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 21 / 53 task hoàn thành
+- **Tổng quan:** 22 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -21,7 +21,7 @@
 | T11.11 | [P1] Bảng kết quả bị "đóng băng" trong giờ quay | DONE | 08dd5f9 | 2026-11-17 | drawQueryTiming(): hôm nay chưa đủ thì stale 20s + refetch 30s; hôm nay đủ thì 10 phút; quá khứ thiếu thì 60s; quá khứ đủ thì Infinity. Áp cho useDraw và useDailyDraws (staleTime/refetchInterval dạng hàm) |
 | T11.12 | [P1][Backend] Cache `immutable 365 ngày` cho danh sách thiếu đài | DONE | 10b9074 | 2026-11-17 | immutable chỉ khi đủ số đài theo lịch thứ đó + mọi kỳ đủ 18 số; ngày quá khứ thiếu thì max-age=60. 3 test MockMvc mới xanh. Lưu ý: ReadEndpointsMockMvcTest.testEndpoint4_getDraw đỏ sẵn trên HEAD (422, không liên quan) |
 | T11.13 | [P1] Kết quả dò cũ hiển thị như kết quả hiện tại (race) | DONE | 95debb9 | 2026-11-17 | Khoá submittedKey (ngày|đài|vé) cho dò 1 vé và nhiều vé; response lệch khoá bị bỏ qua. Xoá 2 effect reset, npm run lint sạch 0 cảnh báo. checkRace.test (có kiểm chứng chiều ngược: không đổi đài thì kết quả vẫn hiện) |
-| T11.14 | [P1] Nút "Dán" của dò hàng loạt không chạy trên điện thoại | TODO | | | |
+| T11.14 | [P1] Nút "Dán" của dò hàng loạt không chạy trên điện thoại | DONE | 72f1ae5 | 2026-11-18 | Cài expo-clipboard ~58.0.4 (có sẵn trong Expo Go SDK 58), thay navigator.clipboard bằng Clipboard.getStringAsync() + hitSlop nút Dán. Test checkBatchInput |
 | T11.15 | [P1] Đang dò mà nút nhìn như bị khoá/treo | DONE | 5a8d60d | 2026-11-17 | CTA 3 trạng thái disabled/ready/loading; loading giữ nền primary, spinner onPrimary, busy=true. Bỏ 2 mã hex, hạ allowlist check.tsx |
 | T11.16 | [P1] Tự dò lại vé chờ: 4 lỗi | DONE | 969fff6 | 2026-11-17 | (a) chỉ nhận CHECKED; (b) lưu wins qua mapCheckResponseToUi; (c) runSharedRecheck() dùng chung 1 promise mức module; (d) STATION_NOT_DRAWING → trạng thái mới INVALID + badge 'Đài không quay ngày này'. Fixture cũ WIN/LOSE (không có ở backend) đổi thành CHECKED |
 | T11.17 | [P2] Mã đài không chuẩn hoá nên vé bị trùng | TODO | | | |
