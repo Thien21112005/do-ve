@@ -16,8 +16,16 @@ import {
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useSavedTickets, updateTicket } from '@/store/ticketStore';
-import { exportTicketsToJson, importTicketsFromJson } from '@/store';
+import {
+  useSavedTickets,
+  updateTicket,
+  useTicketStoreHealth,
+} from '@/store/ticketStore';
+import {
+  exportTicketsToJson,
+  importTicketsFromJson,
+  exportCorruptTicketBackup,
+} from '@/store';
 import { useTheme, layout } from '@/theme';
 import {
   Icon,
@@ -26,6 +34,7 @@ import {
   TicketEmptyIllustration,
   type TicketFilterStatus,
 } from '@/components';
+import { Banner } from '@/components/ui';
 import { usePendingTicketsRecheck } from '@/hooks';
 import { formatDateVN } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
@@ -43,6 +52,7 @@ export default function TicketsScreen() {
   const router = useRouter();
   const { colors } = useTheme();
   const [tickets, { save, remove, clearAll }] = useSavedTickets();
+  const storeHealth = useTicketStoreHealth();
 
   // Recheck notice banner state (T10.51)
   const [recheckBannerMessage, setRecheckBannerMessage] = useState<string | null>(null);
@@ -407,6 +417,28 @@ export default function TicketsScreen() {
           <Icon name="more" size={20} color={colors.textMain} />
         </TouchableOpacity>
       </View>
+
+      {/* Corrupt storage: data kept, writes blocked (T11.07) */}
+      {storeHealth.state === 'corrupt' && (
+        <View
+          className="px-4 pb-2"
+          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
+        >
+          <Banner
+            variant="error"
+            title={STRINGS.tickets.corruptTitle}
+            message={STRINGS.tickets.corruptMessage}
+            actionText={STRINGS.tickets.corruptExport}
+            onAction={() => {
+              exportCorruptTicketBackup(storeHealth.backupKey).then((res) => {
+                if (!res.success) {
+                  Alert.alert(STRINGS.tickets.exportTitle, res.error ?? STRINGS.tickets.exportError);
+                }
+              });
+            }}
+          />
+        </View>
+      )}
 
       {/* Recheck Progress & Result Banners (T10.51) */}
       {(isRechecking || recheckBannerMessage) && (

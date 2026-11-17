@@ -88,6 +88,10 @@ export const STRINGS = {
     viewDrawResultA11y: 'Xem bảng kết quả kỳ này',
     recheckTicketA11y: 'Dò lại vé này',
     deleteTicketA11y: 'Xóa vé này',
+    corruptTitle: 'Không đọc được dữ liệu vé',
+    corruptMessage:
+      'Dữ liệu vé trên máy bị hỏng. Ứng dụng đã giữ nguyên bản gốc và một bản sao, tạm thời chưa lưu thêm vé mới.',
+    corruptExport: 'Xuất bản sao',
   },
 
   check: {

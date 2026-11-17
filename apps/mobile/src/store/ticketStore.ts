@@ -51,35 +51,147 @@ export function generateTicketId(
   return `${station}_${drawDate}_${ticket}`;
 }
 
-/**
- * Load all tickets from AsyncStorage.
- * In case of corrupted JSON or read error, gracefully returns empty array [].
- */
-export async function getTickets(): Promise<SavedTicket[]> {
+// ---------------------------------------------------------------------------
+// Storage health (T11.07): a failed or corrupt read must never lead to a write
+// that replaces the user's tickets with a shorter list.
+// ---------------------------------------------------------------------------
+
+export const CORRUPT_BACKUP_KEY_PREFIX = 'dove.tickets.corrupt.';
+
+export type TicketStoreHealth =
+  | { state: 'ok' }
+  | { state: 'unreadable' }
+  | { state: 'corrupt'; backupKey: string };
+
+/** Stored data exists but cannot be parsed. Writes are blocked. */
+export class TicketStoreCorruptError extends Error {
+  constructor(public readonly backupKey: string) {
+    super('Dữ liệu vé trên máy bị hỏng, đã giữ bản sao và tạm khoá ghi.');
+    this.name = 'TicketStoreCorruptError';
+  }
+}
+
+/** Storage could not be read even after a retry. Writes are blocked. */
+export class TicketStoreReadError extends Error {
+  constructor(cause?: unknown) {
+    super('Không đọc được dữ liệu vé trên máy.');
+    this.name = 'TicketStoreReadError';
+    (this as any).cause = cause;
+  }
+}
+
+let health: TicketStoreHealth = { state: 'ok' };
+let lastCorruptRaw: string | null = null;
+const healthListeners = new Set<() => void>();
+
+function setHealth(next: TicketStoreHealth) {
+  health = next;
+  healthListeners.forEach((l) => l());
+}
+
+export function getTicketStoreHealth(): TicketStoreHealth {
+  return health;
+}
+
+export function useTicketStoreHealth(): TicketStoreHealth {
+  return useSyncExternalStore(
+    (cb) => {
+      healthListeners.add(cb);
+      return () => {
+        healthListeners.delete(cb);
+      };
+    },
+    () => health,
+    () => health,
+  );
+}
+
+async function readRawWithRetry(): Promise<string | null> {
   try {
-    const raw = await AsyncStorage.getItem(TICKETS_STORAGE_KEY);
-    if (!raw) {
-      cachedTickets = [];
-      isInitialized = true;
-      return [];
-    }
-
-    const parsed: TicketStorageEnvelope = JSON.parse(raw);
-    if (parsed && Array.isArray(parsed.tickets)) {
-      cachedTickets = [...parsed.tickets];
-      isInitialized = true;
-      return cachedTickets;
-    }
-
-    cachedTickets = [];
-    isInitialized = true;
-    return [];
+    return await AsyncStorage.getItem(TICKETS_STORAGE_KEY);
   } catch {
-    // Graceful fallback on corrupt data or storage error
+    // One retry for transient errors; a second failure propagates.
+    return await AsyncStorage.getItem(TICKETS_STORAGE_KEY);
+  }
+}
+
+async function markCorrupt(raw: string): Promise<string> {
+  if (health.state === 'corrupt' && lastCorruptRaw === raw) {
+    return health.backupKey;
+  }
+  const backupKey = `${CORRUPT_BACKUP_KEY_PREFIX}${Date.now()}`;
+  try {
+    await AsyncStorage.setItem(backupKey, raw);
+  } catch {
+    // The original key is never overwritten, so the data is still there.
+  }
+  lastCorruptRaw = raw;
+  setHealth({ state: 'corrupt', backupKey });
+  return backupKey;
+}
+
+/**
+ * Strict load used before every write. Throws instead of returning [] when
+ * the stored data cannot be read or parsed.
+ */
+async function loadForWrite(): Promise<SavedTicket[]> {
+  let raw: string | null;
+  try {
+    raw = await readRawWithRetry();
+  } catch (err) {
+    setHealth({ state: 'unreadable' });
+    throw new TicketStoreReadError(err);
+  }
+
+  if (!raw) {
+    if (health.state !== 'ok') setHealth({ state: 'ok' });
     cachedTickets = [];
     isInitialized = true;
     return [];
   }
+
+  let parsed: TicketStorageEnvelope | null = null;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = null;
+  }
+  if (!parsed || !Array.isArray(parsed.tickets)) {
+    throw new TicketStoreCorruptError(await markCorrupt(raw));
+  }
+
+  if (health.state !== 'ok') setHealth({ state: 'ok' });
+  lastCorruptRaw = null;
+  cachedTickets = [...parsed.tickets];
+  isInitialized = true;
+  return cachedTickets;
+}
+
+/**
+ * Load all tickets from AsyncStorage for display.
+ * Corrupt data shows as [] (the UI explains via getTicketStoreHealth());
+ * a transient read error keeps the last known list. It never writes.
+ */
+export async function getTickets(): Promise<SavedTicket[]> {
+  try {
+    return await loadForWrite();
+  } catch (err) {
+    if (err instanceof TicketStoreCorruptError) {
+      cachedTickets = [];
+      isInitialized = true;
+      return [];
+    }
+    return isInitialized ? cachedTickets : [];
+  }
+}
+
+/** Test helper: forget in-memory state between tests. */
+export function resetTicketStoreForTests(): void {
+  cachedTickets = [];
+  isInitialized = false;
+  lastCorruptRaw = null;
+  health = { state: 'ok' };
+  writeQueue = Promise.resolve();
 }
 
 /**
@@ -108,7 +220,7 @@ export async function saveTicket(
       createdAt,
     };
 
-    const currentList = await getTickets();
+    const currentList = await loadForWrite();
     const existingIndex = currentList.findIndex((t) => t.id === id);
 
     let updatedList: SavedTicket[];
@@ -148,7 +260,7 @@ export async function saveManyTickets(
   if (newTickets.length === 0) return [];
 
   return enqueueWrite(async () => {
-    const currentList = await getTickets();
+    const currentList = await loadForWrite();
     const updatedMap = new Map(currentList.map((t) => [t.id, t]));
     const resultList: SavedTicket[] = [];
 
@@ -199,7 +311,7 @@ export async function saveManyTickets(
 export async function removeTicket(id: string): Promise<boolean> {
   return enqueueWrite(async () => {
     try {
-      const currentList = await getTickets();
+      const currentList = await loadForWrite();
       const updatedList = currentList.filter((t) => t.id !== id);
 
       const payload: TicketStorageEnvelope = {
@@ -246,7 +358,7 @@ export async function updateTicket(
 ): Promise<SavedTicket | null> {
   return enqueueWrite(async () => {
     try {
-      const currentList = await getTickets();
+      const currentList = await loadForWrite();
       const index = currentList.findIndex((t) => t.id === id);
       if (index === -1) return null;
 

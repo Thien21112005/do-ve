@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
@@ -313,6 +314,42 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
       success: false,
       importedCount: 0,
       error: err?.message || 'Có lỗi xảy ra khi nhập dữ liệu sao lưu.',
+    };
+  }
+}
+
+/**
+ * Share the raw copy saved when the ticket store was found corrupt (T11.07),
+ * so the user can keep it or send it for recovery.
+ */
+export async function exportCorruptTicketBackup(backupKey: string): Promise<ExportResult> {
+  try {
+    const raw = await AsyncStorage.getItem(backupKey);
+    if (!raw) {
+      return { success: false, exportedCount: 0, error: 'Không tìm thấy bản sao dữ liệu vé.' };
+    }
+    const targetDir = FileSystem.cacheDirectory || FileSystem.documentDirectory || '';
+    const filePath = `${targetDir}dove-tickets-corrupt.txt`;
+    await FileSystem.writeAsStringAsync(filePath, raw, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+    if (!(await Sharing.isAvailableAsync())) {
+      return {
+        success: false,
+        exportedCount: 0,
+        error: 'Thiết bị không hỗ trợ chia sẻ file sao lưu.',
+      };
+    }
+    await Sharing.shareAsync(filePath, {
+      mimeType: 'text/plain',
+      dialogTitle: 'Lưu bản sao dữ liệu vé',
+    });
+    return { success: true, exportedCount: 0, filePath };
+  } catch (err: any) {
+    return {
+      success: false,
+      exportedCount: 0,
+      error: err?.message || 'Có lỗi xảy ra khi xuất bản sao.',
     };
   }
 }
