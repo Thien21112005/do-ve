@@ -172,7 +172,7 @@ async function loadForWrite(): Promise<SavedTicket[]> {
  * Corrupt data shows as [] (the UI explains via getTicketStoreHealth());
  * a transient read error keeps the last known list. It never writes.
  */
-export async function getTickets(): Promise<SavedTicket[]> {
+export async function loadTickets(): Promise<SavedTicket[]> {
   try {
     return await loadForWrite();
   } catch (err) {
@@ -183,6 +183,21 @@ export async function getTickets(): Promise<SavedTicket[]> {
     }
     return isInitialized ? cachedTickets : [];
   }
+}
+
+/** Kept for existing callers: same as loadTickets(). */
+export const getTickets = loadTickets;
+
+/** Synchronous read of the in-memory cache; never touches storage (T11.24). */
+export function readTickets(): SavedTicket[] {
+  return cachedTickets;
+}
+
+const EMPTY_TICKETS: SavedTicket[] = Object.freeze([]) as unknown as SavedTicket[];
+
+/** Stable server snapshot for useSyncExternalStore (a new [] each call loops). */
+export function getTicketsServerSnapshot(): SavedTicket[] {
+  return EMPTY_TICKETS;
 }
 
 /** Test helper: forget in-memory state between tests. */
@@ -421,8 +436,8 @@ export function useSavedTickets(): [
         listeners.delete(callback);
       };
     },
-    () => cachedTickets,
-    () => [],
+    readTickets,
+    getTicketsServerSnapshot,
   );
 
   return [
