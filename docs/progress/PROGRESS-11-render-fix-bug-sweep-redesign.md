@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 10 / 53 task hoàn thành
+- **Tổng quan:** 11 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -25,7 +25,7 @@
 | T11.15 | [P1] Đang dò mà nút nhìn như bị khoá/treo | TODO | | | |
 | T11.16 | [P1] Tự dò lại vé chờ: 4 lỗi | TODO | | | |
 | T11.17 | [P2] Mã đài không chuẩn hoá nên vé bị trùng | TODO | | | |
-| T11.18 | [P2] Tab Dò vé mặc định "hôm nay" kể cả buổi sáng | TODO | | | |
+| T11.18 | [P2] Tab Dò vé mặc định "hôm nay" kể cả buổi sáng | DONE | f7c7c28 | 2026-11-17 | Ngày mặc định của tab Dò vé = useActiveDrawSession().date (trước 16h10 là hôm qua). Test checkDefaultDate |
 | T11.19 | [P2] Màn Kết quả: nút thử lại offline sai và tìm nhanh không có phản hồi | TODO | | | |
 | T11.20 | [P2] Giờ quay mâu thuẫn ở 4 nơi | DONE | fba045b | 2026-11-17 | lib/drawWindow.ts (liveFrom 16:10, start 16:15, expectedDone 16:40); date/format/DateStrip/Home/STRINGS đều lấy từ đây. Test chặn viết cứng giờ. Test cũ khoá 16h35 cập nhật sang 16h40. Nhắc 16h45 giữ riêng (cài đặt thông báo) |
 | T11.21 | [P2] Số tiền trúng chưa có "bằng chữ" | TODO | | | |
