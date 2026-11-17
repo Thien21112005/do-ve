@@ -1,17 +1,27 @@
 import React, { useEffect, type ReactNode } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { View } from 'react-native';
+import {
+  PersistQueryClientProvider,
+  type Persister,
+} from '@tanstack/react-query-persist-client';
 import {
   queryClient,
   setupNetworkAndFocusManagement,
-  setupQueryClientPersistence,
+  asyncStoragePersister,
+  QUERY_CACHE_MAX_AGE,
+  QUERY_CACHE_BUSTER,
+  shouldDehydrateQuery,
 } from '@/lib';
 import { useSettings } from '@/store/settings';
-import { View } from 'react-native';
 import { syncNativeWindTheme, useTheme } from '@/theme/theme';
 import { THEME_CSS_VARS } from '@/theme/cssVars';
 
 export interface AppProvidersProps {
   children: ReactNode;
+  /** Called once the persisted query cache is restored (or failed to restore). */
+  onRestored?: () => void;
+  /** Injectable for tests. */
+  persister?: Persister;
 }
 
 /**
@@ -27,21 +37,33 @@ export function NativeWindThemeSync() {
   return null;
 }
 
-export function AppProviders({ children }: AppProvidersProps) {
-  useEffect(() => {
-    const cleanupNetwork = setupNetworkAndFocusManagement();
-    const [cleanupPersistence] = setupQueryClientPersistence();
-    return () => {
-      cleanupNetwork();
-      cleanupPersistence();
-    };
-  }, []);
+/**
+ * PersistQueryClientProvider holds every query until the offline cache is
+ * restored, so opening the app offline no longer flashes an error before
+ * the cached data appears (T11.23).
+ */
+export function AppProviders({
+  children,
+  onRestored,
+  persister = asyncStoragePersister,
+}: AppProvidersProps) {
+  useEffect(() => setupNetworkAndFocusManagement(), []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister,
+        maxAge: QUERY_CACHE_MAX_AGE,
+        buster: QUERY_CACHE_BUSTER,
+        dehydrateOptions: { shouldDehydrateQuery },
+      }}
+      onSuccess={onRestored}
+      onError={onRestored}
+    >
       <NativeWindThemeSync />
       <ThemeVarsRoot>{children}</ThemeVarsRoot>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 

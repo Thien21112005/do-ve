@@ -79,6 +79,8 @@ function AppContent() {
 export default function RootLayout() {
   const [loaded, error] = useAppFonts();
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  // Keep the splash until the offline query cache is restored (T11.23)
+  const [cacheRestored, setCacheRestored] = useState(false);
 
   useEffect(() => {
     loadSettings()
@@ -91,10 +93,10 @@ export default function RootLayout() {
   const isReady = (loaded || error) && settingsLoaded;
 
   useEffect(() => {
-    if (isReady) {
+    if (isReady && cacheRestored) {
       SplashScreen.hideAsync().catch(() => {});
     }
-  }, [isReady]);
+  }, [isReady, cacheRestored]);
 
   // Keep showing splash screen while font and settings are loading (T09.48)
   if (!isReady) {
@@ -103,7 +105,7 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <AppProviders>
+      <AppProviders onRestored={() => setCacheRestored(true)}>
         <AppContent />
       </AppProviders>
     </ErrorBoundary>
