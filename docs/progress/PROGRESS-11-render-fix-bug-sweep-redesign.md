@@ -8,7 +8,7 @@
 
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
-| T11.01 | Thêm `babel.config.js` cho NativeWind v4 | TODO | | | |
+| T11.01 | Thêm `babel.config.js` cho NativeWind v4 | DOING | 0c75ff7 | 2026-11-17 | Code xong: thêm babel.config.js, bundle Android (expo export) xác nhận className được biên dịch qua css-interop. Chưa DONE vì còn thiếu ảnh máy thật (DoD §0.4), chờ người dùng chụp |
 | T11.02 | Chụp baseline thật (before) toàn app | TODO | | | |
 | T11.03 | Kiểm chứng theme sáng/tối của NativeWind theo cài đặt app | TODO | | | |
 | T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | TODO | | | |
