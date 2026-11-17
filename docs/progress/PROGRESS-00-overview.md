@@ -20,7 +20,8 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
-| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | Hướng A 'Tờ vé giấy' hoàn tất 100% (62/62 tasks), Nielsen 39/40, Native Audit 20/20 |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | Hướng A 'Tờ vé giấy' hoàn tất 100% (62/62 tasks), Nielsen 39/40, Native Audit 20/20 — ⚠️ chưa kiểm chứng trên máy: thiếu babel.config.js nên className không render (xem PLAN-11 §0) |
+| 11 | [Mở khoá render, quét lỗi lần 2 & redesign](PROGRESS-11-render-fix-bug-sweep-redesign.md) | 0 / 52 | TODO | Bắt đầu bằng T11.01 (babel.config.js) |
 
 ## Mốc
 

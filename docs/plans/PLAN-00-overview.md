@@ -21,6 +21,7 @@ Tài liệu gốc: [`SRS.md`](../SRS.md). Tổng cộng **179 task** chia **8 ph
 |---|---|---|---|---|
 | 09 | Quét lỗi toàn dự án (hợp đồng API, ngày giờ, lưu vé, bảo mật backend) | 72 | [PLAN-09](PLAN-09-bug-sweep.md) | [PROGRESS-09](../progress/PROGRESS-09-bug-sweep.md) |
 | 10 | Cải thiện giao diện mobile (Impeccable) | 62 | [PLAN-10](PLAN-10-ui-redesign.md) | [PROGRESS-10](../progress/PROGRESS-10-ui-redesign.md) |
+| 11 | Mở khoá render NativeWind, quét lỗi lần 2, redesign có kiểm chứng ảnh | 52 | [PLAN-11](PLAN-11-render-fix-bug-sweep-redesign.md) | [PROGRESS-11](../progress/PROGRESS-11-render-fix-bug-sweep-redesign.md) |
 
 Làm nhóm A của Phase 09 trước Phase 10 (UI đang render dữ liệu theo hợp đồng API sai).
 
