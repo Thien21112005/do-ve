@@ -47,3 +47,19 @@ afterEach(() => {
   } catch (_) {}
 });
 
+
+// T11.04: TanStack stale/gc timers can be scheduled by a query that settles
+// after its test ended. Unref them so they never keep the Jest process alive.
+try {
+  const { timeoutManager } = require('@tanstack/query-core');
+  const unref = (t) => {
+    if (t && typeof t.unref === 'function') t.unref();
+    return t;
+  };
+  timeoutManager.setTimeoutProvider({
+    setTimeout: (cb, ms) => unref(setTimeout(cb, ms)),
+    clearTimeout: (id) => clearTimeout(id),
+    setInterval: (cb, ms) => unref(setInterval(cb, ms)),
+    clearInterval: (id) => clearInterval(id),
+  });
+} catch (_) {}

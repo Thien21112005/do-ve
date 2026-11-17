@@ -12,13 +12,14 @@ jest.mock('expo-router', () => {
     useRouter: () => routerMock,
     useLocalSearchParams: () => ({}),
     usePathname: () => '/',
+    // Behave like a mounted, focused screen: run on mount/when cb changes and
+    // run the cleanup on unmount, so intervals do not leak and keep Jest alive.
     useFocusEffect: (cb) => {
-      if (typeof cb === 'function') {
+      require('react').useEffect(() => {
+        if (typeof cb !== 'function') return undefined;
         const cleanup = cb();
-        if (typeof cleanup === 'function') {
-          return cleanup;
-        }
-      }
+        return typeof cleanup === 'function' ? cleanup : undefined;
+      }, [cb]);
     },
     Link: ({ children }) => children,
     Tabs: Object.assign(({ children }) => children, { Screen: () => null }),

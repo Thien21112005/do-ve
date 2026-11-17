@@ -208,18 +208,23 @@ export function ResultCard({
           }}
         >
           {isPending
-            ? 'Chưa có kết quả'
+            ? STRINGS.check.resultPendingTitle
             : isWon
-              ? (winCount > 1 ? `Trúng ${winCount} giải` : 'Trúng 1 giải')
-              : 'Không trúng'}
+              ? STRINGS.check.resultWonCount(winCount)
+              : STRINGS.check.resultLostBadge}
         </Text>
         <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>
           {isPending
-            ? 'Chưa có kết quả, thường có sau 16h35'
+            ? STRINGS.check.resultPendingSubtitle
             : isWon
-              ? `Vé số ${result.ticket} trùng khớp giải mở thưởng`
-              : 'Vé không trùng với các bộ số mở thưởng kỳ này'}
+              ? STRINGS.check.resultWonTitle
+              : STRINGS.check.resultLostTitle}
         </Text>
+        {!isPending && !isWon && (
+          <Text className="text-xs mt-0.5" style={{ color: colors.textMuted }}>
+            {STRINGS.check.resultLostSubtitle}
+          </Text>
+        )}
       </View>
 
       {/* 4. Body: Pending notice, Wins list, or non-winning notice */}
@@ -242,6 +247,12 @@ export function ResultCard({
               {getEstimatedDrawTimeMessage(result.drawDate)}
             </Text>
           </View>
+          <Text
+            className="text-xs mb-3 leading-4"
+            style={{ color: colors.textMuted }}
+          >
+            {STRINGS.check.pendingNotice}
+          </Text>
 
           {/* Primary Action: Lưu để tự dò lại (T10.33 & T10.58) */}
           {onSaveTicket && (
@@ -366,17 +377,17 @@ export function ResultCard({
               className="text-sm font-semibold"
               style={{ color: colors.textMuted }}
             >
-              {STRINGS.check.batchTotalPrize}
-            </Text>
-            <Text
-              testID="result-card-total-prize"
-              className="text-xl font-bold text-right"
-              style={{
-                color: colors.win,
-                fontVariant: ['tabular-nums'],
-              }}
-            >
-              {formatCurrency(displayPrize)}
+              {STRINGS.check.totalPrizeLabel}{' '}
+              <Text
+                testID="result-card-total-prize"
+                className="text-xl font-bold"
+                style={{
+                  color: colors.win,
+                  fontVariant: ['tabular-nums'],
+                }}
+              >
+                {formatCurrency(displayPrize)}
+              </Text>
             </Text>
           </View>
 

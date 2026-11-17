@@ -35,6 +35,8 @@ import { useSettings } from '@/store/settings';
 import { getApiErrorMessage } from '@/api/client';
 import type { SavedTicketStatus } from '@/types';
 
+const VALIDATION_DELAY_MS = 600;
+
 export default function CheckScreen() {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
@@ -139,11 +141,26 @@ export default function CheckScreen() {
     queryClient.invalidateQueries({ queryKey: ['stations'] });
   };
 
-  // Inline validation calculation
-  let ticketError: string | null = null;
-  if (hasInteracted && ticketNumber.length > 0 && ticketNumber.length < 6) {
-    ticketError = STRINGS.check.validationIncomplete(ticketNumber.length);
-  }
+  // Inline validation: only complain once the user pauses on an incomplete
+  // number, so typing digit by digit never flashes an error or buzzes (T11.04).
+  const [showIncomplete, setShowIncomplete] = useState(false);
+  const isIncomplete =
+    hasInteracted && ticketNumber.length > 0 && ticketNumber.length < 6;
+
+  useEffect(() => {
+    setShowIncomplete(false);
+    if (!isIncomplete) return;
+    const timer = setTimeout(() => {
+      setShowIncomplete(true);
+      haptics.warning();
+    }, VALIDATION_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [isIncomplete, ticketNumber]);
+
+  const ticketError =
+    isIncomplete && showIncomplete
+      ? STRINGS.check.validationIncomplete(ticketNumber.length)
+      : null;
 
   const parsedBatch = parseBatchTickets(batchText, 20);
 
@@ -311,6 +328,7 @@ export default function CheckScreen() {
     setJustSaved(false);
     if (!isFormValid) {
       haptics.warning();
+      setShowIncomplete(true);
       return;
     }
 
@@ -613,7 +631,7 @@ export default function CheckScreen() {
                 {activeLoading
                   ? STRINGS.check.btnChecking
                   : !isFormValid && mode === 'single' && ticketNumber.length < 6
-                    ? STRINGS.check.validationIncomplete(ticketNumber.length)
+                    ? STRINGS.check.ctaNeedSixDigits
                     : !isFormValid && !selectedStation
                       ? STRINGS.check.selectStationPrompt
                       : mode === 'single'

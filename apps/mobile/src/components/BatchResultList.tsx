@@ -172,23 +172,8 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
           className="text-sm font-medium mt-1 leading-5"
           style={{ color: colors.textMain }}
         >
-          Dò {totalTickets} vé ·{' '}
-          <Text
-            className="font-bold"
-            style={{ color: hasWon ? colors.win : colors.textMain }}
-          >
-            {wonTickets} vé trúng
-          </Text>
-          {' · '}
-          <Text
-            className="font-bold"
-            style={{
-              color: hasWon ? colors.win : colors.textMain,
-              fontVariant: ['tabular-nums'],
-            }}
-          >
-            {formatCurrency(totalPrize)}
-          </Text>
+          {/* One string: the amount stands alone only on the ticket row (T11.04) */}
+          {`Dò ${totalTickets} vé · ${wonTickets} vé trúng · ${formatCurrency(totalPrize)}`}
         </Text>
 
         {/* Save All Button (T10.35) */}

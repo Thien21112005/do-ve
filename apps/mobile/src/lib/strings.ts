@@ -106,6 +106,7 @@ export const STRINGS = {
       `Số vé phải có đủ 6 chữ số (hiện có ${len}/6)`,
     validationEmpty: 'Vui lòng nhập số vé',
     btnCheck: 'Dò vé ngay',
+    ctaNeedSixDigits: 'Nhập đủ 6 số',
     btnChecking: 'Đang dò vé...',
     btnCheckBatch: (count: number) => `Dò hàng loạt (${count} vé)`,
     accessibilityCheckBtnSingle: 'Dò kết quả vé số',
