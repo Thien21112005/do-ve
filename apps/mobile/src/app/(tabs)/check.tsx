@@ -262,6 +262,13 @@ export default function CheckScreen() {
     Boolean(selectedDate) &&
     !activeLoading;
 
+  // Three explicit states so 'checking' never looks like 'disabled' (T11.15)
+  const ctaState: 'disabled' | 'ready' | 'loading' = activeLoading
+    ? 'loading'
+    : isFormValid
+      ? 'ready'
+      : 'disabled';
+
   const triggerSingleCheck = useCallback(
     (ticketToSubmit: string) => {
       if (
@@ -593,7 +600,7 @@ export default function CheckScreen() {
           <View style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}>
             <TouchableOpacity
               testID="check-ticket-button"
-              disabled={!isFormValid}
+              disabled={ctaState !== 'ready'}
               onPress={handleSubmit}
               accessibilityRole="button"
               accessibilityLabel={
@@ -601,28 +608,29 @@ export default function CheckScreen() {
                   ? STRINGS.check.accessibilityCheckBtnSingle
                   : STRINGS.check.accessibilityCheckBtnBatch
               }
-              accessibilityState={{ disabled: !isFormValid }}
+              accessibilityState={{ disabled: ctaState !== 'ready', busy: ctaState === 'loading' }}
               className="w-full rounded-xl items-center justify-center flex-row shadow-sm"
               style={{
                 height: 52,
                 minHeight: 52,
-                backgroundColor: isFormValid ? colors.primary : colors.surfaceSubtle,
-                borderColor: isFormValid ? colors.primary : colors.border,
+                backgroundColor: ctaState === 'disabled' ? colors.surfaceSubtle : colors.primary,
+                borderColor: ctaState === 'disabled' ? colors.border : colors.primary,
                 borderWidth: 1,
-                opacity: isFormValid ? 1 : 0.85,
+                opacity: ctaState === 'disabled' ? 0.85 : 1,
               }}
             >
               {activeLoading && (
                 <ActivityIndicator
+                  testID="check-cta-spinner"
                   size="small"
-                  color="#ffffff"
+                  color={colors.onPrimary}
                   className="mr-2"
                 />
               )}
               <Text
                 className="text-base font-bold"
                 style={{
-                  color: isFormValid ? '#ffffff' : colors.textMuted,
+                  color: ctaState === 'disabled' ? colors.textMuted : colors.onPrimary,
                 }}
               >
                 {activeLoading
