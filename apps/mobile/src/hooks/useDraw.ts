@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchDraw } from '@/api';
 import { ApiError } from '@/api/client';
 import { mapDrawResponseToUi, type UiDrawView } from '@/api/mappers';
+import { drawQueryTiming } from '@/lib/drawTiming';
 
 export const DRAW_QUERY_KEY = 'draw' as const;
 
@@ -16,6 +17,11 @@ export type DrawAvailability = 'AVAILABLE' | 'NOT_YET' | 'NOT_DRAWING';
 interface DrawQueryData {
   draw: UiDrawView | null;
   availability: DrawAvailability;
+}
+
+/** Nothing more will arrive: the draw is complete, or the station does not draw. */
+function isSettled(data?: DrawQueryData): boolean {
+  return data?.availability === 'NOT_DRAWING' || Boolean(data?.draw?.isComplete);
 }
 
 export function useDraw(date: string, station: string) {
@@ -38,7 +44,9 @@ export function useDraw(date: string, station: string) {
       }
     },
     enabled: Boolean(date && station),
-    staleTime: 1000 * 60 * 30, // 30 minutes
+    // Poll while today's draw is filling in; freeze finished past draws (T11.11)
+    staleTime: (q) => drawQueryTiming(date, isSettled(q.state.data)).staleTime,
+    refetchInterval: (q) => drawQueryTiming(date, isSettled(q.state.data)).refetchInterval,
   });
 
   return {

@@ -2,6 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchLatestDayDraws, fetchDraw } from '@/api/draws';
 import { mapDrawResponseToUi, type UiDrawView } from '@/api/mappers';
 import type { StationResponse } from '@/types';
+import { drawQueryTiming } from '@/lib/drawTiming';
+
+function isDayComplete(draws: UiDrawView[] | undefined, stations: StationResponse[]): boolean {
+  if (!draws || stations.length === 0) return false;
+  return draws.length >= stations.length && draws.every((d) => d.isComplete);
+}
 
 export function useDailyDraws(date: string, stations: StationResponse[] = []) {
   const query = useQuery<UiDrawView[], Error>({
@@ -44,7 +50,10 @@ export function useDailyDraws(date: string, stations: StationResponse[] = []) {
       return results.filter(Boolean) as UiDrawView[];
     },
     enabled: Boolean(date),
-    staleTime: 1000 * 60 * 15,
+    // Poll until every scheduled station is complete (T11.11)
+    staleTime: (q) => drawQueryTiming(date, isDayComplete(q.state.data, stations)).staleTime,
+    refetchInterval: (q) =>
+      drawQueryTiming(date, isDayComplete(q.state.data, stations)).refetchInterval,
   });
 
   return {
