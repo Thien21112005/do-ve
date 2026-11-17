@@ -71,8 +71,13 @@ describe('ticketStore never overwrites after a failed read (T11.07)', () => {
     await saveTicket({ ...input, ticket: '333333' });
     resetTicketStoreForTests();
 
-    jest.spyOn(AsyncStorage, 'getItem').mockRejectedValue(new Error('io'));
+    // First read + one retry both fail
+    jest
+      .spyOn(AsyncStorage, 'getItem')
+      .mockRejectedValueOnce(new Error('io'))
+      .mockRejectedValueOnce(new Error('io'));
     const setItem = jest.spyOn(AsyncStorage, 'setItem');
+    setItem.mockClear();
 
     await expect(saveTicket(input)).rejects.toThrow();
     expect(setItem).not.toHaveBeenCalled();

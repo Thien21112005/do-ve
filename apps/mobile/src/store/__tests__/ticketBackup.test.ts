@@ -278,6 +278,7 @@ describe('ticketBackup (Export & Import Tickets JSON - T07.10 & T07.11)', () => 
 
     it('imports multiple tickets in a single write operation (T09.40)', async () => {
       const setItemSpy = jest.spyOn(AsyncStorage, 'setItem');
+      setItemSpy.mockClear(); // count only the import's writes
 
       const batchPayload = {
         version: 1,
