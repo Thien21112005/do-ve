@@ -1,0 +1,43 @@
+# T11.02 — Chụp ảnh baseline toàn app (chạy 2 lần: máy để theme Sáng, rồi theme Tối)
+# Cách chạy:  maestro test .maestro/screenshots.yaml -e THEME=light
+#             maestro test .maestro/screenshots.yaml -e THEME=dark
+# Ảnh được ghi vào thư mục làm việc hiện tại; chép sang docs/screenshots/phase11/baseline/.
+appId: com.dove.app
+---
+- launchApp
+- waitForAnimationToEnd
+
+- tapOn: "Trang chủ"
+- waitForAnimationToEnd
+- takeScreenshot: home-${THEME}
+
+- tapOn: "Dò vé"
+- waitForAnimationToEnd
+- takeScreenshot: check-${THEME}
+
+- tapOn: "Kết quả"
+- waitForAnimationToEnd
+- takeScreenshot: results-${THEME}
+
+- tapOn: "Vé của tôi"
+- waitForAnimationToEnd
+- takeScreenshot: tickets-${THEME}
+
+- tapOn: "Thêm"
+- waitForAnimationToEnd
+- takeScreenshot: more-${THEME}
+
+- tapOn: "Lịch quay thưởng"
+- waitForAnimationToEnd
+- takeScreenshot: schedule-${THEME}
+- back
+
+- tapOn: "Cài đặt"
+- waitForAnimationToEnd
+- takeScreenshot: settings-${THEME}
+- back
+
+- tapOn: "Giới thiệu & Miễn trừ trách nhiệm"
+- waitForAnimationToEnd
+- takeScreenshot: about-${THEME}
+- back
