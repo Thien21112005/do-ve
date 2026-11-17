@@ -32,6 +32,8 @@ import { haptics } from '@/lib/haptics';
 import { todayVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 import { getApiErrorMessage } from '@/api/client';
+import { DRAW_TIERS } from '@/components/DrawTable';
+import { findQuickMatches, quickSearchFeedback } from '@/lib/quickSearch';
 
 export default function ResultsScreen() {
   const { colors } = useTheme();
@@ -67,7 +69,7 @@ export default function ResultsScreen() {
     isError: isDailyError,
     error: dailyError,
     refetch: refetchDaily,
-  } = useDailyDraws(selectedDate, stations);
+  } = useDailyDraws(selectedDate, stations, viewMode === 'all');
 
   const { draw, availability, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
@@ -98,6 +100,24 @@ export default function ResultsScreen() {
   }, [viewMode, refetch, refetchDaily]);
 
   const formattedDate = formatDateVN(selectedDate);
+
+  // Say what the quick search found, including 'nothing' — but only when a
+  // draw table is actually on screen (never while loading, pending or errored) (T11.19)
+  const searchDraws =
+    viewMode === 'all' ? dailyDraws : draw ? [draw] : [];
+  const hasVisibleTable =
+    !showLoading &&
+    !(viewMode === 'all' ? isDailyError : isError) &&
+    searchDraws.length > 0;
+  const quickMatches = hasVisibleTable ? findQuickMatches(searchDraws, quickQuery) : [];
+  const quickFeedback = hasVisibleTable
+    ? quickSearchFeedback(
+        quickMatches,
+        quickQuery,
+        (tier) => DRAW_TIERS.find((t) => t.key === tier)?.shortName ?? tier,
+        viewMode === 'all',
+      )
+    : null;
 
   const handleShare = useCallback(async () => {
     if (!draw) return;
@@ -157,7 +177,8 @@ export default function ResultsScreen() {
         }
       >
         {/* Offline Banner */}
-        <OfflineBanner onRetry={refetch} />
+        {/* Retry what is on screen: one station or the whole day (T11.19) */}
+        <OfflineBanner onRetry={viewMode === 'all' ? refetchDaily : refetch} />
 
         {/* Section: Chọn ngày mở thưởng */}
         <View className="pt-3 px-4 pb-1">
@@ -248,6 +269,16 @@ export default function ResultsScreen() {
               </TouchableOpacity>
             )}
           </View>
+          {quickFeedback ? (
+            <Text
+              testID="results-quick-search-feedback"
+              accessibilityLiveRegion="polite"
+              className="text-xs mt-1.5 px-1"
+              style={{ color: quickMatches.length > 0 ? colors.textMain : colors.textMuted }}
+            >
+              {quickFeedback}
+            </Text>
+          ) : null}
         </View>
 
         {/* Draw details container */}

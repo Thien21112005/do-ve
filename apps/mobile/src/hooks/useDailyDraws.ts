@@ -9,7 +9,11 @@ function isDayComplete(draws: UiDrawView[] | undefined, stations: StationRespons
   return draws.length >= stations.length && draws.every((d) => d.isComplete);
 }
 
-export function useDailyDraws(date: string, stations: StationResponse[] = []) {
+export function useDailyDraws(
+  date: string,
+  stations: StationResponse[] = [],
+  enabled = true,
+) {
   const query = useQuery<UiDrawView[], Error>({
     queryKey: [
       'draws',
@@ -49,7 +53,7 @@ export function useDailyDraws(date: string, stations: StationResponse[] = []) {
       );
       return results.filter(Boolean) as UiDrawView[];
     },
-    enabled: Boolean(date),
+    enabled: Boolean(date) && enabled,
     // Poll until every scheduled station is complete (T11.11)
     staleTime: (q) => drawQueryTiming(date, isDayComplete(q.state.data, stations)).staleTime,
     refetchInterval: (q) =>

@@ -193,6 +193,10 @@ export const STRINGS = {
     allStationsSummary: (count: number) => `Bảng tổng hợp ${count} đài mở thưởng`,
     quickSearchPlaceholder: 'Dò nhanh trong bảng (nhập 2-6 số)...',
     quickSearchClear: 'Xóa tìm kiếm',
+    quickSearchNoMatch: (query: string) =>
+      `Không có số nào khớp ‘${query}’ trong bảng này`,
+    quickSearchMatchCount: (count: number, details: string) =>
+      `Khớp ${count} giải: ${details}`,
     dateLabel: 'Chọn ngày mở thưởng',
     stationLabel: 'Đài mở thưởng',
     loading: 'Đang tải kết quả...',
