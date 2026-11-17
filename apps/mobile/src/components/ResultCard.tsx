@@ -160,11 +160,7 @@ export function ResultCard({
 
   return (
     <Animated.View
-      testID={testID}
-      accessible={true}
-      accessibilityRole="summary"
-      accessibilityLabel={a11ySummary}
-      accessibilityLiveRegion="assertive"
+      testID={`${testID}-container`}
       style={[
         animatedStyle,
         {
@@ -174,6 +170,15 @@ export function ResultCard({
       ]}
       className="mt-4 mx-4 p-5 rounded-2xl border shadow-xs"
     >
+      {/* Summary (context, ticket, status) is one screen-reader element;
+          the action buttons below stay separately focusable (T11.22) */}
+      <View
+        testID={testID}
+        accessible={true}
+        accessibilityRole="summary"
+        accessibilityLabel={a11ySummary}
+        accessibilityLiveRegion="assertive"
+      >
       {/* 1. Context Line: Đài · Ngày (T10.30) */}
       <View className="flex-row items-center justify-between pb-1">
         <Text
@@ -227,6 +232,8 @@ export function ResultCard({
             {STRINGS.check.resultLostSubtitle}
           </Text>
         )}
+      </View>
+
       </View>
 
       {/* 4. Body: Pending notice, Wins list, or non-winning notice */}
