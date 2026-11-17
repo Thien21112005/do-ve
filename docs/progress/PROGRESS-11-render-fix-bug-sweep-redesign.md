@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 20 / 53 task hoàn thành
+- **Tổng quan:** 21 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -26,7 +26,7 @@
 | T11.16 | [P1] Tự dò lại vé chờ: 4 lỗi | DONE | 969fff6 | 2026-11-17 | (a) chỉ nhận CHECKED; (b) lưu wins qua mapCheckResponseToUi; (c) runSharedRecheck() dùng chung 1 promise mức module; (d) STATION_NOT_DRAWING → trạng thái mới INVALID + badge 'Đài không quay ngày này'. Fixture cũ WIN/LOSE (không có ở backend) đổi thành CHECKED |
 | T11.17 | [P2] Mã đài không chuẩn hoá nên vé bị trùng | TODO | | | |
 | T11.18 | [P2] Tab Dò vé mặc định "hôm nay" kể cả buổi sáng | DONE | f7c7c28 | 2026-11-17 | Ngày mặc định của tab Dò vé = useActiveDrawSession().date (trước 16h10 là hôm qua). Test checkDefaultDate |
-| T11.19 | [P2] Màn Kết quả: nút thử lại offline sai và tìm nhanh không có phản hồi | TODO | | | |
+| T11.19 | [P2] Màn Kết quả: nút thử lại offline sai và tìm nhanh không có phản hồi | DONE | e4769a1 | 2026-11-18 | OfflineBanner retry theo chế độ (single → refetch, all → refetchDaily; tắt useDailyDraws khi ở single); quickSearchFeedback hiện dòng 'Không có số nào khớp…' hoặc 'Khớp N giải: …' (ẩn khi chưa có bảng). 7 test mới |
 | T11.20 | [P2] Giờ quay mâu thuẫn ở 4 nơi | DONE | fba045b | 2026-11-17 | lib/drawWindow.ts (liveFrom 16:10, start 16:15, expectedDone 16:40); date/format/DateStrip/Home/STRINGS đều lấy từ đây. Test chặn viết cứng giờ. Test cũ khoá 16h35 cập nhật sang 16h40. Nhắc 16h45 giữ riêng (cài đặt thông báo) |
 | T11.21 | [P2] Số tiền trúng chưa có "bằng chữ" | DONE | edaf2ce | 2026-11-17 | amountInWordsVN() + 28 case (linh/mười/mốt/lăm/mươi, không trăm, nghìn tỷ, chặn số âm/lẻ). Hiển thị trên UI ở T11.34 (ResultStub) |
 | T11.22 | [P2] Trình đọc màn hình không bấm được nút trong thẻ kết quả | DONE | ec6d690 | 2026-11-17 | accessible + liveRegion chỉ gắn vùng tóm tắt (đài·ngày, số vé, trạng thái); thẻ ngoài là container thường nên nút Lưu/Dò lại focus được. Test kiểm nút không có tổ tiên accessible. Cần kiểm lại TalkBack/VoiceOver ở T11.51 |
