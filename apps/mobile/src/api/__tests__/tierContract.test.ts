@@ -1,10 +1,10 @@
+import { TIER_NAMES, TIER_DIGITS, mapCheckResponseToUi } from '../mappers';
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
-import { TIER_NAMES, TIER_DIGITS, mapCheckResponseToUi } from '../mappers';
 
 /** Tier keys straight from the backend enum, so mobile cannot drift (T11.53). */
 function backendTiers(): string[] {
