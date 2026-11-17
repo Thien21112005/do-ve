@@ -7,3 +7,4 @@ export * from './version';
 export * from './strings';
 export * from './date';
 export * from './schedule';
+export * from './amountInWords';
