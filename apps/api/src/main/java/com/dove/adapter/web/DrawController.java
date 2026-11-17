@@ -217,15 +217,34 @@ public class DrawController {
 
     LocalDate todayVn = LocalDate.now(clock.withZone(VN_ZONE));
     boolean allPast = draws.stream().allMatch(d -> d.drawDate().isBefore(todayVn));
-    CacheControl cacheControl =
-        (!draws.isEmpty() && allPast)
-            ? CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable()
-            : CacheControl.noCache();
+    CacheControl cacheControl;
+    if (draws.isEmpty() || !allPast) {
+      cacheControl = CacheControl.noCache();
+    } else if (isCompleteDay(draws)) {
+      cacheControl = CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable();
+    } else {
+      // A past day missing a station or numbers may still be backfilled by
+      // ingestion: never pin it for a year (T11.12).
+      cacheControl = CacheControl.maxAge(Duration.ofSeconds(60));
+    }
 
     List<DrawResponse> responses =
         draws.stream().map(d -> DrawResponse.from(d, resolveStationName(d.stationCode()))).toList();
 
     return ResponseEntity.ok().cacheControl(cacheControl).body(responses);
+  }
+
+  /**
+   * A day is complete when every station scheduled for its weekday has a draw and every draw has
+   * all 18 numbers.
+   */
+  private boolean isCompleteDay(List<DrawResult> draws) {
+    LocalDate day = draws.getFirst().drawDate();
+    int scheduled =
+        stationScheduleRepository.findStationsDrawingOn(day.getDayOfWeek().getValue()).size();
+    return scheduled > 0
+        && draws.size() >= scheduled
+        && draws.stream().allMatch(DrawResult::isComplete);
   }
 
   private String resolveStationName(String stationCode) {

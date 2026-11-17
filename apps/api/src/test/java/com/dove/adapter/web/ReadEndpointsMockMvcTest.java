@@ -564,4 +564,72 @@ class ReadEndpointsMockMvcTest {
         .andExpect(jsonPath("$[1].stationCode").value("tp-hcm"))
         .andExpect(jsonPath("$[1].stationName").value("TP. Hồ Chí Minh"));
   }
+
+  private static DrawResult completeDraw(String station, LocalDate date) {
+    Map<PrizeTier, List<String>> n = new HashMap<>();
+    n.put(PrizeTier.EIGHTH, List.of("12"));
+    n.put(PrizeTier.SEVENTH, List.of("123"));
+    n.put(PrizeTier.SIXTH, List.of("1234", "2345", "3456"));
+    n.put(PrizeTier.FIFTH, List.of("4567"));
+    n.put(PrizeTier.FOURTH, List.of("10001", "10002", "10003", "10004", "10005", "10006", "10007"));
+    n.put(PrizeTier.THIRD, List.of("20001", "20002"));
+    n.put(PrizeTier.SECOND, List.of("30001"));
+    n.put(PrizeTier.FIRST, List.of("40001"));
+    n.put(PrizeTier.SPECIAL, List.of("500001"));
+    return new DrawResult(station, date, n);
+  }
+
+  private void scheduleSundayThreeStations() {
+    stationScheduleRepository.setSchedule(
+        7,
+        List.of(
+            new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH"),
+            new StationEntity("dong-thap", "Đồng Tháp", "SOUTH"),
+            new StationEntity("ca-mau", "Cà Mau", "SOUTH")));
+  }
+
+  @Test
+  @DisplayName("T11.12: past latest-day with every scheduled station complete is immutable")
+  void latestDayCompletePastIsImmutable() throws Exception {
+    LocalDate sunday = LocalDate.of(2026, 11, 8);
+    scheduleSundayThreeStations();
+    drawRepository.put(completeDraw("tp-hcm", sunday));
+    drawRepository.put(completeDraw("dong-thap", sunday));
+    drawRepository.put(completeDraw("ca-mau", sunday));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day").param("date", "2026-11-08"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"));
+  }
+
+  @Test
+  @DisplayName("T11.12: past latest-day missing a scheduled station is NOT immutable")
+  void latestDayMissingStationIsShortLived() throws Exception {
+    LocalDate sunday = LocalDate.of(2026, 11, 8);
+    scheduleSundayThreeStations();
+    drawRepository.put(completeDraw("tp-hcm", sunday));
+    drawRepository.put(completeDraw("dong-thap", sunday));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day").param("date", "2026-11-08"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "max-age=60"));
+  }
+
+  @Test
+  @DisplayName("T11.12: past latest-day with an incomplete draw is NOT immutable")
+  void latestDayIncompleteDrawIsShortLived() throws Exception {
+    LocalDate sunday = LocalDate.of(2026, 11, 8);
+    scheduleSundayThreeStations();
+    drawRepository.put(completeDraw("tp-hcm", sunday));
+    drawRepository.put(completeDraw("dong-thap", sunday));
+    drawRepository.put(
+        new DrawResult("ca-mau", sunday, Map.of(PrizeTier.SPECIAL, List.of("999999"))));
+
+    mockMvc
+        .perform(get("/api/v1/draws/latest-day").param("date", "2026-11-08"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Cache-Control", "max-age=60"));
+  }
 }
