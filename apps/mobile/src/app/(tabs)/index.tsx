@@ -22,7 +22,7 @@ import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
-import { DRAW_WINDOW, toMinutes } from '@/lib/drawWindow';
+import { computeTodayStatus } from '@/lib/todayStatus';
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -61,18 +61,17 @@ export default function HomeScreen() {
   // Check live drawing window (DRAW_WINDOW, T11.20)
   const isLive = isLiveDrawingVN();
 
-  // Compute live time status
-  const timeStatus = useMemo(() => {
-    if (isLive) {
-      return STRINGS.home.statusLive;
-    }
+  // Today's status from data: yesterday's draws never make today "final" (T11.09)
+  const todayStatus = useMemo(() => {
     const { hour, minute } = nowVN();
-    const timeMinutes = hour * 60 + minute;
-    if (timeMinutes > toMinutes(DRAW_WINDOW.expectedDone) || (draws && draws.length > 0)) {
-      return STRINGS.home.statusFinal;
-    }
-    return STRINGS.home.statusUpcoming;
-  }, [isLive, draws]);
+    return computeTodayStatus({
+      today,
+      minutes: hour * 60 + minute,
+      isLive,
+      stationsCount: todayStations.length,
+      draws,
+    });
+  }, [today, isLive, todayStations.length, draws]);
 
   // Animated pulse dot for live drawing, respects reduceMotion
   const [pulseAnim] = useState(() => new Animated.Value(1));
@@ -216,9 +215,9 @@ export default function HomeScreen() {
                 className="w-2.5 h-2.5 rounded-full mr-2"
                 style={{
                   backgroundColor:
-                    timeStatus === STRINGS.home.statusLive
+                    todayStatus.kind === 'live'
                       ? colors.pending
-                      : timeStatus === STRINGS.home.statusFinal
+                      : todayStatus.kind === 'final'
                         ? colors.win
                         : colors.primary,
                   opacity: isLive && !reduceMotion ? pulseAnim : 1,
@@ -229,7 +228,7 @@ export default function HomeScreen() {
                 style={{ color: colors.textMain }}
                 numberOfLines={1}
               >
-                {scheduleDay?.dayName || STRINGS.schedule.todayTag}, {todayStr} · {todayStations.length} đài · {timeStatus}
+                {scheduleDay?.dayName || STRINGS.schedule.todayTag}, {todayStr} · {todayStations.length} đài · {todayStatus.label}
               </Text>
             </View>
 
