@@ -20,7 +20,17 @@ Tên file: `<màn>-<theme>.png` (`home`, `check`, `results`, `tickets`, `more`, 
 
 ## Trạng thái
 
-**Chưa có ảnh.** Phiên làm việc ngày 2026-11-17 không có thiết bị/emulator. Các vấn đề dưới đây được xác minh bằng đọc mã và bằng bundle `expo export --platform android`, **không** bằng mắt.
+- `after-t1101/*-dark.png`: 7 màn, theme Tối, Expo Go trên Android, 2026-11-17 13:44. Chụp **sau** T11.01 và T11.03, **trước** các bản sửa `05106a5`, `d111ada`, `58ec061`. Không có backend nên Home, Kết quả và danh sách đài hiện lỗi hoặc đang tải.
+- Còn thiếu: theme Sáng, màn Lịch quay, ảnh `before/`.
+
+## Quan sát từ ảnh after-t1101 (tối)
+
+1. ✅ NativeWind chạy: 6 ô số nằm một hàng, chip đài nằm ngang, có bo góc và khoảng cách, font Be Vietnam Pro.
+2. ❌ More và Settings: `ListRow` mất `flexDirection`/padding (icon nằm trên, `›` rơi xuống dòng, công tắc nằm dưới chữ). Nguyên nhân: `Pressable style={({ pressed }) => …}` bị css-interop bỏ. Đã sửa ở `d111ada`.
+3. ❌ Dò vé, Kết quả, Vé, Thêm có nền navy `slate-900`, lệch với nền than của header và tab bar. Đã sửa ở `58ec061`.
+4. ❌ LogBox "AsyncStorageError: Native module is null": async-storage 3.1.1 không có trong Expo Go. Đã sửa ở `05106a5` (về 2.2.0).
+5. Còn lại (đã có task): dòng trạng thái Home bị cắt chữ và dính pill "DoVe MIỀN NAM" (T11.30); placeholder giãn chữ quá rộng (T11.31); ngày ISO `2026-11-17` và tiêu đề "3. Nhập…" ở Dò vé, hộp kỳ chiếm nửa màn (T11.33); Dò vé mặc định Hôm nay lúc 13h44 (T11.18); tiêu đề lặp đôi ở Thêm và Vé của tôi (T11.45/T11.41).
+6. Chỉ có ở dev: nút bánh răng của Expo Go, thanh LogBox ở đáy.
 
 ## Vấn đề đã xác minh từ bundle (chưa có ảnh)
 
