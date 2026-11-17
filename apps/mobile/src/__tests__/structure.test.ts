@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { APP_NAME } from '@/lib';
 import { THEME_MODES } from '@/theme';
 import type { StationCode } from '@/types';
@@ -15,5 +17,24 @@ describe('Project Structure and Path Aliases', () => {
   it('resolves @/types alias correctly', () => {
     const station: StationCode = 'TPHCM';
     expect(station).toBe('TPHCM');
+  });
+});
+
+describe('NativeWind build wiring (T11.01)', () => {
+  const babelPath = path.resolve(__dirname, '../../babel.config.js');
+
+  it('has a babel.config.js so className props are compiled', () => {
+    expect(fs.existsSync(babelPath)).toBe(true);
+  });
+
+  it('sets jsxImportSource to nativewind and includes nativewind/babel', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const factory = require(babelPath);
+    const config = factory({ cache: () => undefined });
+    const expoPreset = config.presets.find(
+      (p: unknown) => Array.isArray(p) && p[0] === 'babel-preset-expo',
+    );
+    expect(expoPreset?.[1]?.jsxImportSource).toBe('nativewind');
+    expect(config.presets).toContain('nativewind/babel');
   });
 });
