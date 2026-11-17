@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 9 / 53 task hoàn thành
+- **Tổng quan:** 10 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -16,7 +16,7 @@
 | T11.06 | Guard test "ratchet" chặn tái phát | DONE | 8f1ba7f | 2026-11-17 | designGuard.test.ts + src/test-utils/designDebt.ts; allowlist 23 file (baseline 2026-11-17), bắt buộc hạ khi trả nợ. Allowlist rỗng là mục tiêu cuối phase |
 | T11.07 | [P0] Mất toàn bộ vé khi đọc storage lỗi | DONE | 6f5b4dd | 2026-11-17 | Ghi dùng loadForWrite nghiêm ngặt (ném TicketStoreCorruptError/ReadError); hỏng thì sao lưu raw sang dove.tickets.corrupt.<ts>, không đụng key gốc; lỗi đọc tạm thời thử lại 1 lần; Banner + Xuất bản sao ở màn Vé. 8 test mới |
 | T11.08 | [P0] Dò nhanh ở Home gửi sai cặp đài–ngày | DONE | d8ace18, 952b9cc | 2026-11-17 | getActiveDrawSession() (trước 16h10 = kỳ hôm qua) + useActiveDrawSession; Home dùng cùng cặp ngày–đài, bỏ danh sách đài dự phòng viết cứng. 952b9cc: bỏ timer trong hook (làm Jest treo). Lưu ý: 17/11/2026 là thứ Ba (wireframe ghi T.2 là nhầm) |
-| T11.09 | [P1] Home báo "Đã có kết quả" suốt buổi sáng | TODO | | | |
+| T11.09 | [P1] Home báo "Đã có kết quả" suốt buổi sáng | DONE | e4d6882 | 2026-11-17 | computeTodayStatus() theo dữ liệu hôm nay + isComplete: 4 trạng thái (sắp quay / đang quay x/y / đã đủ / không có lịch); sau giờ quay mà thiếu số thì là 'Đang cập nhật', không phải 'đủ' |
 | T11.10 | [P1] "Chưa có kết quả" bị hiển thị như lỗi đỏ | TODO | | | |
 | T11.11 | [P1] Bảng kết quả bị "đóng băng" trong giờ quay | TODO | | | |
 | T11.12 | [P1][Backend] Cache `immutable 365 ngày` cho danh sách thiếu đài | TODO | | | |
