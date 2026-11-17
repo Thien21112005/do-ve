@@ -10,6 +10,7 @@ import {
 import { useTheme } from '@/theme';
 import { radii, elevations } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
+import { usePressed } from './usePressed';
 
 export interface CardProps extends ViewProps {
   variant?: 'surface' | 'sunken' | 'elevated';
@@ -34,6 +35,7 @@ export function Card({
   ...props
 }: CardProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   let bgColor = colors.surface;
   if (variant === 'sunken') {
@@ -65,7 +67,8 @@ export function Card({
           haptics.selection();
           onPress();
         }}
-        style={({ pressed }) => [
+        {...pressHandlers}
+        style={[
           cardStyle,
           {
             opacity: pressed ? 0.92 : 1,

@@ -12,6 +12,7 @@ import { Text } from './Text';
 import { useTheme } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
+import { usePressed } from './usePressed';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive';
 export type ButtonSize = 'md' | 'lg';
@@ -42,6 +43,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
   const isDisabled = disabled || loading;
 
   const handlePress = (e: any) => {
@@ -81,7 +83,8 @@ export function Button({
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       onPress={handlePress}
-      style={({ pressed }) => [
+      {...pressHandlers}
+      style={[
         styles.base,
         {
           height,

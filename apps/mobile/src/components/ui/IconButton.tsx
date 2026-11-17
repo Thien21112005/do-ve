@@ -9,6 +9,7 @@ import {
 import { useTheme } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
+import { usePressed } from './usePressed';
 
 export interface IconButtonProps extends Omit<PressableProps, 'style'> {
   icon: React.ReactNode;
@@ -31,6 +32,7 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   const handlePress = (e: any) => {
     if (disabled) return;
@@ -58,7 +60,8 @@ export function IconButton({
       disabled={disabled}
       onPress={handlePress}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-      style={({ pressed }) => [
+      {...pressHandlers}
+      style={[
         styles.base,
         {
           width: Math.max(size, 44),

@@ -124,13 +124,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
             accessibilityRole="button"
             accessibilityLabel="Thử lại"
             onPress={this.handleReset}
-            style={({ pressed }) => [
+            style={[
               styles.retryBtn,
               {
                 backgroundColor: themeColors.primary,
                 borderRadius: radii.md,
-                opacity: pressed ? 0.88 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
           >

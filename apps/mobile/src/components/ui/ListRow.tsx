@@ -9,6 +9,7 @@ import {
 import { Text } from './Text';
 import { useTheme } from '@/theme';
 import { haptics } from '@/lib/haptics';
+import { usePressed } from './usePressed';
 
 export interface ListRowProps {
   title: string;
@@ -36,6 +37,7 @@ export function ListRow({
   accessibilityLabel,
 }: ListRowProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   const handlePress = () => {
     if (!onPress) return;
@@ -52,7 +54,8 @@ export function ListRow({
       accessibilityLabel={accessibilityLabel || title}
       disabled={!onPress}
       onPress={handlePress}
-      style={({ pressed }) => [
+      {...pressHandlers}
+      style={[
         styles.container,
         {
           backgroundColor: colors.surface,

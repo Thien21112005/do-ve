@@ -11,6 +11,7 @@ import { Text } from './Text';
 import { useTheme } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
+import { usePressed } from './usePressed';
 
 export interface ChipProps extends Omit<PressableProps, 'style'> {
   label: string;
@@ -34,6 +35,7 @@ export function Chip({
   ...props
 }: ChipProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   const handlePress = (e: any) => {
     if (enableHaptics) {
@@ -51,7 +53,8 @@ export function Chip({
       accessibilityRole="button"
       accessibilityState={{ selected }}
       onPress={handlePress}
-      style={({ pressed }) => [
+      {...pressHandlers}
+      style={[
         styles.base,
         {
           backgroundColor: bgColor,

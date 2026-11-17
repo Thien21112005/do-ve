@@ -23,6 +23,7 @@ import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
 import type { CheckTicketResponse } from '@/types';
 import type { UiCheckResult } from '@/api/mappers';
+import { usePressed } from './ui/usePressed';
 
 export interface ResultCardProps {
   result: UiCheckResult | CheckTicketResponse;
@@ -40,6 +41,7 @@ export function ResultCard({
   testID = 'result-card',
 }: ResultCardProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
   const [reduceMotion, setReduceMotion] = useState(false);
   const isPending = result.status === 'RESULT_NOT_AVAILABLE';
   const isWon = !isPending && Boolean(result.won);
@@ -298,11 +300,12 @@ export function ResultCard({
               }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               className="mt-2 py-2.5 px-4 rounded-xl flex-row items-center justify-center border min-h-[44px]"
-              style={({ pressed }) => ({
+              {...pressHandlers}
+              style={{
                 borderColor: colors.border,
                 backgroundColor: pressed ? colors.surfaceSubtle : colors.surface,
                 opacity: pressed ? 0.8 : 1,
-              })}
+              }}
               accessibilityRole="button"
               accessibilityLabel={STRINGS.check.checkAgain}
             >
