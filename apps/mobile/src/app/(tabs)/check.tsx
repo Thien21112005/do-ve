@@ -42,7 +42,7 @@ export default function CheckScreen() {
   const queryClient = useQueryClient();
   const {
     checkTicket: submitCheck,
-    result,
+    result: rawResult,
     isLoading,
     isError,
     error,
@@ -51,7 +51,7 @@ export default function CheckScreen() {
 
   const {
     checkBatchTickets: submitBatchCheck,
-    result: batchResult,
+    result: rawBatchResult,
     isLoading: isBatchLoading,
     isError: isBatchError,
     error: batchError,
@@ -74,20 +74,16 @@ export default function CheckScreen() {
   const [batchText, setBatchText] = useState<string>('');
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
 
-  // Clear stale check result when single ticket input, station, or date changes (T09.20)
-  useEffect(() => {
-    if (result) {
-      resetSingle();
-      setJustSaved(false);
-    }
-  }, [ticketNumber, selectedStation, selectedDate, resetSingle]);
-
-  // Clear stale batch check result when batch input, station, or date changes (T09.20)
-  useEffect(() => {
-    if (batchResult) {
-      resetBatch();
-    }
-  }, [batchText, selectedStation, selectedDate, resetBatch]);
+  // Only show a response that belongs to the form as it is now: if the user
+  // changes date/station/ticket while a request is in flight, the late
+  // response is ignored instead of shown under the new context (T11.13).
+  const formKey = `${selectedDate}|${selectedStation}|${ticketNumber}`;
+  const batchFormKey = `${selectedDate}|${selectedStation}|${batchText}`;
+  const [submittedKey, setSubmittedKey] = useState<string | null>(null);
+  const [submittedBatchKey, setSubmittedBatchKey] = useState<string | null>(null);
+  const result = rawResult && submittedKey === formKey ? rawResult : null;
+  const batchResult =
+    rawBatchResult && submittedBatchKey === batchFormKey ? rawBatchResult : null;
 
   const scrollViewRef = useRef<any>(null);
   const resultLayoutY = useRef<number>(0);
@@ -280,6 +276,7 @@ export default function CheckScreen() {
       setJustSaved(false);
       haptics.medium();
       Keyboard.dismiss();
+      setSubmittedKey(`${selectedDate}|${selectedStation}|${ticketToSubmit}`);
       submitCheck(
         {
           ticket: ticketToSubmit,
@@ -336,6 +333,7 @@ export default function CheckScreen() {
       triggerSingleCheck(ticketNumber);
     } else {
       haptics.medium();
+      setSubmittedBatchKey(batchFormKey);
       submitBatchCheck(
         {
           stationCode: selectedStation,
