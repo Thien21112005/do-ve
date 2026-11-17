@@ -10,7 +10,7 @@ import { scanDesignDebt, type DebtCounts } from '@/test-utils/designDebt';
  * (or delete) its entry here. Goal at the end of Phase 11: empty.
  */
 const ALLOWLIST: DebtCounts = {
-  'app/(tabs)/check.tsx': { rawRnPrimitive: 2, hexColor: 2, alphaConcat: 1, rawPaletteClass: 10 },
+  'app/(tabs)/check.tsx': { rawRnPrimitive: 2, hexColor: 2, alphaConcat: 1, rawPaletteClass: 8 },
   'app/(tabs)/index.tsx': {
     rawRnPrimitive: 2,
     hexColor: 3,
@@ -18,13 +18,12 @@ const ALLOWLIST: DebtCounts = {
     tinyArbitraryText: 2,
     textWhite: 3,
   },
-  'app/(tabs)/more.tsx': { rawRnPrimitive: 1, alphaConcat: 1, rawPaletteClass: 2 },
-  'app/(tabs)/results.tsx': { rawRnPrimitive: 2, alphaConcat: 4, rawPaletteClass: 6 },
+  'app/(tabs)/more.tsx': { rawRnPrimitive: 1, alphaConcat: 1 },
+  'app/(tabs)/results.tsx': { rawRnPrimitive: 2, alphaConcat: 4, rawPaletteClass: 4 },
   'app/(tabs)/tickets.tsx': {
     rawRnPrimitive: 2,
     hexColor: 6,
     alphaConcat: 3,
-    rawPaletteClass: 2,
     tinyArbitraryText: 2,
     textWhite: 6,
   },

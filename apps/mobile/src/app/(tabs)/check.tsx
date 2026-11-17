@@ -354,7 +354,7 @@ export default function CheckScreen() {
   return (
     <SafeAreaView
       edges={['bottom']}
-      className="flex-1 bg-slate-50 dark:bg-slate-900"
+      className="flex-1 bg-background"
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

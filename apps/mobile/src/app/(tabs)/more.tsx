@@ -15,7 +15,7 @@ export default function MoreScreen() {
     <SafeAreaView
       testID="more-screen"
       edges={['bottom']}
-      className="flex-1 bg-slate-50 dark:bg-slate-900"
+      className="flex-1 bg-background"
     >
       <ScrollView
         contentContainerStyle={{
