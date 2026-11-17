@@ -196,6 +196,9 @@ export const STRINGS = {
     stationLabel: 'Đài mở thưởng',
     loading: 'Đang tải kết quả...',
     emptyTitle: 'Chưa có kết quả mở thưởng',
+    notDrawingTitle: 'Đài này không quay ngày đã chọn',
+    notDrawingMessage: (date: string) =>
+      `Ngày ${date} đài này không có lịch mở thưởng. Hãy chọn đài khác hoặc ngày khác.`,
     noStationSelectedTitle: 'Chưa chọn đài mở thưởng',
     noStationSelectedDesc: (date: string) =>
       `Vui lòng chọn một đài quay thưởng ngày ${date} để xem chi tiết kết quả.`,

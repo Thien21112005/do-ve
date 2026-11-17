@@ -69,7 +69,7 @@ export default function ResultsScreen() {
     refetch: refetchDaily,
   } = useDailyDraws(selectedDate, stations);
 
-  const { draw, isLoading, isError, error, refetch } = useDraw(
+  const { draw, availability, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
     selectedStation,
   );
@@ -451,9 +451,13 @@ export default function ResultsScreen() {
                 className="text-base font-bold mt-2.5 text-center"
                 style={{ color: colors.textMain }}
               >
-                {STRINGS.results.emptyTitle}
+                {availability === 'NOT_DRAWING'
+                  ? STRINGS.results.notDrawingTitle
+                  : STRINGS.results.emptyTitle}
               </Text>
-              {/* Estimated time notice (T10.42) */}
+              {/* Estimated time notice (T10.42); not shown when the station
+                  simply does not draw that day (T11.10) */}
+              {availability !== 'NOT_DRAWING' && (
               <View
                 testID="results-empty-estimated-time"
                 className="mt-2.5 px-3 py-1.5 rounded-lg border flex-row items-center"
@@ -469,11 +473,14 @@ export default function ResultsScreen() {
                   {getEstimatedDrawTimeMessage(selectedDate)}
                 </Text>
               </View>
+              )}
               <Text
                 className="text-xs text-center mt-2 leading-5"
                 style={{ color: colors.textMuted }}
               >
-                {STRINGS.results.emptyMessage(formattedDate)}
+                {availability === 'NOT_DRAWING'
+                  ? STRINGS.results.notDrawingMessage(formattedDate)
+                  : STRINGS.results.emptyMessage(formattedDate)}
               </Text>
             </View>
           ) : (

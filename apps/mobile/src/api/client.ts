@@ -19,6 +19,7 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
   TIMEOUT_ERROR: 'Yêu cầu máy chủ vượt quá thời gian cho phép. Vui lòng thử lại.',
   STATION_NOT_FOUND: 'Không tìm thấy thông tin đài quay thưởng.',
   STATION_NOT_DRAWING: 'Đài này không mở thưởng vào ngày đã chọn.',
+  RESULT_NOT_AVAILABLE: 'Kỳ này chưa có kết quả mở thưởng.',
   INVALID_DATE: 'Ngày mở thưởng không hợp lệ.',
   INVALID_TICKET: 'Số vé không hợp lệ (cần đủ 6 chữ số).',
   RATE_LIMITED: 'Bạn đã thực hiện quá nhiều yêu cầu. Vui lòng chờ ít phút.',
