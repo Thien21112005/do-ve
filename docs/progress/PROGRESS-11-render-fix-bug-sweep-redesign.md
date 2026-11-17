@@ -9,7 +9,7 @@
 | ID | Task | Trạng thái | Commit | Ngày | Ghi chú |
 |---|---|---|---|---|---|
 | T11.01 | Thêm `babel.config.js` cho NativeWind v4 | DOING | 0c75ff7 | 2026-11-17 | Code xong: thêm babel.config.js, bundle Android (expo export) xác nhận className được biên dịch qua css-interop. Chưa DONE vì còn thiếu ảnh máy thật (DoD §0.4), chờ người dùng chụp |
-| T11.02 | Chụp baseline thật (before) toàn app | TODO | | | |
+| T11.02 | Chụp baseline thật (before) toàn app | BLOCKED | cf01385 | 2026-11-17 | Đã thêm .maestro/screenshots.yaml và README baseline (vấn đề xác minh qua bundle). Bị chặn: không có thiết bị/emulator để chụp 32 ảnh, cần người dùng chạy Maestro |
 | T11.03 | Kiểm chứng theme sáng/tối của NativeWind theo cài đặt app | TODO | | | |
 | T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | TODO | | | |
 | T11.05 | Dọn 4 cảnh báo `exhaustive-deps` | TODO | | | |
