@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -41,17 +41,21 @@ export default function ResultsScreen() {
     () => params.station || '',
   );
 
-  useEffect(() => {
-    if (params.station && params.station !== selectedStation) {
+  // Follow incoming route params (e.g. "Xem bảng" from another tab) without
+  // stale-closure effects: compare with the previous params during render.
+  const [prevParams, setPrevParams] = useState({
+    station: params.station,
+    date: params.date,
+  });
+  if (params.station !== prevParams.station || params.date !== prevParams.date) {
+    setPrevParams({ station: params.station, date: params.date });
+    if (params.station && params.station !== prevParams.station) {
       setSelectedStation(params.station);
     }
-  }, [params.station]);
-
-  useEffect(() => {
-    if (params.date && params.date !== selectedDate) {
+    if (params.date && params.date !== prevParams.date) {
       setSelectedDate(params.date);
     }
-  }, [params.date]);
+  }
 
   const { stations, isLoading: isScheduleLoading } = useSchedule(selectedDate);
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single');
