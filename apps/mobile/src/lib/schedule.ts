@@ -1,5 +1,5 @@
 import { STRINGS } from './strings';
-import { todayVN, weekdayVN, addDays } from './date';
+import { todayVN, weekdayVN, addDays, nowVN } from './date';
 
 export interface ScheduledStation {
   code: string;
@@ -101,3 +101,28 @@ export const WEEKLY_SCHEDULE: DaySchedule[] = [
   },
 ];
 
+
+/** From this VN time onward "the current session" is today's draw (T11.08). */
+export const SESSION_SWITCH_MINUTES = 16 * 60 + 10;
+
+export interface DrawSession {
+  /** YYYY-MM-DD in VN time */
+  date: string;
+  dayOfWeek: number;
+  stations: ScheduledStation[];
+}
+
+/**
+ * The draw session the user most likely holds tickets for, as one
+ * consistent date + station list pair (T11.08):
+ * before 16h10 VN → the previous day's session (already drawn);
+ * from 16h10 → today's session.
+ */
+export function getActiveDrawSession(now: Date = new Date()): DrawSession {
+  const today = todayVN(now);
+  const { hour, minute } = nowVN(now);
+  const date = hour * 60 + minute >= SESSION_SWITCH_MINUTES ? today : addDays(today, -1);
+  const dayOfWeek = weekdayVN(date);
+  const stations = WEEKLY_SCHEDULE.find((d) => d.dayOfWeek === dayOfWeek)?.stations ?? [];
+  return { date, dayOfWeek, stations };
+}

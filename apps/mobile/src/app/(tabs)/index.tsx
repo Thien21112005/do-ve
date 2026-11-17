@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Icon, OfflineBanner, HomeDrawsSkeleton } from '@/components';
-import { useLatestDraws, useCheckTicket } from '@/hooks';
+import { useLatestDraws, useCheckTicket, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
 import { useTheme, layout } from '@/theme';
 import { formatDateVN, formatCurrency } from '@/lib/format';
@@ -49,12 +49,13 @@ export default function HomeScreen() {
   );
   const todayStations = scheduleDay?.stations || [];
 
-  // Default selected station to first today station or first draw
-  const activeStation =
-    selectedStation ||
-    todayStations[0]?.code ||
-    draws[0]?.stationCode ||
-    'tp-hcm';
+  // Quick check always uses one consistent session: the station chips
+  // and the draw date come from the same day (T11.08).
+  const session = useActiveDrawSession();
+  const sessionDay = WEEKLY_SCHEDULE.find((s) => s.dayOfWeek === session.dayOfWeek);
+  const activeStation = session.stations.some((st) => st.code === selectedStation)
+    ? selectedStation
+    : session.stations[0]?.code || '';
 
   // Check live drawing window (16h10 - 16h40 VN)
   const isLive = isLiveDrawingVN();
@@ -139,7 +140,7 @@ export default function HomeScreen() {
     doCheckTicket({
       ticket: ticketNumber,
       stationCode: activeStation,
-      drawDate: draws[0]?.drawDate || today,
+      drawDate: session.date,
     });
   };
 
@@ -295,7 +296,10 @@ export default function HomeScreen() {
               className="text-xs leading-relaxed mb-3"
               style={{ color: colors.textMuted }}
             >
-              Chọn đài và nhập 6 chữ số để dò trực tiếp ngay tại đây:
+              {STRINGS.home.quickCheckSession(
+                sessionDay?.dayName ?? '',
+                formatDateVN(session.date),
+              )}
             </Text>
 
             {/* Today Station Selector Chips */}
@@ -305,14 +309,7 @@ export default function HomeScreen() {
               className="mb-3"
               contentContainerStyle={{ paddingRight: 8 }}
             >
-              {(todayStations.length > 0
-                ? todayStations
-                : [
-                    { code: 'tp-hcm', name: 'TP. Hồ Chí Minh' },
-                    { code: 'dong-thap', name: 'Đồng Tháp' },
-                    { code: 'ca-mau', name: 'Cà Mau' },
-                  ]
-              ).map((st) => {
+              {session.stations.map((st) => {
                 const isSelected = activeStation === st.code;
                 return (
                   <TouchableOpacity

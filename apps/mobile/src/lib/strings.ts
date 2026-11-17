@@ -233,6 +233,8 @@ export const STRINGS = {
       'Nhập 6 chữ số trên vé để tra cứu chính xác giải thưởng từ Đặc biệt đến Giải tám.',
     quickCheckBtn: 'Dò vé ngay',
     quickCheckPlaceholder: 'Nhập 6 chữ số vé (vd: 654321)',
+    quickCheckSession: (dayName: string, date: string) =>
+      `Dò kỳ ${dayName}, ${date}. Chọn đài rồi nhập 6 chữ số:`,
     statusLive: 'Đang quay',
     statusFinal: 'Đã có kết quả',
     statusUpcoming: 'Quay lúc 16h15',

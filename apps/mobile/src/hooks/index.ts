@@ -12,3 +12,4 @@ export * from './useAppConfig';
 export * from './usePendingTicketsRecheck';
 export * from './usePendingTicketsReminder';
 export * from './useWeeklySchedule';
+export * from './useActiveDrawSession';
