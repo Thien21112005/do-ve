@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 import { getTickets, updateTicket } from '@/store/ticketStore';
 import { checkBatchTickets } from '@/api/check';
+import { ApiError } from '@/api/client';
+import { mapCheckResponseToUi } from '@/api/mappers';
 import type { SavedTicket } from '@/types';
 
 export interface PendingGroup {
@@ -62,29 +64,38 @@ export async function recheckPendingTickets(
 
         if (response && Array.isArray(response.results)) {
           for (const itemResult of response.results) {
-            if (
-              itemResult.status === 'CHECKED' ||
-              itemResult.status === 'WIN' ||
-              itemResult.status === 'LOSE' ||
-              (itemResult.status && itemResult.status !== 'RESULT_NOT_AVAILABLE')
-            ) {
+            // Only a fully checked result settles a ticket (T11.16a)
+            if (itemResult.status === 'CHECKED') {
               const matchedTicket = group.tickets.find(
                 (t) => t.ticket === itemResult.ticket,
               );
               if (matchedTicket) {
-                const newStatus = itemResult.won ? 'WON' : 'LOST';
+                // Store wins in UI shape (tierName, matchedDigits) (T11.16b)
+                const ui = mapCheckResponseToUi({
+                  ...itemResult,
+                  stationCode: itemResult.stationCode || group.station,
+                  drawDate: itemResult.drawDate || group.drawDate,
+                });
                 await updateFn(matchedTicket.id, {
-                  status: newStatus,
-                  totalPrize: itemResult.totalAmount || 0,
-                  wins: itemResult.wins || [],
+                  status: ui.won ? 'WON' : 'LOST',
+                  totalPrize: ui.totalAmount,
+                  wins: ui.wins,
                 });
                 updatedCount++;
               }
             }
           }
         }
-      } catch {
-        // Continue checking other groups even if one fails
+      } catch (err) {
+        // A station that does not draw that day will never get a result:
+        // mark the tickets INVALID instead of rechecking forever (T11.16d)
+        if (err instanceof ApiError && err.code === 'STATION_NOT_DRAWING') {
+          for (const t of group.tickets) {
+            await updateFn(t.id, { status: 'INVALID' });
+            updatedCount++;
+          }
+        }
+        // Other failures: keep PENDING and try again next time
       }
     }
 
@@ -92,6 +103,24 @@ export async function recheckPendingTickets(
   } catch {
     return { updatedCount: 0 };
   }
+}
+
+/**
+ * One in-flight recheck for the whole app: the hook is mounted in more than
+ * one place (root layout and the tickets tab), and per-instance flags let
+ * both run at once (T11.16c).
+ */
+let inFlight: Promise<{ updatedCount: number }> | null = null;
+
+export function runSharedRecheck(
+  batchCheckFn = checkBatchTickets,
+): Promise<{ updatedCount: number }> {
+  if (!inFlight) {
+    inFlight = recheckPendingTickets(batchCheckFn).finally(() => {
+      inFlight = null;
+    });
+  }
+  return inFlight;
 }
 
 export const DEFAULT_RECHECK_THROTTLE_MS = 2 * 60 * 1000; // 2 minutes (T09.45)
@@ -135,12 +164,14 @@ export function usePendingTicketsRecheck(options?: {
       if (!force && throttleMs > 0 && now - lastRecheckTimestamp < throttleMs) {
         return;
       }
+      const alreadyRunning = inFlight !== null;
       isRunningRef.current = true;
       setIsRechecking(true);
       try {
-        const { updatedCount } = await recheckPendingTickets();
+        const { updatedCount } = await runSharedRecheck();
         lastRecheckTimestamp = Date.now();
-        if (updatedCount > 0) {
+        // Only the instance that started the run reports the count
+        if (updatedCount > 0 && !alreadyRunning) {
           onRecheckComplete?.(updatedCount);
         }
       } finally {

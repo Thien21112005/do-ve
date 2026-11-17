@@ -149,7 +149,7 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
             ticket: '123456',
             stationCode: 'TPHCM',
             drawDate: '2026-11-14',
-            status: 'WIN',
+            status: 'CHECKED', // backend CheckStatus (T11.16)
             won: true,
             wins: [
               {
@@ -164,7 +164,7 @@ describe('usePendingTicketsRecheck & recheckPendingTickets', () => {
             ticket: '654321',
             stationCode: 'TPHCM',
             drawDate: '2026-11-14',
-            status: 'LOSE',
+            status: 'CHECKED', // backend CheckStatus (T11.16)
             won: false,
             wins: [],
             totalAmount: 0,

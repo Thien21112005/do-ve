@@ -39,7 +39,7 @@ export interface ImportResult {
 
 const VALID_TICKET_NUMBER_REGEX = /^\d{6}$/;
 const VALID_DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const VALID_STATUSES = new Set(['WON', 'LOST', 'PENDING']);
+const VALID_STATUSES = new Set(['WON', 'LOST', 'PENDING', 'INVALID']);
 
 /**
  * Strict validator for imported ticket structure (T09.39).

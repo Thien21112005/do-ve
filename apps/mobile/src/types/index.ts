@@ -28,7 +28,8 @@ export type ProblemDetail = {
 
 export type StationCode = string;
 
-export type SavedTicketStatus = 'WON' | 'LOST' | 'PENDING';
+/** INVALID: saved for a station that does not draw on that date (T11.16). */
+export type SavedTicketStatus = 'WON' | 'LOST' | 'PENDING' | 'INVALID';
 
 export interface SavedTicket {
   id: string;

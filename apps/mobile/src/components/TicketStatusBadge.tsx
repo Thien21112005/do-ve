@@ -26,7 +26,17 @@ export function TicketStatusBadge({
   const hasPrize = isWon && totalPrize > 0;
 
   // Visual styling with borders and icons to remain clear even in monochrome
-  const badgeConfig = isPending
+  const badgeConfig = status === 'INVALID'
+    ? {
+        icon: 'alertCircle' as const,
+        iconColor: colors.textMuted,
+        bgColor: colors.surfaceSubtle,
+        borderColor: colors.border,
+        textColor: colors.textMuted,
+        label: STRINGS.tickets.statusInvalidBadge,
+        a11y: STRINGS.tickets.statusInvalidBadge,
+      }
+    : isPending
     ? {
         icon: 'clock' as const,
         iconColor: colors.pending,

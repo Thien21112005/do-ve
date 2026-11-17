@@ -46,6 +46,7 @@ export const STRINGS = {
     statusLostBadge: 'Không trúng',
     statusPending: 'Chờ kết quả',
     statusPendingBadge: 'Chờ kết quả',
+    statusInvalidBadge: 'Đài không quay ngày này',
     totalPrizePrefix: 'Tổng trúng:',
     summaryTotal: 'Tổng vé',
     summaryPending: 'Đang chờ',
