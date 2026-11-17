@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 0 / 52 task hoàn thành
+- **Tổng quan:** 0 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -32,6 +32,7 @@
 | T11.22 | [P2] Trình đọc màn hình không bấm được nút trong thẻ kết quả | TODO | | | |
 | T11.23 | [P2] Cache offline khôi phục không được chờ | TODO | | | |
 | T11.24 | [P3] Vệ sinh store | TODO | | | |
+| T11.53 | [P1] Giải Khuyến khích hiện tên thô "ENCOURAGEMENT" (lệch key tier backend ↔ mobile) | TODO | | | |
 | T11.25 | Cổng quyết định: hướng "Tờ vé giấy" lần đầu tiên được nhìn thấy | TODO | | | |
 | T11.26 | Luật styling một đường | TODO | | | |
 | T11.27 | Primitive riêng của "tờ vé" | TODO | | | |

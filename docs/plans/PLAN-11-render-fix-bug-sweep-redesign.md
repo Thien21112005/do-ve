@@ -3,7 +3,7 @@
 - **Mục tiêu:** Làm cho giao diện đã thiết kế ở Phase 10 **thực sự hiện lên trên máy**, sửa các lỗi nghiệp vụ còn sót, rồi redesign từng màn theo hướng "Tờ vé giấy" — lần này mỗi task UI phải có **ảnh chụp trước/sau** làm bằng chứng.
 - **Phương pháp:** Skill `impeccable` (audit native + critique + new-work cho các màn), chế độ **Operate**. TDD cho mọi logic.
 - **Phạm vi:** `apps/mobile` (chính), 1 task ở `apps/api` (cache header).
-- **Số task:** 52
+- **Số task:** 53
 - **File tiến độ:** [`progress/PROGRESS-11-render-fix-bug-sweep-redesign.md`](../progress/PROGRESS-11-render-fix-bug-sweep-redesign.md)
 
 > Quy ước: mỗi task = 1 commit Conventional Commits; tick progress kèm hash 7 ký tự. Trước mỗi task chỉnh UI, đọc `reference/craft-floor.md` của skill impeccable.
@@ -197,6 +197,12 @@ Nguyên nhân các test đỏ:
 - `useSyncExternalStore(..., () => [])` tạo mảng mới mỗi lần (vòng lặp vô hạn trên web/SSR). Đổi sang hằng `EMPTY`.
 - `getTickets()` vừa đọc vừa ghi `cachedTickets` mỗi lần. Tách `load()` và `read()`.
 - **Commit:** `chore(mobile): stable snapshots in ticket store`
+
+### T11.53 — [P1] Giải Khuyến khích hiện tên thô "ENCOURAGEMENT"
+- **Lỗi:** Backend (`PrizeTier`) trả `tier: "ENCOURAGEMENT"` và không trả `tierName`. Mobile `api/mappers.ts` lại khai báo key `CONSOLATION` trong `TIER_NAMES`/`TIER_DIGITS`. Hệ quả: người trúng giải Khuyến khích (6 triệu) thấy nhãn tiếng Anh "ENCOURAGEMENT". Ngoài ra `matchedDigits` của giải Phụ ĐB/KK đang trả nguyên 6 số ĐB, dễ hiểu nhầm là "trùng cả 6 số".
+- **Sửa:** Đổi key thành `ENCOURAGEMENT`. Test hợp đồng sinh danh sách tier từ `docs/openapi.json`/enum backend để không lệch lại. Với Phụ ĐB thì tô 5 số cuối; với KK thì tô 5 số trùng và đánh dấu vị trí sai.
+- **Test:** fixture thật `{tier:"ENCOURAGEMENT"}` ra "Giải Khuyến khích"; fixture `SPECIAL_CONSOLATION` tô đúng 5 số cuối.
+- **Commit:** `fix(mobile): align derived prize tier keys with backend`
 
 ---
 
