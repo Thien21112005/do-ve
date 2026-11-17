@@ -20,7 +20,6 @@ import {
   ResultSkeleton,
   ResultCard,
   OfflineBanner,
-  getPastDays,
   BatchTicketInput,
   parseBatchTickets,
   BatchResultList,
@@ -29,7 +28,7 @@ import {
 import { useTheme, layout } from '@/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
-import { useCheckTicket, useCheckBatchTickets } from '@/hooks';
+import { useCheckTicket, useCheckBatchTickets, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets } from '@/store/ticketStore';
 import { useSettings } from '@/store/settings';
 import { getApiErrorMessage } from '@/api/client';
@@ -65,8 +64,8 @@ export default function CheckScreen() {
   const [settings] = useSettings();
   const [justSaved, setJustSaved] = useState(false);
 
-  // Initial state: today's date
-  const defaultDate = getPastDays(1)[0].dateString;
+  // Default to the latest drawn session: before 16h10 that is yesterday (T11.18)
+  const { date: defaultDate } = useActiveDrawSession();
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
   const [selectedStation, setSelectedStation] = useState<string>('');
   const [mode, setMode] = useState<'single' | 'batch'>('single');
