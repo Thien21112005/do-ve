@@ -155,6 +155,7 @@ export const BatchTicketInput: React.FC<BatchTicketInputProps> = ({
                 testID="batch-paste-btn"
                 accessibilityRole="button"
                 accessibilityLabel={STRINGS.check.batchPasteBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
                 onPress={onPaste}
                 className="px-2 py-0.5 rounded-md border flex-row items-center mr-2 active:opacity-60"
                 style={{

@@ -4,6 +4,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CheckScreen from '../(tabs)/check';
 import * as apiDraws from '@/api/draws';
+import * as Clipboard from 'expo-clipboard';
 import type { StationResponse } from '@/types';
 
 jest.mock('@/api/draws');
@@ -102,6 +103,32 @@ describe('CheckScreen Batch Input (T06.28)', () => {
     await waitFor(() => {
       const submitBtn = getByTestId('check-ticket-button');
       expect(submitBtn.props.accessibilityState.disabled).toBe(false);
+    });
+  });
+
+  it('pastes tickets from device clipboard on native where navigator.clipboard is absent (T11.14)', async () => {
+    (Clipboard.getStringAsync as jest.Mock).mockResolvedValueOnce('012345\n654321');
+
+    const { getByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    await fireEvent.press(getByTestId('mode-batch-btn'));
+    await waitFor(() => expect(getByTestId('batch-paste-btn')).toBeTruthy());
+
+    await fireEvent.press(getByTestId('batch-paste-btn'));
+    await waitFor(() => {
+      expect(Clipboard.getStringAsync).toHaveBeenCalledTimes(1);
+      expect(getByTestId('batch-ticket-input').props.value).toBe('012345\n654321');
+    });
+
+    // Pasting again appends on a new line instead of wiping existing entries
+    (Clipboard.getStringAsync as jest.Mock).mockResolvedValueOnce('999888');
+    await fireEvent.press(getByTestId('batch-paste-btn'));
+    await waitFor(() => {
+      expect(getByTestId('batch-ticket-input').props.value).toBe(
+        '012345\n654321\n999888',
+      );
     });
   });
 });

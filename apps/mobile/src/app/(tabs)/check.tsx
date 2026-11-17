@@ -12,6 +12,7 @@ import {
   AccessibilityInfo,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Clipboard from 'expo-clipboard';
 import {
   DateStrip,
   StationChips,
@@ -301,12 +302,11 @@ export default function CheckScreen() {
 
   const handleBatchPaste = async () => {
     try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard?.readText) {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          setBatchText((prev) => (prev ? `${prev}\n${text}` : text));
-          haptics.light();
-        }
+      const text = (await Clipboard.getStringAsync()).trim();
+      if (text) {
+        setHasInteracted(true);
+        setBatchText((prev) => (prev ? `${prev}\n${text}` : text));
+        haptics.light();
       }
     } catch {
       // Clipboard not available or permissions denied

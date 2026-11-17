@@ -107,6 +107,11 @@ jest.mock('expo-sharing', () => ({
   shareAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('expo-clipboard', () => ({
+  getStringAsync: jest.fn().mockResolvedValue(''),
+  setStringAsync: jest.fn().mockResolvedValue(true),
+}));
+
 jest.mock('expo-document-picker', () => ({
   getDocumentAsync: jest.fn().mockResolvedValue({
     canceled: true,
