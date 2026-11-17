@@ -30,7 +30,7 @@ describe('API to UI Mappers (T09.04)', () => {
     expect(getTierName('FIRST')).toBe('Giải Nhất');
     expect(getTierName('EIGHTH')).toBe('Giải Tám');
     expect(getTierName('SPECIAL_CONSOLATION')).toBe('Giải Phụ Đặc biệt');
-    expect(getTierName('CONSOLATION')).toBe('Giải Khuyến khích');
+    expect(getTierName('ENCOURAGEMENT')).toBe('Giải Khuyến khích'); // backend key (T11.53)
 
     expect(getMatchedDigits('SPECIAL', '654321')).toBe('654321');
     expect(getMatchedDigits('SEVENTH', '321')).toBe('321');

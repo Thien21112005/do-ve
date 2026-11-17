@@ -250,3 +250,32 @@ describe('ResultCard Component', () => {
     expect(onCheckAgain).toHaveBeenCalled();
   });
 });
+
+describe('ResultCard Khuyến khích label (T11.53)', () => {
+  it('does not claim a 6-digit match for an ENCOURAGEMENT win', async () => {
+    const result: UiCheckResult = {
+      ticket: '123457',
+      stationCode: 'tp-hcm',
+      station: 'tp-hcm',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-15',
+      status: 'CHECKED',
+      won: true,
+      wins: [
+        {
+          tier: 'ENCOURAGEMENT',
+          tierName: 'Giải Khuyến khích',
+          matchedNumber: '123456',
+          matchedDigits: '',
+          prizeAmount: 6000000,
+        },
+      ],
+      totalAmount: 6000000,
+      totalPrize: 6000000,
+    };
+    const { getByText, queryByText } = await render(<ResultCard result={result} />);
+    expect(getByText('Giải Khuyến khích')).toBeTruthy();
+    expect(getByText(/sai 1 số so với giải Đặc biệt · 123456/)).toBeTruthy();
+    expect(queryByText(/Trùng khớp 6 số/)).toBeNull();
+  });
+});

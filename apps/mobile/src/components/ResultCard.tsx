@@ -329,7 +329,11 @@ export function ResultCard({
           </Text>
           {result.wins.map((win, idx) => {
             const digits = (win as any).matchedDigits || (win as any).matchedNumber || '';
-            const matchLabel = digits
+            // Khuyến khích is not a suffix match: say it differs by one digit
+            // instead of implying all 6 digits matched (T11.53).
+            const matchLabel = win.tier === 'ENCOURAGEMENT'
+              ? STRINGS.check.encouragementMatch((win as any).matchedNumber || '')
+              : digits
               ? digits.length === 6
                 ? `Trùng khớp 6 số · ${digits}`
                 : `Khớp ${digits.length} số cuối · ${digits}`

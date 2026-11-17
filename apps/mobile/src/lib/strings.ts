@@ -130,6 +130,8 @@ export const STRINGS = {
     matchedSuffix: 'số cuối',
     totalPrizeLabel: 'Tổng thưởng:',
     taxNote: 'Tiền thưởng trên vé mệnh giá 10.000đ, chưa trừ thuế TNCN',
+    encouragementMatch: (special: string) =>
+      `Đúng số đầu, sai 1 số so với giải Đặc biệt · ${special}`,
     checkAgain: 'Dò lại',
     ticketNumberLabel: 'Số vé dò',
     disclaimer:

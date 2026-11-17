@@ -85,7 +85,7 @@ export const TIER_NAMES: Record<string, string> = {
   SEVENTH: 'Giải Bảy',
   EIGHTH: 'Giải Tám',
   SPECIAL_CONSOLATION: 'Giải Phụ Đặc biệt',
-  CONSOLATION: 'Giải Khuyến khích',
+  ENCOURAGEMENT: 'Giải Khuyến khích',
 };
 
 export const TIER_DIGITS: Record<string, number> = {
@@ -98,8 +98,11 @@ export const TIER_DIGITS: Record<string, number> = {
   SIXTH: 4,
   SEVENTH: 3,
   EIGHTH: 2,
-  SPECIAL_CONSOLATION: 6,
-  CONSOLATION: 6,
+  // Phụ ĐB: same last 5 digits as the special number, first digit differs.
+  SPECIAL_CONSOLATION: 5,
+  // Khuyến khích: first digit matches and exactly one of the other five
+  // differs, so there is no matching suffix to highlight (T11.53).
+  ENCOURAGEMENT: 0,
 };
 
 export function getStationName(
@@ -133,6 +136,7 @@ export function getTierName(tier?: string): string {
 export function getMatchedDigits(tier: string, matchedNumber?: string): string {
   if (!matchedNumber) return '';
   const length = TIER_DIGITS[tier];
+  if (length === 0) return '';
   if (!length || length >= matchedNumber.length) {
     return matchedNumber;
   }
