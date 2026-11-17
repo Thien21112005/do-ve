@@ -6,7 +6,9 @@ import {
   setupQueryClientPersistence,
 } from '@/lib';
 import { useSettings } from '@/store/settings';
-import { syncNativeWindTheme } from '@/theme/theme';
+import { View } from 'react-native';
+import { syncNativeWindTheme, useTheme } from '@/theme/theme';
+import { THEME_CSS_VARS } from '@/theme/cssVars';
 
 export interface AppProvidersProps {
   children: ReactNode;
@@ -38,7 +40,23 @@ export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <NativeWindThemeSync />
-      {children}
+      <ThemeVarsRoot>{children}</ThemeVarsRoot>
     </QueryClientProvider>
+  );
+}
+
+/**
+ * Provides the --color-* CSS variables for every className below it,
+ * generated from colors.ts for the active scheme (T11.03).
+ */
+export function ThemeVarsRoot({ children }: { children: ReactNode }) {
+  const { isDark } = useTheme();
+  return (
+    <View
+      testID="theme-vars-root"
+      style={[{ flex: 1 }, isDark ? THEME_CSS_VARS.dark : THEME_CSS_VARS.light]}
+    >
+      {children}
+    </View>
   );
 }

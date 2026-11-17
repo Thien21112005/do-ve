@@ -167,6 +167,7 @@ const mockNativewindColorScheme = {
 };
 
 jest.mock('nativewind', () => ({
+  vars: (v) => v,
   colorScheme: mockNativewindColorScheme,
   useColorScheme: () => ({
     colorScheme: 'light',

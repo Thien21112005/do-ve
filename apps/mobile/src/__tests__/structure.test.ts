@@ -1,8 +1,12 @@
-import fs from 'fs';
-import path from 'path';
 import { APP_NAME } from '@/lib';
 import { THEME_MODES } from '@/theme';
 import type { StationCode } from '@/types';
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs');
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path');
 
 describe('Project Structure and Path Aliases', () => {
   it('resolves @/lib alias correctly', () => {
@@ -21,7 +25,7 @@ describe('Project Structure and Path Aliases', () => {
 });
 
 describe('NativeWind build wiring (T11.01)', () => {
-  const babelPath = path.resolve(__dirname, '../../babel.config.js');
+  const babelPath = path.resolve(process.cwd(), 'babel.config.js');
 
   it('has a babel.config.js so className props are compiled', () => {
     expect(fs.existsSync(babelPath)).toBe(true);

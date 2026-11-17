@@ -8,9 +8,6 @@ import { updateSettings, resetSettings } from '@/store/settings';
 
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs = require('fs');
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
 
 // Helper to calculate relative luminance according to WCAG 2.1
@@ -267,24 +264,17 @@ describe('Design Tokens & Theme', () => {
   });
 
   describe('Tailwind & NativeWind token mapping (T10.04)', () => {
-    it('defines CSS variables for all semantic tokens in global.css', () => {
-      const globalCss = fs.readFileSync(
-        path.resolve(process.cwd(), 'src/global.css'),
-        'utf8',
-      );
-      expect(globalCss).toContain('--color-background: #F6F4EF');
-      expect(globalCss).toContain('--color-surface: #FFFFFF');
-      expect(globalCss).toContain('--color-text-main: #1A2230');
-      expect(globalCss).toContain('--color-special: #B91C1C');
-      expect(globalCss).toContain('--color-win: #15803D');
-
-      // Dark mode variables
-      expect(globalCss).toContain('.dark {');
-      expect(globalCss).toContain('--color-background: #0F1217');
-      expect(globalCss).toContain('--color-surface: #181C23');
-      expect(globalCss).toContain('--color-text-main: #EEF0F3');
-      expect(globalCss).toContain('--color-special: #FF7A70');
-      expect(globalCss).toContain('--color-win: #4ADE80');
+    it('generates CSS variables for all semantic tokens from colors.ts (T11.03)', () => {
+      // global.css .dark block never compiled on native; vars are now
+      // generated from colors.ts and applied on the root view.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { toCssVars } = require('../cssVars');
+      const light = toCssVars(colors.light);
+      const dark = toCssVars(colors.dark);
+      expect(light['--color-background']).toBe('#F6F4EF');
+      expect(light['--color-text-main']).toBe('#1A2230');
+      expect(dark['--color-background']).toBe('#0F1217');
+      expect(dark['--color-special']).toBe('#FF7A70');
     });
 
     it('maps theme tokens to CSS variables in tailwind.config.js', () => {
