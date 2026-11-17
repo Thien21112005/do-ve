@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, within } from '@testing-library/react-native';
 import { ResultCard } from '../ResultCard';
 import { haptics } from '@/lib/haptics';
 import type { UiCheckResult } from '@/api/mappers';
@@ -195,7 +195,7 @@ describe('ResultCard Component', () => {
     // 1. Estimated time message (T10.33)
     const estimateBox = getByTestId('result-card-pending-estimate');
     expect(estimateBox).toBeTruthy();
-    expect(getByText(/thường có lúc 16h35/i)).toBeTruthy();
+    expect(within(estimateBox).getByText(/thường có lúc 16h40/i)).toBeTruthy();
 
     // 2. Action buttons order: Primary Save button above Secondary Retry button
     const saveBtn = getByTestId('result-card-save-btn');
@@ -241,7 +241,7 @@ describe('ResultCard Component', () => {
 
     expect(getByTestId('result-card')).toBeTruthy();
     expect(getByText('Chưa có kết quả')).toBeTruthy();
-    expect(getByText('Chưa có kết quả, thường có sau 16h35')).toBeTruthy();
+    expect(getByText('Chưa có kết quả, thường có lúc 16h40')).toBeTruthy();
     expect(getByText('777888')).toBeTruthy();
 
     const retryBtn = getByTestId('result-card-retry-btn');

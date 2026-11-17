@@ -22,6 +22,7 @@ import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
+import { DRAW_WINDOW, toMinutes } from '@/lib/drawWindow';
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -57,7 +58,7 @@ export default function HomeScreen() {
     ? selectedStation
     : session.stations[0]?.code || '';
 
-  // Check live drawing window (16h10 - 16h40 VN)
+  // Check live drawing window (DRAW_WINDOW, T11.20)
   const isLive = isLiveDrawingVN();
 
   // Compute live time status
@@ -67,7 +68,7 @@ export default function HomeScreen() {
     }
     const { hour, minute } = nowVN();
     const timeMinutes = hour * 60 + minute;
-    if (timeMinutes > 1000 || (draws && draws.length > 0)) {
+    if (timeMinutes > toMinutes(DRAW_WINDOW.expectedDone) || (draws && draws.length > 0)) {
       return STRINGS.home.statusFinal;
     }
     return STRINGS.home.statusUpcoming;

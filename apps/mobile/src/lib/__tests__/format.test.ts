@@ -41,24 +41,24 @@ describe('format utilities', () => {
   });
 
   describe('getEstimatedDrawTimeMessage (T10.33)', () => {
-    it('returns minutes remaining when current time is 16:23 today (12 minutes before 16:35)', () => {
+    it('returns minutes remaining when current time is 16:23 today (17 minutes before 16:40, DRAW_WINDOW)', () => {
       // 16:23 VN = 09:23 UTC
       const mockNow = new Date('2026-11-16T09:23:00.000Z');
       const msg = getEstimatedDrawTimeMessage('2026-11-16', mockNow);
-      expect(msg).toBe('Thường có lúc 16h35, còn 12 phút');
+      expect(msg).toBe('Thường có lúc 16h40, còn 17 phút');
     });
 
     it('returns hours and minutes remaining when early in the morning', () => {
       // 10:00 VN = 03:00 UTC
       const mockNow = new Date('2026-11-16T03:00:00.000Z');
       const msg = getEstimatedDrawTimeMessage('2026-11-16', mockNow);
-      expect(msg).toBe('Thường có lúc 16h35, còn khoảng 6h35p');
+      expect(msg).toBe('Thường có lúc 16h40, còn khoảng 6h40p');
     });
 
     it('returns future date format when draw date is tomorrow', () => {
       const mockNow = new Date('2026-11-16T03:00:00.000Z');
       const msg = getEstimatedDrawTimeMessage('2026-11-17', mockNow);
-      expect(msg).toBe('Thường có lúc 16h35 ngày 17/11');
+      expect(msg).toBe('Thường có lúc 16h40 ngày 17/11');
     });
 
     it('returns updating message when draw date is in the past', () => {

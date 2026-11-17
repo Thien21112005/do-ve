@@ -12,6 +12,7 @@ import { useTheme } from '@/theme';
 import { todayVN, addDays, weekdayVN, nowVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 import { Icon } from './Icon';
+import { DRAW_WINDOW, toMinutes } from '@/lib/drawWindow';
 
 export interface DateStripProps {
   selectedDate: string; // YYYY-MM-DD
@@ -68,7 +69,7 @@ export function DateStrip({
 
   const todayStr = todayVN();
   const timeVN = nowVN();
-  const isPastDrawTimeToday = timeVN.hour * 60 + timeVN.minute >= 16 * 60 + 35;
+  const isPastDrawTimeToday = timeVN.hour * 60 + timeVN.minute >= toMinutes(DRAW_WINDOW.expectedDone);
 
   // Determine dynamic count so selectedDate is always within list (up to 60 days)
   let effectiveCount = daysCount;

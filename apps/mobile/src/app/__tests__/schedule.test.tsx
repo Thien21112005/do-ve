@@ -132,7 +132,7 @@ describe('ScheduleScreen', () => {
     const { getByText, queryByText, getAllByText } = await renderScheduleScreen();
 
     expect(queryByText(/không nghỉ Tết/i)).toBeNull();
-    expect(getAllByText(/16h15 – 16h35/).length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText(/16h15 – 16h40/).length).toBeGreaterThanOrEqual(1);
     expect(getByText(/Tết Nguyên Đán/i)).toBeTruthy();
   });
 

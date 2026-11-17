@@ -1,3 +1,4 @@
+import { DRAW_WINDOW, DRAW_DONE_LABEL, toMinutes } from './drawWindow';
 /**
  * Format a number into Vietnamese currency format with dot thousands separator (e.g. 1.234.000 đ)
  */
@@ -22,7 +23,7 @@ export function formatDateVN(dateStr: string): string {
 
 /**
  * Calculates estimated draw time message for Southern Vietnam lottery draws.
- * Official draw results are typically finalized at 16:35 VN time (UTC+7).
+ * Uses DRAW_WINDOW.expectedDone (T11.20).
  */
 export function getEstimatedDrawTimeMessage(
   drawDateStr?: string,
@@ -45,31 +46,31 @@ export function getEstimatedDrawTimeMessage(
   if (targetDateStr > todayVnStr) {
     const parts = targetDateStr.split('-');
     if (parts.length === 3) {
-      return `Thường có lúc 16h35 ngày ${parts[2]}/${parts[1]}`;
+      return `Thường có lúc ${DRAW_DONE_LABEL} ngày ${parts[2]}/${parts[1]}`;
     }
   }
 
   // If draw date is in the past
   if (targetDateStr < todayVnStr) {
-    return 'Thường có lúc 16h35, hệ thống đang cập nhật kết quả kỳ quay này';
+    return `Thường có lúc ${DRAW_DONE_LABEL}, hệ thống đang cập nhật kết quả kỳ quay này`;
   }
 
-  // Today in VN: target time is 16:35 (995 minutes)
+  // Today in VN: target is DRAW_WINDOW.expectedDone
   const currentMinutes = vnNow.getHours() * 60 + vnNow.getMinutes();
-  const targetMinutes = 16 * 60 + 35;
+  const targetMinutes = toMinutes(DRAW_WINDOW.expectedDone);
 
   if (currentMinutes < targetMinutes) {
     const diff = targetMinutes - currentMinutes;
     if (diff > 60) {
       const hours = Math.floor(diff / 60);
       const mins = diff % 60;
-      return `Thường có lúc 16h35, còn khoảng ${hours}h${mins > 0 ? `${mins}p` : ''}`;
+      return `Thường có lúc ${DRAW_DONE_LABEL}, còn khoảng ${hours}h${mins > 0 ? `${mins}p` : ''}`;
     }
-    return `Thường có lúc 16h35, còn ${diff} phút`;
+    return `Thường có lúc ${DRAW_DONE_LABEL}, còn ${diff} phút`;
   }
 
-  // At or after 16:35 today
-  return 'Thường có lúc 16h35, hệ thống đang cập nhật kết quả';
+  // At or after the expected time today
+  return `Thường có lúc ${DRAW_DONE_LABEL}, hệ thống đang cập nhật kết quả`;
 }
 
 /**

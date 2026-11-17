@@ -1,3 +1,4 @@
+import { DRAW_START_LABEL, DRAW_DONE_LABEL } from './drawWindow';
 /**
  * Centralized Vietnamese localization strings for DoVe Mobile App
  * Adheres to Vietnamese standard lottery terminology (XSKT Miền Nam).
@@ -124,7 +125,7 @@ export const STRINGS = {
     resultPendingBadge: 'Chờ kết quả',
     resultWonCount: (count: number) => `Trúng ${count} giải`,
     resultLostSubtitle: 'Chúc bạn may mắn lần sau',
-    resultPendingSubtitle: 'Chưa có kết quả, thường có sau 16h35',
+    resultPendingSubtitle: `Chưa có kết quả, thường có lúc ${DRAW_DONE_LABEL}`,
     prizeDetails: 'Chi tiết giải trúng',
     matchedPrefix: 'Khớp',
     matchedSuffix: 'số cuối',
@@ -137,7 +138,7 @@ export const STRINGS = {
     disclaimer:
       'Kết quả chỉ mang tính tham khảo, vui lòng đối chiếu với tờ vé giấy tại đại lý xổ số.',
     pendingNotice:
-      'Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết miền Nam thường có từ 16h15 đến 16h35 hàng ngày.',
+      `Kỳ quay đài này chưa có kết quả chính thức. Kết quả xổ số kiến thiết miền Nam thường có từ ${DRAW_START_LABEL} đến ${DRAW_DONE_LABEL} hàng ngày.`,
     lostNotice: (ticket: string) =>
       `Vé số ${ticket} không trùng với các bộ số mở thưởng kỳ quay này.`,
     saveTicket: 'Lưu vé này',
@@ -180,7 +181,7 @@ export const STRINGS = {
     batchItemPendingBadge: 'Chờ kết quả',
     batchItemNotWonNotice: 'Không trúng giải nào trong kỳ mở thưởng này.',
     batchItemPendingNotice:
-      'Chưa có kết quả mở thưởng (thường có sau 16h35).',
+      `Chưa có kết quả mở thưởng (thường có lúc ${DRAW_DONE_LABEL}).`,
     batchCheckAgain: 'Dò danh sách khác',
   },
 
@@ -199,7 +200,7 @@ export const STRINGS = {
     noStationSelectedDesc: (date: string) =>
       `Vui lòng chọn một đài quay thưởng ngày ${date} để xem chi tiết kết quả.`,
     emptyMessage: (date: string) =>
-      `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có từ 16h15 đến 16h35 hàng ngày.`,
+      `Kỳ quay đài này chưa có kết quả hoặc đài không mở thưởng vào ngày ${date}. Kết quả miền Nam thường có từ ${DRAW_START_LABEL} đến ${DRAW_DONE_LABEL} hàng ngày.`,
     statusFinal: 'Đã có kết quả',
     statusPending: 'Chờ kết quả',
     errorLoading: 'Không thể tải kết quả mở thưởng',
@@ -239,7 +240,7 @@ export const STRINGS = {
       `Dò kỳ ${dayName}, ${date}. Chọn đài rồi nhập 6 chữ số:`,
     statusLive: 'Đang quay',
     statusFinal: 'Đã có kết quả',
-    statusUpcoming: 'Quay lúc 16h15',
+    statusUpcoming: `Quay lúc ${DRAW_START_LABEL}`,
     latestDrawsTitle: 'Kỳ quay mới nhất',
     viewAll: 'Xem tất cả',
     loadingLatest: 'Đang tải kết quả mới nhất...',
@@ -247,7 +248,7 @@ export const STRINGS = {
     emptyLatest: 'Chưa có kết quả kỳ quay nào',
     emptyLatestTitle: 'Chưa có kết quả mở thưởng',
     emptyLatestDesc:
-      'Kết quả các đài miền Nam thường được cập nhật từ 16h15 đến 16h35.',
+      `Kết quả các đài miền Nam thường được cập nhật từ ${DRAW_START_LABEL} đến ${DRAW_DONE_LABEL}.`,
     specialPrizeLabel: 'Đặc biệt',
     specialPrizeBanner: 'Giải Đặc Biệt',
     firstPrizeLabel: 'Giải Nhất',
@@ -257,8 +258,8 @@ export const STRINGS = {
 
   schedule: {
     screenTitle: 'Lịch quay thưởng',
-    subtitle: 'Xổ số kiến thiết 21 tỉnh thành miền Nam (16h15 – 16h35 hàng ngày)',
-    drawTimeTitle: 'Giờ mở thưởng: 16h15 – 16h35 hàng ngày',
+    subtitle: `Xổ số kiến thiết 21 tỉnh thành miền Nam (${DRAW_START_LABEL} – ${DRAW_DONE_LABEL} hàng ngày)`,
+    drawTimeTitle: `Giờ mở thưởng: ${DRAW_START_LABEL} – ${DRAW_DONE_LABEL} hàng ngày`,
     holidayNotice:
       'XSKT miền Nam mở thưởng hàng ngày, tạm nghỉ các ngày Tết Nguyên Đán theo quy định của Hội đồng XSKT Miền Nam.',
     todayTag: 'Hôm nay',
@@ -348,7 +349,7 @@ export const STRINGS = {
       'Kết quả tra cứu trên ứng dụng DoVe chỉ mang tính chất tham khảo. Quý khách vui lòng đối chiếu trực tiếp với tờ vé giấy vật lý tại các Công ty Xổ số kiến thiết hoặc đại lý vé số chính thức trước khi tiến hành lĩnh thưởng.\n\nỨng dụng DoVe không bán vé số, không tổ chức cá cược, không nạp/rút tiền và không tham gia vào bất kỳ hoạt động cờ bạc, đổi thưởng nào dưới mọi hình thức.',
     dataSourceHeader: 'Nguồn dữ liệu kết quả',
     dataSourceText:
-      'Dữ liệu kết quả mở thưởng được thu thập và cập nhật tự động từ cổng thông tin kết quả xổ số kiến thiết 21 tỉnh thành miền Nam (XSKT) vào lúc 16h15 các ngày trong tuần. Hệ thống thực hiện chuẩn hoá và kiểm tra chéo nhiều nguồn để đảm bảo độ tin cậy.',
+      'Dữ liệu kết quả mở thưởng được thu thập và cập nhật tự động từ cổng thông tin kết quả xổ số kiến thiết 21 tỉnh thành miền Nam (XSKT) từ lúc ' + DRAW_START_LABEL + ' các ngày trong tuần. Hệ thống thực hiện chuẩn hoá và kiểm tra chéo nhiều nguồn để đảm bảo độ tin cậy.',
     privacyHeader: 'Quyền riêng tư & dữ liệu',
     privacyText:
       'Vé chỉ lưu trên máy này, không gửi lên server.\n\nDoVe tôn trọng quyền riêng tư của bạn. Toàn bộ các vé số bạn đã lưu hoặc tra cứu đều được lưu trữ hoàn toàn trong bộ nhớ cục bộ (Offline-First) trên thiết bị của bạn. Ứng dụng không thu thập thông tin danh tính, số điện thoại hay vị trí người dùng.',

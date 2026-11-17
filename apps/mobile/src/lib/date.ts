@@ -1,3 +1,4 @@
+import { DRAW_WINDOW, toMinutes } from './drawWindow';
 /**
  * Date and timezone utilities for Vietnam timezone (Asia/Ho_Chi_Minh - GMT+7).
  * Implemented using pure Intl.DateTimeFormat without extra dependencies.
@@ -37,12 +38,14 @@ export function nowVN(date: Date = new Date()) {
 }
 
 /**
- * Checks if current Vietnam time is within the live drawing window (16h10 - 16h40).
+ * Checks if current Vietnam time is within the live drawing window (DRAW_WINDOW.liveFrom – expectedDone).
  */
 export function isLiveDrawingVN(date: Date = new Date()): boolean {
   const parts = nowVN(date);
   const minutes = parts.hour * 60 + parts.minute;
-  return minutes >= 16 * 60 + 10 && minutes <= 16 * 60 + 40;
+  return (
+    minutes >= toMinutes(DRAW_WINDOW.liveFrom) && minutes <= toMinutes(DRAW_WINDOW.expectedDone)
+  );
 }
 
 /**
