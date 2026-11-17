@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 4 / 53 task hoàn thành
+- **Tổng quan:** 5 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -14,7 +14,7 @@
 | T11.04 | Sửa 9 test đỏ bằng cách sửa code, không sửa test | DONE | 977693b | 2026-11-17 | npm test 417/417 xanh, Jest tự thoát (rò do mock useFocusEffect không chạy cleanup + timer TanStack). Mâu thuẫn test T10.28 ↔ FR-CHK-07 giải bằng cách hoãn lỗi inline 600ms. Nhãn CTA khi thiếu số: 'Nhập đủ 6 số' (test T10.27 đòi có lý do), không lặp câu inline |
 | T11.05 | Dọn 4 cảnh báo `exhaustive-deps` | DONE | c2323c2 | 2026-11-17 | results.tsx: bỏ 2 effect đồng bộ param, so với param trước trong lúc render; thêm resultsParams.test. 2 cảnh báo ở check.tsx được dọn cùng T11.13 (cùng gốc) |
 | T11.06 | Guard test "ratchet" chặn tái phát | DONE | 8f1ba7f | 2026-11-17 | designGuard.test.ts + src/test-utils/designDebt.ts; allowlist 23 file (baseline 2026-11-17), bắt buộc hạ khi trả nợ. Allowlist rỗng là mục tiêu cuối phase |
-| T11.07 | [P0] Mất toàn bộ vé khi đọc storage lỗi | TODO | | | |
+| T11.07 | [P0] Mất toàn bộ vé khi đọc storage lỗi | DONE | 6f5b4dd | 2026-11-17 | Ghi dùng loadForWrite nghiêm ngặt (ném TicketStoreCorruptError/ReadError); hỏng thì sao lưu raw sang dove.tickets.corrupt.<ts>, không đụng key gốc; lỗi đọc tạm thời thử lại 1 lần; Banner + Xuất bản sao ở màn Vé. 8 test mới |
 | T11.08 | [P0] Dò nhanh ở Home gửi sai cặp đài–ngày | TODO | | | |
 | T11.09 | [P1] Home báo "Đã có kết quả" suốt buổi sáng | TODO | | | |
 | T11.10 | [P1] "Chưa có kết quả" bị hiển thị như lỗi đỏ | TODO | | | |
