@@ -15,7 +15,7 @@
 | T11.05 | Dọn 4 cảnh báo `exhaustive-deps` | DONE | c2323c2 | 2026-11-17 | results.tsx: bỏ 2 effect đồng bộ param, so với param trước trong lúc render; thêm resultsParams.test. 2 cảnh báo ở check.tsx được dọn cùng T11.13 (cùng gốc) |
 | T11.06 | Guard test "ratchet" chặn tái phát | DONE | 8f1ba7f | 2026-11-17 | designGuard.test.ts + src/test-utils/designDebt.ts; allowlist 23 file (baseline 2026-11-17), bắt buộc hạ khi trả nợ. Allowlist rỗng là mục tiêu cuối phase |
 | T11.07 | [P0] Mất toàn bộ vé khi đọc storage lỗi | DONE | 6f5b4dd | 2026-11-17 | Ghi dùng loadForWrite nghiêm ngặt (ném TicketStoreCorruptError/ReadError); hỏng thì sao lưu raw sang dove.tickets.corrupt.<ts>, không đụng key gốc; lỗi đọc tạm thời thử lại 1 lần; Banner + Xuất bản sao ở màn Vé. 8 test mới |
-| T11.08 | [P0] Dò nhanh ở Home gửi sai cặp đài–ngày | DONE | d8ace18 | 2026-11-17 | getActiveDrawSession() (trước 16h10 = kỳ hôm qua) + useActiveDrawSession; Home dùng cùng cặp ngày–đài, bỏ danh sách đài dự phòng viết cứng. Lưu ý: 17/11/2026 là thứ Ba (wireframe ghi T.2 là nhầm) |
+| T11.08 | [P0] Dò nhanh ở Home gửi sai cặp đài–ngày | DONE | d8ace18, 952b9cc | 2026-11-17 | getActiveDrawSession() (trước 16h10 = kỳ hôm qua) + useActiveDrawSession; Home dùng cùng cặp ngày–đài, bỏ danh sách đài dự phòng viết cứng. 952b9cc: bỏ timer trong hook (làm Jest treo). Lưu ý: 17/11/2026 là thứ Ba (wireframe ghi T.2 là nhầm) |
 | T11.09 | [P1] Home báo "Đã có kết quả" suốt buổi sáng | TODO | | | |
 | T11.10 | [P1] "Chưa có kết quả" bị hiển thị như lỗi đỏ | TODO | | | |
 | T11.11 | [P1] Bảng kết quả bị "đóng băng" trong giờ quay | TODO | | | |
