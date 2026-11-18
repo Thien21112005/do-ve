@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 22 / 53 task hoàn thành
+- **Tổng quan:** 23 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -24,7 +24,7 @@
 | T11.14 | [P1] Nút "Dán" của dò hàng loạt không chạy trên điện thoại | DONE | 72f1ae5 | 2026-11-18 | Cài expo-clipboard ~58.0.4 (có sẵn trong Expo Go SDK 58), thay navigator.clipboard bằng Clipboard.getStringAsync() + hitSlop nút Dán. Test checkBatchInput |
 | T11.15 | [P1] Đang dò mà nút nhìn như bị khoá/treo | DONE | 5a8d60d | 2026-11-17 | CTA 3 trạng thái disabled/ready/loading; loading giữ nền primary, spinner onPrimary, busy=true. Bỏ 2 mã hex, hạ allowlist check.tsx |
 | T11.16 | [P1] Tự dò lại vé chờ: 4 lỗi | DONE | 969fff6 | 2026-11-17 | (a) chỉ nhận CHECKED; (b) lưu wins qua mapCheckResponseToUi; (c) runSharedRecheck() dùng chung 1 promise mức module; (d) STATION_NOT_DRAWING → trạng thái mới INVALID + badge 'Đài không quay ngày này'. Fixture cũ WIN/LOSE (không có ở backend) đổi thành CHECKED |
-| T11.17 | [P2] Mã đài không chuẩn hoá nên vé bị trùng | TODO | | | |
+| T11.17 | [P2] Mã đài không chuẩn hoá nên vé bị trùng | DONE | 973963c | 2026-11-18 | normalizeStationCode() về slug backend (TPHCM/tphcm/TP.HCM → tp-hcm, DONG_THAP → dong-thap, BD → binh-duong…) ở saveTicket/saveManyTickets/ticketBackup; schema v2 + migrate 1 lần gộp trùng giữ bản có kết quả & note. Toàn bộ Nhóm B (19/19) DONE |
 | T11.18 | [P2] Tab Dò vé mặc định "hôm nay" kể cả buổi sáng | DONE | f7c7c28 | 2026-11-17 | Ngày mặc định của tab Dò vé = useActiveDrawSession().date (trước 16h10 là hôm qua). Test checkDefaultDate |
 | T11.19 | [P2] Màn Kết quả: nút thử lại offline sai và tìm nhanh không có phản hồi | DONE | e4769a1 | 2026-11-18 | OfflineBanner retry theo chế độ (single → refetch, all → refetchDaily; tắt useDailyDraws khi ở single); quickSearchFeedback hiện dòng 'Không có số nào khớp…' hoặc 'Khớp N giải: …' (ẩn khi chưa có bảng). 7 test mới |
 | T11.20 | [P2] Giờ quay mâu thuẫn ở 4 nơi | DONE | fba045b | 2026-11-17 | lib/drawWindow.ts (liveFrom 16:10, start 16:15, expectedDone 16:40); date/format/DateStrip/Home/STRINGS đều lấy từ đây. Test chặn viết cứng giờ. Test cũ khoá 16h35 cập nhật sang 16h40. Nhắc 16h45 giữ riêng (cài đặt thông báo) |
