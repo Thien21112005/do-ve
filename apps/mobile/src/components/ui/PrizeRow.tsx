@@ -18,6 +18,10 @@ export interface PrizeRowProps {
   highlightSuffix?: string;
   showDivider?: boolean;
   emptyPlaceholder?: string;
+  /** Optional chunk size (e.g. 4 for G4's 7 numbers) to group into compact rows. */
+  twoRowChunkSize?: number;
+  contentTestID?: string;
+  matchTestID?: string;
   testID?: string;
 }
 
@@ -35,6 +39,9 @@ export function PrizeRow({
   highlightSuffix,
   showDivider = true,
   emptyPlaceholder = '—',
+  twoRowChunkSize,
+  contentTestID,
+  matchTestID,
   testID = 'prize-row',
 }: PrizeRowProps) {
   const { colors } = useTheme();
@@ -43,6 +50,45 @@ export function PrizeRow({
 
   const spokenNumbers = numbers.length > 0 ? numbers.join(', ') : 'Chưa có';
   const numberColor = isSpecial ? colors.special : colors.textMain;
+
+  const renderNumberPill = (num: string, idx: number, compact = false) => {
+    const matched = canHighlight && num.endsWith(q);
+    return (
+      <View
+        key={`${num}-${idx}`}
+        testID={matched ? matchTestID || `${testID}-match-${num}` : undefined}
+        style={[
+          compact ? styles.compactPill : styles.numberPill,
+          {
+            backgroundColor: matched ? colors.winTint : 'transparent',
+            borderBottomColor: matched ? colors.win : 'transparent',
+          },
+        ]}
+      >
+        <Text
+          variant={hero ? 'ticketLg' : 'ticketMd'}
+          color={matched ? colors.win : numberColor}
+          style={
+            hero
+              ? styles.heroDigits
+              : compact
+                ? styles.compactDigits
+                : styles.standardDigits
+          }
+        >
+          {num}
+        </Text>
+      </View>
+    );
+  };
+
+  const rows: string[][] | null =
+    twoRowChunkSize && numbers.length > twoRowChunkSize
+      ? [
+          numbers.slice(0, twoRowChunkSize),
+          numbers.slice(twoRowChunkSize),
+        ]
+      : null;
 
   return (
     <View
@@ -56,10 +102,13 @@ export function PrizeRow({
           borderBottomWidth: StyleSheet.hairlineWidth,
           borderBottomColor: colors.border,
         },
-        hero && { backgroundColor: colors.specialTint },
+        { backgroundColor: hero ? colors.specialTint : 'transparent' },
       ]}
     >
-      <View testID={`${testID}-label-col`} style={styles.labelColumn}>
+      <View
+        testID={`${testID}-label-col`}
+        style={[styles.labelColumn, rows && styles.compactLabelColumn]}
+      >
         <Text
           variant={isSpecial ? 'bodyStrong' : 'caption'}
           color={isSpecial ? colors.special : colors.textMuted}
@@ -68,38 +117,33 @@ export function PrizeRow({
         </Text>
       </View>
 
-      <View style={styles.numbersArea}>
-        {numbers.length > 0 ? (
-          numbers.map((num, idx) => {
-            const matched = canHighlight && num.endsWith(q);
-            return (
-              <View
-                key={`${num}-${idx}`}
-                testID={matched ? `${testID}-match-${num}` : undefined}
-                style={[
-                  styles.numberPill,
-                  {
-                    backgroundColor: matched ? colors.winTint : 'transparent',
-                    borderBottomColor: matched ? colors.win : 'transparent',
-                  },
-                ]}
-              >
-                <Text
-                  variant={hero ? 'ticketLg' : 'ticketMd'}
-                  color={matched ? colors.win : numberColor}
-                  style={hero ? styles.heroDigits : styles.standardDigits}
-                >
-                  {num}
-                </Text>
-              </View>
-            );
-          })
-        ) : (
-          <Text variant="body" color={colors.textMuted}>
-            {emptyPlaceholder}
-          </Text>
-        )}
-      </View>
+      {rows ? (
+        <View testID={contentTestID} style={styles.chunkedArea}>
+          {rows.map((chunk, rIdx) => (
+            <View
+              key={`row-${rIdx}`}
+              testID={
+                contentTestID ? `${contentTestID}-row-${rIdx}` : undefined
+              }
+              style={styles.chunkRow}
+            >
+              {chunk.map((num, idx) =>
+                renderNumberPill(num, rIdx * (twoRowChunkSize || 4) + idx, true),
+              )}
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View testID={contentTestID} style={styles.numbersArea}>
+          {numbers.length > 0 ? (
+            numbers.map((num, idx) => renderNumberPill(num, idx, false))
+          ) : (
+            <Text variant="body" color={colors.textMuted}>
+              {emptyPlaceholder}
+            </Text>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -116,6 +160,9 @@ const styles = StyleSheet.create({
     width: 64,
     justifyContent: 'center',
   },
+  compactLabelColumn: {
+    width: 40,
+  },
   numbersArea: {
     flex: 1,
     flexDirection: 'row',
@@ -125,8 +172,27 @@ const styles = StyleSheet.create({
     columnGap: 14,
     rowGap: 6,
   },
+  chunkedArea: {
+    flex: 1,
+    alignItems: 'flex-end',
+    rowGap: 4,
+  },
+  chunkRow: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    columnGap: 6,
+  },
   numberPill: {
     paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderTopLeftRadius: radii.sm,
+    borderTopRightRadius: radii.sm,
+    borderBottomWidth: 2,
+  },
+  compactPill: {
+    paddingHorizontal: 1,
     paddingVertical: 1,
     borderTopLeftRadius: radii.sm,
     borderTopRightRadius: radii.sm,
@@ -136,6 +202,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 26,
     letterSpacing: 1,
+  },
+  compactDigits: {
+    fontSize: 20,
+    lineHeight: 26,
+    letterSpacing: -0.3,
   },
   heroDigits: {
     fontSize: 28,

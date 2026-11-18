@@ -140,4 +140,31 @@ describe('DrawTable', () => {
     expect(getByLabelText(/Đặc biệt.*654321/)).toBeTruthy();
     expect(getByLabelText(/Giải tám.*89/)).toBeTruthy();
   });
+
+  it('uses PrizeRow with vermilion ink on G8 & ĐB, >=20pt digits, ticketLg ĐB, and 2-row G4 layout (T11.37)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { colors } = require('@/theme/colors');
+    const { getByText, getByTestId } = await render(<DrawTable prizes={mockPrizes} />);
+
+    const flatten = (node: any) =>
+      Object.assign(
+        {},
+        ...(Array.isArray(node.props.style)
+          ? node.props.style.filter(Boolean)
+          : [node.props.style]),
+      );
+
+    // G8 ('89') and ĐB ('654321') both printed in vermilion (colors.special)
+    expect(flatten(getByText('89')).color).toBe(colors.light.special);
+    expect(flatten(getByText('654321')).color).toBe(colors.light.special);
+    expect(flatten(getByText('654321')).fontSize).toBeGreaterThanOrEqual(28);
+
+    // Normal prizes >= 20pt
+    expect(flatten(getByText('12345')).fontSize).toBeGreaterThanOrEqual(20);
+    expect(flatten(getByText('45671')).fontSize).toBeGreaterThanOrEqual(20);
+
+    // G4 (7 numbers) arranged into 2 compact rows (4 + 3)
+    expect(getByTestId('draw-table-content-FOURTH-row-0')).toBeTruthy();
+    expect(getByTestId('draw-table-content-FOURTH-row-1')).toBeTruthy();
+  });
 });

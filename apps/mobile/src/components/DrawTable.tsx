@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../theme';
-import { STRINGS } from '../lib/strings';
-import { getSettings, type DrawTableOrder } from '../store/settings';
+import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { PrizeRow } from '@/components/ui';
+import { useTheme, radii } from '@/theme';
+import { STRINGS } from '@/lib/strings';
+import { getSettings, type DrawTableOrder } from '@/store/settings';
 
 export interface PrizeTierConfig {
   key: string;
@@ -14,69 +15,71 @@ export interface PrizeTierConfig {
 }
 
 /**
- * Standard printed lottery result sheet order (G8 -> Special Prize) (T10.38).
+ * Standard printed lottery result sheet order (G8 -> Special Prize) (T10.38, T11.37).
+ * Both G.8 and ĐB are printed in vermilion ink (`highlight: true`).
  */
 export const DRAW_TIERS: PrizeTierConfig[] = [
   {
     key: 'EIGHTH',
     name: STRINGS.results.prizes.eighth,
-    shortName: STRINGS.results.prizes.eighthShort, // 'G.8'
+    shortName: STRINGS.results.prizes.eighthShort,
     digits: 2,
     count: 1,
+    highlight: true,
   },
   {
     key: 'SEVENTH',
     name: STRINGS.results.prizes.seventh,
-    shortName: STRINGS.results.prizes.seventhShort, // 'G.7'
+    shortName: STRINGS.results.prizes.seventhShort,
     digits: 3,
     count: 1,
   },
   {
     key: 'SIXTH',
     name: STRINGS.results.prizes.sixth,
-    shortName: STRINGS.results.prizes.sixthShort, // 'G.6'
+    shortName: STRINGS.results.prizes.sixthShort,
     digits: 4,
     count: 3,
   },
   {
     key: 'FIFTH',
     name: STRINGS.results.prizes.fifth,
-    shortName: STRINGS.results.prizes.fifthShort, // 'G.5'
+    shortName: STRINGS.results.prizes.fifthShort,
     digits: 4,
     count: 1,
   },
   {
     key: 'FOURTH',
     name: STRINGS.results.prizes.fourth,
-    shortName: STRINGS.results.prizes.fourthShort, // 'G.4'
+    shortName: STRINGS.results.prizes.fourthShort,
     digits: 5,
     count: 7,
   },
   {
     key: 'THIRD',
     name: STRINGS.results.prizes.third,
-    shortName: STRINGS.results.prizes.thirdShort, // 'G.3'
+    shortName: STRINGS.results.prizes.thirdShort,
     digits: 5,
     count: 2,
   },
   {
     key: 'SECOND',
     name: STRINGS.results.prizes.second,
-    shortName: STRINGS.results.prizes.secondShort, // 'G.2'
+    shortName: STRINGS.results.prizes.secondShort,
     digits: 5,
     count: 1,
   },
   {
     key: 'FIRST',
     name: STRINGS.results.prizes.first,
-    shortName: STRINGS.results.prizes.firstShort, // 'G.1'
+    shortName: STRINGS.results.prizes.firstShort,
     digits: 5,
     count: 1,
   },
   {
     key: 'SPECIAL',
     name: STRINGS.results.prizes.special,
-    shortName: STRINGS.results.prizes.specialShort, // 'ĐB'
+    shortName: STRINGS.results.prizes.specialShort,
     digits: 6,
     count: 1,
     highlight: true,
@@ -88,6 +91,8 @@ export interface DrawTableProps {
   numbers?: Record<string, string[]> | null;
   order?: DrawTableOrder;
   highlightQuery?: string;
+  borderless?: boolean;
+  style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 
@@ -96,146 +101,51 @@ export const DrawTable: React.FC<DrawTableProps> = ({
   numbers,
   order: propOrder,
   highlightQuery,
+  borderless = false,
+  style,
   testID = 'draw-table',
 }) => {
   const { colors } = useTheme();
   const data = numbers || prizes;
   const currentOrder = propOrder || getSettings().drawTableOrder || 'g8_to_special';
-  const tiers = currentOrder === 'special_to_g8' ? [...DRAW_TIERS].reverse() : DRAW_TIERS;
+  const tiers =
+    currentOrder === 'special_to_g8' ? [...DRAW_TIERS].reverse() : DRAW_TIERS;
 
   return (
     <View
       testID={testID}
-      className="rounded-2xl border overflow-hidden"
-      style={{
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-      }}
+      style={[
+        styles.container,
+        !borderless && {
+          borderWidth: 1,
+          borderRadius: radii.lg,
+          borderColor: colors.border,
+        },
+        { backgroundColor: colors.surface },
+        style,
+      ]}
     >
       {tiers.map((tier, index) => {
         const tierNumbers = data?.[tier.key] || [];
-        const isSpecial = tier.highlight;
-        const isLastRow = index === tiers.length - 1;
-        const numbersString =
-          tierNumbers.length > 0
-            ? tierNumbers.join(', ')
-            : STRINGS.results.noDataYet;
-
-        const specialColor = colors.special || colors.primary;
-        const specialTint = colors.specialTint || `${specialColor}15`;
+        const isSpecial = tier.key === 'SPECIAL' || tier.key === 'EIGHTH';
+        const isHero = tier.key === 'SPECIAL';
 
         return (
-          <View
+          <PrizeRow
             key={tier.key}
             testID={`draw-table-row-${index}`}
-            accessible
-            accessibilityRole="text"
-            accessibilityLabel={`${tier.name}: ${numbersString}`}
-            className="flex-row items-center border-b"
-            style={[
-              {
-                borderColor: colors.border,
-                backgroundColor: isSpecial
-                  ? `${specialColor}0D` // Subtle tint for Special Prize
-                  : 'transparent',
-              },
-              isLastRow && styles.noBorderBottom,
-            ]}
-          >
-            {/* Left Label Column */}
-            <View
-              className="w-20 py-3 px-2 justify-center items-center border-r"
-              style={{
-                borderColor: colors.border,
-                backgroundColor: isSpecial ? specialTint : 'transparent',
-              }}
-            >
-              <Text
-                className={`text-xs text-center ${isSpecial ? 'font-bold' : 'font-medium'}`}
-                style={{
-                  color: isSpecial ? specialColor : colors.textMuted,
-                }}
-              >
-                {tier.shortName}
-              </Text>
-            </View>
-
-            {/* Right Numbers Content Area */}
-            <View
-              testID={`draw-table-content-${tier.key}`}
-              className={`flex-1 py-2.5 px-3 ${
-                tier.key === 'FOURTH'
-                  ? 'flex-row flex-wrap justify-between items-center'
-                  : 'flex-row flex-wrap justify-center items-center gap-x-4 gap-y-1.5'
-              }`}
-            >
-              {tierNumbers.length > 0 ? (
-                tierNumbers.map((num, numIdx) => {
-                  const isMatched = Boolean(
-                    highlightQuery &&
-                      highlightQuery.trim().length >= 2 &&
-                      num.endsWith(highlightQuery.trim()),
-                  );
-
-                  const isGrid2Col = tier.key === 'FOURTH';
-                  const fontSizeClass = isSpecial
-                    ? 'text-[22px] leading-7'
-                    : tier.key === 'EIGHTH'
-                      ? 'text-xl'
-                      : tier.key === 'FIRST'
-                        ? 'text-lg'
-                        : tier.digits >= 5
-                          ? 'text-base'
-                          : 'text-lg';
-
-                  return (
-                    <View
-                      key={`${tier.key}-${numIdx}-${num}`}
-                      className={isGrid2Col ? 'w-1/2 items-center py-1' : ''}
-                    >
-                      <View
-                        testID={isMatched ? 'draw-number-matched' : undefined}
-                        className={
-                          isMatched
-                            ? 'px-1.5 py-0.5 rounded border'
-                            : 'px-0.5 py-0.5'
-                        }
-                        style={{
-                          backgroundColor: isMatched
-                            ? colors.winTint || `${colors.win}15`
-                            : 'transparent',
-                          borderColor: isMatched
-                            ? colors.winBorder
-                            : 'transparent',
-                        }}
-                      >
-                        <Text
-                          className={`text-center font-bold tracking-wider ${fontSizeClass}`}
-                          style={{
-                            color: isMatched
-                              ? colors.win
-                              : isSpecial
-                                ? specialColor
-                                : colors.textMain,
-                            fontVariant: ['tabular-nums'],
-                          }}
-                        >
-                          {num}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })
-              ) : (
-                <Text
-                  className="text-base font-semibold"
-                  style={{ color: colors.textMuted }}
-                >
-                  -
-                </Text>
-              )}
-            </View>
-          </View>
+            contentTestID={`draw-table-content-${tier.key}`}
+            matchTestID="draw-number-matched"
+            label={tier.shortName}
+            a11yLabel={tier.name}
+            numbers={tierNumbers}
+            isSpecial={isSpecial}
+            hero={isHero}
+            twoRowChunkSize={tier.key === 'FOURTH' ? 4 : undefined}
+            highlightSuffix={highlightQuery}
+            emptyPlaceholder="-"
+            showDivider={index < tiers.length - 1}
+          />
         );
       })}
     </View>
@@ -243,7 +153,7 @@ export const DrawTable: React.FC<DrawTableProps> = ({
 };
 
 const styles = StyleSheet.create({
-  noBorderBottom: {
-    borderBottomWidth: 0,
+  container: {
+    overflow: 'hidden',
   },
 });
