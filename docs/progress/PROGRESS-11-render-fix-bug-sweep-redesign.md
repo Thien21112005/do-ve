@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 45 / 53 task hoàn thành
+- **Tổng quan:** 46 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -53,7 +53,7 @@
 | T11.42 | Vé của tôi: hàng vé phẳng nhóm theo kỳ | DONE | d1b723a | 2026-11-18 | Hàng vé phẳng >=56pt (ticketMd + chữ & màu trạng thái, bỏ nút thùng rác lặp), Perforation ngăn giữa các kỳ; xoá nợ SavedTicketsSummary & TicketStatusBadge. Đủ ảnh Sáng/Tối |
 | T11.43 | Vé của tôi: Sheet chi tiết vé | DONE | eb81160 | 2026-11-18 | Dùng Sheet + ResultStub (TicketNumber tô số khớp, amountInWordsVN, bảng giải) kèm ô ghi chú, xem bảng, dò lại, xoá. Đủ ảnh Sáng/Tối |
 | T11.44 | Vé của tôi: trạng thái rỗng | DONE | a573628 | 2026-11-18 | TicketEmptyIllustration nét mảnh dùng 100% token theme (xoá 26 mã hex & hạt lấp lánh trang trí), copy gọn trực diện. Đủ ảnh Sáng/Tối |
-| T11.45 | Thêm & Cài đặt: chỉ dùng ListRow, sửa a11y công tắc | TODO | | | |
+| T11.45 | Thêm & Cài đặt: chỉ dùng ListRow, sửa a11y công tắc | DONE | 3fbfbe8 | 2026-11-18 | More & Settings dùng toàn bộ ListRow + SectionHeader, bỏ tiêu đề Thêm lặp, ListRow tĩnh không bọc accessible=true để Switch là 1 phần tử a11y duy nhất; xoá nợ more & settings. Đủ ảnh Sáng/Tối |
 | T11.46 | Lịch quay: bảng 7 ngày, đài bấm được | TODO | | | |
 | T11.47 | Giới thiệu: copy & bố cục | TODO | | | |
 | T11.48 | Bộ trạng thái chung loading/empty/error/offline | TODO | | | |
