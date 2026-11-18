@@ -132,4 +132,72 @@ describe('Split Tickets components (T11.41)', () => {
     await fireEvent.press(getByTestId('clear-all-tickets-btn'));
     expect(onClearAll).toHaveBeenCalledTimes(1);
   });
+
+  it('renders >=56pt flat TicketRow with text+color status and Perforation between date groups (T11.42)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { colors } = require('@/theme/colors');
+    const lostTicket: SavedTicket = {
+      ...sampleTicket,
+      id: 't-2',
+      ticket: '778102',
+      drawDate: '2026-11-16',
+      status: 'LOST',
+      totalPrize: 0,
+    };
+
+    const { getByTestId, getByText, queryByTestId } = await render(
+      <TicketList
+        sections={[
+          {
+            title: '17/11/2026',
+            drawDate: '2026-11-17',
+            data: [sampleTicket],
+          },
+          {
+            title: '16/11/2026',
+            drawDate: '2026-11-16',
+            data: [lostTicket],
+          },
+        ]}
+        summaryStats={{ total: 2, pending: 0, won: 1, totalWonPrize: 200000 }}
+        filterCounts={{ ALL: 2, WON: 1, PENDING: 0, LOST: 1 }}
+        filteredCount={2}
+        hasAnyTickets={true}
+        activeFilter="ALL"
+        isRechecking={false}
+        onRefresh={jest.fn()}
+        onSelectFilter={jest.fn()}
+        onPressTicket={jest.fn()}
+        onDeleteTicket={jest.fn()}
+      />,
+    );
+
+    const row = getByTestId('saved-ticket-item-t-1');
+    const rowStyle = Object.assign(
+      {},
+      ...(Array.isArray(row.props.style)
+        ? row.props.style.filter(Boolean)
+        : [row.props.style]),
+    );
+    expect(rowStyle.minHeight).toBeGreaterThanOrEqual(56);
+    expect(queryByTestId('delete-ticket-btn-t-1')).toBeNull();
+
+    // Text + color status
+    const wonText = getByText('Trúng 200.000 đ');
+    const wonStyle = Object.assign(
+      {},
+      ...(Array.isArray(wonText.props.style)
+        ? wonText.props.style.filter(Boolean)
+        : [wonText.props.style]),
+    );
+    expect(wonStyle.color).toBe(colors.light.win);
+    expect(getByText('Không trúng')).toBeTruthy();
+
+    // Perforation rendered between sections
+    expect(
+      getByTestId('ticket-section-perforation-2026-11-17', {
+        includeHiddenElements: true,
+      }),
+    ).toBeTruthy();
+  });
 });

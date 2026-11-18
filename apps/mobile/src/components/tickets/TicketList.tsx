@@ -11,8 +11,10 @@ import {
   SavedTicketsSummary,
   type TicketFilterStatus,
 } from '@/components/SavedTicketsSummary';
-import { Text, Chip, Button } from '@/components/ui';
+import { Text, Chip, Button, Perforation } from '@/components/ui';
 import { useTheme, layout, radii } from '@/theme';
+import { weekdayVN } from '@/lib/date';
+import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
 import { TicketRow } from './TicketRow';
@@ -45,8 +47,8 @@ export interface TicketListProps {
 
 const FILTER_OPTIONS: { key: TicketFilterStatus; label: string }[] = [
   { key: 'ALL', label: STRINGS.tickets.filterAll },
-  { key: 'WON', label: STRINGS.tickets.filterWon },
-  { key: 'PENDING', label: STRINGS.tickets.filterPending },
+  { key: 'WON', label: 'Trúng' },
+  { key: 'PENDING', label: 'Chờ' },
   { key: 'LOST', label: STRINGS.tickets.filterLost },
 ];
 
@@ -54,7 +56,6 @@ export function TicketList({
   sections,
   summaryStats,
   filterCounts,
-  filteredCount,
   hasAnyTickets,
   activeFilter,
   isRechecking,
@@ -65,6 +66,7 @@ export function TicketList({
   headerRight,
 }: TicketListProps) {
   const { colors } = useTheme();
+  const lastDrawDate = sections[sections.length - 1]?.drawDate;
 
   return (
     <SectionList
@@ -83,32 +85,41 @@ export function TicketList({
       }
       contentContainerStyle={{
         paddingHorizontal: 16,
-        paddingTop: 8,
+        paddingTop: 10,
         paddingBottom: 40,
         width: '100%',
         maxWidth: layout.contentMaxWidth,
         alignSelf: 'center',
       }}
-      renderSectionHeader={({ section }) => (
-        <View
-          testID={`section-header-${section.drawDate}`}
-          style={[
-            styles.sectionHeader,
-            { backgroundColor: colors.background },
-          ]}
-        >
-          <Text
-            variant="caption"
-            color={colors.textMuted}
-            style={styles.sectionTitle}
+      renderSectionHeader={({ section }) => {
+        const dayShort = WEEKLY_SCHEDULE.find(
+          (s) => s.dayOfWeek === weekdayVN(section.drawDate),
+        )?.shortName;
+        const headerLabel = dayShort
+          ? `${dayShort} · ${section.title}`
+          : section.title;
+
+        return (
+          <View
+            testID={`section-header-${section.drawDate}`}
+            style={[
+              styles.sectionHeader,
+              { backgroundColor: colors.background },
+            ]}
           >
-            {STRINGS.tickets.drawDateGroup(section.title).toUpperCase()}
-          </Text>
-          <Text variant="caption" color={colors.textMuted}>
-            {STRINGS.tickets.ticketCount(section.data.length)}
-          </Text>
-        </View>
-      )}
+            <Text
+              variant="caption"
+              color={colors.textMuted}
+              style={styles.sectionTitle}
+            >
+              {headerLabel.toUpperCase()}
+            </Text>
+            <Text variant="caption" color={colors.textMuted}>
+              {STRINGS.tickets.ticketCount(section.data.length)}
+            </Text>
+          </View>
+        );
+      }}
       renderItem={({ item, index, section }) => {
         const isFirst = index === 0;
         const isLast = index === section.data.length - 1;
@@ -130,7 +141,6 @@ export function TicketList({
                 borderBottomWidth: 1,
                 borderBottomLeftRadius: radii.md,
                 borderBottomRightRadius: radii.md,
-                marginBottom: 8,
                 overflow: 'hidden',
               },
             ]}
@@ -144,6 +154,14 @@ export function TicketList({
           </View>
         );
       }}
+      renderSectionFooter={({ section }) =>
+        section.drawDate !== lastDrawDate ? (
+          <Perforation
+            testID={`ticket-section-perforation-${section.drawDate}`}
+            style={styles.sectionPerforation}
+          />
+        ) : null
+      }
       ListHeaderComponent={
         <View style={styles.listHeader}>
           <SavedTicketsSummary
@@ -171,7 +189,7 @@ export function TicketList({
                   <Chip
                     key={opt.key}
                     testID={`ticket-filter-chip-${opt.key}`}
-                    label={`${opt.label} (${count})`}
+                    label={`${opt.label} ${count}`}
                     selected={activeFilter === opt.key}
                     onPress={() => onSelectFilter(opt.key)}
                   />
@@ -179,17 +197,6 @@ export function TicketList({
               })}
             </ScrollView>
             {headerRight}
-          </View>
-
-          <View
-            style={[
-              styles.countRow,
-              { borderBottomColor: colors.border },
-            ]}
-          >
-            <Text variant="caption" color={colors.textMuted}>
-              {STRINGS.tickets.ticketCount(filteredCount)}
-            </Text>
           </View>
         </View>
       }
@@ -261,23 +268,18 @@ const styles = StyleSheet.create({
   filterToolbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: 2,
     gap: 8,
   },
   chipsScroll: {
     flex: 1,
   },
   chipsContent: {
-    gap: 8,
+    gap: 6,
     paddingRight: 4,
   },
-  countRow: {
-    paddingVertical: 8,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 4,
-  },
   sectionHeader: {
-    paddingTop: 12,
+    paddingTop: 10,
     paddingBottom: 6,
     paddingHorizontal: 2,
     flexDirection: 'row',
@@ -287,6 +289,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'BeVietnamPro-SemiBold',
     letterSpacing: 0.6,
+  },
+  sectionPerforation: {
+    marginTop: 10,
+    marginBottom: 2,
   },
   filterEmptyBox: {
     padding: 24,

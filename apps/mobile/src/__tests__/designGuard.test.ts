@@ -18,9 +18,7 @@ const ALLOWLIST: DebtCounts = {
   'components/ErrorBoundary.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
   'components/Icon.tsx': { hexColor: 1 },
   'components/OfflineBanner.tsx': { rawRnPrimitive: 2, alphaConcat: 1 },
-  'components/SavedTicketsSummary.tsx': { rawRnPrimitive: 2, tinyArbitraryText: 3 },
   'components/TicketEmptyIllustration.tsx': { hexColor: 26 },
-  'components/TicketStatusBadge.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
 };
 
 describe('design-debt ratchet (T11.06)', () => {

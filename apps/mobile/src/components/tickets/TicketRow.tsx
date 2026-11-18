@@ -24,7 +24,6 @@ export function TicketRow({
   const { colors } = useTheme();
   const { pressed: rowPressed, pressHandlers: rowHandlers } = usePressed();
   const { pressed: swipePressed, pressHandlers: swipeHandlers } = usePressed();
-  const { pressed: delPressed, pressHandlers: delHandlers } = usePressed();
 
   const stationLabel = ticket.stationName || ticket.station;
 
@@ -59,102 +58,91 @@ export function TicketRow({
       renderRightActions={renderRightActions}
       testID={`swipeable-${ticket.id}`}
     >
-      <View
+      <Pressable
+        testID={`saved-ticket-item-${ticket.id}`}
+        onPress={() => {
+          haptics.light();
+          onPress(ticket);
+        }}
+        accessibilityRole="button"
+        accessibilityLabel={`Chi tiết vé ${ticket.ticket}, đài ${stationLabel}`}
+        accessibilityActions={[{ name: 'delete', label: 'Xóa vé' }]}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName === 'delete') {
+            onDelete(ticket);
+          }
+        }}
+        {...rowHandlers}
         style={[
-          styles.rowWrap,
+          styles.rowContainer,
           {
             backgroundColor: colors.surface,
             borderBottomWidth: isLastInSection ? 0 : StyleSheet.hairlineWidth,
             borderBottomColor: colors.border,
+            opacity: rowPressed ? 0.72 : 1,
           },
         ]}
       >
-        <Pressable
-          testID={`saved-ticket-item-${ticket.id}`}
-          onPress={() => {
-            haptics.light();
-            onPress(ticket);
-          }}
-          accessibilityRole="button"
-          accessibilityLabel={`Chi tiết vé ${ticket.ticket}, đài ${stationLabel}`}
-          {...rowHandlers}
-          style={[
-            styles.rowMainPressable,
-            { opacity: rowPressed ? 0.72 : 1 },
-          ]}
-        >
-          <View style={styles.leftInfo}>
-            <Text
-              variant="ticketMd"
-              color={colors.textMain}
-              style={styles.ticketDigits}
-            >
-              {ticket.ticket}
-            </Text>
-            <Text
-              variant="caption"
-              color={colors.textMuted}
-              numberOfLines={1}
-            >
-              {stationLabel}
-            </Text>
-          </View>
+        <View style={styles.leftInfo}>
+          <Text
+            variant="ticketMd"
+            color={colors.textMain}
+            style={styles.ticketDigits}
+          >
+            {ticket.ticket}
+          </Text>
+          <Text
+            variant="caption"
+            color={colors.textMuted}
+            numberOfLines={1}
+          >
+            {stationLabel}
+          </Text>
+        </View>
 
+        <View style={styles.rightInfo}>
           <TicketStatusBadge
             status={ticket.status}
             totalPrize={ticket.totalPrize}
-            size="sm"
+            flat={true}
           />
-        </Pressable>
-
-        <Pressable
-          testID={`delete-ticket-btn-${ticket.id}`}
-          onPress={() => onDelete(ticket)}
-          accessibilityRole="button"
-          accessibilityLabel={`Xóa vé ${ticket.ticket}`}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          {...delHandlers}
-          style={[
-            styles.inlineDeleteBtn,
-            { opacity: delPressed ? 0.65 : 1 },
-          ]}
-        >
-          <Icon name="trash" size={16} color={colors.textMuted} />
-        </Pressable>
-      </View>
+          <Text
+            variant="body"
+            color={colors.textMuted}
+            style={styles.chevron}
+          >
+            ›
+          </Text>
+        </View>
+      </Pressable>
     </Swipeable>
   );
 }
 
 const styles = StyleSheet.create({
-  rowWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 56,
-    paddingLeft: 14,
-    paddingRight: 8,
-  },
-  rowMainPressable: {
-    flex: 1,
+  rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: 56,
     paddingVertical: 10,
+    paddingHorizontal: 14,
   },
   leftInfo: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 12,
   },
   ticketDigits: {
     letterSpacing: 1.2,
   },
-  inlineDeleteBtn: {
-    width: 36,
-    height: 36,
+  rightInfo: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 4,
+  },
+  chevron: {
+    marginLeft: 8,
+    fontSize: 18,
+    lineHeight: 20,
   },
   swipeDeleteAction: {
     justifyContent: 'center',
