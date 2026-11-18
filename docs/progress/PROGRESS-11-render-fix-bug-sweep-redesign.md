@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 52 / 53 task hoàn thành
+- **Tổng quan:** 53 / 53 task hoàn thành (100% — Chốt M11.1, M11.2, M11.3, M11.4)
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -60,4 +60,4 @@
 | T11.49 | Motion & haptic tiết chế | DONE | 1dbcd3d | 2026-11-18 | Khoá đúng 3 thời lượng motion (120ms nhấn, 200ms segmented, 320ms cuống kết quả), gỡ hẳn CelebrationEffect emoji/pháo hoa, guard kiểm mọi điểm rung qua hapticsEnabled |
 | T11.50 | Critique + audit trung thực dựa trên ảnh after | DONE | 7997317 | 2026-11-18 | 16 ảnh after-full (8 màn × Sáng/Tối) + REVIEW.md chấm trung thực Nielsen 36/40 & Native Audit 16/20, tách bạch rõ phần đã render thật vs phần cần máy vật lý |
 | T11.51 | Ma trận thiết bị & a11y (360dp, chữ 200%, TalkBack/VoiceOver) | DONE | f027f6b | 2026-11-18 | 20 ảnh ma trận (360x640, 768x1024, 360x640-200pct Sáng/Tối) + deviceAndA11yMatrix.test.tsx (luồng dò-lưu-xoá-hoàn tác qua nhãn a11y, AAA contrast >14:1). Ghi chú rõ 2 bước cần kiểm bổ sung trên máy vật lý |
-| T11.52 | `/impeccable document` + cập nhật DESIGN.md, PROGRESS-00 | TODO | | | |
+| T11.52 | `/impeccable document` + cập nhật DESIGN.md, PROGRESS-00 | DONE | f8a79aa | 2026-11-18 | Cập nhật DESIGN.md chuẩn Stitch YAML frontmatter + .impeccable/design.json v2 khớp code ship, cập nhật PROGRESS-00 ghi chú trung thực Phase 10 & chốt M8 Phase 11 (92/92 suites, 556/556 tests xanh, ALLOWLIST = {}) |
