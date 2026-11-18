@@ -80,4 +80,33 @@ describe('Results quick search feedback and retry (T11.19)', () => {
     await waitFor(() => expect(apiDraws.fetchLatestDayDraws).toHaveBeenCalledTimes(2));
     expect(apiDraws.fetchDraw).toHaveBeenCalledTimes(drawCallsBefore);
   });
+
+  it('does NOT fire single-station fetchDraw with stale station when stepping dates in "Cả ngày" mode (T12.07)', async () => {
+    (apiDraws.fetchScheduleByDate as jest.Mock).mockImplementation((date: string) => {
+      if (date.endsWith('-16')) {
+        return Promise.resolve([{ code: 'tp-hcm', name: 'TP. Hồ Chí Minh', region: 'SOUTH' }]);
+      }
+      return Promise.resolve([{ code: 'ben-tre', name: 'Bến Tre', region: 'SOUTH' }]);
+    });
+
+    const { getByTestId } = await render(<ResultsScreen />, { wrapper: Wrapper });
+    await waitFor(() => expect(apiDraws.fetchDraw).toHaveBeenCalled());
+
+    // Switch to "Cả ngày"
+    fireEvent.press(getByTestId('results-view-mode-all'));
+    await waitFor(() => expect(apiDraws.fetchLatestDayDraws).toHaveBeenCalledTimes(1));
+
+    (apiDraws.fetchDraw as jest.Mock).mockClear();
+
+    // Step to previous date while in "Cả ngày" mode
+    fireEvent.press(getByTestId('results-prev-date-btn'));
+    await waitFor(() => expect(apiDraws.fetchLatestDayDraws).toHaveBeenCalledTimes(2));
+
+    // Must NOT call single-station fetchDraw while viewing "Cả ngày"
+    expect(apiDraws.fetchDraw).not.toHaveBeenCalled();
+
+    // Switching back to "Từng đài" queries the new date's station, never the stale station
+    fireEvent.press(getByTestId('results-view-mode-single'));
+    await waitFor(() => expect(apiDraws.fetchDraw).toHaveBeenCalledTimes(1));
+  });
 });

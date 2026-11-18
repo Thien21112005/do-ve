@@ -97,26 +97,37 @@ export default function ResultsScreen() {
   );
   const [quickQuery, setQuickQuery] = useState('');
 
+  // Keep station aligned with current date's schedule even while StationChips is unmounted in 'all' mode (T12.07)
+  const effectiveStation =
+    stations.length > 0 && !stations.some((s) => s.code === selectedStation)
+      ? stations[0]?.code || ''
+      : selectedStation;
+
   const {
     draws: dailyDraws,
     isLoading: isDailyLoading,
     isError: isDailyError,
     error: dailyError,
     refetch: refetchDaily,
-  } = useDailyDraws(selectedDate, stations, viewMode === 'all');
+  } = useDailyDraws(
+    selectedDate,
+    stations,
+    viewMode === 'all' && !isScheduleLoading,
+  );
 
   const { draw, availability, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
-    selectedStation,
+    effectiveStation,
+    viewMode === 'single',
   );
 
   // T09.29: Avoid empty state flash before station chips are loaded and auto-selected
   const isWaitingForStation =
-    !selectedStation && (isScheduleLoading || stations.length > 0);
+    !effectiveStation && (isScheduleLoading || stations.length > 0);
   const showLoading =
     viewMode === 'all'
-      ? isDailyLoading
-      : isWaitingForStation || (Boolean(selectedStation) && isLoading);
+      ? isScheduleLoading || isDailyLoading
+      : isWaitingForStation || (Boolean(effectiveStation) && isLoading);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -349,7 +360,7 @@ export default function ResultsScreen() {
           <View className="pt-1">
             <StationChips
               selectedDate={selectedDate}
-              selectedStation={selectedStation}
+              selectedStation={effectiveStation}
               onSelectStation={setSelectedStation}
             />
           </View>
@@ -485,7 +496,7 @@ export default function ResultsScreen() {
               actionText={STRINGS.common.retry}
               onAction={() => refetch()}
             />
-          ) : !selectedStation ? (
+          ) : !effectiveStation ? (
             <View
               testID="results-no-station-container"
               style={[
@@ -775,7 +786,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   sheetHeaderLeft: {
     flex: 1,

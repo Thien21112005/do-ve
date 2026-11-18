@@ -24,7 +24,7 @@ function isSettled(data?: DrawQueryData): boolean {
   return data?.availability === 'NOT_DRAWING' || Boolean(data?.draw?.isComplete);
 }
 
-export function useDraw(date: string, station: string) {
+export function useDraw(date: string, station: string, enabled = true) {
   const query = useQuery<DrawQueryData, Error>({
     queryKey: [DRAW_QUERY_KEY, date, station],
     queryFn: async () => {
@@ -43,7 +43,7 @@ export function useDraw(date: string, station: string) {
         throw err;
       }
     },
-    enabled: Boolean(date && station),
+    enabled: Boolean(date && station) && enabled,
     // Poll while today's draw is filling in; freeze finished past draws (T11.11)
     staleTime: (q) => drawQueryTiming(date, isSettled(q.state.data)).staleTime,
     refetchInterval: (q) => drawQueryTiming(date, isSettled(q.state.data)).refetchInterval,

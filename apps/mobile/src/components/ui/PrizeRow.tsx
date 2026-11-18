@@ -99,7 +99,7 @@ export function PrizeRow({
       style={[
         styles.row,
         showDivider && {
-          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomWidth: 1,
           borderBottomColor: colors.border,
         },
         { backgroundColor: hero ? colors.specialTint : 'transparent' },
