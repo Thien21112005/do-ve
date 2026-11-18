@@ -54,6 +54,13 @@ dove:
     rate-limit-interval-ms: ${DOVE_INGESTION_RATE_LIMIT_MS:2000}
     connect-timeout-ms: ${DOVE_INGESTION_CONNECT_TIMEOUT_MS:5000}
     read-timeout-ms: ${DOVE_INGESTION_READ_TIMEOUT_MS:10000}
+    startup-backfill:
+      enabled: ${DOVE_STARTUP_BACKFILL_ENABLED:true}
+      days: ${DOVE_STARTUP_BACKFILL_DAYS:14}
+    on-demand-backfill:
+      enabled: ${DOVE_ONDEMAND_BACKFILL_ENABLED:true}
+      max-past-days: ${DOVE_ONDEMAND_BACKFILL_MAX_DAYS:60}
+      cooldown-seconds: ${DOVE_ONDEMAND_BACKFILL_COOLDOWN_SEC:60}
     xskt:
       base-url: "${DOVE_XSKT_BASE_URL:https://xskt.com.vn}"
   app:

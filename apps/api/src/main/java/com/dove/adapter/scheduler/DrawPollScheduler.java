@@ -2,6 +2,7 @@ package com.dove.adapter.scheduler;
 
 import com.dove.application.DrawRepository;
 import com.dove.application.IngestDrawsUseCase;
+import com.dove.application.OnDemandDrawBackfillService;
 import com.dove.application.StationSchedulePort;
 import com.dove.domain.DrawResult;
 import java.time.Clock;
@@ -10,6 +11,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ public class DrawPollScheduler {
   private final Clock clock;
   private final LocalTime windowStart;
   private final LocalTime windowEnd;
+  private final Optional<OnDemandDrawBackfillService> backfillService;
 
   public DrawPollScheduler(
       IngestDrawsUseCase ingestUseCase,
@@ -49,7 +52,25 @@ public class DrawPollScheduler {
         drawRepository,
         clock,
         DEFAULT_WINDOW_START,
-        DEFAULT_WINDOW_END);
+        DEFAULT_WINDOW_END,
+        Optional.empty());
+  }
+
+  public DrawPollScheduler(
+      IngestDrawsUseCase ingestUseCase,
+      StationSchedulePort schedulePort,
+      DrawRepository drawRepository,
+      Clock clock,
+      String windowStart,
+      String windowEnd) {
+    this(
+        ingestUseCase,
+        schedulePort,
+        drawRepository,
+        clock,
+        LocalTime.parse(windowStart),
+        LocalTime.parse(windowEnd),
+        Optional.empty());
   }
 
   @Autowired
@@ -59,14 +80,16 @@ public class DrawPollScheduler {
       DrawRepository drawRepository,
       Clock clock,
       @Value("${dove.scheduler.window-start:16:10}") String windowStart,
-      @Value("${dove.scheduler.window-end:17:30}") String windowEnd) {
+      @Value("${dove.scheduler.window-end:17:30}") String windowEnd,
+      Optional<OnDemandDrawBackfillService> backfillService) {
     this(
         ingestUseCase,
         schedulePort,
         drawRepository,
         clock,
         LocalTime.parse(windowStart),
-        LocalTime.parse(windowEnd));
+        LocalTime.parse(windowEnd),
+        backfillService);
   }
 
   public DrawPollScheduler(
@@ -76,12 +99,31 @@ public class DrawPollScheduler {
       Clock clock,
       LocalTime windowStart,
       LocalTime windowEnd) {
+    this(
+        ingestUseCase,
+        schedulePort,
+        drawRepository,
+        clock,
+        windowStart,
+        windowEnd,
+        Optional.empty());
+  }
+
+  public DrawPollScheduler(
+      IngestDrawsUseCase ingestUseCase,
+      StationSchedulePort schedulePort,
+      DrawRepository drawRepository,
+      Clock clock,
+      LocalTime windowStart,
+      LocalTime windowEnd,
+      Optional<OnDemandDrawBackfillService> backfillService) {
     this.ingestUseCase = ingestUseCase;
     this.schedulePort = schedulePort;
     this.drawRepository = drawRepository;
     this.clock = clock;
     this.windowStart = windowStart;
     this.windowEnd = windowEnd;
+    this.backfillService = backfillService != null ? backfillService : Optional.empty();
   }
 
   @Scheduled(
@@ -100,6 +142,8 @@ public class DrawPollScheduler {
           windowEnd);
       return;
     }
+
+    backfillService.ifPresent(s -> s.ensureDateIngested(today.minusDays(1)));
 
     if (areAllStationsComplete(today)) {
       log.info("Tất cả các đài trong ngày [{}] đã có đủ 18 số mở thưởng, dừng poll", today);
