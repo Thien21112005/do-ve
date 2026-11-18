@@ -174,6 +174,27 @@ describe('format utilities', () => {
       expect(text).toContain('ĐB: 123456');
       expect(text).toContain('Đồng Tháp');
       expect(text).toContain('ĐB: 999999');
+
+      // Date header appears once at the top, not repeated per station, and no triple newlines (T11.40)
+      expect(text.match(/14\/11\/2026/g)?.length).toBe(1);
+      expect(text).not.toContain('\n\n\n');
+    });
+
+    it('orders shared prize tiers from G.8 down to ĐB like a printed sheet and preserves leading zeros (T11.40)', () => {
+      const text = formatDrawForShare(
+        {
+          stationName: 'Bến Tre',
+          drawDate: '2026-11-17',
+          numbers: {
+            EIGHTH: ['07'],
+            FIRST: ['08274'],
+            SPECIAL: ['045123'],
+          },
+        },
+        '17/11/2026',
+      );
+      expect(text.indexOf('G.8: 07')).toBeGreaterThan(-1);
+      expect(text.indexOf('ĐB: 045123')).toBeGreaterThan(text.indexOf('G.8: 07'));
     });
   });
 });

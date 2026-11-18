@@ -107,8 +107,33 @@ export function animateCountUp(
   return () => clearInterval(timer);
 }
 
+const SHARE_TIERS: { key: string; label: string }[] = [
+  { key: 'EIGHTH', label: 'G.8' },
+  { key: 'SEVENTH', label: 'G.7' },
+  { key: 'SIXTH', label: 'G.6' },
+  { key: 'FIFTH', label: 'G.5' },
+  { key: 'FOURTH', label: 'G.4' },
+  { key: 'THIRD', label: 'G.3' },
+  { key: 'SECOND', label: 'G.2' },
+  { key: 'FIRST', label: 'G.1' },
+  { key: 'SPECIAL', label: 'ĐB' },
+];
+
+function formatDrawTierLines(
+  nums: Record<string, string[]> = {},
+): string[] {
+  const lines: string[] = [];
+  for (const { key, label } of SHARE_TIERS) {
+    const list = nums[key];
+    if (list && list.length > 0) {
+      lines.push(`${label}: ${list.join(' - ')}`);
+    }
+  }
+  return lines;
+}
+
 /**
- * Format a draw result into clean text suitable for sharing via SMS/Zalo/Messenger.
+ * Format a draw result into clean text suitable for sharing via SMS/Zalo/Messenger (T11.40).
  */
 export function formatDrawForShare(
   draw?: {
@@ -124,33 +149,12 @@ export function formatDrawForShare(
   const station = draw.stationName || draw.stationCode || 'Miền Nam';
   const dateFormatted = dateVN || (draw.drawDate ? formatDateVN(draw.drawDate) : '');
   const title = dateFormatted ? `XSMN ${dateFormatted} – ${station}` : `XSMN – ${station}`;
-  const lines: string[] = [title];
-
-  const nums = draw.numbers || draw.prizes || {};
-  const tiers: { key: string; label: string }[] = [
-    { key: 'SPECIAL', label: 'ĐB' },
-    { key: 'FIRST', label: 'G.1' },
-    { key: 'SECOND', label: 'G.2' },
-    { key: 'THIRD', label: 'G.3' },
-    { key: 'FOURTH', label: 'G.4' },
-    { key: 'FIFTH', label: 'G.5' },
-    { key: 'SIXTH', label: 'G.6' },
-    { key: 'SEVENTH', label: 'G.7' },
-    { key: 'EIGHTH', label: 'G.8' },
-  ];
-
-  for (const { key, label } of tiers) {
-    const list = nums[key];
-    if (list && list.length > 0) {
-      lines.push(`${label}: ${list.join(' - ')}`);
-    }
-  }
-
-  return lines.join('\n');
+  const tierLines = formatDrawTierLines(draw.numbers || draw.prizes || {});
+  return [title, ...tierLines].join('\n');
 }
 
 /**
- * Format multiple draw results into combined text for daily share.
+ * Format multiple draw results into combined text for daily share without repeating the date (T11.40).
  */
 export function formatDailyDrawsForShare(
   draws?:
@@ -166,11 +170,13 @@ export function formatDailyDrawsForShare(
 ): string {
   if (!draws || draws.length === 0) return '';
   const dateFormatted = dateVN || (draws[0]?.drawDate ? formatDateVN(draws[0].drawDate) : '');
-  const lines: string[] = [`XSMN ${dateFormatted}`];
+  const header = dateFormatted ? `XSMN ${dateFormatted}` : 'XSMN';
 
-  for (const draw of draws) {
-    lines.push('\n' + formatDrawForShare(draw, dateFormatted));
-  }
+  const stationBlocks = draws.map((draw) => {
+    const station = draw.stationName || draw.stationCode || 'Miền Nam';
+    const tierLines = formatDrawTierLines(draw.numbers || draw.prizes || {});
+    return [`[${station}]`, ...tierLines].join('\n');
+  });
 
-  return lines.join('\n');
+  return [header, ...stationBlocks].join('\n\n');
 }
