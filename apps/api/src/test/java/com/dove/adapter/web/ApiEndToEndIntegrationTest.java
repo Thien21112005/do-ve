@@ -160,12 +160,13 @@ class ApiEndToEndIntegrationTest {
   }
 
   @Test
-  @DisplayName("E2E: Gọi GET /api/v1/draws thật từ DB có Cache-Control immutable")
+  @DisplayName("E2E: Gọi GET /api/v1/draws thật từ DB có Cache-Control 1 ngày và ETag")
   void getDraw_e2e_success() throws Exception {
     mockMvc
         .perform(get("/api/v1/draws").param("date", "2024-11-04").param("station", "tp-hcm"))
         .andExpect(status().isOk())
-        .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"))
+        .andExpect(header().string("Cache-Control", "max-age=86400, public"))
+        .andExpect(header().exists("ETag"))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
         .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("654321"));
   }

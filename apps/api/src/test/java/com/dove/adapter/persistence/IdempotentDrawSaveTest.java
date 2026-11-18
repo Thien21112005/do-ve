@@ -35,9 +35,11 @@ class IdempotentDrawSaveTest {
   @BeforeEach
   void setUp() {
     drawResultRepository.deleteAll();
-    stationRepository.deleteAll();
 
-    stationRepository.save(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH"));
+    stationRepository
+        .findByCode("tp-hcm")
+        .orElseGet(
+            () -> stationRepository.save(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
 
     Map<PrizeTier, List<String>> numbers =
         Map.of(

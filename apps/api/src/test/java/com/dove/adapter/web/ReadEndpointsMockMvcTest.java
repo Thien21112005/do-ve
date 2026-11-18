@@ -494,13 +494,17 @@ class ReadEndpointsMockMvcTest {
   @DisplayName("Endpoint 4: GET /api/v1/draws")
   void testEndpoint4_getDraw() throws Exception {
     LocalDate pastDate = LocalDate.of(2026, 11, 8);
+    stationScheduleRepository.setSchedule(
+        pastDate.getDayOfWeek().getValue(),
+        List.of(new StationEntity("tp-hcm", "TP. Hồ Chí Minh", "SOUTH")));
     drawRepository.put(
         new DrawResult("tp-hcm", pastDate, Map.of(PrizeTier.SPECIAL, List.of("654321"))));
 
     mockMvc
         .perform(get("/api/v1/draws").param("date", "2026-11-08").param("station", "tp-hcm"))
         .andExpect(status().isOk())
-        .andExpect(header().string("Cache-Control", "max-age=31536000, public, immutable"))
+        .andExpect(header().string("Cache-Control", "max-age=86400, public"))
+        .andExpect(header().exists("ETag"))
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
         .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("654321"));
 
@@ -510,7 +514,7 @@ class ReadEndpointsMockMvcTest {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code").value("STATION_NOT_FOUND"));
 
-    // Draw not found
+    // Draw not found (2026-11-01 is also Sunday, so tp-hcm is scheduled but draw is missing)
     mockMvc
         .perform(get("/api/v1/draws").param("date", "2026-11-01").param("station", "tp-hcm"))
         .andExpect(status().isNotFound());
