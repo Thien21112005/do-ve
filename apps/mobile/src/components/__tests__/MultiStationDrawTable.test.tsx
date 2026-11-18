@@ -123,16 +123,18 @@ const mockDrawsSaturday4Stations: UiDrawView[] = [
 ];
 
 describe('MultiStationDrawTable (T10.39)', () => {
-  it('renders all 4 stations side-by-side with columns for Saturday draws', async () => {
-    const { getByTestId, getByText } = await render(
+  it('renders all 4 stations side-by-side on 1 screen for Saturday draws at normal font scale (T10.39, T12.06)', async () => {
+    const { getByTestId, queryByTestId, getByText } = await render(
       <MultiStationDrawTable draws={mockDrawsSaturday4Stations} />,
     );
 
     expect(getByTestId('multi-station-draw-table')).toBeTruthy();
-    expect(getByTestId('multi-station-scroll-view')).toBeTruthy();
+    // All 4 stations fit side-by-side without horizontal scroll at normal fontScale
+    expect(queryByTestId('multi-station-scroll-view')).toBeNull();
+    expect(queryByTestId('multi-station-scroll-hint')).toBeNull();
 
-    // Headers of all 4 stations
-    expect(getByText('TP. Hồ Chí Minh')).toBeTruthy();
+    // Compact header for TP. Hồ Chí Minh -> TP.HCM + other 3 stations
+    expect(getByText('TP.HCM')).toBeTruthy();
     expect(getByText('Long An')).toBeTruthy();
     expect(getByText('Bình Phước')).toBeTruthy();
     expect(getByText('Hậu Giang')).toBeTruthy();
@@ -186,36 +188,49 @@ describe('MultiStationDrawTable (T10.39)', () => {
     expect(getByText('44401')).toBeTruthy();
   });
 
-  it('pins left tier column, disables horizontal scroll for <=3 stations, enables for >=4, and prints G8 & ĐB in vermilion (T11.38)', async () => {
+  it('pins left tier column, prints G8 & ĐB in vermilion, and switches 4-station view to horizontal scroll with hint banner when fontScale > 1.2 (T11.38, T12.06)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const RN = require('react-native');
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { colors } = require('@/theme/colors');
-    const { getByTestId, getByText, rerender } = await render(
-      <MultiStationDrawTable draws={mockDrawsSaturday4Stations} />,
-    );
 
-    expect(getByTestId('multi-station-fixed-tier-col')).toBeTruthy();
-    expect(getByTestId('multi-station-scroll-view').props.scrollEnabled).toBe(
-      true,
-    );
+    const dimSpy = jest
+      .spyOn(RN, 'useWindowDimensions')
+      .mockReturnValue({ width: 390, height: 844, scale: 3, fontScale: 1.35 });
 
-    const flatten = (node: any) =>
-      Object.assign(
-        {},
-        ...(Array.isArray(node.props.style)
-          ? node.props.style.filter(Boolean)
-          : [node.props.style]),
+    try {
+      const { getByTestId, getByText, rerender } = await render(
+        <MultiStationDrawTable draws={mockDrawsSaturday4Stations} />,
       );
 
-    expect(flatten(getByText('81')).color).toBe(colors.light.special);
-    expect(flatten(getByText('123456')).color).toBe(colors.light.special);
+      expect(getByTestId('multi-station-fixed-tier-col')).toBeTruthy();
+      expect(getByTestId('multi-station-scroll-view').props.scrollEnabled).toBe(
+        true,
+      );
+      expect(getByTestId('multi-station-scroll-hint')).toBeTruthy();
+      expect(getByText(/Vuốt ngang xem đủ 4 đài/)).toBeTruthy();
 
-    // 3 stations -> fits viewport width in unified grid without horizontal ScrollView
-    await rerender(
-      <MultiStationDrawTable draws={mockDrawsSaturday4Stations.slice(0, 3)} />,
-    );
-    expect(
-      flatten(getByTestId('multi-station-header-cell-0')).flexBasis,
-    ).toBe(0);
+      const flatten = (node: any) =>
+        Object.assign(
+          {},
+          ...(Array.isArray(node.props.style)
+            ? node.props.style.filter(Boolean)
+            : [node.props.style]),
+        );
+
+      expect(flatten(getByText('81')).color).toBe(colors.light.special);
+      expect(flatten(getByText('123456')).color).toBe(colors.light.special);
+
+      // 3 stations -> fits viewport width in unified grid even at fontScale 1.35
+      await rerender(
+        <MultiStationDrawTable draws={mockDrawsSaturday4Stations.slice(0, 3)} />,
+      );
+      expect(
+        flatten(getByTestId('multi-station-header-cell-0')).flexBasis,
+      ).toBe(0);
+    } finally {
+      dimSpy.mockRestore();
+    }
   });
 
   it('aligns 3-station columns with unified flexBasis: 0 and crisp 1dp borders without horizontal ScrollView (T12.05)', async () => {
