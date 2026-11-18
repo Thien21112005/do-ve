@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 47 / 53 task hoàn thành
+- **Tổng quan:** 48 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -55,7 +55,7 @@
 | T11.44 | Vé của tôi: trạng thái rỗng | DONE | a573628 | 2026-11-18 | TicketEmptyIllustration nét mảnh dùng 100% token theme (xoá 26 mã hex & hạt lấp lánh trang trí), copy gọn trực diện. Đủ ảnh Sáng/Tối |
 | T11.45 | Thêm & Cài đặt: chỉ dùng ListRow, sửa a11y công tắc | DONE | 3fbfbe8 | 2026-11-18 | More & Settings dùng toàn bộ ListRow + SectionHeader, bỏ tiêu đề Thêm lặp, ListRow tĩnh không bọc accessible=true để Switch là 1 phần tử a11y duy nhất; xoá nợ more & settings. Đủ ảnh Sáng/Tối |
 | T11.46 | Lịch quay: bảng 7 ngày, đài bấm được | DONE | bca9e24 | 2026-11-18 | Bảng 7 hàng (Thứ → các đài), hôm nay tô primaryTint, từng đài bấm mở Kết quả và focus độc lập (accessible=false ở hàng cha); xoá nợ schedule.tsx. Đủ ảnh Sáng/Tối |
-| T11.47 | Giới thiệu: copy & bố cục | TODO | | | |
+| T11.47 | Giới thiệu: copy & bố cục | DONE | 660f422 | 2026-11-18 | Bố cục văn bản phẳng không thẻ hộp/icon màu lớn, Perforation chia tách, miễn trừ phi cờ bạc rõ ràng; xoá nợ about.tsx. Đủ ảnh Sáng/Tối |
 | T11.48 | Bộ trạng thái chung loading/empty/error/offline | TODO | | | |
 | T11.49 | Motion & haptic tiết chế | TODO | | | |
 | T11.50 | Critique + audit trung thực dựa trên ảnh after | TODO | | | |
