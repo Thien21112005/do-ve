@@ -1,16 +1,16 @@
 import React from 'react';
 import {
   View,
+  ScrollView,
   TextInput,
   Pressable,
   Platform,
   StyleSheet,
 } from 'react-native';
 import { Icon } from '@/components/Icon';
-import { TicketStatusBadge } from '@/components/TicketStatusBadge';
-import { Sheet, Text, Button, usePressed } from '@/components/ui';
+import { ResultStub } from '@/components/ResultStub';
+import { Sheet, Text, Button, Banner, usePressed } from '@/components/ui';
 import { useTheme, radii } from '@/theme';
-import { formatDateVN } from '@/lib/format';
 import { STRINGS } from '@/lib/strings';
 import type { SavedTicket } from '@/types';
 
@@ -50,49 +50,38 @@ export function TicketDetailSheet({
       testID="saved-ticket-detail-sheet"
     >
       {ticket ? (
-        <View>
-          <View
-            style={[
-              styles.ticketSummaryBox,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.stationDateRow}>
-              <Text variant="bodyStrong" color={colors.textMain}>
-                {ticket.stationName || ticket.station}
-              </Text>
-              <Text variant="caption" color={colors.textMuted}>
-                {formatDateVN(ticket.drawDate)}
-              </Text>
-            </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {ticket.status === 'INVALID' ? (
+            <Banner
+              variant="warning"
+              message={`${ticket.stationName || ticket.station} · ${STRINGS.tickets.statusInvalidBadge}`}
+              style={styles.invalidBanner}
+            />
+          ) : null}
 
-            <View
-              style={[
-                styles.ticketNumberRow,
-                { borderTopColor: colors.border },
-              ]}
-            >
-              <View>
-                <Text variant="caption" color={colors.textMuted}>
-                  {STRINGS.check.ticketNumberLabel}
-                </Text>
-                <Text
-                  testID="detail-sheet-ticket-number"
-                  variant="ticketLg"
-                  color={colors.textMain}
-                >
-                  {ticket.ticket}
-                </Text>
-              </View>
-              <TicketStatusBadge
-                status={ticket.status}
-                totalPrize={ticket.totalPrize}
-                size="md"
-              />
-            </View>
+          <View style={styles.stubWrap}>
+            <ResultStub
+              testID="detail-sheet-stub"
+              compact={true}
+              showPerforation={false}
+              hideDisclaimer={true}
+              result={{
+                ticket: ticket.ticket,
+                stationCode: ticket.station,
+                stationName: ticket.stationName || ticket.station,
+                drawDate: ticket.drawDate,
+                status:
+                  ticket.status === 'PENDING'
+                    ? 'RESULT_NOT_AVAILABLE'
+                    : 'CHECKED',
+                won: ticket.status === 'WON',
+                totalAmount: ticket.totalPrize || 0,
+                wins: (ticket.wins || []) as any,
+              }}
+            />
           </View>
 
           <View style={styles.noteSection}>
@@ -178,31 +167,18 @@ export function TicketDetailSheet({
               </Text>
             </Pressable>
           </View>
-        </View>
+        </ScrollView>
       ) : null}
     </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
-  ticketSummaryBox: {
-    padding: 14,
-    borderRadius: radii.md,
-    borderWidth: 1,
+  invalidBanner: {
+    marginBottom: 10,
+  },
+  stubWrap: {
     marginBottom: 14,
-  },
-  stationDateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  ticketNumberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 8,
-    borderTopWidth: StyleSheet.hairlineWidth,
   },
   noteSection: {
     marginBottom: 14,

@@ -74,13 +74,13 @@ describe('Split Tickets components (T11.41)', () => {
     expect(onSelectFilter).toHaveBeenCalledWith('WON');
   });
 
-  it('renders TicketDetailSheet when ticket is provided and triggers actions', async () => {
+  it('renders TicketDetailSheet with ResultStub (amount in words + TicketNumber) and triggers actions (T11.43)', async () => {
     const onClose = jest.fn();
     const onSaveNote = jest.fn();
     const onViewDraw = jest.fn();
     const onRecheck = jest.fn();
     const onDelete = jest.fn();
-    const { getByTestId } = await render(
+    const { getByTestId, getByText } = await render(
       <TicketDetailSheet
         ticket={sampleTicket}
         noteDraft="Vé đầu tuần"
@@ -95,7 +95,9 @@ describe('Split Tickets components (T11.41)', () => {
     );
 
     expect(getByTestId('saved-ticket-detail-sheet')).toBeTruthy();
-    expect(getByTestId('detail-sheet-ticket-number')).toBeTruthy();
+    expect(getByTestId('detail-sheet-stub-container')).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
+    expect(getByText('Hai trăm nghìn đồng')).toBeTruthy();
 
     await fireEvent.press(getByTestId('detail-sheet-save-note-btn'));
     expect(onSaveNote).toHaveBeenCalled();

@@ -33,6 +33,7 @@ export interface ResultStubProps {
   checkAgainLabel?: string;
   showPerforation?: boolean;
   compact?: boolean;
+  hideDisclaimer?: boolean;
   testID?: string;
 }
 
@@ -51,6 +52,7 @@ export function ResultStub({
   checkAgainLabel,
   showPerforation = true,
   compact = false,
+  hideDisclaimer = false,
   testID = 'result-card',
 }: ResultStubProps) {
   const { colors } = useTheme();
@@ -436,9 +438,11 @@ export function ResultStub({
           </View>
         )}
 
-        <Text variant="caption" color={colors.textMuted} style={styles.disclaimer}>
-          {STRINGS.check.disclaimer}
-        </Text>
+        {!hideDisclaimer ? (
+          <Text variant="caption" color={colors.textMuted} style={styles.disclaimer}>
+            {STRINGS.check.disclaimer}
+          </Text>
+        ) : null}
       </Animated.View>
     </View>
   );

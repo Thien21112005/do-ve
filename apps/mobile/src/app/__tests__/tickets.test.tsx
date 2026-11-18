@@ -645,8 +645,9 @@ describe('TicketsScreen (Vé của tôi)', () => {
       expect(getByTestId('saved-ticket-detail-sheet')).toBeTruthy();
     });
     const sheet = getByTestId('saved-ticket-detail-sheet');
-    expect(getByTestId('detail-sheet-ticket-number')).toBeTruthy();
-    expect(getByTestId('detail-sheet-ticket-number').props.children).toBe('998877');
+    expect(getByTestId('detail-sheet-stub-container')).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
+    expect(within(sheet).getByText('Một trăm nghìn đồng')).toBeTruthy();
     expect(within(sheet).getByText(/TP. Hồ Chí Minh/)).toBeTruthy();
     expect(within(sheet).getByText(/14\/11\/2026/)).toBeTruthy();
 
