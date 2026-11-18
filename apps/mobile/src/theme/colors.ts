@@ -7,12 +7,13 @@
 
 export const colors = {
   light: {
-    // Brand & Action
-    primary: '#1D4ED8', // blue-700
-    primaryHover: '#1E40AF',
-    primarySubtle: '#EFF4FE',
-    primaryTint: '#EFF4FE',
-    onPrimary: '#FFFFFF',
+    // Brand & Action — Deep letterpress ink so vermilion (ĐB/G8) & emerald (win)
+    // remain the only two vivid chromatic accents on the paper sheet (T11.29)
+    primary: '#1A2230', // deep blue-black ink
+    primaryHover: '#0F172A',
+    primarySubtle: '#EAE5DB',
+    primaryTint: '#EAE5DB',
+    onPrimary: '#F6F4EF', // warm ivory paper text (> 14:1 AAA)
 
     // Backgrounds & Surfaces (Warm Paper Theme)
     background: '#F6F4EF', // warm paper off-white
@@ -26,9 +27,9 @@ export const colors = {
     textMuted: '#566070', // slate ink (> 5.7:1 contrast)
     textInverse: '#FFFFFF',
 
-    // Borders & Lines
-    border: '#E2DDD2', // paper edge / perforation
-    borderFocus: '#1D4ED8',
+    // Borders & Lines — Crisp paper edge legible in outdoor sunlight (T11.29)
+    border: '#D9D2C3', // paper edge / perforation
+    borderFocus: '#1A2230',
 
     // Lottery Result States & Specificity
     special: '#B91C1C', // vermilion red (Giải Đặc biệt)
@@ -47,18 +48,18 @@ export const colors = {
 
     loss: '#566070', // neutral ink
     lossBg: '#F6F4EF',
-    lossBorder: '#E2DDD2',
+    lossBorder: '#D9D2C3',
 
     error: '#B42318', // alert red
     errorTint: '#FEF3F2',
     errorBg: '#FEF3F2',
   },
   dark: {
-    // Brand & Action
-    primary: '#7AA2FF',
-    primaryHover: '#93B4FF',
-    primarySubtle: '#172554',
-    primaryTint: '#172554',
+    // Brand & Action — Warm parchment on night charcoal (T11.29)
+    primary: '#EAE5DB',
+    primaryHover: '#F6F4EF',
+    primarySubtle: '#222834',
+    primaryTint: '#222834',
     onPrimary: '#0F1217',
 
     // Backgrounds & Surfaces (Night Charcoal)
@@ -74,8 +75,8 @@ export const colors = {
     textInverse: '#0F1217',
 
     // Borders & Lines
-    border: '#2A303A',
-    borderFocus: '#7AA2FF',
+    border: '#303744',
+    borderFocus: '#EAE5DB',
 
     // Lottery Result States & Specificity
     special: '#FF7A70',
@@ -94,7 +95,7 @@ export const colors = {
 
     loss: '#9AA3B2',
     lossBg: '#12151B',
-    lossBorder: '#2A303A',
+    lossBorder: '#303744',
 
     error: '#FF8A80',
     errorTint: '#450A0A',

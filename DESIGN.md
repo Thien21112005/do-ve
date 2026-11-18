@@ -11,8 +11,9 @@
 - **Nền giấy ấm ngà (`#F6F4EF`):** Dịu mắt khi nhìn lâu ngoài trời, phân biệt rõ với nền trắng của thẻ vé (`#FFFFFF`).
 - **Chữ mực xanh đen đậm nét (`#1A2230`):** Tạo độ tương phản xuất sắc (đạt chuẩn WCAG AAA > 14:1) giúp người lớn tuổi hoặc lao động dễ đọc.
 - **Con số là nhân vật chính:** Số vé luôn được in to, rõ ràng, định dạng `tabular-nums` với khoảng cách cố định.
-- **Đỏ son (`#B91C1C`) cho Giải Đặc biệt:** Tôn vinh giải thưởng cao nhất.
-- **Xanh ngọc (`#15803D`) cho Trúng thưởng:** Mang lại cảm xúc vỡ òa, may mắn mà tao nhã.
+- **Đỏ son (`#B91C1C`) cho Giải Đặc biệt & Giải Tám:** Tôn vinh hai giải biên như tờ dò giấy thật.
+- **Xanh ngọc (`#15803D`) cho Trúng thưởng:** Mang lại cảm xúc may mắn mà tao nhã.
+- **Mực xanh đen (`#1A2230`) cho hành động chính (`primary`, T11.29):** Sau khi đối chiếu ảnh chụp render thật, màu xanh dương chói `#1D4ED8` trên các chip/nút bị loại bỏ vì lấn át số đỏ son ĐB. Nút chính và chip đang chọn dùng chính màu mực in `#1A2230` (chữ giấy ngà `#F6F4EF`, tương phản > 14:1 AAA), nhường toàn bộ sân khấu màu sắc cho **đỏ son (ĐB/G8)** và **xanh trúng thưởng**. Viền thẻ được tăng độ đậm từ `#E2DDD2` lên `#D9D2C3` để tách bạch rõ dưới nắng mà không cần đổ bóng.
 - **Nói KHÔNG với AI-Slop:** Không gradient lòe loẹt, không glassmorphism, không card lồng trong card, không micro-text < 12px.
 
 ---
@@ -30,11 +31,11 @@
 | `textMain` | `#1A2230` | `#EEF0F3` | Chữ chính, số vé chính (**WCAG AAA > 14:1**) |
 | `textMuted` | `#566070` | `#9AA3B2` | Chữ phụ, nhãn đài, ngày (**WCAG AA > 5.5:1**) |
 | `textInverse` | `#FFFFFF` | `#0F1217` | Chữ tương phản trên nền tối/sáng |
-| `border` | `#E2DDD2` | `#2A303A` | Đường dập vé, viền thẻ |
-| `borderFocus` | `#1D4ED8` | `#7AA2FF` | Viền ô nhập khi focus |
-| `primary` | `#1D4ED8` | `#7AA2FF` | Nút hành động chính (Dò vé) |
-| `primaryTint` | `#EFF4FE` | `#172554` | Nền banner info / tag đài được chọn |
-| `onPrimary` | `#FFFFFF` | `#0F1217` | Chữ trên nút primary (**WCAG AA > 6.7:1**) |
+| `border` | `#D9D2C3` | `#303744` | Đường dập vé, viền thẻ sắc nét ngoài nắng (T11.29) |
+| `borderFocus` | `#1A2230` | `#EAE5DB` | Viền ô nhập khi focus |
+| `primary` | `#1A2230` | `#EAE5DB` | Mực xanh đen / giấy ngà ấm cho CTA & chip chọn (T11.29) |
+| `primaryTint` | `#EAE5DB` | `#222834` | Nền nhạt trung tính cho dòng hôm nay / tag |
+| `onPrimary` | `#F6F4EF` | `#0F1217` | Chữ trên nút primary (**WCAG AAA > 14:1**) |
 | `special` | `#B91C1C` | `#FF7A70` | Đỏ son Giải Đặc biệt (**WCAG AA > 6.4:1**) |
 | `specialTint` | `#FEF2F2` | `#450A0A` | Nền giải đặc biệt |
 | `win` | `#15803D` | `#4ADE80` | Xanh trúng giải (**WCAG AA > 5:1**) |

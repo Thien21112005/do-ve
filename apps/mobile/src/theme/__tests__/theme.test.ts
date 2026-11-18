@@ -148,6 +148,26 @@ describe('Design Tokens & Theme', () => {
         expect(colors[mode].onPrimary).toBeDefined();
       }
     });
+
+    it('tunes paper border and ink primary after real render so only special/win speak chromatics (T11.29)', () => {
+      expect(colors.light.border).toBe('#D9D2C3');
+      expect(colors.light.primary).toBe('#1A2230');
+      expect(colors.light.onPrimary).toBe('#F6F4EF');
+
+      // Primary button text and ghost/link primary text both meet AAA (>= 7:1)
+      expect(
+        getContrastRatio(colors.light.onPrimary, colors.light.primary),
+      ).toBeGreaterThanOrEqual(7.0);
+      expect(
+        getContrastRatio(colors.light.primary, colors.light.surface),
+      ).toBeGreaterThanOrEqual(7.0);
+      expect(
+        getContrastRatio(colors.dark.onPrimary, colors.dark.primary),
+      ).toBeGreaterThanOrEqual(7.0);
+      expect(
+        getContrastRatio(colors.dark.primary, colors.dark.surface),
+      ).toBeGreaterThanOrEqual(7.0);
+    });
   });
 
   describe('Tokens validation', () => {
