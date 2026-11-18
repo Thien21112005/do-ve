@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 36 / 53 task hoàn thành
+- **Tổng quan:** 37 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -40,7 +40,7 @@
 | T11.29 | Màu & bề mặt: rà lại sau khi nhìn thấy thật | DONE | 5c5a655 | 2026-11-18 | Chuyển primary sang mực xanh đen #1A2230 (chữ ngà #F6F4EF, AAA > 14:1; dark #EAE5DB/#0F1217) để đỏ son ĐB & xanh trúng làm chủ đạo; tăng viền giấy lên #D9D2C3 tách rõ ngoài nắng. Cập nhật DESIGN.md + ảnh t11-29 |
 | T11.30 | Home: khối "Hôm nay" theo dữ liệu thật | DONE | 6def710 | 2026-11-18 | Bỏ pill lặp DoVe/MIỀN NAM & chữ cắt cụt; hiển thị tên các đài hôm nay + trạng thái thực tế + Perforation; hạ allowlist index.tsx. Đủ ảnh Sáng/Tối |
 | T11.31 | Home: dò nhanh dùng TicketInput 6 ô + cuống kết quả | DONE | 73727a3 | 2026-11-18 | Thay TextInput 1 dòng bằng TicketInput 6 ô + ResultStub inline (trúng/không trúng/chờ đều lưu được); hạ allowlist index.tsx. Đủ ảnh Sáng/Tối |
-| T11.32 | Home: danh sách "Kết quả mới nhất" dạng hàng phẳng | TODO | | | |
+| T11.32 | Home: danh sách "Kết quả mới nhất" dạng hàng phẳng | DONE | 748a7eb | 2026-11-18 | Hàng phẳng >=56pt (tên đài + ĐB đỏ son), bỏ card lồng card & G1/G8 vụn, lối tắt Vé của tôi dùng ListRow; xoá sạch nợ index.tsx khỏi designGuard. Đủ ảnh Sáng/Tối |
 | T11.33 | Dò vé: 1 dòng ngữ cảnh kỳ + Sheet chọn ngày/đài | DONE | eb3d827 | 2026-11-18 | Thay hộp DateStrip nửa màn & tiêu đề đánh số '3. Nhập…' bằng 1 dòng 'Kỳ … Đổi ›' mở Sheet chọn ngày/đài + hàng Chip đài gọn; xoá nợ check.tsx, DateStrip, StationChips. Đủ ảnh Sáng/Tối |
 | T11.34 | Dò vé: ResultStub 3 trạng thái (trúng/không trúng/chờ) + số tiền bằng chữ | DONE | 5c6ca20 | 2026-11-18 | ResultStub thay ResultCard: Perforation + TicketNumber + display prize + amountInWordsVN, 3 trạng thái winTint/surface/pendingTint, xoá nợ ResultCard & HighlightedTicket khỏi designGuard. Đủ ảnh Sáng/Tối |
 | T11.35 | Dò vé: dò nhiều vé — đếm hợp lệ/lỗi, bỏ trùng, kết quả gom nhóm | DONE | 8b4bb7f | 2026-11-18 | parseBatchTickets báo số vé hợp lệ + lỗi theo dòng ('N vé hợp lệ · M lỗi ở dòng K'), tự bỏ trùng; BatchResultList gom vé trúng lên đầu, tổng tiền 1 lần; xoá nợ BatchTicketInput & BatchResultList. Đủ ảnh Sáng/Tối |
