@@ -16,5 +16,6 @@ export * from './PrizeRow';
 export * from './Perforation';
 export * from './StickyFooter';
 export * from './Sheet';
+export * from './CalendarPickerSheet';
 export * from './Snackbar';
 export * from './usePressed';

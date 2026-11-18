@@ -27,4 +27,5 @@ export * from './ui/PrizeRow';
 export * from './ui/Perforation';
 export * from './ui/StickyFooter';
 export * from './ui/Sheet';
+export * from './ui/CalendarPickerSheet';
 export * from './ui/Snackbar';
