@@ -57,37 +57,28 @@ describe('CheckScreen Form Composition', () => {
     ]);
   });
 
-  it('renders all sections and disables submit button when ticket is incomplete', async () => {
-    const { getByText, getByTestId } = await render(<CheckScreen />, {
+  it('renders compact 1-line draw context without numbered step headers and disables submit when incomplete (T11.33)', async () => {
+    const { getByTestId, queryByText } = await render(<CheckScreen />, {
       wrapper: createWrapper(),
     });
 
     expect(getByTestId('check-context-box')).toBeTruthy();
-    expect(getByText('Kỳ mở thưởng')).toBeTruthy();
-    expect(getByTestId('date-strip')).toBeTruthy();
+    expect(getByTestId('check-context-picker-btn')).toBeTruthy();
     expect(getByTestId('station-chips')).toBeTruthy();
-    expect(getByText('3. Nhập 6 chữ số trên vé')).toBeTruthy();
+    expect(queryByText('3. Nhập 6 chữ số trên vé')).toBeNull();
 
     const submitBtn = getByTestId('check-ticket-button');
     expect(submitBtn.props.accessibilityState.disabled).toBe(true);
   });
 
-  it('merges date and station into one context box with result indicators (T10.24)', async () => {
-    const { getByTestId, getAllByTestId, queryByText } = await render(<CheckScreen />, {
+  it('opens picker Sheet to change date and station from compact context row (T11.33)', async () => {
+    const { getByTestId, queryByTestId, findByTestId } = await render(<CheckScreen />, {
       wrapper: createWrapper(),
     });
 
-    // Separate standalone headers should no longer exist
-    expect(queryByText('1. Chọn ngày mở thưởng')).toBeNull();
-    expect(queryByText('2. Chọn đài quay')).toBeNull();
-
-    // Context box contains both date strip and station chips
-    const contextBox = getByTestId('check-context-box');
-    expect(contextBox).toBeTruthy();
-
-    // Past date chips should render a result indicator dot
-    const pastDots = getAllByTestId('date-strip-chip-dot-past');
-    expect(pastDots.length).toBeGreaterThan(0);
+    expect(queryByTestId('check-context-sheet')).toBeNull();
+    fireEvent.press(getByTestId('check-context-picker-btn'));
+    expect(await findByTestId('check-context-sheet')).toBeTruthy();
   });
 
   it('renders segmented control for single and batch modes with accessibility roles (T10.26)', async () => {

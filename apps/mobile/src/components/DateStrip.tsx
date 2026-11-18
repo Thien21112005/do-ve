@@ -1,14 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
-  TouchableOpacity,
-  Modal,
+  Pressable,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, Sheet, usePressed } from './ui';
 import { useTheme } from '@/theme';
+import { radii } from '@/theme/tokens';
 import { todayVN, addDays, weekdayVN, nowVN } from '@/lib';
 import { STRINGS } from '@/lib/strings';
 import { Icon } from './Icon';
@@ -57,6 +57,66 @@ export function getPastDays(count = 14, baseDate = new Date()): DayItem[] {
 const ITEM_WIDTH = 66;
 const ITEM_GAP = 8;
 
+function DayChip({
+  item,
+  isSelected,
+  hasResult,
+  testID,
+  dotTestID,
+  onPress,
+}: {
+  item: DayItem;
+  isSelected: boolean;
+  hasResult: boolean;
+  testID: string;
+  dotTestID?: string;
+  onPress: () => void;
+}) {
+  const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
+
+  return (
+    <Pressable
+      testID={testID}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.isToday ? 'Hôm nay, ' : ''}${item.dayOfWeekShort}, ngày ${item.dayOfMonth}${hasResult ? ', đã có kết quả' : ''}`}
+      accessibilityState={{ selected: isSelected }}
+      {...pressHandlers}
+      style={{
+        ...styles.dayChip,
+        backgroundColor: isSelected ? colors.primary : colors.surfaceSubtle,
+        borderColor: isSelected ? colors.primary : colors.border,
+        opacity: pressed ? 0.85 : 1,
+      }}
+    >
+      <Text
+        variant="caption"
+        color={isSelected ? colors.onPrimary : colors.textMuted}
+      >
+        {item.isToday ? 'Hôm nay' : item.dayOfWeekShort}
+      </Text>
+      <Text
+        variant="bodyStrong"
+        color={isSelected ? colors.onPrimary : colors.textMain}
+      >
+        {item.dayOfMonth}
+      </Text>
+      {hasResult ? (
+        <View
+          testID={dotTestID}
+          style={[
+            styles.dot,
+            {
+              backgroundColor: isSelected ? colors.onPrimary : colors.primary,
+            },
+          ]}
+        />
+      ) : null}
+    </Pressable>
+  );
+}
+
 export function DateStrip({
   selectedDate,
   onSelectDate,
@@ -64,14 +124,15 @@ export function DateStrip({
   testID = 'date-strip',
 }: DateStripProps) {
   const { colors } = useTheme();
+  const { pressed: calPressed, pressHandlers: calHandlers } = usePressed();
   const [modalVisible, setModalVisible] = useState(false);
   const flatListRef = useRef<FlatList<DayItem>>(null);
 
   const todayStr = todayVN();
   const timeVN = nowVN();
-  const isPastDrawTimeToday = timeVN.hour * 60 + timeVN.minute >= toMinutes(DRAW_WINDOW.expectedDone);
+  const isPastDrawTimeToday =
+    timeVN.hour * 60 + timeVN.minute >= toMinutes(DRAW_WINDOW.expectedDone);
 
-  // Determine dynamic count so selectedDate is always within list (up to 60 days)
   let effectiveCount = daysCount;
   if (selectedDate && selectedDate < todayStr) {
     const diffTime =
@@ -83,7 +144,6 @@ export function DateStrip({
   const days = getPastDays(effectiveCount);
   const past60Days = getPastDays(60);
 
-  // Auto-scroll to selectedDate when it changes (T10.25)
   useEffect(() => {
     const targetIndex = days.findIndex((d) => d.dateString === selectedDate);
     if (targetIndex > 0 && flatListRef.current) {
@@ -105,56 +165,23 @@ export function DateStrip({
       item.dateString < todayStr || (item.isToday && isPastDrawTimeToday);
 
     return (
-      <TouchableOpacity
-        key={item.dateString}
+      <DayChip
+        item={item}
+        isSelected={isSelected}
+        hasResult={hasResult}
         testID={`${testID}-chip-${item.dateString}`}
+        dotTestID={
+          !item.isToday
+            ? 'date-strip-chip-dot-past'
+            : `${testID}-chip-${item.dateString}-dot`
+        }
         onPress={() => onSelectDate(item.dateString)}
-        accessibilityRole="button"
-        accessibilityLabel={`${item.isToday ? 'Hôm nay, ' : ''}${item.dayOfWeekShort}, ngày ${item.dayOfMonth}${hasResult ? ', đã có kết quả' : ''}`}
-        accessibilityState={{ selected: isSelected }}
-        className="items-center justify-center py-2 px-3 rounded-xl border min-w-[62px]"
-        style={{
-          backgroundColor: isSelected
-            ? colors.primary
-            : colors.surfaceSubtle,
-          borderColor: isSelected ? colors.primary : colors.border,
-        }}
-      >
-        <Text
-          className="text-xs font-medium mb-0.5"
-          style={{
-            color: isSelected ? '#ffffff' : colors.textMuted,
-          }}
-        >
-          {item.isToday ? 'Hôm nay' : item.dayOfWeekShort}
-        </Text>
-        <Text
-          className="text-sm font-bold"
-          style={{
-            color: isSelected ? '#ffffff' : colors.textMain,
-          }}
-        >
-          {item.dayOfMonth}
-        </Text>
-        {hasResult && (
-          <View
-            testID={
-              !item.isToday
-                ? 'date-strip-chip-dot-past'
-                : `${testID}-chip-${item.dateString}-dot`
-            }
-            className="w-1.5 h-1.5 rounded-full mt-1"
-            style={{
-              backgroundColor: isSelected ? '#ffffff' : colors.primary,
-            }}
-          />
-        )}
-      </TouchableOpacity>
+      />
     );
   };
 
   return (
-    <View testID={testID} className="my-2">
+    <View testID={testID} style={styles.root}>
       <FlatList
         ref={flatListRef}
         data={days}
@@ -162,7 +189,7 @@ export function DateStrip({
         renderItem={renderDayItem}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, gap: ITEM_GAP }}
+        contentContainerStyle={styles.listContent}
         getItemLayout={(_, index) => ({
           length: ITEM_WIDTH + ITEM_GAP,
           offset: (ITEM_WIDTH + ITEM_GAP) * index,
@@ -170,130 +197,103 @@ export function DateStrip({
         })}
         onScrollToIndexFailed={() => {}}
         ListFooterComponent={
-          <TouchableOpacity
+          <Pressable
             testID={`${testID}-calendar-btn`}
             onPress={() => setModalVisible(true)}
             accessibilityRole="button"
             accessibilityLabel={STRINGS.check.openCalendarA11y}
-            className="items-center justify-center py-2 px-3 rounded-xl border min-w-[62px]"
-            style={{
-              backgroundColor: colors.surfaceSubtle,
-              borderColor: colors.border,
-            }}
+            {...calHandlers}
+            style={[
+              styles.dayChip,
+              {
+                backgroundColor: colors.surfaceSubtle,
+                borderColor: colors.border,
+                opacity: calPressed ? 0.8 : 1,
+              },
+            ]}
           >
             <Icon name="calendar" size={18} color={colors.primary} />
-            <Text
-              className="text-xs font-semibold mt-0.5"
-              style={{ color: colors.primary }}
-            >
+            <Text variant="caption" color={colors.primary} style={styles.calText}>
               Lịch
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         }
       />
 
-      {/* Date Picker Modal (60 days) */}
-      {modalVisible && (
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          transparent
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View
-            testID="date-picker-modal"
-            className="flex-1 justify-end bg-black/50"
-          >
-            <SafeAreaView
-              className="rounded-t-3xl max-h-[80%]"
-              style={{ backgroundColor: colors.surface }}
-            >
-              <View className="flex-row items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-                <View className="flex-row items-center gap-2">
-                  <Icon name="calendar" size={18} color={colors.primary} />
-                  <Text
-                    accessibilityRole="header"
-                    className="text-base font-bold"
-                    style={{ color: colors.textMain }}
-                  >
-                    Chọn ngày mở thưởng (60 ngày)
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  testID="date-picker-close-btn"
-                  onPress={() => setModalVisible(false)}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.common.close}
-                  className="p-1 rounded-full"
-                >
-                  <Icon name="x" size={20} color={colors.textMuted} />
-                </TouchableOpacity>
-              </View>
+      <Sheet
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title="Chọn ngày mở thưởng (60 ngày)"
+        closeTestID="date-picker-close-btn"
+        testID="date-picker-modal"
+      >
+        <ScrollView style={styles.modalScroll}>
+          <View style={styles.modalGrid}>
+            {past60Days.map((item) => {
+              const isSelected = item.dateString === selectedDate;
+              const hasResult =
+                item.dateString < todayStr ||
+                (item.isToday && isPastDrawTimeToday);
 
-              <ScrollView className="px-4 py-2">
-                <View className="flex-row flex-wrap justify-between gap-y-2 pb-6">
-                  {past60Days.map((item) => {
-                    const isSelected = item.dateString === selectedDate;
-                    const hasResult =
-                      item.dateString < todayStr ||
-                      (item.isToday && isPastDrawTimeToday);
-
-                    return (
-                      <TouchableOpacity
-                        key={item.dateString}
-                        testID={`date-picker-item-${item.dateString}`}
-                        onPress={() => {
-                          onSelectDate(item.dateString);
-                          setModalVisible(false);
-                        }}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${item.dayOfWeekShort}, ${item.dateString}`}
-                        accessibilityState={{ selected: isSelected }}
-                        className="w-[30%] py-2.5 px-2 rounded-xl border items-center justify-center"
-                        style={{
-                          backgroundColor: isSelected
-                            ? colors.primary
-                            : colors.surfaceSubtle,
-                          borderColor: isSelected
-                            ? colors.primary
-                            : colors.border,
-                        }}
-                      >
-                        <Text
-                          className="text-xs font-medium"
-                          style={{
-                            color: isSelected ? '#ffffff' : colors.textMuted,
-                          }}
-                        >
-                          {item.isToday ? 'Hôm nay' : item.dayOfWeekShort}
-                        </Text>
-                        <Text
-                          className="text-sm font-bold mt-0.5"
-                          style={{
-                            color: isSelected ? '#ffffff' : colors.textMain,
-                          }}
-                        >
-                          {item.dayOfMonth}
-                        </Text>
-                        {hasResult && (
-                          <View
-                            className="w-1.5 h-1.5 rounded-full mt-1"
-                            style={{
-                              backgroundColor: isSelected
-                                ? '#ffffff'
-                                : colors.primary,
-                            }}
-                          />
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
+              return (
+                <View key={item.dateString} style={styles.gridCell}>
+                  <DayChip
+                    item={item}
+                    isSelected={isSelected}
+                    hasResult={hasResult}
+                    testID={`date-picker-item-${item.dateString}`}
+                    onPress={() => {
+                      onSelectDate(item.dateString);
+                      setModalVisible(false);
+                    }}
+                  />
                 </View>
-              </ScrollView>
-            </SafeAreaView>
+              );
+            })}
           </View>
-        </Modal>
-      )}
+        </ScrollView>
+      </Sheet>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    marginVertical: 6,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    gap: ITEM_GAP,
+  },
+  dayChip: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    minWidth: 62,
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: radii.full,
+    marginTop: 4,
+  },
+  calText: {
+    marginTop: 2,
+  },
+  modalScroll: {
+    maxHeight: 380,
+  },
+  modalGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 8,
+    paddingBottom: 16,
+  },
+  gridCell: {
+    width: '31.5%',
+  },
+});

@@ -10,7 +10,6 @@ import { scanDesignDebt, type DebtCounts } from '@/test-utils/designDebt';
  * (or delete) its entry here. Goal at the end of Phase 11: empty.
  */
 const ALLOWLIST: DebtCounts = {
-  'app/(tabs)/check.tsx': { rawRnPrimitive: 2, alphaConcat: 1, rawPaletteClass: 8 },
   'app/(tabs)/index.tsx': {
     rawRnPrimitive: 2,
     hexColor: 3,
@@ -33,14 +32,12 @@ const ALLOWLIST: DebtCounts = {
   'components/AppVersionGate.tsx': { rawRnPrimitive: 1 },
   'components/BatchResultList.tsx': { rawRnPrimitive: 1, hexColor: 2, alphaConcat: 1 },
   'components/BatchTicketInput.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
-  'components/DateStrip.tsx': { rawRnPrimitive: 2, hexColor: 6, rawPaletteClass: 2 },
   'components/DrawTable.tsx': { rawRnPrimitive: 1, alphaConcat: 3 },
   'components/ErrorBoundary.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
   'components/Icon.tsx': { hexColor: 1 },
   'components/MultiStationDrawTable.tsx': { rawRnPrimitive: 1, alphaConcat: 4 },
   'components/OfflineBanner.tsx': { rawRnPrimitive: 2, alphaConcat: 1 },
   'components/SavedTicketsSummary.tsx': { rawRnPrimitive: 2, tinyArbitraryText: 3 },
-  'components/StationChips.tsx': { rawRnPrimitive: 2, hexColor: 1, rawPaletteClass: 1 },
   'components/TicketEmptyIllustration.tsx': { hexColor: 26 },
   'components/TicketStatusBadge.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
 };

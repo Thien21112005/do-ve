@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import {
   View,
-  Text,
   ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
+import { Chip, Text, Button } from './ui';
 import { useTheme } from '@/theme';
 import { useSchedule } from '@/hooks';
 
@@ -27,7 +27,6 @@ export function StationChips({
   const { colors } = useTheme();
   const { stations, isLoading, isError, refetch } = useSchedule(selectedDate);
 
-  // Auto-select first station if current selection is invalid for new date
   useEffect(() => {
     if (autoSelectFirst && stations.length > 0) {
       const exists = stations.some((s) => s.code === selectedStation);
@@ -39,10 +38,7 @@ export function StationChips({
 
   if (isLoading) {
     return (
-      <View
-        testID={`${testID}-loading`}
-        className="my-2 py-3 items-center justify-center"
-      >
+      <View testID={`${testID}-loading`} style={styles.centerBox}>
         <ActivityIndicator size="small" color={colors.primary} />
       </View>
     );
@@ -50,40 +46,24 @@ export function StationChips({
 
   if (isError) {
     return (
-      <View
-        testID={`${testID}-error`}
-        className="my-2 px-4 py-2 flex-row items-center justify-center"
-      >
-        <Text
-          className="text-xs mr-2 font-medium"
-          style={{ color: colors.error }}
-        >
+      <View testID={`${testID}-error`} style={styles.errorRow}>
+        <Text variant="caption" color={colors.error} style={styles.errorText}>
           Không thể tải danh sách đài
         </Text>
-        <TouchableOpacity
+        <Button
           testID={`${testID}-retry-btn`}
+          variant="secondary"
+          title="Thử lại"
           onPress={() => refetch()}
-          className="px-2.5 py-1 rounded-lg border"
-          style={{ borderColor: colors.error }}
-        >
-          <Text
-            className="text-xs font-semibold"
-            style={{ color: colors.error }}
-          >
-            Thử lại
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
     );
   }
 
   if (stations.length === 0) {
     return (
-      <View
-        testID={`${testID}-empty`}
-        className="my-2 px-4 py-2 items-center justify-center"
-      >
-        <Text className="text-xs text-slate-400">
+      <View testID={`${testID}-empty`} style={styles.centerBox}>
+        <Text variant="caption" color={colors.textMuted}>
           Không có đài mở thưởng trong ngày này
         </Text>
       </View>
@@ -91,43 +71,53 @@ export function StationChips({
   }
 
   return (
-    <View testID={testID} className="my-2">
+    <View testID={testID} style={styles.container}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
+        contentContainerStyle={styles.scrollContent}
       >
         {stations.map((station) => {
           const isSelected = station.code === selectedStation;
-
           return (
-            <TouchableOpacity
+            <Chip
               key={station.code ?? station.name ?? 'station'}
               testID={`${testID}-${station.code ?? 'unknown'}`}
-              onPress={() => station.code && onSelectStation(station.code)}
-              accessibilityRole="button"
+              label={station.name ?? station.code ?? ''}
+              selected={isSelected}
               accessibilityLabel={`Đài ${station.name ?? station.code ?? ''}`}
-              accessibilityState={{ selected: isSelected }}
-              className="items-center justify-center py-2 px-4 rounded-xl border"
-              style={{
-                backgroundColor: isSelected
-                  ? colors.primary
-                  : colors.surfaceSubtle,
-                borderColor: isSelected ? colors.primary : colors.border,
-              }}
-            >
-              <Text
-                className="text-sm font-semibold"
-                style={{
-                  color: isSelected ? '#ffffff' : colors.textMain,
-                }}
-              >
-                {station.name}
-              </Text>
-            </TouchableOpacity>
+              onPress={() => station.code && onSelectStation(station.code)}
+            />
           );
         })}
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 4,
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  centerBox: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorRow: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  errorText: {
+    flexShrink: 1,
+  },
+});

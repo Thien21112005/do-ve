@@ -262,12 +262,12 @@ describe('Tab Screens', () => {
   });
 
   it('renders CheckScreen correctly', async () => {
-    const { getByText, getByTestId } = await render(<CheckScreen />, {
+    const { getByTestId, queryByText } = await render(<CheckScreen />, {
       wrapper: createWrapper(),
     });
     expect(getByTestId('check-context-box')).toBeTruthy();
-    expect(getByText('Kỳ mở thưởng')).toBeTruthy();
-    expect(getByText('3. Nhập 6 chữ số trên vé')).toBeTruthy();
+    expect(getByTestId('check-context-picker-btn')).toBeTruthy();
+    expect(queryByText('3. Nhập 6 chữ số trên vé')).toBeNull();
   });
 
   it('renders ResultsScreen correctly', async () => {

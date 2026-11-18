@@ -22,6 +22,7 @@ export interface SheetProps {
   onClose: () => void;
   title?: string;
   closeLabel?: string;
+  closeTestID?: string;
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   testID?: string;
@@ -35,6 +36,7 @@ export function Sheet({
   onClose,
   title,
   closeLabel = 'Đóng',
+  closeTestID,
   children,
   style,
   testID = 'bottom-sheet',
@@ -88,6 +90,7 @@ export function Sheet({
                 {title}
               </Text>
               <IconButton
+                testID={closeTestID}
                 accessibilityLabel={closeLabel}
                 onPress={onClose}
                 icon={<X size={20} color={colors.textMuted} strokeWidth={2} />}
