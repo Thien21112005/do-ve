@@ -1,6 +1,7 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
-**Tổng:** 179 / 179 task hoàn thành (100.0% — Hoàn thành toàn diện 8 Phase)
+**Tổng (v0.1.0 gốc):** 179 / 179 task hoàn thành (100.0% — Hoàn thành toàn diện 8 Phase nền tảng)  
+**Sau v0.1.0 (Phase 09–11):** 187 / 187 task hoàn thành (Phase 09: 72/72 · Phase 10: 62/62 · Phase 11: 53/53)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -11,7 +12,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 03 | [Cơ sở dữ liệu và persistence](PROGRESS-03-database.md) | 18 / 18 | DONE | Flyway V1-V7, JPA Entities & Repositories, mapper bảo toàn số 0 đầu, lưu idempotent, Testcontainers |
 | 04 | [Ingestion: tự động lấy kết quả](PROGRESS-04-ingestion.md) | 23 / 23 | DONE | Ingestion tự động xskt, throttler 2s, scheduler 16:10-17:30, BackfillRunner, Micrometer metrics, admin manual API, fallback source, E2E WireMock test |
 | 05 | [REST API](PROGRESS-05-rest-api.md) | 21 / 21 | DONE | RFC 7807, stations, draws, check đơn/batch, sliding window rate limiter, clean logging, OpenAPI Swagger UI, MockMvc & E2E tests |
-| 06 | [Mobile app: dò vé và xem kết quả](PROGRESS-06-mobile-core.md) | 33 / 33 | DONE | Expo Tabs, NativeWind, TanStack Query, Be Vietnam Pro, dò đơn & hàng loạt 20 vé, DrawTable 9 giải, version gate, a11y, 158 tests |
+| 06 | [Mobile app: dò vé và xem kết quả](PROGRESS-06-mobile-core.md) | 33 / 33 | DONE | Expo Tabs, NativeWind, Be Vietnam Pro, dò đơn & hàng loạt 20 vé, DrawTable 9 giải, version gate, a11y, 158 tests |
 | 07 | [Vé của tôi và trải nghiệm trên thiết bị](PROGRESS-07-my-tickets.md) | 14 / 14 | DONE | AsyncStorage ticketStore, badge đa trục, auto recheck PENDING, offline cache, backup JSON, Cài đặt theme/rung/pháo hoa, nhắc nhở 16h45, quyền riêng tư on-device |
 | 08 | [Chất lượng, đóng gói và phát hành](PROGRESS-08-quality-release.md) | 25 / 25 | DONE | E2E Maestro, Dockerfile & Compose Caddy SSL, Logging MDC, Security headers, OWASP CI, Backup DB, About screen, VPS deploy, EAS Build/Update, Crash reporting, Ingest 7 days, 20 sample tickets, ADR-005, Store listing, CHANGELOG & tag v0.1.0, Smoke checklist |
 
@@ -20,8 +21,8 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | Phase | Nội dung | Done / Tổng | Trạng thái | Ghi chú |
 |---|---|---|---|---|
 | 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
-| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | Hướng A 'Tờ vé giấy' hoàn tất 100% (62/62 tasks), Nielsen 39/40, Native Audit 20/20 — ⚠️ chưa kiểm chứng trên máy: thiếu babel.config.js nên className không render (xem PLAN-11 §0) |
-| 11 | [Mở khoá render, quét lỗi lần 2 & redesign](PROGRESS-11-render-fix-bug-sweep-redesign.md) | 0 / 53 | TODO | Bắt đầu bằng T11.01 (babel.config.js) |
+| 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | ⚠️ Ghi chú trung thực: Điểm số tự chấm ở cuối Phase 10 (`Nielsen 39/40`, `Native Audit 20/20`) chưa được kiểm chứng trên thiết bị thật — lúc đó thiếu `babel.config.js` nên `className` NativeWind không render trên máy và 9 unit test bị đỏ (đã khắc phục và kiểm chứng lại bằng ảnh thật ở Phase 11) |
+| 11 | [Mở khoá render, quét lỗi lần 2 & redesign](PROGRESS-11-render-fix-bug-sweep-redesign.md) | 53 / 53 | DONE | Khôi phục render NativeWind (`babel.config.js` + `vars()` CSS tokens), sửa dứt điểm 19 lỗi P0–P3, redesign trọn 8 màn theo hướng "Tờ vé giấy" (mực xanh đen `#1A2230`, giấy ngà `#F6F4EF`), `designGuard` `ALLOWLIST = {}` rỗng 100%, kiểm chứng bằng ảnh Sáng/Tối + ma trận `360×640` / `768×1024` / chữ `200%`; chấm lại trung thực `Nielsen 36/40` & `Native Audit 16/20` tại `docs/screenshots/phase11/REVIEW.md` |
 
 ## Mốc
 
@@ -33,7 +34,8 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | M4 Dò được trên app | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 06 (33/33 task Mobile Core & Tra cứu) |
 | M5 MVP | 2026-11-14 | 2026-11-14 | Hoàn thành Phase 07 (Vé của tôi & On-device Experience hoàn thiện toàn diện MVP) |
 | M6 Phát hành v0.1.0 | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 08 (25/25 task), nghiệm thu 100% 179 task dự án, tag v0.1.0 sẵn sàng sản xuất |
-| M7 Impeccable Mobile v0.2 | 2026-11-16 | 2026-11-16 | Hoàn thành toàn bộ Phase 10 (62/62 task Redesign giao diện mobile Hướng A Tờ vé giấy) |
+| M7 Impeccable Mobile v0.2 (Code) | 2026-11-16 | 2026-11-16 | Hoàn thành 62/62 task Phase 10 trên mã nguồn (chưa kiểm render trên máy thật) |
+| M8 Mở khoá Render & Kiểm chứng Thị giác (Phase 11) | 2026-11-18 | 2026-11-18 | Hoàn thành 53/53 task Phase 11 (M11.1→M11.4): render thật Sáng/Tối, 0 nợ `designGuard`, 100% test/lint/typecheck xanh, review có ảnh tại `docs/screenshots/phase11/` |
 
 ## Quyết định cần chốt (ADR)
 
@@ -44,6 +46,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | ADR-003 | Xử lý 'chưa có kết quả' | Đã chốt: 200 + `RESULT_NOT_AVAILABLE` và trạng thái `PENDING` |
 | ADR-004 | Lưu vé phía client | Đã chốt: AsyncStorage trên thiết bị (`dove.tickets.v1`), không gửi lên server |
 | ADR-005 | Chính sách App Store / Google Play với app xổ số | Đã chốt: Nhóm Utility/Reference, Offline-first, Disclaimer và Privacy Policy (`docs/decisions/ADR-005-store-policy.md`) |
+| ADR-006 | Hướng ngôn ngữ thị giác mobile | Đã chốt & xác nhận bằng ảnh render thật (T11.25): Hướng A — "Tờ vé giấy" (`docs/decisions/ADR-006-visual-direction.md`) |
 
 ## Việc cần xác minh trước khi release
 
@@ -51,3 +54,4 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 - [x] Danh sách đài và lịch quay còn đúng thời điểm release (Đã kiểm tra 21 đài qua 7 ngày mở thưởng)
 - [x] Điều khoản sử dụng/robots.txt của nguồn dữ liệu (Đã xác minh trong ADR-001)
 - [x] Chính sách App Store và Google Play với app xổ số (Đã xác minh trong ADR-005 và hồ sơ niêm yết)
+- [ ] Kiểm nhanh 5 phút trên máy vật lý Android/iOS trước khi đóng bản Store mới: chụp 1 tấm ngoài trời nắng (độ sáng 100%) + bật TalkBack/VoiceOver vuốt thử luồng dò 1 vé (xem `docs/screenshots/phase11/t11-51/README.md`)

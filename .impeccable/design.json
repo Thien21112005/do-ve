@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T11:32:00+07:00",
+  "title": "Design System: DoVe — Tờ Vé Giấy Miền Nam",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Letterpress Deep Ink",
+        "canonical": "#1A2230",
+        "tonalRamp": ["#0F1217", "#1A2230", "#2A3548", "#415068", "#64748B", "#94A3B8", "#CBD5E1", "#EAE5DB"]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Warm Ivory Ticket Paper",
+        "canonical": "#F6F4EF",
+        "tonalRamp": ["#181C23", "#303744", "#566070", "#8C877B", "#BEB7A8", "#D9D2C3", "#EFEBE3", "#F6F4EF"]
+      },
+      "special": {
+        "role": "secondary",
+        "displayName": "Vermilion Jackpot Ink",
+        "canonical": "#B91C1C",
+        "tonalRamp": ["#450A0A", "#7F1D1D", "#991B1B", "#B91C1C", "#DC2626", "#EF4444", "#FCA5A5", "#FEF2F2"]
+      },
+      "win": {
+        "role": "tertiary",
+        "displayName": "Emerald Winning Stamp",
+        "canonical": "#15803D",
+        "tonalRamp": ["#052E16", "#14532D", "#166534", "#15803D", "#16A34A", "#4ADE80", "#86EFAC", "#F0FDF4"]
+      },
+      "pending": {
+        "role": "neutral",
+        "displayName": "Amber Draw Waiting",
+        "canonical": "#B45309",
+        "tonalRamp": ["#451A03", "#78350F", "#92400E", "#B45309", "#D97706", "#FBBF24", "#FDE68A", "#FFFBEB"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Prize Amount",
+        "purpose": "Winning payout amount hero on ResultStub."
+      },
+      "headline": {
+        "displayName": "Screen Brand Headline",
+        "purpose": "Top-level product identity in About."
+      },
+      "title": {
+        "displayName": "Section & Station Title",
+        "purpose": "Block titles, empty state headings, and today's stations."
+      },
+      "body": {
+        "displayName": "Editorial Body",
+        "purpose": "Readable Vietnamese prose, disclaimers, and descriptions."
+      },
+      "body-strong": {
+        "displayName": "Control & Row Label",
+        "purpose": "Buttons, active chips, and native list row titles."
+      },
+      "caption": {
+        "displayName": "Metadata & Legal Caption",
+        "purpose": "Dates, tax notes, offline strip, and secondary hints (>=12px floor)."
+      },
+      "ticket-lg": {
+        "displayName": "6-Digit Ticket Hero (Tabular)",
+        "purpose": "Special prize number, TicketNumber stub, and 200% single-box input."
+      },
+      "ticket-md": {
+        "displayName": "Draw Table & Saved Ticket Digits (Tabular)",
+        "purpose": "Prize rows G.8 to G.1 and saved ticket list numbers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "none",
+        "value": "none",
+        "purpose": "Default flat paper cards and tables separated by 1px #D9D2C3 border."
+      },
+      {
+        "name": "sheet",
+        "value": "0 -4px 12px rgba(0, 0, 0, 0.08)",
+        "purpose": "Bottom Sheet modals and StickyFooter CTA above keyboard."
+      },
+      {
+        "name": "toast",
+        "value": "0 4px 16px rgba(0, 0, 0, 0.12)",
+        "purpose": "Floating Undo Snackbar above bottom navigation."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Press feedback and validation micro-shake."
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "purpose": "Segmented control sliding indicator."
+      },
+      {
+        "name": "duration-slow",
+        "value": "320ms",
+        "purpose": "ResultStub entrance reveal (0.98 -> 1) and live dot pulse."
+      },
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Crisp deceleration for stub entrance and sheet transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact-phone", "value": "360px" },
+      { "name": "content-max", "value": "560px" },
+      { "name": "table-max", "value": "720px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Deep ink primary CTA for checking and saving lottery tickets.",
+      "html": "<button class=\"ds-btn-primary\">Dò vé ngay</button>",
+      "css": ".ds-btn-primary { background: #1A2230; color: #F6F4EF; font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; font-weight: 600; height: 52px; padding: 0 24px; border-radius: 12px; border: none; cursor: pointer; transition: opacity 120ms ease, transform 120ms ease; } .ds-btn-primary:hover { background: #0F172A; } .ds-btn-primary:active { opacity: 0.88; transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid #1A2230; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined paper button for secondary actions like checking another ticket.",
+      "html": "<button class=\"ds-btn-secondary\">Dò vé khác</button>",
+      "css": ".ds-btn-secondary { background: #FFFFFF; color: #1A2230; font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; font-weight: 600; height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #D9D2C3; cursor: pointer; transition: background 120ms ease, transform 120ms ease; } .ds-btn-secondary:hover { background: #EFEBE3; } .ds-btn-secondary:active { transform: scale(0.98); } .ds-btn-secondary:focus-visible { outline: 2px solid #1A2230; outline-offset: 2px; }"
+    },
+    {
+      "name": "Station Chip",
+      "kind": "chip",
+      "refersTo": "chip-selected",
+      "description": "Pill selector for Southern Vietnam lottery stations.",
+      "html": "<div class=\"ds-chip-row\"><button class=\"ds-chip ds-chip-active\">Bến Tre</button><button class=\"ds-chip\">Vũng Tàu</button><button class=\"ds-chip\">Bạc Liêu</button></div>",
+      "css": ".ds-chip-row { display: flex; gap: 8px; } .ds-chip { background: #FFFFFF; color: #1A2230; border: 1px solid #D9D2C3; border-radius: 9999px; height: 38px; padding: 0 14px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 120ms ease; } .ds-chip-active { background: #1A2230; color: #F6F4EF; border-color: #1A2230; font-weight: 600; } .ds-chip:hover { opacity: 0.88; } .ds-chip:focus-visible { outline: 2px solid #1A2230; outline-offset: 2px; }"
+    },
+    {
+      "name": "6-Digit Ticket Input",
+      "kind": "input",
+      "description": "Six sunken paper wells for 6-character XSMN ticket numbers preserving leading zeros.",
+      "html": "<div class=\"ds-ticket-boxes\"><input class=\"ds-digit ds-digit-focus\" value=\"0\" maxlength=\"1\" aria-label=\"Chữ số thứ 1\"/><input class=\"ds-digit\" value=\"4\" maxlength=\"1\" aria-label=\"Chữ số thứ 2\"/><input class=\"ds-digit\" value=\"5\" maxlength=\"1\" aria-label=\"Chữ số thứ 3\"/><input class=\"ds-digit\" value=\"1\" maxlength=\"1\" aria-label=\"Chữ số thứ 4\"/><input class=\"ds-digit\" value=\"2\" maxlength=\"1\" aria-label=\"Chữ số thứ 5\"/><input class=\"ds-digit\" value=\"3\" maxlength=\"1\" aria-label=\"Chữ số thứ 6\"/></div>",
+      "css": ".ds-ticket-boxes { display: flex; gap: 8px; max-width: 360px; } .ds-digit { flex: 1; height: 58px; background: #EFEBE3; border: 1.5px solid #D9D2C3; border-radius: 12px; text-align: center; font-family: 'Be Vietnam Pro', sans-serif; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; color: #1A2230; } .ds-digit-focus, .ds-digit:focus { background: #FFFFFF; border: 2px solid #1A2230; outline: none; }"
+    },
+    {
+      "name": "Winning Result Stub",
+      "kind": "card",
+      "refersTo": "card-sheet",
+      "description": "Paper ticket stub with dashed perforation, underlined matched digits, and Vietnamese amount in words.",
+      "html": "<div class=\"ds-stub\"><div class=\"ds-stub-meta\">TP. Hồ Chí Minh · 17/11/2026</div><div class=\"ds-perf\"></div><div class=\"ds-stub-num\"><span class=\"ds-match\">045123</span></div><div class=\"ds-stub-tier\">Trúng Giải Đặc biệt</div><div class=\"ds-stub-amt\">2.000.000.000 đ</div><div class=\"ds-stub-words\">Hai tỷ đồng</div></div>",
+      "css": ".ds-stub { background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 16px; padding: 16px; max-width: 360px; font-family: 'Be Vietnam Pro', sans-serif; color: #1A2230; } .ds-stub-meta { font-size: 13px; color: #566070; } .ds-perf { border-bottom: 1.5px dashed #86EFAC; margin: 12px 0; } .ds-stub-num { font-size: 32px; font-weight: 700; letter-spacing: 4px; font-variant-numeric: tabular-nums; color: #15803D; } .ds-match { border-bottom: 2px solid #15803D; padding-bottom: 2px; } .ds-stub-tier { margin-top: 8px; font-size: 15px; font-weight: 600; color: #15803D; } .ds-stub-amt { margin-top: 4px; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; color: #15803D; } .ds-stub-words { font-size: 13px; color: #566070; margin-top: 2px; }"
+    },
+    {
+      "name": "Draw Table Prize Rows (G.8 & ĐB)",
+      "kind": "custom",
+      "description": "Flat printed result table rows with 64pt tier column and vermilion boundary prizes.",
+      "html": "<div class=\"ds-table\"><div class=\"ds-row\"><div class=\"ds-tier ds-special\">G.8</div><div class=\"ds-nums ds-special\">43</div></div><div class=\"ds-row\"><div class=\"ds-tier\">G.7</div><div class=\"ds-nums\">303</div></div><div class=\"ds-row ds-row-db\"><div class=\"ds-tier ds-special\">ĐB</div><div class=\"ds-nums ds-db\">045123</div></div></div>",
+      "css": ".ds-table { background: #FFFFFF; border: 1px solid #D9D2C3; border-radius: 16px; overflow: hidden; max-width: 360px; font-family: 'Be Vietnam Pro', sans-serif; } .ds-row { display: flex; align-items: center; border-bottom: 1px solid #D9D2C3; min-height: 40px; } .ds-row-db { background: #FEF2F2; border-bottom: none; min-height: 52px; } .ds-tier { width: 64px; text-align: center; font-size: 13px; font-weight: 600; color: #566070; border-right: 1px solid #D9D2C3; padding: 10px 0; } .ds-nums { flex: 1; text-align: center; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; color: #1A2230; letter-spacing: 1.5px; } .ds-special { color: #B91C1C; } .ds-db { color: #B91C1C; font-size: 30px; letter-spacing: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Tờ Vé Giấy Miền Nam",
+    "overview": "Ứng dụng DoVe tái hiện cảm giác tin cậy, mộc mạc và rõ ràng của tờ vé số kiến thiết và tờ dò giấy truyền thống miền Nam trên thiết bị di động. Thay vì chạy theo hiệu ứng công nghệ bóng bẩy hay màu mè sòng bạc, mọi quyết định thị giác đều phục vụ mục tiêu đọc chuẩn 6 chữ số trong dưới 5 giây, kể cả với người lớn tuổi hoặc ngoài trời nắng.",
+    "keyCharacteristics": [
+      "Nền giấy ngà ấm (#F6F4EF) & Tờ dò trắng tinh (#FFFFFF) tách lớp bằng viền giấy #D9D2C3 phẳng không đổ bóng.",
+      "Mực in xanh đen (#1A2230) làm màu hành động chính (AAA > 14:1), nhường sân khấu màu cho Đỏ son (#B91C1C) của ĐB/G8 và Xanh lá (#15803D) của vé trúng.",
+      "Con số tabular-nums là nhân vật chính, bảo toàn số 0 đứng đầu, đi kèm số tiền đọc bằng chữ tiếng Việt.",
+      "Không pháo hoa/emoji gây ồn, hỗ trợ chữ 200%, Reduce Motion, và đánh dấu kết quả bằng chữ + màu + gạch chân 2px."
+    ],
+    "rules": [
+      {
+        "name": "The Two-Accent Ink Rule",
+        "body": "Toàn bộ giao diện chỉ cho phép hai màu sắc rực xuất hiện trên mặt giấy: đỏ son (special) cho ĐB/G8 và xanh lá (win) cho vé trúng. Mọi nút bấm và chip đang chọn bắt buộc dùng màu mực in (primary).",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Ticket Rule",
+        "body": "Mọi dãy số xổ số bắt buộc bật fontVariant: ['tabular-nums'] và cỡ chữ tối thiểu 20pt trên bảng dò; nghiêm cấm cỡ chữ dưới 12px ở bất kỳ đâu trong ứng dụng.",
+        "section": "typography"
+      },
+      {
+        "name": "The Single-Elevation Rule",
+        "body": "Một bề mặt chỉ được chọn một cách tách nền: hoặc viền 1px phẳng (none), hoặc bóng nổi (sheet / toast) — tuyệt đối không vừa kẻ khung thẻ lồng nhau vừa đổ bóng.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do import mọi thành phần chữ và điều khiển từ @/components/ui (Text, Button, Chip, ListRow, SectionHeader, Banner, EmptyState, Segmented, Sheet, Snackbar, StickyFooter, TicketNumber, PrizeRow, Perforation, usePressed).",
+      "Do dùng họ class font font-vn-regular, font-vn-medium, font-vn-semibold, font-vn-bold trong Tailwind config và gán trọng lượng chữ qua <Text variant=\"...\">.",
+      "Do dùng hook usePressed() với mảng style phẳng cho mọi Pressable.",
+      "Do giữ nguyên chuỗi 6 ký tự của vé số (bảo toàn số 0 đứng đầu) và tách các nút bấm ra ngoài vùng accessible={true}."
+    ],
+    "donts": [
+      "Don't import Text hoặc TouchableOpacity thô từ 'react-native', viết cứng mã màu #hex ngoài src/theme/colors.ts, hoặc nối chuỗi alpha kiểu `${colors.primary}1A`.",
+      "Don't dùng class màu thô của Tailwind (slate-*, red-*, amber-*, text-white) hoặc cỡ chữ nhỏ hơn 12px (text-[10px], text-[11px]).",
+      "Don't lồng thẻ trong thẻ (card-in-card), kẻ viền màu lệch trái dày hơn 1px, đặt nhãn phụ viết hoa phía trên tiêu đề chính, hoặc lặp lại tiêu đề màn hình bên dưới thanh header.",
+      "Don't thêm hiệu ứng pháo hoa, emoji ăn mừng (🎉) hay bất kỳ câu chữ chào mời mua vé / cá cược nào."
+    ]
+  }
+}
+
