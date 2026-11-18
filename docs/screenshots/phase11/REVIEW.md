@@ -163,3 +163,4 @@ Method: design review only (detector not applicable, native platform)
 1. **[P2] `$impeccable clarify`**: Đồng bộ nhãn và kiểu nút CTA khi chưa đủ 6 số ở khối `Dò vé nhanh` trên `Home` với tab `Dò vé`.
 2. **[P2] `$impeccable adapt`**: Bổ sung bố cục Navigation Rail khi chiều ngang màn hình `>= 768dp` nếu mở rộng hỗ trợ máy tính bảng.
 3. **[P3] `$impeccable polish`**: Tinh chỉnh `paddingBottom` thanh tab đáy khi `insets.bottom === 0` để dấu nặng/hỏi tiếng Việt thoáng hơn trên Web & Android 3 nút.
+
