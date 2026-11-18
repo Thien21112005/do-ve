@@ -22,11 +22,26 @@ export interface MultiStationDrawTableProps {
 }
 
 const HEADER_HEIGHT = 44;
+const TIER_COL_WIDTH = 46;
 
 function getTierRowHeight(tier: PrizeTierConfig): number {
-  if (tier.key === 'SPECIAL') return 48;
-  if (tier.count <= 1) return 40;
-  return tier.count * 24 + 14;
+  if (tier.key === 'SPECIAL') return 46;
+  if (tier.count <= 1) return 38;
+  return tier.count * 24 + 12;
+}
+
+function buildRowA11yLabel(tier: PrizeTierConfig, draws: UiDrawView[]): string {
+  return (
+    `${tier.name}: ` +
+    draws
+      .map((d) => {
+        const numbers = d.numbers?.[tier.key] || d.prizes?.[tier.key] || [];
+        return `${d.stationName || d.stationCode} (${
+          numbers.length > 0 ? numbers.join(', ') : 'Chưa có'
+        })`;
+      })
+      .join('; ')
+  );
 }
 
 export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
@@ -38,7 +53,8 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
   testID = 'multi-station-draw-table',
 }) => {
   const { colors } = useTheme();
-  const currentOrder = propOrder || getSettings().drawTableOrder || 'g8_to_special';
+  const currentOrder =
+    propOrder || getSettings().drawTableOrder || 'g8_to_special';
   const tiers: PrizeTierConfig[] =
     currentOrder === 'special_to_g8' ? [...DRAW_TIERS].reverse() : DRAW_TIERS;
 
@@ -50,11 +66,204 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
   const q = (highlightQuery ?? '').trim();
   const canHighlight = q.length >= 2;
 
+  const renderNumberCellContent = (
+    d: UiDrawView,
+    tier: PrizeTierConfig,
+    isSpecial: boolean,
+    isHero: boolean,
+  ) => {
+    const numbers = d.numbers?.[tier.key] || d.prizes?.[tier.key] || [];
+    if (numbers.length === 0) {
+      return (
+        <Text variant="body" color={colors.textMuted}>
+          -
+        </Text>
+      );
+    }
+
+    return numbers.map((num, nIdx) => {
+      const isMatched = canHighlight && num.endsWith(q);
+      return (
+        <View
+          key={`num-${d.stationCode}-${tier.key}-${nIdx}-${num}`}
+          testID={isMatched ? 'draw-number-matched' : undefined}
+          style={[
+            styles.numberPill,
+            {
+              backgroundColor: isMatched ? colors.winTint : 'transparent',
+              borderBottomColor: isMatched ? colors.win : 'transparent',
+            },
+          ]}
+        >
+          <Text
+            variant="ticketMd"
+            color={
+              isMatched
+                ? colors.win
+                : isSpecial
+                  ? colors.special
+                  : colors.textMain
+            }
+            style={isHero ? styles.heroCellDigits : styles.cellDigits}
+          >
+            {num}
+          </Text>
+        </View>
+      );
+    });
+  };
+
+  if (!needsHorizontalScroll) {
+    return (
+      <View
+        testID={testID}
+        style={[
+          styles.unifiedContainer,
+          !borderless && {
+            borderWidth: 1,
+            borderRadius: radii.lg,
+            borderColor: colors.border,
+          },
+          { backgroundColor: colors.surface },
+          style,
+        ]}
+      >
+        <View
+          testID="multi-station-header-row"
+          style={[
+            styles.unifiedHeaderRow,
+            {
+              minHeight: HEADER_HEIGHT,
+              backgroundColor: colors.surfaceSubtle,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+            },
+          ]}
+        >
+          <View
+            testID="multi-station-fixed-tier-col"
+            style={[
+              styles.unifiedTierHeaderCell,
+              {
+                width: TIER_COL_WIDTH,
+                borderRightWidth: 1,
+                borderRightColor: colors.border,
+              },
+            ]}
+          >
+            <Text
+              variant="caption"
+              color={colors.textMuted}
+              style={styles.headerText}
+            >
+              Giải
+            </Text>
+          </View>
+
+          {draws.map((d, sIdx) => {
+            const displayName = d.stationName || d.stationCode;
+            const isLastCol = sIdx === draws.length - 1;
+
+            return (
+              <View
+                key={`station-header-${d.stationCode}-${sIdx}`}
+                testID={`multi-station-header-cell-${sIdx}`}
+                style={[
+                  styles.flexStationCol,
+                  styles.stationHeaderCell,
+                  !isLastCol && {
+                    borderRightWidth: 1,
+                    borderRightColor: colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  variant="caption"
+                  color={colors.textMain}
+                  numberOfLines={2}
+                  align="center"
+                  style={styles.headerText}
+                >
+                  {displayName}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {tiers.map((tier, rIdx) => {
+          const isSpecial = tier.key === 'SPECIAL' || tier.key === 'EIGHTH';
+          const isHero = tier.key === 'SPECIAL';
+          const isLastRow = rIdx === tiers.length - 1;
+          const rowHeight = getTierRowHeight(tier);
+          const rowA11y = buildRowA11yLabel(tier, draws);
+
+          return (
+            <View
+              key={tier.key}
+              testID={`multi-station-row-${rIdx}`}
+              accessible={true}
+              accessibilityRole="text"
+              accessibilityLabel={rowA11y}
+              style={[
+                styles.unifiedDataRow,
+                {
+                  minHeight: rowHeight,
+                  backgroundColor: isHero ? colors.specialTint : 'transparent',
+                  borderBottomWidth: isLastRow ? 0 : 1,
+                  borderBottomColor: colors.border,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.unifiedTierLabelCell,
+                  {
+                    width: TIER_COL_WIDTH,
+                    borderRightWidth: 1,
+                    borderRightColor: colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  variant={isSpecial ? 'bodyStrong' : 'caption'}
+                  color={isSpecial ? colors.special : colors.textMuted}
+                >
+                  {tier.shortName}
+                </Text>
+              </View>
+
+              {draws.map((d, sIdx) => {
+                const isLastCol = sIdx === draws.length - 1;
+                return (
+                  <View
+                    key={`cell-${d.stationCode}-${tier.key}-${sIdx}`}
+                    testID={`multi-station-cell-${rIdx}-${sIdx}`}
+                    style={[
+                      styles.flexStationCol,
+                      styles.stationDataCell,
+                      !isLastCol && {
+                        borderRightWidth: 1,
+                        borderRightColor: colors.border,
+                      },
+                    ]}
+                  >
+                    {renderNumberCellContent(d, tier, isSpecial, isHero)}
+                  </View>
+                );
+              })}
+            </View>
+          );
+        })}
+      </View>
+    );
+  }
+
   return (
     <View
       testID={testID}
       style={[
-        styles.container,
+        styles.scrollContainer,
         !borderless && {
           borderWidth: 1,
           borderRadius: radii.lg,
@@ -64,12 +273,13 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
         style,
       ]}
     >
-      {/* Fixed Left Tier Column — stays pinned when scrolling >=4 stations */}
+      {/* Pinned Left Tier Column when horizontal scrolling is active */}
       <View
         testID="multi-station-fixed-tier-col"
         style={[
           styles.fixedTierCol,
           {
+            width: TIER_COL_WIDTH,
             borderRightColor: colors.border,
             backgroundColor: colors.surface,
           },
@@ -108,7 +318,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                 {
                   height: rowHeight,
                   backgroundColor: isHero ? colors.specialTint : 'transparent',
-                  borderBottomWidth: isLastRow ? 0 : StyleSheet.hairlineWidth,
+                  borderBottomWidth: isLastRow ? 0 : 1,
                   borderBottomColor: colors.border,
                 },
               ]}
@@ -124,21 +334,17 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
         })}
       </View>
 
-      {/* Station Columns — 2..3 stations share full width; >=4 scroll horizontally */}
       <ScrollView
         testID="multi-station-scroll-view"
         horizontal
-        scrollEnabled={needsHorizontalScroll}
-        showsHorizontalScrollIndicator={needsHorizontalScroll}
+        scrollEnabled={true}
+        showsHorizontalScrollIndicator={true}
         bounces={false}
         style={styles.scrollArea}
-        contentContainerStyle={
-          !needsHorizontalScroll ? styles.fillScrollContent : undefined
-        }
       >
-        <View style={!needsHorizontalScroll ? styles.fillTableBody : undefined}>
-          {/* Station Column Headers */}
+        <View>
           <View
+            testID="multi-station-header-row"
             style={[
               styles.stationHeaderRow,
               {
@@ -155,13 +361,12 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
               return (
                 <View
                   key={`station-header-${d.stationCode}-${sIdx}`}
+                  testID={`multi-station-header-cell-${sIdx}`}
                   style={[
-                    needsHorizontalScroll
-                      ? styles.scrollableStationCol
-                      : styles.flexStationCol,
+                    styles.scrollableStationCol,
                     styles.stationHeaderCell,
                     !isLastCol && {
-                      borderRightWidth: StyleSheet.hairlineWidth,
+                      borderRightWidth: 1,
                       borderRightColor: colors.border,
                     },
                   ]}
@@ -180,24 +385,12 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
             })}
           </View>
 
-          {/* Tier Rows across Stations */}
           {tiers.map((tier, rIdx) => {
             const isSpecial = tier.key === 'SPECIAL' || tier.key === 'EIGHTH';
             const isHero = tier.key === 'SPECIAL';
             const isLastRow = rIdx === tiers.length - 1;
             const rowHeight = getTierRowHeight(tier);
-
-            const rowA11y =
-              `${tier.name}: ` +
-              draws
-                .map((d) => {
-                  const numbers =
-                    d.numbers?.[tier.key] || d.prizes?.[tier.key] || [];
-                  return `${d.stationName || d.stationCode} (${
-                    numbers.length > 0 ? numbers.join(', ') : 'Chưa có'
-                  })`;
-                })
-                .join('; ');
+            const rowA11y = buildRowA11yLabel(tier, draws);
 
             return (
               <View
@@ -211,76 +404,28 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                   {
                     height: rowHeight,
                     backgroundColor: isHero ? colors.specialTint : 'transparent',
-                    borderBottomWidth: isLastRow ? 0 : StyleSheet.hairlineWidth,
+                    borderBottomWidth: isLastRow ? 0 : 1,
                     borderBottomColor: colors.border,
                   },
                 ]}
               >
                 {draws.map((d, sIdx) => {
-                  const numbers =
-                    d.numbers?.[tier.key] || d.prizes?.[tier.key] || [];
                   const isLastCol = sIdx === draws.length - 1;
 
                   return (
                     <View
                       key={`cell-${d.stationCode}-${tier.key}-${sIdx}`}
+                      testID={`multi-station-cell-${rIdx}-${sIdx}`}
                       style={[
-                        needsHorizontalScroll
-                          ? styles.scrollableStationCol
-                          : styles.flexStationCol,
+                        styles.scrollableStationCol,
                         styles.stationDataCell,
                         !isLastCol && {
-                          borderRightWidth: StyleSheet.hairlineWidth,
+                          borderRightWidth: 1,
                           borderRightColor: colors.border,
                         },
                       ]}
                     >
-                      {numbers.length > 0 ? (
-                        numbers.map((num, nIdx) => {
-                          const isMatched = canHighlight && num.endsWith(q);
-                          return (
-                            <View
-                              key={`num-${d.stationCode}-${tier.key}-${nIdx}-${num}`}
-                              testID={
-                                isMatched ? 'draw-number-matched' : undefined
-                              }
-                              style={[
-                                styles.numberPill,
-                                {
-                                  backgroundColor: isMatched
-                                    ? colors.winTint
-                                    : 'transparent',
-                                  borderBottomColor: isMatched
-                                    ? colors.win
-                                    : 'transparent',
-                                },
-                              ]}
-                            >
-                              <Text
-                                variant="ticketMd"
-                                color={
-                                  isMatched
-                                    ? colors.win
-                                    : isSpecial
-                                      ? colors.special
-                                      : colors.textMain
-                                }
-                                style={
-                                  isHero
-                                    ? styles.heroCellDigits
-                                    : styles.cellDigits
-                                }
-                              >
-                                {num}
-                              </Text>
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <Text variant="body" color={colors.textMuted}>
-                          -
-                        </Text>
-                      )}
+                      {renderNumberCellContent(d, tier, isSpecial, isHero)}
                     </View>
                   );
                 })}
@@ -294,19 +439,42 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  unifiedContainer: {
+    width: '100%',
+    overflow: 'hidden',
+  },
+  unifiedHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
+  },
+  unifiedTierHeaderCell: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  unifiedDataRow: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
+  },
+  unifiedTierLabelCell: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  scrollContainer: {
     flexDirection: 'row',
     overflow: 'hidden',
   },
   fixedTierCol: {
-    width: 48,
-    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightWidth: 1,
   },
   cornerHeaderCell: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   tierLabelCell: {
     justifyContent: 'center',
@@ -316,21 +484,16 @@ const styles = StyleSheet.create({
   scrollArea: {
     flex: 1,
   },
-  fillScrollContent: {
-    flexGrow: 1,
-  },
-  fillTableBody: {
-    flex: 1,
-  },
   stationHeaderRow: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
   },
   stationHeaderCell: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   headerText: {
     fontFamily: 'BeVietnamPro-SemiBold',
@@ -340,7 +503,10 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   flexStationCol: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: 0,
   },
   scrollableStationCol: {
     width: 112,

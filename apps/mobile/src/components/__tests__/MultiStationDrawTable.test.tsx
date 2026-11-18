@@ -209,12 +209,53 @@ describe('MultiStationDrawTable (T10.39)', () => {
     expect(flatten(getByText('81')).color).toBe(colors.light.special);
     expect(flatten(getByText('123456')).color).toBe(colors.light.special);
 
-    // 3 stations -> fits viewport width without horizontal scrolling
+    // 3 stations -> fits viewport width in unified grid without horizontal ScrollView
     await rerender(
       <MultiStationDrawTable draws={mockDrawsSaturday4Stations.slice(0, 3)} />,
     );
-    expect(getByTestId('multi-station-scroll-view').props.scrollEnabled).toBe(
-      false,
+    expect(
+      flatten(getByTestId('multi-station-header-cell-0')).flexBasis,
+    ).toBe(0);
+  });
+
+  it('aligns 3-station columns with unified flexBasis: 0 and crisp 1dp borders without horizontal ScrollView (T12.05)', async () => {
+    const threeDraws = mockDrawsSaturday4Stations.slice(0, 3);
+    const { getByTestId, queryByTestId } = await render(
+      <MultiStationDrawTable draws={threeDraws} />,
     );
+
+    // No horizontal ScrollView wrapper skewing header vs body flex widths
+    expect(queryByTestId('multi-station-scroll-view')).toBeNull();
+
+    const flatten = (node: any) =>
+      Object.assign(
+        {},
+        ...(Array.isArray(node.props.style)
+          ? node.props.style.filter(Boolean)
+          : [node.props.style]),
+      );
+
+    for (const sIdx of [0, 1, 2]) {
+      const headerCellStyle = flatten(
+        getByTestId(`multi-station-header-cell-${sIdx}`),
+      );
+      const dataCellStyle = flatten(
+        getByTestId(`multi-station-cell-0-${sIdx}`),
+      );
+      expect(headerCellStyle.flexGrow).toBe(1);
+      expect(headerCellStyle.flexShrink).toBe(1);
+      expect(headerCellStyle.flexBasis).toBe(0);
+      expect(headerCellStyle.minWidth).toBe(0);
+      expect(dataCellStyle.flexGrow).toBe(1);
+      expect(dataCellStyle.flexShrink).toBe(1);
+      expect(dataCellStyle.flexBasis).toBe(0);
+      expect(dataCellStyle.minWidth).toBe(0);
+    }
+
+    // Crisp 1dp horizontal and vertical grid lines (never sub-pixel hairlineWidth)
+    expect(flatten(getByTestId('multi-station-header-row')).borderBottomWidth).toBe(1);
+    expect(flatten(getByTestId('multi-station-row-0')).borderBottomWidth).toBe(1);
+    expect(flatten(getByTestId('multi-station-header-cell-0')).borderRightWidth).toBe(1);
+    expect(flatten(getByTestId('multi-station-cell-0-0')).borderRightWidth).toBe(1);
   });
 });
