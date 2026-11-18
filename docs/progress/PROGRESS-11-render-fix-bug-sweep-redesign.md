@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 30 / 53 task hoàn thành
+- **Tổng quan:** 31 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -42,7 +42,7 @@
 | T11.31 | Home: dò nhanh dùng TicketInput 6 ô + cuống kết quả | TODO | | | |
 | T11.32 | Home: danh sách "Kết quả mới nhất" dạng hàng phẳng | TODO | | | |
 | T11.33 | Dò vé: 1 dòng ngữ cảnh kỳ + Sheet chọn ngày/đài | TODO | | | |
-| T11.34 | Dò vé: ResultStub 3 trạng thái (trúng/không trúng/chờ) + số tiền bằng chữ | TODO | | | |
+| T11.34 | Dò vé: ResultStub 3 trạng thái (trúng/không trúng/chờ) + số tiền bằng chữ | DONE | 5c6ca20 | 2026-11-18 | ResultStub thay ResultCard: Perforation + TicketNumber + display prize + amountInWordsVN, 3 trạng thái winTint/surface/pendingTint, xoá nợ ResultCard & HighlightedTicket khỏi designGuard. Đủ ảnh Sáng/Tối |
 | T11.35 | Dò vé: dò nhiều vé — đếm hợp lệ/lỗi, bỏ trùng, kết quả gom nhóm | TODO | | | |
 | T11.36 | Dò vé: nút Dò bám trên bàn phím | TODO | | | |
 | T11.37 | Kết quả: DrawTable kiểu tờ dò giấy (PrizeRow, G8→ĐB) | TODO | | | |
