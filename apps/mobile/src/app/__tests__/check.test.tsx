@@ -71,7 +71,7 @@ describe('CheckScreen Form Composition', () => {
     expect(submitBtn.props.accessibilityState.disabled).toBe(true);
   });
 
-  it('opens picker Sheet to change date and station from compact context row (T11.33)', async () => {
+  it('opens picker Sheet with month calendar grid to change date and station from compact context row (T11.33, T12.09)', async () => {
     const { getByTestId, queryByTestId, findByTestId } = await render(<CheckScreen />, {
       wrapper: createWrapper(),
     });
@@ -79,6 +79,8 @@ describe('CheckScreen Form Composition', () => {
     expect(queryByTestId('check-context-sheet')).toBeNull();
     fireEvent.press(getByTestId('check-context-picker-btn'));
     expect(await findByTestId('check-context-sheet')).toBeTruthy();
+    expect(getByTestId('calendar-month-label')).toBeTruthy();
+    expect(getByTestId('calendar-prev-month-btn')).toBeTruthy();
   });
 
   it('renders segmented control for single and batch modes with accessibility roles (T10.26)', async () => {

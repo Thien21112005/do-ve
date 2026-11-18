@@ -247,6 +247,8 @@ describe('ResultsScreen', () => {
 
     await fireEvent.press(getByTestId('results-calendar-btn'));
     expect(await findByTestId('results-date-picker-sheet')).toBeTruthy();
+    expect(getByTestId('calendar-month-label')).toBeTruthy();
+    expect(getByTestId('calendar-prev-month-btn')).toBeTruthy();
   });
 
   it('does NOT flash empty state "Chưa có kết quả" before station is selected (T09.29)', async () => {

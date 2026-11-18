@@ -20,12 +20,10 @@ import {
   Segmented,
   DrawTableSkeleton,
 } from '@/components';
-import { getPastDays } from '@/components/DateStrip';
 import {
   Text,
   Banner,
-  Sheet,
-  Chip,
+  CalendarPickerSheet,
   usePressed,
 } from '@/components/ui';
 import {
@@ -154,7 +152,6 @@ export default function ResultsScreen() {
     : formattedDate;
   const shortDateLabel = `${daySchedule?.shortName || ''} ${formattedDate.slice(0, 5)}`.trim();
   const canStepNext = selectedDate < todayStr;
-  const past60Days = getPastDays(60);
 
   // Say what the quick search found, including 'nothing' — but only when a
   // draw table is actually on screen (never while loading, pending or errored) (T11.19)
@@ -704,35 +701,17 @@ export default function ResultsScreen() {
         </View>
       </ScrollView>
 
-      {/* 60-Day Calendar Sheet */}
-      <Sheet
+      {/* Month Calendar Picker Sheet (T12.09) */}
+      <CalendarPickerSheet
         visible={dateSheetOpen}
+        selectedDate={selectedDate}
+        onSelectDate={(dateStr) => setSelectedDate(dateStr)}
         onClose={() => setDateSheetOpen(false)}
-        title="Chọn ngày mở thưởng (60 ngày)"
+        title="Chọn ngày mở thưởng"
         closeTestID="results-date-picker-close-btn"
+        dayTestIDPrefix="results-date-option"
         testID="results-date-picker-sheet"
-      >
-        <ScrollView style={styles.sheetScroll}>
-          <View style={styles.sheetChipsGrid}>
-            {past60Days.map((item) => (
-              <Chip
-                key={item.dateString}
-                testID={`results-date-option-${item.dateString}`}
-                label={
-                  item.isToday
-                    ? `Hôm nay ${item.dayOfMonth}`
-                    : `${item.dayOfWeekShort} ${item.dayOfMonth}`
-                }
-                selected={item.dateString === selectedDate}
-                onPress={() => {
-                  setSelectedDate(item.dateString);
-                  setDateSheetOpen(false);
-                }}
-              />
-            ))}
-          </View>
-        </ScrollView>
-      </Sheet>
+      />
     </SafeAreaView>
   );
 }
@@ -852,14 +831,5 @@ const styles = StyleSheet.create({
   searchFeedback: {
     marginTop: 6,
     paddingHorizontal: 4,
-  },
-  sheetScroll: {
-    maxHeight: 380,
-  },
-  sheetChipsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingBottom: 16,
   },
 });

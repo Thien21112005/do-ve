@@ -14,7 +14,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import {
-  getPastDays,
   StationChips,
   TicketInput,
   Icon,
@@ -26,7 +25,14 @@ import {
   BatchResultList,
   Segmented,
 } from '@/components';
-import { Text, Sheet, Chip, StickyFooter, Banner, usePressed } from '@/components/ui';
+import {
+  Text,
+  CalendarPickerSheet,
+  Chip,
+  StickyFooter,
+  Banner,
+  usePressed,
+} from '@/components/ui';
 import { useTheme, layout } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { useQueryClient } from '@tanstack/react-query';
@@ -100,7 +106,6 @@ export default function CheckScreen() {
   const dayLabel = isoDay === 7 ? 'CN' : SHORT_DAYS[isoDay] || '';
   const [, mm, dd] = selectedDate.split('-');
   const shortDate = dd && mm ? `${dd}/${mm}` : formatDateVN(selectedDate);
-  const past60Days = getPastDays(60);
 
   // Only show a response that belongs to the form as it is now (T11.13).
   const formKey = `${selectedDate}|${selectedStation}|${ticketNumber}`;
@@ -623,53 +628,40 @@ export default function CheckScreen() {
           </Pressable>
         </StickyFooter>
 
-        {/* Date + Station Picker Sheet (T11.33) */}
-        <Sheet
+        {/* Date + Station Calendar Picker Sheet (T11.33, T12.09) */}
+        <CalendarPickerSheet
           visible={isPickerOpen}
-          title="Chọn kỳ mở thưởng"
+          selectedDate={selectedDate}
+          onSelectDate={(dateStr) => setSelectedDate(dateStr)}
           onClose={() => setIsPickerOpen(false)}
+          title="Chọn kỳ mở thưởng"
+          dayTestIDPrefix="sheet-date"
           testID="check-context-sheet"
-        >
-          <Text variant="caption" color={colors.textMuted} style={styles.sheetLabel}>
-            Đài mở thưởng ngày {formatDateVN(selectedDate)}
-          </Text>
-          <View style={styles.sheetStations}>
-            {stations.map((st) => (
-              <Chip
-                key={st.code ?? st.name}
-                label={st.name ?? st.code ?? ''}
-                selected={st.code === selectedStation}
-                onPress={() => {
-                  if (st.code) setSelectedStation(st.code);
-                  setIsPickerOpen(false);
-                }}
-              />
-            ))}
-          </View>
-
-          <Text variant="caption" color={colors.textMuted} style={styles.sheetLabel}>
-            Chọn ngày (60 ngày gần nhất)
-          </Text>
-          <ScrollView style={styles.sheetScroll}>
-            <View style={styles.sheetDateGrid}>
-              {past60Days.map((item) => {
-                const isSelected = item.dateString === selectedDate;
-                return (
+          headerSlot={
+            <>
+              <Text
+                variant="caption"
+                color={colors.textMuted}
+                style={styles.sheetLabel}
+              >
+                Đài mở thưởng ngày {formatDateVN(selectedDate)}
+              </Text>
+              <View style={styles.sheetStations}>
+                {stations.map((st) => (
                   <Chip
-                    key={item.dateString}
-                    testID={`sheet-date-${item.dateString}`}
-                    label={`${item.isToday ? 'Hôm nay' : item.dayOfWeekShort} ${item.dayOfMonth}`}
-                    selected={isSelected}
-                    style={styles.sheetDateChip}
+                    key={st.code ?? st.name}
+                    label={st.name ?? st.code ?? ''}
+                    selected={st.code === selectedStation}
                     onPress={() => {
-                      setSelectedDate(item.dateString);
+                      if (st.code) setSelectedStation(st.code);
+                      setIsPickerOpen(false);
                     }}
                   />
-                );
-              })}
-            </View>
-          </ScrollView>
-        </Sheet>
+                ))}
+              </View>
+            </>
+          }
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -759,19 +751,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
-  },
-  sheetScroll: {
-    maxHeight: 280,
-  },
-  sheetDateGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingBottom: 16,
-  },
-  sheetDateChip: {
-    width: '31%',
-    justifyContent: 'center',
+    marginBottom: 14,
   },
 });
