@@ -26,7 +26,7 @@ import {
   BatchResultList,
   Segmented,
 } from '@/components';
-import { Text, Sheet, Chip, usePressed } from '@/components/ui';
+import { Text, Sheet, Chip, StickyFooter, usePressed } from '@/components/ui';
 import { useTheme, layout } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { useQueryClient } from '@tanstack/react-query';
@@ -44,6 +44,14 @@ import type { SavedTicketStatus } from '@/types';
 
 const VALIDATION_DELAY_MS = 600;
 const SHORT_DAYS = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];
+
+export function getCheckKeyboardBehavior(
+  os: string = Platform.OS,
+): 'padding' | 'height' | undefined {
+  if (os === 'ios') return 'padding';
+  if (os === 'android') return 'height';
+  return undefined;
+}
 
 export default function CheckScreen() {
   const { colors } = useTheme();
@@ -370,7 +378,8 @@ export default function CheckScreen() {
       style={[styles.safe, { backgroundColor: colors.background }]}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        testID="check-keyboard-avoiding"
+        behavior={getCheckKeyboardBehavior()}
         style={styles.flex}
       >
         <ScrollView
@@ -591,72 +600,61 @@ export default function CheckScreen() {
           ) : null}
         </ScrollView>
 
-        {/* Bottom CTA Bar */}
-        <View
-          testID="sticky-cta-bar"
-          style={[
-            styles.ctaOuter,
-            {
-              backgroundColor: colors.surface,
-              borderTopColor: colors.border,
-            },
-          ]}
-        >
-          <View style={styles.ctaInner}>
-            <Pressable
-              testID="check-ticket-button"
-              disabled={ctaState !== 'ready'}
-              onPress={handleSubmit}
-              accessibilityRole="button"
-              accessibilityLabel={
-                mode === 'single'
-                  ? STRINGS.check.accessibilityCheckBtnSingle
-                  : STRINGS.check.accessibilityCheckBtnBatch
+        {/* Sticky Bottom CTA Bar (T11.36) */}
+        <StickyFooter testID="sticky-cta-bar">
+          <Pressable
+            testID="check-ticket-button"
+            disabled={ctaState !== 'ready'}
+            onPress={handleSubmit}
+            accessibilityRole="button"
+            accessibilityLabel={
+              mode === 'single'
+                ? STRINGS.check.accessibilityCheckBtnSingle
+                : STRINGS.check.accessibilityCheckBtnBatch
+            }
+            accessibilityState={{
+              disabled: ctaState !== 'ready',
+              busy: ctaState === 'loading',
+            }}
+            {...ctaHandlers}
+            style={{
+              ...styles.ctaButton,
+              backgroundColor:
+                ctaState === 'disabled' ? colors.surfaceSubtle : colors.primary,
+              borderColor:
+                ctaState === 'disabled' ? colors.border : colors.primary,
+              opacity:
+                ctaState === 'disabled' ? 0.85 : ctaPressed ? 0.88 : 1,
+            }}
+          >
+            {activeLoading ? (
+              <ActivityIndicator
+                testID="check-cta-spinner"
+                size="small"
+                color={colors.onPrimary}
+                style={styles.spinner}
+              />
+            ) : null}
+            <Text
+              variant="bodyStrong"
+              color={
+                ctaState === 'disabled' ? colors.textMuted : colors.onPrimary
               }
-              accessibilityState={{
-                disabled: ctaState !== 'ready',
-                busy: ctaState === 'loading',
-              }}
-              {...ctaHandlers}
-              style={{
-                ...styles.ctaButton,
-                backgroundColor:
-                  ctaState === 'disabled' ? colors.surfaceSubtle : colors.primary,
-                borderColor:
-                  ctaState === 'disabled' ? colors.border : colors.primary,
-                opacity:
-                  ctaState === 'disabled' ? 0.85 : ctaPressed ? 0.88 : 1,
-              }}
             >
-              {activeLoading ? (
-                <ActivityIndicator
-                  testID="check-cta-spinner"
-                  size="small"
-                  color={colors.onPrimary}
-                  style={styles.spinner}
-                />
-              ) : null}
-              <Text
-                variant="bodyStrong"
-                color={
-                  ctaState === 'disabled' ? colors.textMuted : colors.onPrimary
-                }
-              >
-                {activeLoading
-                  ? STRINGS.check.btnChecking
-                  : !isFormValid && mode === 'single' && ticketNumber.length < 6
-                    ? STRINGS.check.ctaNeedSixDigits
-                    : !isFormValid && !selectedStation
-                      ? STRINGS.check.selectStationPrompt
-                      : mode === 'single'
-                        ? STRINGS.check.btnCheck
-                        : STRINGS.check.btnCheckBatch(
-                            parsedBatch.validTickets.length,
-                          )}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+              {activeLoading
+                ? STRINGS.check.btnChecking
+                : !isFormValid && mode === 'single' && ticketNumber.length < 6
+                  ? STRINGS.check.ctaNeedSixDigits
+                  : !isFormValid && !selectedStation
+                    ? STRINGS.check.selectStationPrompt
+                    : mode === 'single'
+                      ? STRINGS.check.btnCheck
+                      : STRINGS.check.btnCheckBatch(
+                          parsedBatch.validTickets.length,
+                        )}
+            </Text>
+          </Pressable>
+        </StickyFooter>
 
         {/* Date + Station Picker Sheet (T11.33) */}
         <Sheet
@@ -798,16 +796,6 @@ const styles = StyleSheet.create({
   batchResultsSection: {
     marginTop: 14,
     paddingHorizontal: 16,
-  },
-  ctaOuter: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
-  },
-  ctaInner: {
-    width: '100%',
-    maxWidth: layout.contentMaxWidth,
-    alignSelf: 'center',
   },
   ctaButton: {
     width: '100%',

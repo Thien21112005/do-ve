@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import { render, fireEvent, waitFor, configure } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import CheckScreen from '../(tabs)/check';
+import CheckScreen, { getCheckKeyboardBehavior } from '../(tabs)/check';
 import * as apiDraws from '@/api/draws';
 import * as apiCheck from '@/api/check';
 import { getTickets, clearAllTickets } from '@/store/ticketStore';
@@ -121,6 +121,25 @@ describe('CheckScreen Form Composition', () => {
       ? Object.assign({}, ...submitBtn.props.style)
       : submitBtn.props.style;
     expect(btnStyle.minHeight || btnStyle.height).toBeGreaterThanOrEqual(52);
+  });
+
+  it('uses StickyFooter with sheet elevation and Android height keyboard avoidance (T11.36)', async () => {
+    expect(getCheckKeyboardBehavior('android')).toBe('height');
+    expect(getCheckKeyboardBehavior('ios')).toBe('padding');
+
+    const { getByTestId } = await render(<CheckScreen />, {
+      wrapper: createWrapper(),
+    });
+    expect(getByTestId('check-keyboard-avoiding')).toBeTruthy();
+
+    const footer = getByTestId('sticky-cta-bar');
+    const footerStyle = Object.assign(
+      {},
+      ...(Array.isArray(footer.props.style)
+        ? footer.props.style.filter(Boolean)
+        : [footer.props.style]),
+    );
+    expect(footerStyle.elevation).toBe(8);
   });
 
   it('does not trigger warning haptics when 5 digits are typed (T10.28)', async () => {
