@@ -79,3 +79,12 @@ Dự án DoVe thống nhất chọn **Hướng A: "Tờ vé giấy"** làm ngôn
 - Toàn bộ các component UI hiện tại (`TicketInput`, `ResultCard`, `DrawTable`, `BatchResultList`,...) sẽ được chuẩn hóa màu sắc và typography theo các token semantic của Hướng A.
 - NativeWind config và React Native theme được đồng bộ để tự động phản hồi đúng khi chuyển đổi Light/Dark mode.
 - Cải thiện vượt bậc khả năng tiếp cận (Accessibility) ngoài trời nắng cho đối tượng người lớn tuổi và lao động bình dân.
+
+---
+
+## 5. Xác Nhận Sau Bản Render Thật Đầu Tiên (2026-11-18 — T11.25)
+
+- **Bối cảnh:** Ở Phase 10, thiếu `babel.config.js` khiến `className` của NativeWind chưa từng được biên dịch trên thiết bị thật. Sau khi mở khoá NativeWind (`T11.01` — `0c75ff7`), sửa biến theme động qua `ThemeVarsRoot` (`T11.03` — `736f2a7`) và chụp đối chiếu trên điện thoại Android thật (`docs/screenshots/phase11/baseline/after-t1101/`), bảng màu và typography Be Vietnam Pro lần đầu hiện lên đúng thực tế.
+- **Quyết định của người dùng (2026-11-18):** **Giữ nguyên Hướng A — "Tờ vé giấy" và triển khai tới nơi**, không đổi sang thế giới thị giác khác:
+  - Giữ trọn bảng màu giấy ngà ấm (`#F6F4EF`), mực xanh đen (`#1A2230`), đỏ son ĐB (`#B91C1C`), xanh trúng (`#15803D`) và than đêm (`#0F1217` / `#181C23`).
+  - Loại bỏ toàn bộ mã màu rời rạc, card lồng card và raw RN primitives còn sót ở 23 file trong allowlist (`T11.06`), chuyển sang bộ primitive tờ vé (`TicketNumber`, `PrizeRow`, `Perforation`, `ResultStub`) theo đúng Luật styling một đường (`DESIGN.md` §7).
