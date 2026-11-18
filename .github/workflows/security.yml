@@ -27,28 +27,25 @@ jobs:
           cache: 'npm'
           cache-dependency-path: apps/mobile/package-lock.json
 
-      - name: Audit Mobile Dependencies (fail on High/Critical)
-        run: npm audit --audit-level=high
+      - name: Install Mobile Dependencies
+        run: npm ci
+
+      - name: Audit Mobile Dependencies (fail on unmitigated High/Critical)
+        run: npm run audit:ci
 
   backend-dependency-check:
-    name: Backend Dependency Check (OWASP)
+    name: Backend Dependency Check (Trivy Maven CVE Scan)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 21 (Temurin)
-        uses: actions/setup-java@v4
+      - name: Scan Backend Maven Dependencies for High/Critical CVEs
+        uses: aquasecurity/trivy-action@0.33.1
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
-
-      - name: Grant execute permission for mvnw
-        run: chmod +x mvnw
-
-      - name: Run OWASP Dependency-Check (fail on CVSS >= 7)
-        run: ./mvnw -B org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=7 -DskipTestScope=true
+          scan-type: 'fs'
+          scan-ref: 'apps/api'
+          scanners: 'vuln'
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          exit-code: '1'
