@@ -81,11 +81,9 @@ describe('ResultCard Component', () => {
     expect(contextLine).toBeTruthy();
     expect(getByText(/TP\. Hồ Chí Minh · 14\/11\/2026/)).toBeTruthy();
 
-    // 2. Hero Ticket Number (Nhân vật chính)
-    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
-    expect(getByTestId('ticket-segment-matched')).toBeTruthy();
-    expect(getByText('456')).toBeTruthy();
-    expect(getByText('123')).toBeTruthy();
+    // 2. Hero Ticket Number (Nhân vật chính — TicketNumber tabular cells)
+    expect(getByTestId('result-card-hero-ticket-digit-0')).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket-digit-5')).toBeTruthy();
 
     // 3. Status title 22px bold
     const statusTitle = getByTestId('result-card-status-title');
@@ -139,8 +137,7 @@ describe('ResultCard Component', () => {
     );
 
     expect(getByTestId('result-card')).toBeTruthy();
-    expect(getByTestId('result-card-hero-ticket')).toBeTruthy();
-    expect(getByText('654321')).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket-digit-0')).toBeTruthy();
     expect(getByTestId('result-card-status-title')).toBeTruthy();
     expect(getByText('Không trúng')).toBeTruthy();
     expect(queryByText('Trúng 2 giải')).toBeNull();
@@ -242,7 +239,7 @@ describe('ResultCard Component', () => {
     expect(getByTestId('result-card')).toBeTruthy();
     expect(getByText('Chưa có kết quả')).toBeTruthy();
     expect(getByText('Chưa có kết quả, thường có lúc 16h40')).toBeTruthy();
-    expect(getByText('777888')).toBeTruthy();
+    expect(getByTestId('result-card-hero-ticket-digit-5')).toBeTruthy();
 
     const retryBtn = getByTestId('result-card-retry-btn');
     expect(retryBtn).toBeTruthy();

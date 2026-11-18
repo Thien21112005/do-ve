@@ -7,6 +7,7 @@ export * from './StationChips';
 export * from './ResultSkeleton';
 export * from './Skeleton';
 export * from './ResultCard';
+export * from './ResultStub';
 export * from './HighlightedTicket';
 export * from './CelebrationEffect';
 export * from './OfflineBanner';

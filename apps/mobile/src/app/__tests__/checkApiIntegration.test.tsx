@@ -89,7 +89,8 @@ describe('CheckScreen API Integration', () => {
     await waitFor(() => {
       expect(getByTestId('check-result-section')).toBeTruthy();
       expect(getByText('Chúc mừng bạn đã trúng thưởng!')).toBeTruthy();
-      expect(getByText(/Tổng thưởng: 2.000.000.000 đ/)).toBeTruthy();
+      expect(getByText('2.000.000.000 đ')).toBeTruthy();
+      expect(getByText('Hai tỷ đồng')).toBeTruthy();
     });
   });
 

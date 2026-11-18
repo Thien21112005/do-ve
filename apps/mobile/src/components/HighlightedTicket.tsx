@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withDelay,
   withSpring,
 } from 'react-native-reanimated';
+import { Text } from './ui/Text';
 import { useTheme } from '@/theme';
 
 export interface MatchedSegment {
@@ -328,7 +329,7 @@ export function HighlightedTicket({
               isLg={isLg}
               textSizeClass={textSizeClass}
               winColor={colors.win}
-              winTint={colors.winTint || `${colors.win}15`}
+              winTint={colors.winTint}
               winBorder={colors.winBorder}
               animated={animated}
             />
