@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
 import {
   View,
-  Text,
   ScrollView,
   Switch,
   Alert,
   AppState,
   Linking,
+  Platform,
+  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme, layout } from '@/theme';
+import { useTheme, layout, radii } from '@/theme';
 import { useSettings } from '@/store/settings';
 import { STRINGS } from '@/lib/strings';
-import { Segmented } from '@/components/ui/Segmented';
-import { ListRow } from '@/components/ui/ListRow';
+import { Segmented, ListRow, SectionHeader } from '@/components/ui';
 import {
   requestNotificationPermission,
   hasNotificationPermission,
@@ -84,6 +84,9 @@ export default function SettingsScreen() {
     }
   };
 
+  const webSwitchProps =
+    Platform.OS === 'web' ? { activeThumbColor: colors.onPrimary } : {};
+
   return (
     <SafeAreaView
       testID="settings-screen"
@@ -99,132 +102,99 @@ export default function SettingsScreen() {
           maxWidth: layout.contentMaxWidth,
           alignSelf: 'center',
         }}
-        className="flex-1 px-4 pt-4"
+        className="flex-1"
       >
-        {/* Appearance Section */}
-        <Text
-          className="text-xs font-bold uppercase tracking-wider mb-2 px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.settings.appearanceSection}
-        </Text>
-
+        {/* 1. Hiển thị (Giao diện, Thứ tự bảng, Cỡ chữ lớn) */}
+        <SectionHeader title={STRINGS.settings.appearanceSection} />
         <View
-          className="rounded-2xl border overflow-hidden mb-6 shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
+          style={[
+            styles.groupBox,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
-          {/* Theme mode Segmented row (T10.54) */}
-          <View
+          <ListRow
             testID="settings-theme-row"
-            className="p-4 border-b"
-            style={{
-              borderColor: colors.border,
-              borderBottomWidth: 1,
-            }}
-          >
-            <View className="mb-2.5">
-              <Text
-                className="text-base font-semibold mb-0.5"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.settings.themeModeTitle}
-              </Text>
-              <Text
-                className="text-xs leading-relaxed"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.settings.themeSystemDesc}
-              </Text>
-            </View>
-            <Segmented
-              testID="settings-theme-segmented"
-              selectedKey={settings.themeMode || 'system'}
-              onChange={(key) =>
-                updateSettings({ themeMode: key as 'system' | 'light' | 'dark' })
-              }
-              options={[
-                {
-                  key: 'system',
-                  label: STRINGS.settings.themeSystem,
-                  testID: 'settings-theme-system',
-                },
-                {
-                  key: 'light',
-                  label: STRINGS.settings.themeLightShort,
-                  testID: 'settings-theme-light',
-                },
-                {
-                  key: 'dark',
-                  label: STRINGS.settings.themeDarkShort,
-                  testID: 'settings-theme-dark',
-                },
-              ]}
-            />
-          </View>
+            title={STRINGS.settings.themeModeTitle}
+            subtitle={STRINGS.settings.themeSystemDesc}
+            footer={
+              <Segmented
+                testID="settings-theme-segmented"
+                selectedKey={settings.themeMode || 'system'}
+                onChange={(key) =>
+                  updateSettings({
+                    themeMode: key as 'system' | 'light' | 'dark',
+                  })
+                }
+                options={[
+                  {
+                    key: 'system',
+                    label: STRINGS.settings.themeSystem,
+                    testID: 'settings-theme-system',
+                  },
+                  {
+                    key: 'light',
+                    label: STRINGS.settings.themeLightShort,
+                    testID: 'settings-theme-light',
+                  },
+                  {
+                    key: 'dark',
+                    label: STRINGS.settings.themeDarkShort,
+                    testID: 'settings-theme-dark',
+                  },
+                ]}
+              />
+            }
+          />
 
-          {/* Draw Table Order setting (T10.38) */}
-          <View
+          <ListRow
             testID="settings-draw-order-row"
-            className="p-4"
-            style={{
-              borderColor: colors.border,
-            }}
-          >
-            <View className="mb-2.5">
-              <Text
-                className="text-base font-semibold mb-0.5"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.settings.drawTableOrderTitle}
-              </Text>
-              <Text
-                className="text-xs leading-relaxed"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.settings.drawTableOrderDesc}
-              </Text>
-            </View>
-            <Segmented
-              testID="settings-draw-order-segmented"
-              selectedKey={settings.drawTableOrder || 'g8_to_special'}
-              onChange={(key) =>
-                updateSettings({ drawTableOrder: key as any })
-              }
-              options={[
-                {
-                  key: 'g8_to_special',
-                  label: STRINGS.settings.drawTableOrderG8First,
-                  testID: 'settings-draw-order-g8-first',
-                },
-                {
-                  key: 'special_to_g8',
-                  label: STRINGS.settings.drawTableOrderSpecialFirst,
-                  testID: 'settings-draw-order-special-first',
-                },
-              ]}
-            />
-          </View>
+            title={STRINGS.settings.drawTableOrderTitle}
+            subtitle={STRINGS.settings.drawTableOrderDesc}
+            footer={
+              <Segmented
+                testID="settings-draw-order-segmented"
+                selectedKey={settings.drawTableOrder || 'g8_to_special'}
+                onChange={(key) =>
+                  updateSettings({ drawTableOrder: key as any })
+                }
+                options={[
+                  {
+                    key: 'g8_to_special',
+                    label: STRINGS.settings.drawTableOrderG8First,
+                    testID: 'settings-draw-order-g8-first',
+                  },
+                  {
+                    key: 'special_to_g8',
+                    label: STRINGS.settings.drawTableOrderSpecialFirst,
+                    testID: 'settings-draw-order-special-first',
+                  },
+                ]}
+              />
+            }
+          />
+
+          <ListRow
+            testID="settings-font-scale-row"
+            title="Cỡ chữ lớn"
+            subtitle="Tự động theo cài đặt Cỡ chữ của điện thoại (hỗ trợ tới 200%)"
+            style={{ borderBottomWidth: 0 }}
+          />
         </View>
 
-        {/* Experience Section */}
-        <Text
-          className="text-xs font-bold uppercase tracking-wider mb-2 px-1"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.settings.experienceSection}
-        </Text>
-
+        {/* 2. Dò vé (Tự dò khi đủ 6 số, Rung, Hiệu ứng trúng) */}
+        <SectionHeader title="Dò vé" />
         <View
-          className="rounded-2xl border overflow-hidden shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
+          style={[
+            styles.groupBox,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
-          {/* Auto submit when 6 digits are typed (T10.54) */}
           <ListRow
             title={STRINGS.settings.autoSubmitTitle}
             subtitle={STRINGS.settings.autoSubmitDesc}
@@ -234,33 +204,26 @@ export default function SettingsScreen() {
                 accessibilityRole="switch"
                 accessibilityLabel={STRINGS.settings.autoSubmitTitle}
                 value={settings.autoSubmitEnabled}
-                onValueChange={(val) => updateSettings({ autoSubmitEnabled: val })}
-                {...({ onPress: () => updateSettings({ autoSubmitEnabled: !settings.autoSubmitEnabled }) } as any)}
+                onValueChange={(val) =>
+                  updateSettings({ autoSubmitEnabled: val })
+                }
+                {...({
+                  onPress: () =>
+                    updateSettings({
+                      autoSubmitEnabled: !settings.autoSubmitEnabled,
+                    }),
+                  ...webSwitchProps,
+                } as any)}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
+                thumbColor={
+                  settings.autoSubmitEnabled
+                    ? colors.onPrimary
+                    : colors.surfaceElevated
+                }
               />
             }
           />
 
-          {/* Celebration toggle (T10.54) */}
-          <ListRow
-            title={STRINGS.settings.celebrationTitle}
-            subtitle={STRINGS.settings.celebrationDesc}
-            trailing={
-              <Switch
-                testID="settings-celebration-switch"
-                accessibilityRole="switch"
-                accessibilityLabel={STRINGS.settings.celebrationTitle}
-                value={settings.celebrationEnabled}
-                onValueChange={(val) => updateSettings({ celebrationEnabled: val })}
-                {...({ onPress: () => updateSettings({ celebrationEnabled: !settings.celebrationEnabled }) } as any)}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
-              />
-            }
-          />
-
-          {/* Haptics toggle (T10.54) */}
           <ListRow
             title={STRINGS.settings.hapticsTitle}
             subtitle={STRINGS.settings.hapticsDesc}
@@ -271,14 +234,65 @@ export default function SettingsScreen() {
                 accessibilityLabel={STRINGS.settings.hapticsTitle}
                 value={settings.hapticsEnabled}
                 onValueChange={(val) => updateSettings({ hapticsEnabled: val })}
-                {...({ onPress: () => updateSettings({ hapticsEnabled: !settings.hapticsEnabled }) } as any)}
+                {...({
+                  onPress: () =>
+                    updateSettings({
+                      hapticsEnabled: !settings.hapticsEnabled,
+                    }),
+                  ...webSwitchProps,
+                } as any)}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
+                thumbColor={
+                  settings.hapticsEnabled
+                    ? colors.onPrimary
+                    : colors.surfaceElevated
+                }
               />
             }
           />
 
-          {/* Reminder toggle (T10.54) */}
+          <ListRow
+            title={STRINGS.settings.celebrationTitle}
+            subtitle={STRINGS.settings.celebrationDesc}
+            style={{ borderBottomWidth: 0 }}
+            trailing={
+              <Switch
+                testID="settings-celebration-switch"
+                accessibilityRole="switch"
+                accessibilityLabel={STRINGS.settings.celebrationTitle}
+                value={settings.celebrationEnabled}
+                onValueChange={(val) =>
+                  updateSettings({ celebrationEnabled: val })
+                }
+                {...({
+                  onPress: () =>
+                    updateSettings({
+                      celebrationEnabled: !settings.celebrationEnabled,
+                    }),
+                  ...webSwitchProps,
+                } as any)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={
+                  settings.celebrationEnabled
+                    ? colors.onPrimary
+                    : colors.surfaceElevated
+                }
+              />
+            }
+          />
+        </View>
+
+        {/* 3. Nhắc nhở */}
+        <SectionHeader title="Nhắc nhở" />
+        <View
+          style={[
+            styles.groupBox,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+        >
           <ListRow
             title={STRINGS.settings.reminderTitle}
             subtitle={STRINGS.settings.reminderDesc}
@@ -290,9 +304,17 @@ export default function SettingsScreen() {
                 accessibilityLabel={STRINGS.settings.reminderTitle}
                 value={settings.reminderEnabled}
                 onValueChange={handleToggleReminder}
-                {...({ onPress: () => handleToggleReminder(!settings.reminderEnabled) } as any)}
+                {...({
+                  onPress: () =>
+                    handleToggleReminder(!settings.reminderEnabled),
+                  ...webSwitchProps,
+                } as any)}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#FFFFFF"
+                thumbColor={
+                  settings.reminderEnabled
+                    ? colors.onPrimary
+                    : colors.surfaceElevated
+                }
               />
             }
           />
@@ -301,3 +323,12 @@ export default function SettingsScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  groupBox: {
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+  },
+});

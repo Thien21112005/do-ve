@@ -8,18 +8,17 @@ describe('MoreScreen (Thêm)', () => {
     jest.clearAllMocks();
   });
 
-  it('renders native grouped style list with sections and rows (T10.52)', async () => {
-    const { getByText, getByTestId } = await render(<MoreScreen />);
+  it('renders native grouped style list with ListRow and no duplicate header title (T11.45)', async () => {
+    const { getByText, getByTestId, queryByText } = await render(<MoreScreen />);
 
-    // Screen title and subtitle
-    expect(getByText('Thêm')).toBeTruthy();
+    // No duplicate title/subtitle below tab header
     expect(
-      getByText('Lịch quay số, Giới thiệu và Cài đặt ứng dụng'),
-    ).toBeTruthy();
+      queryByText('Lịch quay số, Giới thiệu và Cài đặt ứng dụng'),
+    ).toBeNull();
 
     // Section headers: Tiện ích & Ứng dụng
-    expect(getByText('Tiện ích')).toBeTruthy();
-    expect(getByText('Ứng dụng')).toBeTruthy();
+    expect(getByText(/TIỆN ÍCH/i)).toBeTruthy();
+    expect(getByText(/ỨNG DỤNG/i)).toBeTruthy();
 
     // Menu rows
     expect(getByTestId('more-menu-schedule')).toBeTruthy();

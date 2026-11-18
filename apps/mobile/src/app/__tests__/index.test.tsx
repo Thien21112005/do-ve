@@ -312,12 +312,12 @@ describe('Tab Screens', () => {
     expect(queryByText('Lưu trữ và theo dõi các vé số đã dò')).toBeNull();
   });
 
-  it('renders MoreScreen correctly', async () => {
-    const { getByText, getByTestId } = await render(<MoreScreen />);
-    expect(getByText('Thêm')).toBeTruthy();
+  it('renders MoreScreen correctly without duplicate screen title (T11.45)', async () => {
+    const { getByText, getByTestId, queryByText } = await render(<MoreScreen />);
     expect(
-      getByText('Lịch quay số, Giới thiệu và Cài đặt ứng dụng'),
-    ).toBeTruthy();
+      queryByText('Lịch quay số, Giới thiệu và Cài đặt ứng dụng'),
+    ).toBeNull();
+    expect(getByTestId('more-menu-schedule')).toBeTruthy();
     expect(getByTestId('more-privacy-notice')).toBeTruthy();
     expect(
       getByText('Vé chỉ lưu trên máy này, không gửi lên server.'),

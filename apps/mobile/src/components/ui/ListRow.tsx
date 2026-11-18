@@ -16,6 +16,8 @@ export interface ListRowProps {
   subtitle?: string;
   icon?: React.ReactNode;
   trailing?: React.ReactNode;
+  /** Optional control rendered below the main row line (e.g. Segmented control). */
+  footer?: React.ReactNode;
   showChevron?: boolean;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
@@ -29,6 +31,7 @@ export function ListRow({
   subtitle,
   icon,
   trailing,
+  footer,
   showChevron = false,
   onPress,
   style,
@@ -47,12 +50,66 @@ export function ListRow({
 
   const titleColor = destructive ? colors.error : colors.textMain;
 
+  const innerContent = (
+    <>
+      <View style={styles.mainRow}>
+        {icon ? <View style={styles.iconContainer}>{icon}</View> : null}
+
+        <View style={styles.content}>
+          <Text
+            variant="body"
+            style={{ color: titleColor, fontFamily: 'BeVietnamPro-Medium' }}
+          >
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text
+              variant="caption"
+              style={[styles.subtitle, { color: colors.textMuted }]}
+            >
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
+
+        {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+
+        {showChevron ? (
+          <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
+        ) : null}
+      </View>
+
+      {footer ? <View style={styles.footer}>{footer}</View> : null}
+    </>
+  );
+
+  // When non-interactive (e.g. row holding a Switch or Segmented control),
+  // render a plain View without accessible=true so child controls stay
+  // directly focusable by TalkBack/VoiceOver (T11.45).
+  if (!onPress) {
+    return (
+      <View
+        testID={testID}
+        accessible={false}
+        style={[
+          styles.container,
+          {
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+          },
+          style,
+        ]}
+      >
+        {innerContent}
+      </View>
+    );
+  }
+
   return (
     <Pressable
       testID={testID}
-      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || title}
-      disabled={!onPress}
       onPress={handlePress}
       {...pressHandlers}
       style={[
@@ -60,41 +117,27 @@ export function ListRow({
         {
           backgroundColor: colors.surface,
           borderBottomColor: colors.border,
-          opacity: pressed && onPress ? 0.75 : 1,
+          opacity: pressed ? 0.75 : 1,
         },
         style,
       ]}
     >
-      {icon ? <View style={styles.iconContainer}>{icon}</View> : null}
-
-      <View style={styles.content}>
-        <Text variant="body" style={{ color: titleColor, fontFamily: 'BeVietnamPro-Medium' }}>
-          {title}
-        </Text>
-        {subtitle ? (
-          <Text variant="caption" style={[styles.subtitle, { color: colors.textMuted }]}>
-            {subtitle}
-          </Text>
-        ) : null}
-      </View>
-
-      {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
-
-      {showChevron ? (
-        <Text style={[styles.chevron, { color: colors.textMuted }]}>›</Text>
-      ) : null}
+      {innerContent}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 48, // Standard touch target
+    minHeight: 52,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    justifyContent: 'center',
+  },
+  mainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   iconContainer: {
     marginRight: 12,
@@ -110,6 +153,9 @@ const styles = StyleSheet.create({
   },
   trailing: {
     marginLeft: 12,
+  },
+  footer: {
+    marginTop: 10,
   },
   chevron: {
     fontSize: 22,

@@ -205,6 +205,20 @@ describe('SettingsScreen (Cài đặt)', () => {
     expect(reminderSwitch.props.accessibilityRole).toBe('switch');
     expect(reminderSwitch.props.accessibilityLabel).toBeTruthy();
     expect(typeof (reminderSwitch.props.onChange || reminderSwitch.props.onValueChange)).toBe('function');
+
+    // No ancestor of a Switch may set accessible=true (T11.45)
+    for (const sw of [
+      autoSubmitSwitch,
+      celebrationSwitch,
+      hapticsSwitch,
+      reminderSwitch,
+    ]) {
+      let cur = sw.parent;
+      while (cur) {
+        expect(cur.props?.accessible).not.toBe(true);
+        cur = cur.parent;
+      }
+    }
   });
 });
 

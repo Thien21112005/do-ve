@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon, ListRow } from '@/components';
-import { useTheme, layout } from '@/theme';
+import { Icon } from '@/components';
+import { Text, ListRow, SectionHeader } from '@/components/ui';
+import { useTheme, layout, radii } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 import { CURRENT_APP_VERSION } from '@/lib/version';
 
@@ -16,6 +17,7 @@ export default function MoreScreen() {
       testID="more-screen"
       edges={['bottom']}
       className="flex-1 bg-background"
+      style={{ backgroundColor: colors.background }}
     >
       <ScrollView
         contentContainerStyle={{
@@ -25,31 +27,18 @@ export default function MoreScreen() {
           maxWidth: layout.contentMaxWidth,
           alignSelf: 'center',
         }}
-        className="flex-1 px-4 pt-4"
+        className="flex-1"
       >
-        <Text
-          className="text-2xl font-bold mb-1"
-          style={{ color: colors.textMain }}
-        >
-          {STRINGS.more.screenTitle}
-        </Text>
-        <Text className="text-xs mb-4" style={{ color: colors.textMuted }}>
-          {STRINGS.more.subtitle}
-        </Text>
-
         {/* Section 1: Tiện ích */}
-        <Text
-          className="text-xs font-semibold tracking-wider mb-2 px-1 uppercase"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.more.sectionUtilities}
-        </Text>
+        <SectionHeader title={STRINGS.more.sectionUtilities} />
         <View
-          className="rounded-2xl border overflow-hidden mb-6"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
+          style={[
+            styles.groupBox,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
           <ListRow
             testID="more-menu-schedule"
@@ -63,18 +52,15 @@ export default function MoreScreen() {
         </View>
 
         {/* Section 2: Ứng dụng */}
-        <Text
-          className="text-xs font-semibold tracking-wider mb-2 px-1 uppercase"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.more.sectionApp}
-        </Text>
+        <SectionHeader title={STRINGS.more.sectionApp} />
         <View
-          className="rounded-2xl border overflow-hidden mb-8"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
+          style={[
+            styles.groupBox,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
           <ListRow
             testID="more-menu-settings"
@@ -96,24 +82,28 @@ export default function MoreScreen() {
         </View>
 
         {/* Privacy Notice & Single-line Version Footer */}
-        <View className="items-center px-4 mt-auto">
+        <View style={styles.footerArea}>
           <View
             testID="more-privacy-notice"
-            className="flex-row items-center justify-center py-2 px-3 rounded-xl mb-3"
-            style={{ backgroundColor: `${colors.border}30` }}
+            style={[
+              styles.privacyPill,
+              { backgroundColor: colors.surfaceSubtle },
+            ]}
           >
             <Icon name="info" size={13} color={colors.textMuted} />
             <Text
-              className="text-xs font-medium ml-1.5"
-              style={{ color: colors.textMuted }}
+              variant="caption"
+              color={colors.textMuted}
+              style={styles.privacyText}
             >
               {STRINGS.more.privacyNotice}
             </Text>
           </View>
           <Text
             testID="more-version-footer"
-            className="text-xs text-center font-medium"
-            style={{ color: colors.textMuted }}
+            variant="caption"
+            align="center"
+            color={colors.textMuted}
           >
             DoVe phiên bản {CURRENT_APP_VERSION} · Dò vé số kiến thiết miền Nam
           </Text>
@@ -122,3 +112,30 @@ export default function MoreScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  groupBox: {
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+  },
+  footerArea: {
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginTop: 'auto',
+    paddingTop: 28,
+  },
+  privacyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: radii.md,
+    marginBottom: 12,
+  },
+  privacyText: {
+    marginLeft: 6,
+  },
+});
