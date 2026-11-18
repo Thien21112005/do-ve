@@ -25,7 +25,6 @@ const ALLOWLIST: DebtCounts = {
   'components/AppVersionGate.tsx': { rawRnPrimitive: 1 },
   'components/ErrorBoundary.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
   'components/Icon.tsx': { hexColor: 1 },
-  'components/MultiStationDrawTable.tsx': { rawRnPrimitive: 1, alphaConcat: 4 },
   'components/OfflineBanner.tsx': { rawRnPrimitive: 2, alphaConcat: 1 },
   'components/SavedTicketsSummary.tsx': { rawRnPrimitive: 2, tinyArbitraryText: 3 },
   'components/TicketEmptyIllustration.tsx': { hexColor: 26 },

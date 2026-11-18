@@ -185,4 +185,36 @@ describe('MultiStationDrawTable (T10.39)', () => {
     expect(matched.length).toBeGreaterThan(0);
     expect(getByText('44401')).toBeTruthy();
   });
+
+  it('pins left tier column, disables horizontal scroll for <=3 stations, enables for >=4, and prints G8 & ĐB in vermilion (T11.38)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { colors } = require('@/theme/colors');
+    const { getByTestId, getByText, rerender } = await render(
+      <MultiStationDrawTable draws={mockDrawsSaturday4Stations} />,
+    );
+
+    expect(getByTestId('multi-station-fixed-tier-col')).toBeTruthy();
+    expect(getByTestId('multi-station-scroll-view').props.scrollEnabled).toBe(
+      true,
+    );
+
+    const flatten = (node: any) =>
+      Object.assign(
+        {},
+        ...(Array.isArray(node.props.style)
+          ? node.props.style.filter(Boolean)
+          : [node.props.style]),
+      );
+
+    expect(flatten(getByText('81')).color).toBe(colors.light.special);
+    expect(flatten(getByText('123456')).color).toBe(colors.light.special);
+
+    // 3 stations -> fits viewport width without horizontal scrolling
+    await rerender(
+      <MultiStationDrawTable draws={mockDrawsSaturday4Stations.slice(0, 3)} />,
+    );
+    expect(getByTestId('multi-station-scroll-view').props.scrollEnabled).toBe(
+      false,
+    );
+  });
 });
