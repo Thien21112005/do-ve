@@ -39,7 +39,8 @@ describe('ticketStore Service', () => {
     });
 
     expect(saved.ticket).toBe('012345');
-    expect(saved.id).toBe('TPHCM_2026-11-14_012345');
+    expect(saved.id).toBe('tp-hcm_2026-11-14_012345');
+    expect(saved.station).toBe('tp-hcm');
     expect(saved.createdAt).toBeDefined();
 
     const all = await getTickets();

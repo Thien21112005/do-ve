@@ -594,7 +594,7 @@ describe('TicketsScreen (Vé của tôi)', () => {
       },
     ];
 
-    await saveManyTickets(ticketsData);
+    const savedList = await saveManyTickets(ticketsData);
 
     const { getByTestId, getByText } = await render(<TicketsScreen />);
 
@@ -609,11 +609,9 @@ describe('TicketsScreen (Vé của tôi)', () => {
     expect(getByText(/13\/11\/2026/)).toBeTruthy();
 
     // Verify all 7 compact ticket rows are rendered
-    for (const t of ticketsData) {
+    for (const t of savedList) {
       expect(getByText(t.ticket)).toBeTruthy();
-      expect(
-        getByTestId(`saved-ticket-item-${t.station}_${t.drawDate}_${t.ticket}`),
-      ).toBeTruthy();
+      expect(getByTestId(`saved-ticket-item-${t.id}`)).toBeTruthy();
     }
   });
 

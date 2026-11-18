@@ -30,7 +30,7 @@ import { useTheme, layout } from '@/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import { haptics, STRINGS } from '@/lib';
 import { useCheckTicket, useCheckBatchTickets, useActiveDrawSession } from '@/hooks';
-import { useSavedTickets } from '@/store/ticketStore';
+import { useSavedTickets, normalizeStationCode } from '@/store/ticketStore';
 import { useSettings } from '@/store/settings';
 import { getApiErrorMessage } from '@/api/client';
 import type { SavedTicketStatus } from '@/types';
@@ -167,8 +167,10 @@ export default function CheckScreen() {
         savedTickets.some(
           (t) =>
             t.ticket === result.ticket &&
-            (t.station === (result as any).station ||
-              t.station === (result as any).stationCode) &&
+            normalizeStationCode(t.station) ===
+              normalizeStationCode(
+                (result as any).stationCode || (result as any).station || '',
+              ) &&
             t.drawDate === result.drawDate,
         ),
     );

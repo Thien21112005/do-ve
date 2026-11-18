@@ -299,7 +299,7 @@ describe('CheckScreen Form Composition', () => {
       const saved = await getTickets();
       expect(saved.length).toBe(1);
       expect(saved[0].ticket).toBe('012345');
-      expect(saved[0].station).toBe('TPHCM');
+      expect(saved[0].station).toBe('tp-hcm');
       expect(saved[0].status).toBe('WON');
       expect(saved[0].totalPrize).toBe(2000000000);
     });

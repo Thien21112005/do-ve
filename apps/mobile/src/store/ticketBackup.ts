@@ -6,6 +6,7 @@ import {
   getTickets,
   saveManyTickets,
   generateTicketId,
+  normalizeStationCode,
 } from './ticketStore';
 import type { SavedTicket } from '@/types';
 
@@ -254,15 +255,15 @@ export async function importTicketsFromJson(): Promise<ImportResult> {
         continue;
       }
 
-      const id =
-        raw.id || generateTicketId(raw.station, raw.drawDate, raw.ticket);
+      const station = normalizeStationCode(raw.station);
+      const id = generateTicketId(station, raw.drawDate, raw.ticket);
       const existing = existingMap.get(id);
 
       const candidate: SavedTicket = {
         id,
         ticket: raw.ticket,
-        station: raw.station,
-        stationName: raw.stationName || raw.station,
+        station,
+        stationName: raw.stationName || station,
         drawDate: raw.drawDate,
         status: raw.status || 'PENDING',
         totalPrize: typeof raw.totalPrize === 'number' ? raw.totalPrize : 0,

@@ -9,7 +9,7 @@ import { useTheme } from '../theme';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
 import { haptics } from '../lib/haptics';
-import { useSavedTickets } from '../store/ticketStore';
+import { useSavedTickets, normalizeStationCode } from '../store/ticketStore';
 import type { BatchCheckResponse, SavedTicketStatus } from '../types';
 import { getStationName, type UiBatchResult } from '../api/mappers';
 
@@ -59,7 +59,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
       (t) =>
         t.ticket === ticketNumber &&
         t.drawDate === (batchResult.drawDate || '') &&
-        (t.station.toLowerCase() === rawStation.toLowerCase() ||
+        (normalizeStationCode(t.station) === normalizeStationCode(rawStation) ||
           t.stationName === stationName),
     );
   };

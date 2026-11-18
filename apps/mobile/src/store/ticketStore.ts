@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
-import type { SavedTicket } from '@/types';
+import { STATION_NAMES } from '@/api/mappers';
+import type { SavedTicket, SavedTicketStatus } from '@/types';
 
 export const TICKETS_STORAGE_KEY = 'dove.tickets.v1';
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;
 
 export interface TicketStorageEnvelope {
   version: number;
@@ -40,6 +41,137 @@ function notifyListeners() {
   listeners.forEach((listener) => listener(cachedTickets));
 }
 
+const STATION_SLUG_ALIASES: Record<string, string> = {
+  tphcm: 'tp-hcm',
+  hcm: 'tp-hcm',
+  'ho-chi-minh': 'tp-hcm',
+  'tp-ho-chi-minh': 'tp-hcm',
+  dongthap: 'dong-thap',
+  dt: 'dong-thap',
+  camau: 'ca-mau',
+  cm: 'ca-mau',
+  bentre: 'ben-tre',
+  bt: 'ben-tre',
+  vungtau: 'vung-tau',
+  vt: 'vung-tau',
+  'ba-ria-vung-tau': 'vung-tau',
+  baclieu: 'bac-lieu',
+  bl: 'bac-lieu',
+  dongnai: 'dong-nai',
+  dn: 'dong-nai',
+  cantho: 'can-tho',
+  ct: 'can-tho',
+  soctrang: 'soc-trang',
+  st: 'soc-trang',
+  tayninh: 'tay-ninh',
+  tn: 'tay-ninh',
+  angiang: 'an-giang',
+  ag: 'an-giang',
+  binhthuan: 'binh-thuan',
+  bth: 'binh-thuan',
+  vinhlong: 'vinh-long',
+  vl: 'vinh-long',
+  binhduong: 'binh-duong',
+  bd: 'binh-duong',
+  travinh: 'tra-vinh',
+  tv: 'tra-vinh',
+  longan: 'long-an',
+  la: 'long-an',
+  haugiang: 'hau-giang',
+  hg: 'hau-giang',
+  binhphuoc: 'binh-phuoc',
+  bp: 'binh-phuoc',
+  tiengiang: 'tien-giang',
+  tg: 'tien-giang',
+  kiengiang: 'kien-giang',
+  kg: 'kien-giang',
+  dalat: 'da-lat',
+  dl: 'da-lat',
+  'lam-dong': 'da-lat',
+  lamdong: 'da-lat',
+};
+
+/**
+ * Normalize any station code variant (TPHCM, tphcm, TP.HCM, DONG_THAP, BD...)
+ * to the canonical backend slug (tp-hcm, dong-thap, binh-duong...) (T11.17).
+ */
+export function normalizeStationCode(raw: string): string {
+  const slug = (raw ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\./g, '-')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  return STATION_SLUG_ALIASES[slug] ?? slug;
+}
+
+function resolveStationName(stationSlug: string, rawName?: string): string {
+  if (rawName && normalizeStationCode(rawName) !== stationSlug) {
+    return rawName;
+  }
+  return STATION_NAMES[stationSlug] || rawName || stationSlug;
+}
+
+function statusRank(status: SavedTicketStatus | undefined): number {
+  if (status === 'WON') return 3;
+  if (status === 'LOST') return 2;
+  if (status === 'INVALID') return 1;
+  return 0; // PENDING
+}
+
+function mergeDuplicateTickets(existing: SavedTicket, incoming: SavedTicket): SavedTicket {
+  const rExisting = statusRank(existing.status);
+  const rIncoming = statusRank(incoming.status);
+  const winner =
+    rIncoming > rExisting
+      ? incoming
+      : rIncoming < rExisting
+        ? existing
+        : (incoming.totalPrize ?? 0) >= (existing.totalPrize ?? 0)
+          ? incoming
+          : existing;
+  const other = winner === incoming ? existing : incoming;
+  return {
+    ...other,
+    ...winner,
+    stationName: resolveStationName(winner.station, winner.stationName || other.stationName),
+    note: winner.note || other.note,
+  };
+}
+
+function normalizeTicketItem(raw: SavedTicket): SavedTicket {
+  const station = normalizeStationCode(raw.station);
+  const id = generateTicketId(station, raw.drawDate, raw.ticket);
+  return {
+    ...raw,
+    id,
+    station,
+    stationName: resolveStationName(station, raw.stationName),
+  };
+}
+
+function migrateTicketsToV2(tickets: SavedTicket[]): SavedTicket[] {
+  const byId = new Map<string, SavedTicket>();
+  const order: string[] = [];
+  for (const raw of tickets) {
+    const normalized = normalizeTicketItem(raw);
+    const prev = byId.get(normalized.id);
+    if (prev) {
+      byId.set(normalized.id, mergeDuplicateTickets(prev, normalized));
+    } else {
+      byId.set(normalized.id, normalized);
+      order.push(normalized.id);
+    }
+  }
+  return order.map((id) => byId.get(id)!);
+}
+
+function normalizeLookupId(id: string): string {
+  const match = /^(.+)_(\d{4}-\d{2}-\d{2})_(\d{6})$/.exec(id);
+  return match ? generateTicketId(match[1], match[2], match[3]) : id;
+}
+
 /**
  * Generate a consistent unique ID for a ticket if not provided
  */
@@ -48,7 +180,7 @@ export function generateTicketId(
   drawDate: string,
   ticket: string,
 ): string {
-  return `${station}_${drawDate}_${ticket}`;
+  return `${normalizeStationCode(station)}_${drawDate}_${ticket}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -162,7 +294,21 @@ async function loadForWrite(): Promise<SavedTicket[]> {
 
   if (health.state !== 'ok') setHealth({ state: 'ok' });
   lastCorruptRaw = null;
-  cachedTickets = [...parsed.tickets];
+
+  let tickets = [...parsed.tickets];
+  if ((parsed.version ?? 1) < CURRENT_SCHEMA_VERSION) {
+    tickets = migrateTicketsToV2(tickets);
+    try {
+      await AsyncStorage.setItem(
+        TICKETS_STORAGE_KEY,
+        JSON.stringify({ version: CURRENT_SCHEMA_VERSION, tickets }),
+      );
+    } catch {
+      // Transient persistence failure: keep migrated list in memory for this session
+    }
+  }
+
+  cachedTickets = tickets;
   isInitialized = true;
   return cachedTickets;
 }
@@ -220,17 +366,14 @@ export async function saveTicket(
   },
 ): Promise<SavedTicket> {
   return enqueueWrite(async () => {
-    const id =
-      ticketInput.id ||
-      generateTicketId(
-        ticketInput.station,
-        ticketInput.drawDate,
-        ticketInput.ticket,
-      );
+    const station = normalizeStationCode(ticketInput.station);
+    const id = generateTicketId(station, ticketInput.drawDate, ticketInput.ticket);
     const createdAt = ticketInput.createdAt || new Date().toISOString();
 
     const newTicket: SavedTicket = {
       ...ticketInput,
+      station,
+      stationName: resolveStationName(station, ticketInput.stationName),
       id,
       createdAt,
     };
@@ -239,15 +382,13 @@ export async function saveTicket(
     const existingIndex = currentList.findIndex((t) => t.id === id);
 
     let updatedList: SavedTicket[];
+    let savedItem: SavedTicket;
     if (existingIndex >= 0) {
-      // Update existing ticket
+      savedItem = mergeDuplicateTickets(currentList[existingIndex], newTicket);
       updatedList = [...currentList];
-      updatedList[existingIndex] = {
-        ...currentList[existingIndex],
-        ...newTicket,
-      };
+      updatedList[existingIndex] = savedItem;
     } else {
-      // Prepend newest ticket
+      savedItem = newTicket;
       updatedList = [newTicket, ...currentList];
     }
 
@@ -259,7 +400,7 @@ export async function saveTicket(
     await AsyncStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(payload));
     cachedTickets = updatedList;
     notifyListeners();
-    return newTicket;
+    return savedItem;
   });
 }
 
@@ -280,25 +421,30 @@ export async function saveManyTickets(
     const resultList: SavedTicket[] = [];
 
     for (const input of newTickets) {
-      const id =
-        input.id ||
-        generateTicketId(input.station, input.drawDate, input.ticket);
+      const station = normalizeStationCode(input.station);
+      const id = generateTicketId(station, input.drawDate, input.ticket);
       const createdAt = input.createdAt || new Date().toISOString();
       const ticketItem: SavedTicket = {
         ...input,
+        station,
+        stationName: resolveStationName(station, input.stationName),
         id,
         createdAt,
       };
 
-      updatedMap.set(id, ticketItem);
-      resultList.push(ticketItem);
+      const prev = updatedMap.get(id);
+      const merged = prev ? mergeDuplicateTickets(prev, ticketItem) : ticketItem;
+      updatedMap.set(id, merged);
+      resultList.push(merged);
     }
 
     const updatedList: SavedTicket[] = [];
-    // Prepend newly added tickets not in currentList
+    const seenAdded = new Set<string>();
+    // Prepend newly added tickets not in currentList (deduped across aliases)
     for (const item of resultList) {
-      if (!currentList.some((t) => t.id === item.id)) {
-        updatedList.push(item);
+      if (!currentList.some((t) => t.id === item.id) && !seenAdded.has(item.id)) {
+        seenAdded.add(item.id);
+        updatedList.push(updatedMap.get(item.id)!);
       }
     }
 
@@ -326,8 +472,9 @@ export async function saveManyTickets(
 export async function removeTicket(id: string): Promise<boolean> {
   return enqueueWrite(async () => {
     try {
+      const targetId = normalizeLookupId(id);
       const currentList = await loadForWrite();
-      const updatedList = currentList.filter((t) => t.id !== id);
+      const updatedList = currentList.filter((t) => t.id !== targetId);
 
       const payload: TicketStorageEnvelope = {
         version: CURRENT_SCHEMA_VERSION,
@@ -373,8 +520,9 @@ export async function updateTicket(
 ): Promise<SavedTicket | null> {
   return enqueueWrite(async () => {
     try {
+      const targetId = normalizeLookupId(id);
       const currentList = await loadForWrite();
-      const index = currentList.findIndex((t) => t.id === id);
+      const index = currentList.findIndex((t) => t.id === targetId);
       if (index === -1) return null;
 
       const updatedItem: SavedTicket = {
@@ -404,8 +552,9 @@ export async function updateTicket(
  * Get ticket by ID.
  */
 export async function getTicketById(id: string): Promise<SavedTicket | null> {
+  const targetId = normalizeLookupId(id);
   const tickets = await getTickets();
-  return tickets.find((t) => t.id === id) || null;
+  return tickets.find((t) => t.id === targetId) || null;
 }
 
 /**
