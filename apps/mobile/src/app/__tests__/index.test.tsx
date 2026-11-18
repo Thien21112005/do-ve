@@ -99,13 +99,14 @@ describe('Tab Screens', () => {
     });
   });
 
-  it('renders HomeScreen with latest draws and quick check card', async () => {
-    const { getByText, getAllByText, getByTestId } = await render(<HomeScreen />, {
+  it('renders HomeScreen today block without duplicate DoVe/MIỀN NAM header pill (T11.30)', async () => {
+    const { getByText, getAllByText, getByTestId, queryByText } = await render(<HomeScreen />, {
       wrapper: createWrapper(),
     });
 
-    expect(getByText('DoVe')).toBeTruthy();
+    expect(queryByText('MIỀN NAM')).toBeNull();
     expect(getByTestId('home-today-status')).toBeTruthy();
+    expect(getByTestId('home-today-stations')).toBeTruthy();
     expect(getByText('Dò vé nhanh')).toBeTruthy();
     expect(getByTestId('home-quick-check-btn')).toBeTruthy();
 

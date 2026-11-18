@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Icon, OfflineBanner, HomeDrawsSkeleton } from '@/components';
+import { Text as UiText, Perforation } from '@/components/ui';
 import { useLatestDraws, useCheckTicket, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
 import { useTheme, layout } from '@/theme';
@@ -199,59 +200,48 @@ export default function HomeScreen() {
         {/* Offline Banner */}
         <OfflineBanner onRetry={refetch} />
 
-        {/* 1. Today Status Row (T10.18) */}
-        <View className="px-4 pt-3 pb-2">
-          <View
-            testID="home-today-status"
-            className="flex-row items-center justify-between px-3.5 py-2.5 rounded-xl border"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }}
+        {/* 1. Today Block — data-driven stations & status without repeated branding (T11.30) */}
+        <View className="px-4 pt-4 pb-1" testID="home-today-status">
+          <UiText
+            testID="home-today-stations"
+            variant="title"
+            color={colors.textMain}
           >
-            <View className="flex-row items-center flex-1 mr-2">
+            {todayStations.length > 0
+              ? todayStations.map((s) => s.name).join(' · ')
+              : STRINGS.schedule.todayTag}
+          </UiText>
+
+          <View className="flex-row items-center mt-1">
+            {isLive ? (
               <Animated.View
-                testID={isLive ? 'home-live-pulse-dot' : 'home-status-dot'}
-                className="w-2.5 h-2.5 rounded-full mr-2"
+                testID="home-live-pulse-dot"
                 style={{
-                  backgroundColor:
-                    todayStatus.kind === 'live'
-                      ? colors.pending
-                      : todayStatus.kind === 'final'
-                        ? colors.win
-                        : colors.primary,
-                  opacity: isLive && !reduceMotion ? pulseAnim : 1,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  marginRight: 6,
+                  backgroundColor: colors.pending,
+                  opacity: !reduceMotion ? pulseAnim : 1,
                 }}
               />
-              <Text
-                className="text-xs font-semibold"
-                style={{ color: colors.textMain }}
-                numberOfLines={1}
-              >
-                {scheduleDay?.dayName || STRINGS.schedule.todayTag}, {todayStr} · {todayStations.length} đài · {todayStatus.label}
-              </Text>
-            </View>
-
-            <View className="flex-row items-center">
-              <Text
-                className="text-xs font-bold mr-1"
-                style={{ color: colors.primary }}
-              >
-                {STRINGS.common.appName}
-              </Text>
-              <View
-                className="px-1.5 py-0.5 rounded"
-                style={{ backgroundColor: `${colors.primary}1A` }}
-              >
-                <Text
-                  className="text-[10px] font-bold"
-                  style={{ color: colors.primary }}
-                >
-                  {STRINGS.common.regionName}
-                </Text>
-              </View>
-            </View>
+            ) : null}
+            <UiText
+              variant="caption"
+              color={
+                todayStatus.kind === 'live'
+                  ? colors.pending
+                  : todayStatus.kind === 'final'
+                    ? colors.win
+                    : colors.textMuted
+              }
+            >
+              {scheduleDay?.dayName || STRINGS.schedule.todayTag}, {todayStr} ·{' '}
+              {todayStatus.label}
+            </UiText>
           </View>
+
+          <Perforation />
         </View>
 
         {/* 2. Inline Quick Check Card (T10.18) */}

@@ -13,8 +13,8 @@ const ALLOWLIST: DebtCounts = {
   'app/(tabs)/index.tsx': {
     rawRnPrimitive: 2,
     hexColor: 3,
-    alphaConcat: 8,
-    tinyArbitraryText: 2,
+    alphaConcat: 7,
+    tinyArbitraryText: 1,
     textWhite: 3,
   },
   'app/(tabs)/more.tsx': { rawRnPrimitive: 1, alphaConcat: 1 },
