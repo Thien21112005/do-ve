@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 24 / 53 task hoàn thành
+- **Tổng quan:** 25 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -33,7 +33,7 @@
 | T11.23 | [P2] Cache offline khôi phục không được chờ | DONE | d2b13c8 | 2026-11-17 | PersistQueryClientProvider (không cài thêm gói) giữ query tới khi khôi phục cache xong; splash ẩn sau onSuccess/onError. Test: queryFn không chạy trước khi restore xong |
 | T11.24 | [P3] Vệ sinh store | DONE | 2801739 | 2026-11-17 | getTicketsServerSnapshot() trả 1 mảng EMPTY cố định; tách loadTickets() (đọc storage, getTickets là alias) và readTickets() (đọc cache đồng bộ) |
 | T11.53 | [P1] Giải Khuyến khích hiện tên thô "ENCOURAGEMENT" (lệch key tier backend ↔ mobile) | DONE | e134d68 | 2026-11-17 | Key ENCOURAGEMENT; Phụ ĐB tô 5 số cuối; KK không tô đuôi, ghi 'Đúng số đầu, sai 1 số so với ĐB'. tierContract.test đọc thẳng PrizeTier.java (openapi không có enum tier). Test mappers cũ đang khoá key sai CONSOLATION → sửa thành ENCOURAGEMENT |
-| T11.25 | Cổng quyết định: hướng "Tờ vé giấy" lần đầu tiên được nhìn thấy | TODO | | | |
+| T11.25 | Cổng quyết định: hướng "Tờ vé giấy" lần đầu tiên được nhìn thấy | DONE | adb8024 | 2026-11-18 | Người dùng duyệt giữ Hướng A 'Tờ vé giấy' và làm tới nơi; đồng ý dùng Expo Web + Playwright chụp tự động before/after Sáng & Tối. Cập nhật ADR-006 §5 |
 | T11.26 | Luật styling một đường | DONE | a0c4be5 | 2026-11-18 | DESIGN.md §7 (primitive @/components/ui, className bố cục/ngữ nghĩa, cấm hex/alpha concat, usePressed cho Pressable); đổi fontFamily tailwind sang vn-regular/medium/semibold/bold tránh đụng fontWeight trên Android |
 | T11.27 | Primitive riêng của "tờ vé" | TODO | | | |
 | T11.28 | Ô nhập 6 số chịu được chữ to | TODO | | | |
