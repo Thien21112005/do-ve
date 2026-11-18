@@ -22,6 +22,7 @@ import {
 import { amountInWordsVN } from '@/lib/amountInWords';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
+import { useSettings } from '@/store/settings';
 import type { CheckTicketResponse } from '@/types';
 import type { UiCheckResult } from '@/api/mappers';
 
@@ -56,6 +57,7 @@ export function ResultStub({
   testID = 'result-card',
 }: ResultStubProps) {
   const { colors } = useTheme();
+  const [settings] = useSettings();
   const [reduceMotion, setReduceMotion] = useState(false);
   const isPending = result.status === 'RESULT_NOT_AVAILABLE';
   const isWon = !isPending && Boolean(result.won);
@@ -81,7 +83,7 @@ export function ResultStub({
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) {
+    if (reduceMotion || (isWon && !settings.celebrationEnabled)) {
       opacity.value = 1;
       scale.value = 1;
       return;
@@ -89,14 +91,14 @@ export function ResultStub({
     const [x1, y1, x2, y2] = motion.easing.outQuart;
     const easingOutQuart = Easing.bezier(x1, y1, x2, y2);
     opacity.value = withTiming(1, {
-      duration: motion.duration.normal,
+      duration: motion.duration.slow,
       easing: easingOutQuart,
     });
     scale.value = withTiming(1, {
-      duration: motion.duration.normal,
+      duration: motion.duration.slow,
       easing: easingOutQuart,
     });
-  }, [opacity, scale, reduceMotion]);
+  }, [opacity, scale, reduceMotion, isWon, settings.celebrationEnabled]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -134,11 +136,11 @@ export function ResultStub({
 
   const hasTriggeredHapticsRef = useRef(false);
   useEffect(() => {
-    if (isWon && !hasTriggeredHapticsRef.current) {
+    if (isWon && settings.celebrationEnabled && !hasTriggeredHapticsRef.current) {
       hasTriggeredHapticsRef.current = true;
       haptics.success();
     }
-  }, [isWon]);
+  }, [isWon, settings.celebrationEnabled]);
 
   const cardBg = isPending
     ? colors.pendingTint

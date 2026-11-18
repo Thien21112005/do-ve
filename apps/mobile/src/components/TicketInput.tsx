@@ -10,7 +10,7 @@ import {
   type NativeSyntheticEvent,
 } from 'react-native';
 import { useTheme } from '@/theme';
-import { radii, typeScale } from '@/theme/tokens';
+import { motion, radii, typeScale } from '@/theme/tokens';
 
 export interface TicketInputProps {
   value: string;
@@ -73,12 +73,12 @@ export function TicketInput({
 
   useEffect(() => {
     if (hasError && !reduceMotion) {
+      const stepMs = motion.duration.fast / 4;
       Animated.sequence([
-        Animated.timing(shakeAnim, { toValue: -6, duration: 40, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 6, duration: 40, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: -4, duration: 40, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 4, duration: 40, useNativeDriver: true }),
-        Animated.timing(shakeAnim, { toValue: 0, duration: 40, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -6, duration: stepMs, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 6, duration: stepMs, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -4, duration: stepMs, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: stepMs, useNativeDriver: true }),
       ]).start();
     }
   }, [hasError, reduceMotion, shakeAnim]);

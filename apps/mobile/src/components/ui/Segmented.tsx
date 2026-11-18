@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Text } from './Text';
 import { useTheme } from '@/theme';
-import { radii } from '@/theme/tokens';
+import { motion, radii } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
 
 export interface SegmentOption<T extends string = string> {
@@ -68,7 +68,7 @@ export function Segmented<T extends string = string>({
       } else {
         Animated.timing(slideAnim, {
           toValue: selectedIndex * segmentWidth,
-          duration: 200,
+          duration: motion.duration.normal,
           useNativeDriver: false,
         }).start();
       }

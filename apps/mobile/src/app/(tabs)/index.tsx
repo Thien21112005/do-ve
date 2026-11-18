@@ -30,7 +30,7 @@ import {
 } from '@/components/ui';
 import { useLatestDraws, useCheckTicket, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
-import { useTheme, layout, radii } from '@/theme';
+import { useTheme, layout, radii, motion } from '@/theme';
 import { formatDateVN } from '@/lib/format';
 import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
@@ -192,12 +192,12 @@ export default function HomeScreen() {
       Animated.sequence([
         Animated.timing(pulseAnim, {
           toValue: 0.25,
-          duration: 700,
+          duration: motion.duration.slow,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 700,
+          duration: motion.duration.slow,
           useNativeDriver: true,
         }),
       ]),
