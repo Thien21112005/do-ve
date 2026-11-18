@@ -11,7 +11,6 @@ import { scanDesignDebt, type DebtCounts } from '@/test-utils/designDebt';
  */
 const ALLOWLIST: DebtCounts = {
   'app/(tabs)/more.tsx': { rawRnPrimitive: 1, alphaConcat: 1 },
-  'app/(tabs)/results.tsx': { rawRnPrimitive: 2, alphaConcat: 4, rawPaletteClass: 4 },
   'app/(tabs)/tickets.tsx': {
     rawRnPrimitive: 2,
     hexColor: 6,

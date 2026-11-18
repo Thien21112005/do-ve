@@ -84,8 +84,8 @@ describe('ResultsScreen', () => {
     });
   });
 
-  it('renders date strip, station chips, and loads initial station draw result', async () => {
-    const { getByTestId, getAllByText, getByText } = await render(
+  it('renders compact date nav bar, station chips, and loads initial station draw result (T11.39)', async () => {
+    const { getByTestId, getAllByText, getByText, queryByTestId } = await render(
       <ResultsScreen />,
       {
         wrapper: createWrapper(),
@@ -93,7 +93,11 @@ describe('ResultsScreen', () => {
     );
 
     expect(getByTestId('results-screen')).toBeTruthy();
-    expect(getByTestId('date-strip')).toBeTruthy();
+    expect(getByTestId('results-date-nav')).toBeTruthy();
+    expect(getByTestId('results-prev-date-btn')).toBeTruthy();
+    expect(getByTestId('results-next-date-btn')).toBeTruthy();
+    expect(getByTestId('results-calendar-btn')).toBeTruthy();
+    expect(queryByTestId('date-strip')).toBeNull();
 
     await waitFor(() => {
       expect(getByTestId('station-chips-TPHCM')).toBeTruthy();
@@ -178,20 +182,71 @@ describe('ResultsScreen', () => {
     });
   });
 
-  it('uses Vietnam date for initial selected date during 0h-7h UTC boundary (T09.16)', async () => {
-    // 2026-11-14 20:00:00 UTC is 2026-11-15 03:00:00 in Vietnam
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-11-14T20:00:00Z'));
+  it('uses Vietnam latest drawn session during 0h-7h UTC boundary and steps up to VN today (T09.16, T11.39)', async () => {
+    // 2026-11-14 20:00:00 UTC is 2026-11-15 03:00:00 in Vietnam:
+    // latest drawn session is 2026-11-14, and pressing Next steps to VN today (2026-11-15)
+    jest.useFakeTimers({
+      now: new Date('2026-11-14T20:00:00Z'),
+      doNotFake: [
+        'setTimeout',
+        'clearTimeout',
+        'setInterval',
+        'clearInterval',
+        'setImmediate',
+        'clearImmediate',
+        'nextTick',
+        'queueMicrotask',
+      ],
+    });
 
-    await render(<ResultsScreen />, {
+    try {
+      const { getByTestId } = await render(<ResultsScreen />, {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => {
+        expect(apiDraws.fetchScheduleByDate).toHaveBeenCalledWith('2026-11-14');
+      });
+
+      await fireEvent.press(getByTestId('results-next-date-btn'));
+
+      await waitFor(() => {
+        expect(apiDraws.fetchScheduleByDate).toHaveBeenCalledWith('2026-11-15');
+        expect(
+          getByTestId('results-next-date-btn').props.accessibilityState?.disabled,
+        ).toBe(true);
+      });
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('places quick search box below results-draw-container and opens calendar sheet (T11.39)', async () => {
+    const { getByTestId, findByTestId, toJSON } = await render(<ResultsScreen />, {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => {
-      expect(apiDraws.fetchScheduleByDate).toHaveBeenCalledWith('2026-11-15');
-    });
+    await waitFor(() => expect(getByTestId('draw-table')).toBeTruthy());
 
-    jest.useRealTimers();
+    const ids: string[] = [];
+    const seen = new WeakSet<object>();
+    const walk = (node: any) => {
+      if (!node || typeof node !== 'object' || seen.has(node)) return;
+      seen.add(node);
+      if (node.props?.testID) ids.push(node.props.testID);
+      if (Array.isArray(node.children)) node.children.forEach(walk);
+    };
+    const root = toJSON();
+    if (Array.isArray(root)) root.forEach(walk);
+    else walk(root);
+
+    const tablePos = ids.indexOf('results-draw-container');
+    const searchPos = ids.indexOf('results-quick-search-box');
+    expect(tablePos).toBeGreaterThan(-1);
+    expect(searchPos).toBeGreaterThan(tablePos);
+
+    await fireEvent.press(getByTestId('results-calendar-btn'));
+    expect(await findByTestId('results-date-picker-sheet')).toBeTruthy();
   });
 
   it('does NOT flash empty state "Chưa có kết quả" before station is selected (T09.29)', async () => {

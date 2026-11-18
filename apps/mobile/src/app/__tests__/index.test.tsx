@@ -298,10 +298,11 @@ describe('Tab Screens', () => {
   });
 
   it('renders ResultsScreen correctly', async () => {
-    const { getByText } = await render(<ResultsScreen />, {
+    const { getByTestId, queryByText } = await render(<ResultsScreen />, {
       wrapper: createWrapper(),
     });
-    expect(getByText('Chọn ngày mở thưởng')).toBeTruthy();
+    expect(getByTestId('results-date-nav')).toBeTruthy();
+    expect(queryByText('Chọn ngày mở thưởng')).toBeNull();
   });
 
   it('renders TicketsScreen correctly', async () => {
