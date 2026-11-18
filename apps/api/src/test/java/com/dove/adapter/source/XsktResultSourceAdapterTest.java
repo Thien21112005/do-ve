@@ -168,4 +168,40 @@ class XsktResultSourceAdapterTest {
     assertThat(benTre.get().drawDate()).isEqualTo(nov03);
     assertThat(benTre.get().isComplete()).isTrue();
   }
+
+  @Test
+  @DisplayName(
+      "Review C1: falls back to short URL when primary echoes requested date in title without dockq but holds wrong stations")
+  void fetchFallsBackWhenPrimaryEchoesDateWithoutRequestedStation() throws Exception {
+    // Primary echoes 03/11/2026 in title (no dockq) but renders Monday's tp-hcm instead of ben-tre
+    String misleadingPrimary =
+        loadHtml("xskt_xsmn_2026-11-02.html")
+            .replace("2026-11-02", "2026-11-03")
+            .replace("02/11/2026", "03/11/2026")
+            .replace("02-11-2026", "03-11-2026");
+    String realNov03Html = loadHtml("xskt_xsmn_2026-11-03.html");
+
+    wireMockServer.stubFor(
+        get(urlEqualTo("/xsmn/ngay-03-11-2026"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/html; charset=UTF-8")
+                    .withBody(misleadingPrimary)));
+
+    wireMockServer.stubFor(
+        get(urlEqualTo("/xsmn/ngay-03-11"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/html; charset=UTF-8")
+                    .withBody(realNov03Html)));
+
+    LocalDate nov03 = LocalDate.of(2026, 11, 3);
+    Optional<DrawResult> benTre = adapter.fetch("ben-tre", nov03);
+
+    assertThat(benTre).isPresent();
+    assertThat(benTre.get().stationCode()).isEqualTo("ben-tre");
+    assertThat(benTre.get().drawDate()).isEqualTo(nov03);
+  }
 }

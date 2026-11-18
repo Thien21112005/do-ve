@@ -103,8 +103,7 @@ public class XsktHtmlParser {
       } catch (Exception ignored) {
       }
     } else {
-      Element dockq = table.selectFirst("i.dockq[data-url], [data-url]");
-      if (dockq != null) {
+      for (Element dockq : table.select("i.dockq[data-url], [data-url]")) {
         Matcher dm = DOCKQ_DATE_PATTERN.matcher(dockq.attr("data-url").trim());
         if (dm.find()) {
           try {
@@ -113,10 +112,15 @@ public class XsktHtmlParser {
                     Integer.parseInt(dm.group(3)),
                     Integer.parseInt(dm.group(2)),
                     Integer.parseInt(dm.group(1)));
+            break;
           } catch (Exception ignored) {
           }
         }
       }
+    }
+
+    if (drawDate == null) {
+      return List.of();
     }
 
     Elements headerCells = table.select("thead tr th");
@@ -383,7 +387,7 @@ public class XsktHtmlParser {
       }
     }
 
-    return LocalDate.now();
+    return null;
   }
 
   private static String normalizeString(String input) {

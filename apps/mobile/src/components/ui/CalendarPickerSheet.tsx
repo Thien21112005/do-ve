@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Sheet } from './Sheet';
 import { Text } from './Text';
@@ -112,6 +112,7 @@ function DayCellButton({
       accessibilityLabel={a11yParts.join(', ')}
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
+      hitSlop={2}
       onPress={() => {
         if (disabled) return;
         haptics.selection?.();
@@ -244,7 +245,12 @@ export function CalendarPickerSheet({
       closeTestID={closeTestID}
       testID={testID}
     >
-      {headerSlot}
+      <ScrollView
+        testID="calendar-scroll-view"
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
+        {headerSlot}
 
       {/* Quick shortcut chips: Hôm nay / Hôm qua */}
       <View style={styles.quickRow}>
@@ -349,6 +355,7 @@ export function CalendarPickerSheet({
           </View>
         ))}
       </View>
+      </ScrollView>
     </Sheet>
   );
 }
@@ -414,3 +421,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+

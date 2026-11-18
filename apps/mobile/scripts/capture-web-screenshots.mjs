@@ -127,12 +127,6 @@ const yesterdayVN = new Date(vnNow.getTime() - 24 * 3600 * 1000)
   .toISOString()
   .slice(0, 10);
 
-const SAMPLE_DRAWS = [
-  makeDraw('ben-tre', 'Bến Tre', yesterdayVN, 3),
-  makeDraw('vung-tau', 'Vũng Tàu', yesterdayVN, 7),
-  makeDraw('bac-lieu', 'Bạc Liêu', yesterdayVN, 9),
-];
-
 const apiServer = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');

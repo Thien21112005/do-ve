@@ -217,9 +217,16 @@ public class DrawController {
         throw new StationNotFoundException(station);
       }
       drawResultOpt = drawRepository.findLatestByStation(station);
-      if (drawResultOpt.isEmpty() && backfillService.isPresent()) {
-        backfillService.get().ensureLatestCompletedDateIngested();
-        drawResultOpt = drawRepository.findLatestByStation(station);
+      if (backfillService.isPresent()) {
+        Optional<LocalDate> lastScheduledDate =
+            findLatestScheduledDateForStation(
+                station, backfillService.get().latestExpectedCompletedDate());
+        if (lastScheduledDate.isPresent()
+            && (drawResultOpt.isEmpty()
+                || drawResultOpt.get().drawDate().isBefore(lastScheduledDate.get()))) {
+          backfillService.get().ensureDateIngested(lastScheduledDate.get());
+          drawResultOpt = drawRepository.findLatestByStation(station);
+        }
       }
     } else {
       backfillService.ifPresent(OnDemandDrawBackfillService::ensureLatestCompletedDateIngested);
@@ -293,6 +300,21 @@ public class DrawController {
     return scheduled > 0
         && draws.size() >= scheduled
         && draws.stream().allMatch(DrawResult::isComplete);
+  }
+
+  private Optional<LocalDate> findLatestScheduledDateForStation(
+      String stationCode, LocalDate upToDate) {
+    for (int offset = 0; offset < 7; offset++) {
+      LocalDate candidate = upToDate.minusDays(offset);
+      int weekday = candidate.getDayOfWeek().getValue();
+      boolean drawsOnCandidate =
+          stationScheduleRepository.findStationsDrawingOn(weekday).stream()
+              .anyMatch(s -> s.getCode().equalsIgnoreCase(stationCode));
+      if (drawsOnCandidate) {
+        return Optional.of(candidate);
+      }
+    }
+    return Optional.empty();
   }
 
   private String resolveStationName(String stationCode) {

@@ -686,5 +686,41 @@ class ReadEndpointsMockMvcTest {
         .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
         .andExpect(jsonPath("$.drawDate").value("2026-11-01"))
         .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("500001"));
+
+    // Review I4: Seed an older Sunday (2026-11-01) for dong-thap while 2026-11-08 is cleared,
+    // and advance clock to Wednesday 2026-11-11 (where yesterday 2026-11-10 is Tuesday, NOT
+    // Sunday):
+    // GET /api/v1/draws/latest?station=dong-thap must backfill dong-thap's latest scheduled Sunday
+    // (2026-11-08)!
+    FakeDrawRepository sparseRepo = new FakeDrawRepository();
+    sparseRepo.put(completeDraw("dong-thap", LocalDate.of(2026, 11, 1)));
+    Clock wedClock = Clock.fixed(Instant.parse("2026-11-11T08:00:00Z"), VN_ZONE);
+    com.dove.application.IngestDrawsUseCase wedIngest =
+        new com.dove.application.IngestDrawsUseCase(schedulePort, fakeSource, sparseRepo);
+    com.dove.application.OnDemandDrawBackfillService wedBackfill =
+        new com.dove.application.OnDemandDrawBackfillService(
+            wedIngest,
+            schedulePort,
+            sparseRepo,
+            wedClock,
+            true,
+            90,
+            java.time.Duration.ofSeconds(60));
+    MockMvc wedMvc =
+        MockMvcBuilders.standaloneSetup(
+                new DrawController(
+                    stationScheduleRepository,
+                    sparseRepo,
+                    stationRepository,
+                    wedClock,
+                    wedBackfill))
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
+
+    wedMvc
+        .perform(get("/api/v1/draws/latest").param("station", "dong-thap"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.stationCode").value("dong-thap"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-08"));
   }
 }

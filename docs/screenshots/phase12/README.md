@@ -12,3 +12,4 @@
 | **4-Station Saturday (`14/11/2026`)** | `results-4stations-sat-light.png` | `results-4stations-sat-dark.png` | All 4 Saturday XSMN stations (`TP.HCM \| Long An \| Bình Phước \| Hậu Giang`) fit side-by-side on 1 screen with `14pt` tabular numbers and zero clipped digits |
 | **Results Month Calendar Sheet** | `results-calendar-light.png` | `results-calendar-dark.png` | Monday-first `T2..CN` 7-column Vietnamese calendar grid, `Hôm nay` / `Hôm qua` quick chips, `Tháng 11, 2026` navigation, and disabled future dates |
 | **Check Context + Calendar Sheet** | `check-calendar-light.png` | `check-calendar-dark.png` | Station chips for selected date paired directly above the `T2..CN` month calendar grid inside `check-context-sheet` |
+

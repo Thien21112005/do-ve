@@ -302,4 +302,11 @@ class OnDemandDrawBackfillServiceTest {
     assertThat(drawRepository.findByStationAndDate("ben-tre", LocalDate.of(2026, 11, 18)))
         .isPresent();
   }
+
+  @Test
+  @DisplayName(
+      "Review I5: default maxPastDays constant is 90 days matching SRS FR-RES-05 and CalendarPickerSheet")
+  void defaultMaxPastDaysConstantIs90() {
+    assertThat(OnDemandDrawBackfillService.DEFAULT_MAX_PAST_DAYS).isEqualTo(90);
+  }
 }

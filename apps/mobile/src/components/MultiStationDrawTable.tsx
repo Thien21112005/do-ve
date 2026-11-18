@@ -301,6 +301,13 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
     );
   }
 
+  const scaleMultiplier = Math.max(1, safeFontScale);
+  const scrollTierColWidth = Math.ceil(
+    TIER_COL_WIDTH * Math.min(scaleMultiplier, 1.5),
+  );
+  const scrollHeaderHeight = Math.ceil(HEADER_HEIGHT * scaleMultiplier);
+  const scrollStationColWidth = Math.ceil(104 * scaleMultiplier);
+
   return (
     <View
       testID={testID}
@@ -337,7 +344,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
           style={[
             styles.fixedTierCol,
             {
-              width: TIER_COL_WIDTH,
+              width: scrollTierColWidth,
               borderRightColor: colors.border,
               backgroundColor: colors.surface,
             },
@@ -347,7 +354,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
             style={[
               styles.cornerHeaderCell,
               {
-                height: HEADER_HEIGHT,
+                height: scrollHeaderHeight,
                 backgroundColor: colors.surfaceSubtle,
                 borderBottomColor: colors.border,
               },
@@ -366,7 +373,9 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
             const isSpecial = tier.key === 'SPECIAL' || tier.key === 'EIGHTH';
             const isHero = tier.key === 'SPECIAL';
             const isLastRow = rIdx === tiers.length - 1;
-            const rowHeight = getTierRowHeight(tier, false);
+            const rowHeight = Math.ceil(
+              getTierRowHeight(tier, false) * scaleMultiplier,
+            );
 
             return (
               <View
@@ -406,7 +415,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
               style={[
                 styles.stationHeaderRow,
                 {
-                  height: HEADER_HEIGHT,
+                  height: scrollHeaderHeight,
                   backgroundColor: colors.surfaceSubtle,
                   borderBottomColor: colors.border,
                 },
@@ -424,7 +433,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                     key={`station-header-${d.stationCode}-${sIdx}`}
                     testID={`multi-station-header-cell-${sIdx}`}
                     style={[
-                      styles.scrollableStationCol,
+                      { width: scrollStationColWidth },
                       styles.stationHeaderCell,
                       !isLastCol && {
                         borderRightWidth: 1,
@@ -450,7 +459,9 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
               const isSpecial = tier.key === 'SPECIAL' || tier.key === 'EIGHTH';
               const isHero = tier.key === 'SPECIAL';
               const isLastRow = rIdx === tiers.length - 1;
-              const rowHeight = getTierRowHeight(tier, false);
+              const rowHeight = Math.ceil(
+                getTierRowHeight(tier, false) * scaleMultiplier,
+              );
               const rowA11y = buildRowA11yLabel(tier, draws);
 
               return (
@@ -480,7 +491,7 @@ export const MultiStationDrawTable: React.FC<MultiStationDrawTableProps> = ({
                         key={`cell-${d.stationCode}-${tier.key}-${sIdx}`}
                         testID={`multi-station-cell-${rIdx}-${sIdx}`}
                         style={[
-                          styles.scrollableStationCol,
+                          { width: scrollStationColWidth },
                           styles.stationDataCell,
                           !isLastCol && {
                             borderRightWidth: 1,

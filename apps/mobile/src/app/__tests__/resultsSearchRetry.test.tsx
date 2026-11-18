@@ -109,4 +109,36 @@ describe('Results quick search feedback and retry (T11.19)', () => {
     fireEvent.press(getByTestId('results-view-mode-single'));
     await waitFor(() => expect(apiDraws.fetchDraw).toHaveBeenCalledTimes(1));
   });
+
+  it('Review I2: does NOT fire stale-station fetchDraw while schedule is loading when stepping dates in "Từng đài" mode', async () => {
+    let callIdx = 0;
+    (apiDraws.fetchScheduleByDate as jest.Mock).mockImplementation((date: string) => {
+      callIdx += 1;
+      if (callIdx === 1) {
+        return Promise.resolve([{ code: 'ben-tre', name: 'Bến Tre', region: 'SOUTH' }]);
+      }
+      return new Promise((resolve) =>
+        setTimeout(
+          () => resolve([{ code: 'tp-hcm', name: 'TP. Hồ Chí Minh', region: 'SOUTH' }]),
+          40,
+        ),
+      );
+    });
+
+    const { getByTestId } = await render(<ResultsScreen />, { wrapper: Wrapper });
+    await waitFor(() => expect(apiDraws.fetchDraw).toHaveBeenCalledTimes(1));
+
+    // User explicitly taps station chip (setting selectedStation = 'ben-tre')
+    await fireEvent.press(getByTestId('station-chips-ben-tre'));
+    (apiDraws.fetchDraw as jest.Mock).mockClear();
+
+    // Step to previous date while in "Từng đài" mode; wait for new schedule (40ms) to settle
+    await fireEvent.press(getByTestId('results-prev-date-btn'));
+    await waitFor(() =>
+      expect(apiDraws.fetchDraw).toHaveBeenCalledWith(expect.any(String), 'tp-hcm'),
+    );
+
+    // Must have called fetchDraw ONLY ONCE (for 'tp-hcm'), NEVER earlier with stale 'ben-tre'
+    expect(apiDraws.fetchDraw).toHaveBeenCalledTimes(1);
+  });
 });

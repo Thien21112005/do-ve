@@ -221,6 +221,12 @@ describe('MultiStationDrawTable (T10.39)', () => {
       expect(flatten(getByText('81')).color).toBe(colors.light.special);
       expect(flatten(getByText('123456')).color).toBe(colors.light.special);
 
+      // Review I3: row height & column width scale with fontScale (1.35x) so 7-number G.4 never overlaps
+      expect(flatten(getByTestId('multi-station-row-4')).height).toBeGreaterThan(200);
+      expect(
+        flatten(getByTestId('multi-station-header-cell-0')).width,
+      ).toBeGreaterThan(130);
+
       // 3 stations -> fits viewport width in unified grid even at fontScale 1.35
       await rerender(
         <MultiStationDrawTable draws={mockDrawsSaturday4Stations.slice(0, 3)} />,

@@ -29,6 +29,7 @@ describe('CalendarPickerSheet (T12.08)', () => {
     );
 
     expect(getByText('Tháng 11, 2026')).toBeTruthy();
+    expect(getByTestId('calendar-scroll-view')).toBeTruthy();
     for (const wd of ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']) {
       expect(getByText(wd)).toBeTruthy();
     }

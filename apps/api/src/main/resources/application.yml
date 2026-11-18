@@ -59,7 +59,7 @@ dove:
       days: ${DOVE_STARTUP_BACKFILL_DAYS:14}
     on-demand-backfill:
       enabled: ${DOVE_ONDEMAND_BACKFILL_ENABLED:true}
-      max-past-days: ${DOVE_ONDEMAND_BACKFILL_MAX_DAYS:60}
+      max-past-days: ${DOVE_ONDEMAND_BACKFILL_MAX_DAYS:90}
       cooldown-seconds: ${DOVE_ONDEMAND_BACKFILL_COOLDOWN_SEC:60}
     xskt:
       base-url: "${DOVE_XSKT_BASE_URL:https://xskt.com.vn}"

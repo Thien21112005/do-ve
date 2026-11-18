@@ -206,4 +206,47 @@ class XsktHtmlParserTest {
     assertThat(sections.getFirst().stationCode()).isEqualTo("tp-hcm");
     assertThat(sections.getFirst().drawDate()).isEqualTo(LocalDate.of(2021, 3, 22));
   }
+
+  @Test
+  @DisplayName(
+      "Review C1: parseStationSections rejects undated HTML instead of guessing LocalDate.now()")
+  void parseStationSections_returnsEmptyWhenNoVerifiableFourDigitYearExists() {
+    String undatedHtml =
+        """
+        <html>
+        <head><title>XSMN ngày 18/11</title></head>
+        <body>
+          <table class="tbl-xsmn">
+            <tr><th>Giải</th><th><a href="/xsmn/tp-hcm">TP.HCM</a></th></tr>
+          </table>
+        </body>
+        </html>
+        """;
+
+    assertThat(parser.parseStationSections(undatedHtml)).isEmpty();
+  }
+
+  @Test
+  @DisplayName(
+      "Review C1: parseStationSections scans past non-date [data-url] elements to find dockq date")
+  void parseStationSections_scansPastNonDateDataUrlAttributes() {
+    String htmlWithWidgetFirst =
+        """
+        <html>
+        <head><title>Kết quả xổ số Miền Nam ngày 13/11/2026</title></head>
+        <body>
+          <table class="tbl-xsmn" id="MN0">
+            <tr>
+              <th data-url="/share/widget">Giải</th>
+              <th><a href="/xshcm-xstp">Hồ Chí Minh</a><i class="dockq" data-url="tp-ho-chi-minh/22-03-2021"></i></th>
+            </tr>
+          </table>
+        </body>
+        </html>
+        """;
+
+    List<XsktHtmlParser.StationSection> sections = parser.parseStationSections(htmlWithWidgetFirst);
+    assertThat(sections).hasSize(1);
+    assertThat(sections.getFirst().drawDate()).isEqualTo(LocalDate.of(2021, 3, 22));
+  }
 }

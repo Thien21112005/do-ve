@@ -95,11 +95,17 @@ export default function ResultsScreen() {
   );
   const [quickQuery, setQuickQuery] = useState('');
 
-  // Keep station aligned with current date's schedule even while StationChips is unmounted in 'all' mode (T12.07)
+  // Keep station aligned with current date's schedule even while StationChips is unmounted in 'all' mode (T12.07 / Review I2)
   const effectiveStation =
     stations.length > 0 && !stations.some((s) => s.code === selectedStation)
       ? stations[0]?.code || ''
       : selectedStation;
+  if (effectiveStation && effectiveStation !== selectedStation) {
+    setSelectedStation(effectiveStation);
+  }
+  const isStationValidForDate =
+    Boolean(effectiveStation) &&
+    stations.some((s) => s.code === effectiveStation);
 
   const {
     draws: dailyDraws,
@@ -116,7 +122,7 @@ export default function ResultsScreen() {
   const { draw, availability, isLoading, isError, error, refetch } = useDraw(
     selectedDate,
     effectiveStation,
-    viewMode === 'single',
+    viewMode === 'single' && !isScheduleLoading && isStationValidForDate,
   );
 
   // T09.29: Avoid empty state flash before station chips are loaded and auto-selected
@@ -125,7 +131,9 @@ export default function ResultsScreen() {
   const showLoading =
     viewMode === 'all'
       ? isScheduleLoading || isDailyLoading
-      : isWaitingForStation || (Boolean(effectiveStation) && isLoading);
+      : isScheduleLoading ||
+        isWaitingForStation ||
+        (Boolean(effectiveStation) && isLoading);
 
   const [refreshing, setRefreshing] = useState(false);
 

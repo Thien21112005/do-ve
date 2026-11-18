@@ -3,6 +3,8 @@ package com.dove.adapter.source;
 import com.dove.application.ResultSource;
 import com.dove.domain.DrawResult;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +24,7 @@ public class XsktResultSourceAdapter implements ResultSource {
 
   private static final Logger log = LoggerFactory.getLogger(XsktResultSourceAdapter.class);
   private static final int MAX_CACHED_DATES = 30;
+  private static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
   private final LotteryHttpClient httpClient;
   private final XsktHtmlParser parser;
@@ -63,8 +66,14 @@ public class XsktResultSourceAdapter implements ResultSource {
 
     // 2. Try primary URL (/xsmn/ngay-DD-MM-YYYY), then short URL (/xsmn/ngay-DD-MM) if stale
     List<DrawResult> matchingDraws = fetchMatchingDrawsFromUrl(buildUrl(drawDate), drawDate);
-    if (matchingDraws.isEmpty()) {
-      matchingDraws = fetchMatchingDrawsFromUrl(buildShortYearUrl(drawDate), drawDate);
+    boolean hasRequestedStation =
+        matchingDraws.stream().anyMatch(d -> stationCode.equalsIgnoreCase(d.stationCode()));
+    if (!hasRequestedStation && isWithinShortUrlWindow(drawDate)) {
+      List<DrawResult> fallbackDraws =
+          fetchMatchingDrawsFromUrl(buildShortYearUrl(drawDate), drawDate);
+      if (!fallbackDraws.isEmpty()) {
+        matchingDraws = fallbackDraws;
+      }
     }
 
     if (matchingDraws.isEmpty()) {
@@ -140,6 +149,12 @@ public class XsktResultSourceAdapter implements ResultSource {
   public String buildShortYearUrl(LocalDate drawDate) {
     return String.format(
         "%s/xsmn/ngay-%02d-%02d", baseUrl, drawDate.getDayOfMonth(), drawDate.getMonthValue());
+  }
+
+  private static boolean isWithinShortUrlWindow(LocalDate drawDate) {
+    LocalDate todayVn = LocalDate.now(VN_ZONE);
+    long daysAgo = ChronoUnit.DAYS.between(drawDate, todayVn);
+    return daysAgo >= 0 && daysAgo <= 365;
   }
 
   /** Clears the in-memory date cache. */

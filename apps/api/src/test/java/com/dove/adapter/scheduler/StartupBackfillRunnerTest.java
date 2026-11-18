@@ -137,4 +137,32 @@ class StartupBackfillRunnerTest {
     assertThat(runner.runCatchUpSynchronously()).isZero();
     assertThat(fetchedDates).isEmpty();
   }
+
+  @Test
+  @DisplayName("Review I1: shutdown() stops catch-up loop immediately on container teardown")
+  void shutdown_stopsFurtherDateInspectionImmediately() {
+    SimpleDrawRepo drawRepo = new SimpleDrawRepo();
+    StationSchedulePort schedulePort = date -> List.of("tp-hcm");
+    List<LocalDate> fetchedDates = new ArrayList<>();
+    StartupBackfillRunner[] holder = new StartupBackfillRunner[1];
+
+    ResultSource source =
+        (stationCode, date) -> {
+          fetchedDates.add(date);
+          holder[0].shutdown();
+          return Optional.of(completeDraw(stationCode, date));
+        };
+
+    Clock clock = Clock.fixed(Instant.parse("2026-11-18T07:40:00Z"), VN_ZONE);
+    IngestDrawsUseCase ingestUseCase = new IngestDrawsUseCase(schedulePort, source, drawRepo);
+    OnDemandDrawBackfillService backfillService =
+        new OnDemandDrawBackfillService(
+            ingestUseCase, schedulePort, drawRepo, clock, true, 90, Duration.ofSeconds(60));
+
+    holder[0] = new StartupBackfillRunner(backfillService, true, 14);
+    int inspected = holder[0].runCatchUpSynchronously();
+
+    assertThat(inspected).isEqualTo(1);
+    assertThat(fetchedDates).hasSize(1);
+  }
 }

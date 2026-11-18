@@ -33,6 +33,7 @@ public class OnDemandDrawBackfillService {
 
   public static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
   public static final LocalTime TODAY_READY_CUTOFF = LocalTime.of(16, 40);
+  public static final int DEFAULT_MAX_PAST_DAYS = 90;
   private static final long JOIN_TIMEOUT_SECONDS = 15L;
 
   private final IngestDrawsUseCase ingestUseCase;
@@ -54,7 +55,7 @@ public class OnDemandDrawBackfillService {
       DrawRepository drawRepository,
       Optional<Clock> clock,
       @Value("${dove.ingestion.on-demand-backfill.enabled:true}") boolean enabled,
-      @Value("${dove.ingestion.on-demand-backfill.max-past-days:60}") int maxPastDays,
+      @Value("${dove.ingestion.on-demand-backfill.max-past-days:90}") int maxPastDays,
       @Value("${dove.ingestion.on-demand-backfill.cooldown-seconds:60}") long cooldownSeconds) {
     this(
         ingestUseCase,
