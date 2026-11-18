@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 49 / 53 task hoàn thành
+- **Tổng quan:** 50 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -57,7 +57,7 @@
 | T11.46 | Lịch quay: bảng 7 ngày, đài bấm được | DONE | bca9e24 | 2026-11-18 | Bảng 7 hàng (Thứ → các đài), hôm nay tô primaryTint, từng đài bấm mở Kết quả và focus độc lập (accessible=false ở hàng cha); xoá nợ schedule.tsx. Đủ ảnh Sáng/Tối |
 | T11.47 | Giới thiệu: copy & bố cục | DONE | 660f422 | 2026-11-18 | Bố cục văn bản phẳng không thẻ hộp/icon màu lớn, Perforation chia tách, miễn trừ phi cờ bạc rõ ràng; xoá nợ about.tsx. Đủ ảnh Sáng/Tối |
 | T11.48 | Bộ trạng thái chung loading/empty/error/offline | DONE | bf00995 | 2026-11-18 | OfflineBanner dải mỏng gắn sát dưới header cả 4 tab + fallback WEEKLY_SCHEDULE khi offline, Skeleton khớp bảng thật & tôn trọng Reduce Motion, Banner 1px border tách a11y nút; ALLOWLIST rỗng {} (chốt M11.3). Đủ ảnh Sáng/Tối |
-| T11.49 | Motion & haptic tiết chế | TODO | | | |
+| T11.49 | Motion & haptic tiết chế | DONE | 1dbcd3d | 2026-11-18 | Khoá đúng 3 thời lượng motion (120ms nhấn, 200ms segmented, 320ms cuống kết quả), gỡ hẳn CelebrationEffect emoji/pháo hoa, guard kiểm mọi điểm rung qua hapticsEnabled |
 | T11.50 | Critique + audit trung thực dựa trên ảnh after | TODO | | | |
 | T11.51 | Ma trận thiết bị & a11y (360dp, chữ 200%, TalkBack/VoiceOver) | TODO | | | |
 | T11.52 | `/impeccable document` + cập nhật DESIGN.md, PROGRESS-00 | TODO | | | |
