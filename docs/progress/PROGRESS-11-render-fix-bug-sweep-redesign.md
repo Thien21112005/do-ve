@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 38 / 53 task hoàn thành
+- **Tổng quan:** 39 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -46,7 +46,7 @@
 | T11.35 | Dò vé: dò nhiều vé — đếm hợp lệ/lỗi, bỏ trùng, kết quả gom nhóm | DONE | 8b4bb7f | 2026-11-18 | parseBatchTickets báo số vé hợp lệ + lỗi theo dòng ('N vé hợp lệ · M lỗi ở dòng K'), tự bỏ trùng; BatchResultList gom vé trúng lên đầu, tổng tiền 1 lần; xoá nợ BatchTicketInput & BatchResultList. Đủ ảnh Sáng/Tối |
 | T11.36 | Dò vé: nút Dò bám trên bàn phím | DONE | dc0db36 | 2026-11-18 | StickyFooter (bóng sheet, safe-area) + KeyboardAvoidingView behavior='height' trên Android để bàn phím số không che nút Dò. Đủ ảnh Sáng/Tối |
 | T11.37 | Kết quả: DrawTable kiểu tờ dò giấy (PrizeRow, G8→ĐB) | DONE | 729c992 | 2026-11-18 | Dùng PrizeRow thứ tự G.8→ĐB, cả G.8 & ĐB mực đỏ son, chữ số >=20pt tabular, ĐB ticketLg, G.4 xếp gọn 2 hàng (4+3); xoá nợ DrawTable. Đủ ảnh Sáng/Tối |
-| T11.38 | Kết quả: bảng nhiều đài chế độ "Cả ngày" | TODO | | | |
+| T11.38 | Kết quả: bảng nhiều đài chế độ "Cả ngày" | DONE | 25a3400 | 2026-11-18 | Cột giải cố định bên trái (48pt), 2–3 đài chia đều toàn chiều ngang không phải cuộn, >=4 đài cuộn ngang mượt, G.8 & ĐB đỏ son; xoá nợ MultiStationDrawTable. Đủ ảnh Sáng/Tối |
 | T11.39 | Kết quả: điều hướng ngày ‹ › + vị trí ô tìm số | TODO | | | |
 | T11.40 | Kết quả: dọn văn bản chia sẻ | TODO | | | |
 | T11.41 | Vé của tôi: tách tickets.tsx (1129 dòng) thành component | TODO | | | |
