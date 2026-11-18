@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 43 / 53 task hoàn thành
+- **Tổng quan:** 44 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -51,7 +51,7 @@
 | T11.40 | Kết quả: dọn văn bản chia sẻ | DONE | e382408 | 2026-11-18 | Xếp giải G.8→ĐB khi chia sẻ, không lặp ngày nhiều lần ở chế độ Cả ngày, giữ nguyên số 0 đầu |
 | T11.41 | Vé của tôi: tách tickets.tsx (1129 dòng) thành component | DONE | efc22bb | 2026-11-18 | Tách thành TicketList, TicketRow, TicketDetailSheet, TicketsMenu + unit test; bỏ tiêu đề Vé của tôi lặp đôi, dùng Snackbar/Sheet, xoá nợ tickets.tsx. Đủ ảnh Sáng/Tối |
 | T11.42 | Vé của tôi: hàng vé phẳng nhóm theo kỳ | DONE | d1b723a | 2026-11-18 | Hàng vé phẳng >=56pt (ticketMd + chữ & màu trạng thái, bỏ nút thùng rác lặp), Perforation ngăn giữa các kỳ; xoá nợ SavedTicketsSummary & TicketStatusBadge. Đủ ảnh Sáng/Tối |
-| T11.43 | Vé của tôi: Sheet chi tiết vé | TODO | | | |
+| T11.43 | Vé của tôi: Sheet chi tiết vé | DONE | eb81160 | 2026-11-18 | Dùng Sheet + ResultStub (TicketNumber tô số khớp, amountInWordsVN, bảng giải) kèm ô ghi chú, xem bảng, dò lại, xoá. Đủ ảnh Sáng/Tối |
 | T11.44 | Vé của tôi: trạng thái rỗng | TODO | | | |
 | T11.45 | Thêm & Cài đặt: chỉ dùng ListRow, sửa a11y công tắc | TODO | | | |
 | T11.46 | Lịch quay: bảng 7 ngày, đài bấm được | TODO | | | |
