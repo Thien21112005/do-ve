@@ -39,7 +39,7 @@ export function Chip({
 
   const handlePress = (e: any) => {
     if (enableHaptics) {
-      haptics.selection();
+      haptics.selection?.();
     }
     onPress?.(e);
   };

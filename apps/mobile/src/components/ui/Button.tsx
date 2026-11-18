@@ -49,7 +49,7 @@ export function Button({
   const handlePress = (e: any) => {
     if (isDisabled) return;
     if (enableHaptics) {
-      haptics.selection();
+      haptics.selection?.();
     }
     onPress?.(e);
   };

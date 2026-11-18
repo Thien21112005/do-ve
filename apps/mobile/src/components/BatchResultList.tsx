@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Text, Button, Chip, Perforation, usePressed } from './ui';
 import { Icon } from './Icon';
 import {
   HighlightedTicket,
   getLongestMatchedSuffix,
 } from './HighlightedTicket';
 import { useTheme } from '../theme';
+import { radii } from '../theme/tokens';
 import { formatCurrency, formatDateVN } from '../lib/format';
 import { STRINGS } from '../lib/strings';
 import { haptics } from '../lib/haptics';
@@ -21,6 +23,40 @@ export interface BatchResultListProps {
   testID?: string;
 }
 
+function BatchSaveBookmark({
+  testID,
+  isSaved,
+  ticket,
+  onPress,
+}: {
+  testID: string;
+  isSaved: boolean;
+  ticket: string;
+  onPress: () => void;
+}) {
+  const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
+  return (
+    <Pressable
+      testID={testID}
+      onPress={onPress}
+      hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+      accessibilityRole="button"
+      accessibilityLabel={
+        isSaved ? STRINGS.check.savedTicket : `${STRINGS.check.saveTicket} ${ticket}`
+      }
+      {...pressHandlers}
+      style={[styles.bookmarkBtn, { opacity: pressed ? 0.65 : 1 }]}
+    >
+      <Icon
+        name={isSaved ? 'check' : 'bookmark'}
+        size={16}
+        color={isSaved ? colors.win : colors.textMuted}
+      />
+    </Pressable>
+  );
+}
+
 export const BatchResultList: React.FC<BatchResultListProps> = ({
   batchResult,
   onCheckAgain,
@@ -29,6 +65,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
   testID = 'batch-result-list',
 }) => {
   const { colors } = useTheme();
+  const { pressed: saveAllPressed, pressHandlers: saveAllHandlers } = usePressed();
   const [filterWonOnly, setFilterWonOnly] = useState(false);
   const [savedTickets, { save: saveTicketToStore, saveMany: saveManyTicketsToStore }] =
     useSavedTickets();
@@ -53,7 +90,6 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
         ? (batchResult as any).totalAmount
         : 0;
 
-  // Check if a specific ticket is saved
   const isTicketSaved = (ticketNumber: string) => {
     return savedTickets.some(
       (t) =>
@@ -68,7 +104,6 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
     totalTickets > 0 &&
     (batchResult.results || []).every((item) => isTicketSaved(item.ticket ?? ''));
 
-  // Handler to save a single ticket (T10.35)
   const handleSaveItem = async (item: any) => {
     haptics.light();
     if (onSaveTicket) {
@@ -99,7 +134,6 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
     });
   };
 
-  // Handler to save all tickets in batch (T10.35)
   const handleSaveAll = async () => {
     haptics.light();
     if (onSaveAllTickets) {
@@ -132,7 +166,7 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
     await saveManyTicketsToStore(toSave);
   };
 
-  // T10.34: Sort winning tickets to the top and filter by won state
+  // Winning tickets grouped at top (T11.35)
   const displayResults = useMemo(() => {
     const rawList = (batchResult.results || []).map((item, originalIndex) => ({
       ...item,
@@ -152,49 +186,44 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
   }, [batchResult.results, filterWonOnly]);
 
   return (
-    <View testID={testID} className="w-full">
-      {/* 1. Compact Summary Bar (T10.34 & T10.35) */}
+    <View testID={testID} style={styles.root}>
+      <Perforation />
+
+      {/* 1. Compact Summary Bar — Total prize shown once (T11.35) */}
       <View
         testID="batch-summary-bar"
-        className="p-4 rounded-xl border mb-3"
-        style={{
-          backgroundColor: hasWon ? colors.winBg : colors.surface,
-          borderColor: hasWon ? colors.winBorder : colors.border,
-        }}
+        style={[
+          styles.summaryBar,
+          {
+            backgroundColor: hasWon ? colors.winTint : colors.surface,
+            borderColor: hasWon ? colors.winBorder : colors.border,
+          },
+        ]}
       >
-        <Text
-          className="text-xs font-semibold tracking-wide"
-          style={{ color: colors.textMuted }}
-        >
+        <Text variant="caption" color={colors.textMuted}>
           Đài {stationName} · {formattedDrawDate}
         </Text>
-        <Text
-          className="text-sm font-medium mt-1 leading-5"
-          style={{ color: colors.textMain }}
-        >
-          {/* One string: the amount stands alone only on the ticket row (T11.04) */}
+        <Text variant="bodyStrong" color={colors.textMain} style={styles.summaryStats}>
           {`Dò ${totalTickets} vé · ${wonTickets} vé trúng · ${formatCurrency(totalPrize)}`}
         </Text>
 
-        {/* Save All Button (T10.35) */}
-        <View
-          className="flex-row items-center justify-between mt-3 pt-2.5 border-t"
-          style={{ borderColor: colors.surfaceSubtle }}
-        >
+        <View style={[styles.summaryFooter, { borderTopColor: colors.border }]}>
           <Pressable
             testID="batch-save-all-btn"
             onPress={handleSaveAll}
-            className="px-3 py-1.5 rounded-lg border flex-row items-center"
-            style={{
-              backgroundColor: areAllTicketsSaved
-                ? `${colors.win}15`
-                : colors.surface,
-              borderColor: areAllTicketsSaved ? colors.win : colors.border,
-            }}
             accessibilityRole="button"
             accessibilityLabel={
               areAllTicketsSaved ? STRINGS.check.savedAllTickets : STRINGS.check.saveAllTickets
             }
+            {...saveAllHandlers}
+            style={[
+              styles.saveAllBtn,
+              {
+                backgroundColor: areAllTicketsSaved ? colors.winTint : colors.surface,
+                borderColor: areAllTicketsSaved ? colors.win : colors.border,
+                opacity: saveAllPressed ? 0.8 : 1,
+              },
+            ]}
           >
             <Icon
               name={areAllTicketsSaved ? 'check' : 'bookmark'}
@@ -202,10 +231,9 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
               color={areAllTicketsSaved ? colors.win : colors.textMain}
             />
             <Text
-              className="text-xs font-semibold ml-1.5"
-              style={{
-                color: areAllTicketsSaved ? colors.win : colors.textMain,
-              }}
+              variant="caption"
+              color={areAllTicketsSaved ? colors.win : colors.textMain}
+              style={styles.saveAllLabel}
             >
               {areAllTicketsSaved
                 ? STRINGS.check.savedAll
@@ -215,58 +243,35 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
         </View>
       </View>
 
-      {/* 2. Filter Bar (T10.34: Chỉ vé trúng) */}
-      {hasWon && (
-        <View className="flex-row items-center space-x-2 mb-3">
-          <Pressable
+      {/* 2. Filter Chips */}
+      {hasWon ? (
+        <View style={styles.filterRow}>
+          <Chip
             testID="batch-filter-all"
+            label={`Tất cả (${totalTickets})`}
+            selected={!filterWonOnly}
             onPress={() => setFilterWonOnly(false)}
-            className="px-3 py-1.5 rounded-full border mr-2"
-            style={{
-              backgroundColor: !filterWonOnly ? colors.primary : colors.surface,
-              borderColor: !filterWonOnly ? colors.primary : colors.border,
-            }}
-            accessibilityRole="button"
-            accessibilityState={{ selected: !filterWonOnly }}
-          >
-            <Text
-              className="text-xs font-semibold"
-              style={{ color: !filterWonOnly ? '#FFFFFF' : colors.textMain }}
-            >
-              Tất cả ({totalTickets})
-            </Text>
-          </Pressable>
-
-          <Pressable
+          />
+          <Chip
             testID="batch-filter-won"
+            label={`Chỉ vé trúng (${wonTickets})`}
+            selected={filterWonOnly}
             onPress={() => setFilterWonOnly(true)}
-            className="px-3 py-1.5 rounded-full border"
-            style={{
-              backgroundColor: filterWonOnly ? colors.win : colors.surface,
-              borderColor: filterWonOnly ? colors.win : colors.border,
-            }}
-            accessibilityRole="button"
-            accessibilityState={{ selected: filterWonOnly }}
-          >
-            <Text
-              className="text-xs font-semibold"
-              style={{ color: filterWonOnly ? '#FFFFFF' : colors.win }}
-            >
-              Chỉ vé trúng ({wonTickets})
-            </Text>
-          </Pressable>
+          />
         </View>
-      )}
+      ) : null}
 
-      {/* 3. Flat Rows List (T10.34 & T10.35) */}
+      {/* 3. Grouped Flat Rows */}
       <View
-        className="rounded-xl border overflow-hidden mb-4"
-        style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-        }}
+        style={[
+          styles.listBox,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
       >
-        {displayResults.map((item) => {
+        {displayResults.map((item, idx) => {
           const isItemWon = item.won === true;
           const isNotAvailable = item.status === 'RESULT_NOT_AVAILABLE';
           const itemTotalPrize =
@@ -276,19 +281,26 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                 ? (item as any).totalAmount
                 : 0;
           const isSaved = isTicketSaved(item.ticket ?? '');
+          const isLast = idx === displayResults.length - 1;
 
           return (
             <View
               key={`batch-item-${item.ticket}`}
               testID={`batch-item-${item.ticket}`}
-              className="p-3 border-b flex-row items-center justify-between"
-              style={{ borderColor: colors.surfaceSubtle }}
+              style={[
+                styles.row,
+                !isLast && {
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderBottomColor: colors.border,
+                },
+                isItemWon && { backgroundColor: colors.winTint },
+              ]}
             >
-              {/* Left: Index & Ticket Number */}
-              <View className="flex-row items-center flex-1 pr-2">
+              <View style={styles.rowLeft}>
                 <Text
-                  className="text-xs font-medium mr-2 w-6 text-right"
-                  style={{ color: colors.textMuted }}
+                  variant="caption"
+                  color={colors.textMuted}
+                  style={styles.indexText}
                 >
                   #{item.originalIndex + 1}
                 </Text>
@@ -304,132 +316,187 @@ export const BatchResultList: React.FC<BatchResultListProps> = ({
                   />
                 ) : (
                   <Text
-                    className="text-base font-bold tracking-wider"
-                    style={{
-                      color: colors.textMain,
-                      fontVariant: ['tabular-nums'],
-                    }}
+                    variant="bodyStrong"
+                    color={colors.textMain}
+                    style={styles.tabular}
                   >
                     {item.ticket}
                   </Text>
                 )}
               </View>
 
-              {/* Middle: Match Status Text */}
-              <View className="flex-1 px-2 items-start">
-                {isItemWon && item.wins && (
-                  <View className="space-y-0.5">
+              <View style={styles.rowMiddle}>
+                {isItemWon && item.wins ? (
+                  <View>
                     {item.wins.map((win, winIdx) => (
                       <Text
                         key={`${win.tier}-${winIdx}`}
-                        className="text-xs font-semibold"
-                        style={{ color: colors.win }}
+                        variant="caption"
+                        color={colors.win}
                       >
                         {(win as any).tierName || win.tier}
                       </Text>
                     ))}
                   </View>
-                )}
-                {isNotAvailable && (
-                  <Text
-                    className="text-xs font-medium"
-                    style={{ color: colors.pending }}
-                  >
+                ) : null}
+                {isNotAvailable ? (
+                  <Text variant="caption" color={colors.pending}>
                     {STRINGS.check.resultPendingTitle}
                   </Text>
-                )}
-                {!isItemWon && !isNotAvailable && (
-                  <Text
-                    className="text-xs"
-                    style={{ color: colors.textMuted }}
-                  >
+                ) : null}
+                {!isItemWon && !isNotAvailable ? (
+                  <Text variant="caption" color={colors.textMuted}>
                     {STRINGS.check.resultLostBadge}
                   </Text>
-                )}
+                ) : null}
               </View>
 
-              {/* Right: Tabular Prize Amount & Row Bookmark Button (T10.35) */}
-              <View className="flex-row items-center">
-                <View className="items-end min-w-[70px]">
+              <View style={styles.rowRight}>
+                <View style={styles.amountCol}>
                   {isItemWon ? (
                     <Text
-                      className="text-sm font-bold text-right"
-                      style={{
-                        color: colors.win,
-                        fontVariant: ['tabular-nums'],
-                      }}
+                      variant="bodyStrong"
+                      color={colors.win}
+                      style={styles.tabularRight}
                     >
                       {formatCurrency(itemTotalPrize)}
                     </Text>
                   ) : (
                     <Text
-                      className="text-sm text-right font-medium"
-                      style={{
-                        color: colors.textMuted,
-                        fontVariant: ['tabular-nums'],
-                      }}
+                      variant="body"
+                      color={colors.textMuted}
+                      style={styles.tabularRight}
                     >
                       —
                     </Text>
                   )}
                 </View>
 
-                {/* Bookmark Button (T10.35) */}
-                <Pressable
+                <BatchSaveBookmark
                   testID={`batch-save-ticket-${item.ticket}`}
+                  isSaved={isSaved}
+                  ticket={item.ticket ?? ''}
                   onPress={() => handleSaveItem(item)}
-                  className="p-1.5 ml-2 rounded-lg"
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    isSaved ? STRINGS.check.savedTicket : `${STRINGS.check.saveTicket} ${item.ticket}`
-                  }
-                >
-                  <Icon
-                    name={isSaved ? 'check' : 'bookmark'}
-                    size={15}
-                    color={isSaved ? colors.win : colors.textMuted}
-                  />
-                </Pressable>
+                />
               </View>
             </View>
           );
         })}
       </View>
 
-      {/* Action: Dò lại button */}
-      {onCheckAgain && (
-        <View className="my-2">
-          <Pressable
-            testID="batch-check-again-btn"
-            accessibilityRole="button"
-            accessibilityLabel={STRINGS.check.batchCheckAgain}
-            onPress={onCheckAgain}
-            className="py-3 px-5 rounded-xl border flex-row items-center justify-center active:opacity-70"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <Icon name="refresh" size={16} color={colors.textMain} />
-            <Text
-              className="ml-2 text-sm font-bold"
-              style={{ color: colors.textMain }}
-            >
-              {STRINGS.check.batchCheckAgain}
-            </Text>
-          </Pressable>
-        </View>
-      )}
+      {onCheckAgain ? (
+        <Button
+          testID="batch-check-again-btn"
+          variant="secondary"
+          title={STRINGS.check.batchCheckAgain}
+          accessibilityLabel={STRINGS.check.batchCheckAgain}
+          icon={<Icon name="refresh" size={16} color={colors.textMain} />}
+          onPress={onCheckAgain}
+        />
+      ) : null}
 
-      {/* Disclaimer */}
-      <View className="mt-4 px-2">
-        <Text
-          className="text-xs text-center leading-relaxed italic"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.check.disclaimer}
-        </Text>
-      </View>
+      <Text variant="caption" color={colors.textMuted} style={styles.disclaimer}>
+        {STRINGS.check.disclaimer}
+      </Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    width: '100%',
+  },
+  summaryBar: {
+    padding: 16,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  summaryStats: {
+    marginTop: 4,
+    fontVariant: ['tabular-nums'],
+  },
+  summaryFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  saveAllBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 36,
+  },
+  saveAllLabel: {
+    marginLeft: 6,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  listBox: {
+    borderRadius: radii.md,
+    borderWidth: 1,
+    overflow: 'hidden',
+    marginBottom: 14,
+  },
+  row: {
+    minHeight: 52,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  rowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    paddingRight: 8,
+  },
+  indexText: {
+    width: 24,
+    textAlign: 'right',
+    marginRight: 8,
+    fontVariant: ['tabular-nums'],
+  },
+  rowMiddle: {
+    flex: 1,
+    paddingHorizontal: 6,
+    alignItems: 'flex-start',
+  },
+  rowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  amountCol: {
+    minWidth: 74,
+    alignItems: 'flex-end',
+  },
+  tabular: {
+    fontVariant: ['tabular-nums'],
+  },
+  tabularRight: {
+    fontVariant: ['tabular-nums'],
+    textAlign: 'right',
+  },
+  bookmarkBtn: {
+    minWidth: 36,
+    minHeight: 36,
+    marginLeft: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disclaimer: {
+    marginTop: 12,
+    textAlign: 'center',
+  },
+});

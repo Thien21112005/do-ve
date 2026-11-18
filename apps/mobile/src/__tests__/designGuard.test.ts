@@ -30,8 +30,6 @@ const ALLOWLIST: DebtCounts = {
   'app/schedule.tsx': { rawRnPrimitive: 1, hexColor: 1, alphaConcat: 7 },
   'app/settings.tsx': { rawRnPrimitive: 1, hexColor: 4 },
   'components/AppVersionGate.tsx': { rawRnPrimitive: 1 },
-  'components/BatchResultList.tsx': { rawRnPrimitive: 1, hexColor: 2, alphaConcat: 1 },
-  'components/BatchTicketInput.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
   'components/DrawTable.tsx': { rawRnPrimitive: 1, alphaConcat: 3 },
   'components/ErrorBoundary.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
   'components/Icon.tsx': { hexColor: 1 },

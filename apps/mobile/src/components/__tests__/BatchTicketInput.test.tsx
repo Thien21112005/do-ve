@@ -64,6 +64,20 @@ describe('parseBatchTickets helper', () => {
     expect(result.duplicateCount).toBe(6);
     expect(result.isOverLimit).toBe(false);
   });
+
+  it('tracks line numbers of invalid entries and formats line-level status summary (T11.35)', () => {
+    const lines = [
+      '100001 100002 100003 100004',
+      '100005 100006 100007 100008',
+      '100009 100010 100011 100012',
+      '999', // line 4 invalid
+    ].join('\n');
+
+    const result = parseBatchTickets(lines, 20);
+    expect(result.count).toBe(12);
+    expect(result.invalidLines).toEqual([4]);
+    expect(result.statusSummary).toBe('12 vé hợp lệ · 1 lỗi ở dòng 4');
+  });
 });
 
 describe('BatchTicketInput Component', () => {

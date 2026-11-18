@@ -37,7 +37,7 @@ export function IconButton({
   const handlePress = (e: any) => {
     if (disabled) return;
     if (enableHaptics) {
-      haptics.selection();
+      haptics.selection?.();
     }
     onPress?.(e);
   };
