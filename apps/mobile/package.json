@@ -85,8 +85,14 @@
     "update:preview": "eas update --channel preview",
     "update:prod": "eas update --channel production",
     "gen:api": "openapi-typescript ../../docs/openapi.json -o src/types/api.d.ts",
+    "audit:ci": "node scripts/audit-ci.mjs",
     "format": "prettier --write .",
     "postinstall": "node scripts/patch-expo-notifications.js"
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
   },
   "private": true
 }
