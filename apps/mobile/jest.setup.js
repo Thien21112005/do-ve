@@ -1,4 +1,10 @@
 /* global jest */
+// Normalize RN's legacy Jest default (fontScale: 2) to standard 100% OS font scale (1.0)
+require('react-native').Dimensions.set({
+  window: { width: 390, height: 844, scale: 3, fontScale: 1 },
+  screen: { width: 390, height: 844, scale: 3, fontScale: 1 },
+});
+
 jest.mock('expo-router', () => {
   const routerMock = {
     push: jest.fn(),

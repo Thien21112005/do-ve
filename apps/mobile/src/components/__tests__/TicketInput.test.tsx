@@ -186,28 +186,56 @@ describe('TicketInput Component', () => {
     expect(onComplete).toHaveBeenCalledWith('654321');
   });
 
-  it('scales box dimensions and sets maxFontSizeMultiplier for dynamic type (T10.23)', async () => {
+  it('uses flex-1 aspectRatio 0.8 maxWidth 56 boxes in explicit row style at normal fontScale (T11.28)', async () => {
+    const { getByTestId } = await render(
+      <TicketInput value="012345" onChangeText={jest.fn()} />,
+    );
+
+    const root = getByTestId('ticket-input');
+    const rootStyle = Array.isArray(root.props.style)
+      ? Object.assign({}, ...root.props.style.filter(Boolean))
+      : root.props.style;
+    expect(rootStyle.flexDirection).toBe('row');
+
+    const box0 = getByTestId('ticket-input-digit-0').parent;
+    const boxStyle = Array.isArray(box0?.props.style)
+      ? Object.assign({}, ...box0?.props.style.filter(Boolean))
+      : box0?.props.style;
+    expect(boxStyle.flex).toBe(1);
+    expect(boxStyle.aspectRatio).toBe(0.8);
+    expect(boxStyle.maxWidth).toBe(56);
+  });
+
+  it('switches to a single contiguous ticketLg input when fontScale > 1.3 (T11.28)', async () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { PixelRatio } = require('react-native');
-    const spyFontScale = jest.spyOn(PixelRatio, 'getFontScale').mockReturnValue(2.0);
+    const spyFontScale = jest.spyOn(PixelRatio, 'getFontScale').mockReturnValue(1.5);
+    const onChangeText = jest.fn();
+    const onComplete = jest.fn();
 
     try {
-      const { getByTestId } = await render(
-        <TicketInput value="123456" onChangeText={jest.fn()} />,
+      const { getByTestId, queryByTestId } = await render(
+        <TicketInput
+          value="012"
+          onChangeText={onChangeText}
+          onComplete={onComplete}
+        />,
       );
 
-      const digitInput = getByTestId('ticket-input-digit-0');
-      // maxFontSizeMultiplier should be capped reasonably (between 1.2 and 1.5) to prevent clipping
-      expect(digitInput.props.maxFontSizeMultiplier).toBeDefined();
-      expect(digitInput.props.maxFontSizeMultiplier).toBeLessThanOrEqual(1.5);
-      expect(digitInput.props.maxFontSizeMultiplier).toBeGreaterThanOrEqual(1.2);
+      expect(queryByTestId('ticket-input-digit-0')).toBeNull();
+      const singleInput = getByTestId('ticket-input-single-input');
+      expect(singleInput.props.value).toBe('012');
 
-      // Box height scales with dynamic type (greater than base 56px when fontScale is 2.0)
-      const box0 = digitInput.parent;
-      const boxStyles = Array.isArray(box0?.props.style)
-        ? Object.assign({}, ...box0?.props.style)
-        : box0?.props.style;
-      expect(boxStyles?.height).toBeGreaterThan(56);
+      const inputStyle = Array.isArray(singleInput.props.style)
+        ? Object.assign({}, ...singleInput.props.style.filter(Boolean))
+        : singleInput.props.style;
+      expect(inputStyle.fontFamily).toBe('BeVietnamPro-Bold');
+      expect(inputStyle.fontVariant).toEqual(['tabular-nums']);
+
+      // Pasting "12 34 56" strips spaces and completes all 6 digits
+      fireEvent.changeText(singleInput, '12 34 56');
+      expect(onChangeText).toHaveBeenCalledWith('123456');
+      expect(onComplete).toHaveBeenCalledWith('123456');
     } finally {
       spyFontScale.mockRestore();
     }
