@@ -1,19 +1,10 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
-  Text,
-  SectionList,
-  ScrollView,
-  TouchableOpacity,
   Alert,
-  RefreshControl,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
+  StyleSheet,
 } from 'react-native';
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import {
@@ -26,15 +17,24 @@ import {
   importTicketsFromJson,
   exportCorruptTicketBackup,
 } from '@/store';
-import { useTheme, layout } from '@/theme';
+import { useTheme, layout, radii } from '@/theme';
 import {
   Icon,
-  TicketStatusBadge,
-  SavedTicketsSummary,
   TicketEmptyIllustration,
   type TicketFilterStatus,
 } from '@/components';
-import { Banner } from '@/components/ui';
+import {
+  TicketList,
+  TicketDetailSheet,
+  TicketsMenu,
+} from '@/components/tickets';
+import {
+  Text,
+  Button,
+  IconButton,
+  Banner,
+  Snackbar,
+} from '@/components/ui';
 import { usePendingTicketsRecheck } from '@/hooks';
 import { formatDateVN } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
@@ -74,7 +74,7 @@ export default function TicketsScreen() {
     onRecheckComplete: handleRecheckComplete,
   });
 
-  // Filter state for summary cards with session memory (T10.44 & T10.45)
+  // Filter state with session memory (T10.44 & T10.45)
   const [activeFilter, setActiveFilterState] =
     useState<TicketFilterStatus>(sessionSavedTicketFilter);
 
@@ -90,17 +90,13 @@ export default function TicketsScreen() {
   const [noteDraft, setNoteDraft] = useState('');
   const [isSavingNote, setIsSavingNote] = useState(false);
 
-  // Header overflow menu state (T10.49)
+  // Overflow menu state (T10.49)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     return () => {
-      if (undoTimeoutRef.current) {
-        clearTimeout(undoTimeoutRef.current);
-      }
-      if (bannerTimeoutRef.current) {
-        clearTimeout(bannerTimeoutRef.current);
-      }
+      if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
+      if (bannerTimeoutRef.current) clearTimeout(bannerTimeoutRef.current);
     };
   }, []);
 
@@ -109,7 +105,6 @@ export default function TicketsScreen() {
     setActiveFilterState(filter);
   }, []);
 
-  // Summary statistics for header card (T10.44)
   const summaryStats = useMemo(() => {
     let pending = 0;
     let won = 0;
@@ -130,7 +125,6 @@ export default function TicketsScreen() {
     };
   }, [tickets]);
 
-  // Counts per status for filter chips (T10.45)
   const filterCounts = useMemo(() => {
     let won = 0;
     let pending = 0;
@@ -148,7 +142,6 @@ export default function TicketsScreen() {
     };
   }, [tickets]);
 
-  // Sort tickets: drawDate desc, createdAt desc
   const sortedTickets = useMemo(() => {
     return [...tickets].sort((a, b) => {
       const aDate = a.drawDate || '';
@@ -161,13 +154,11 @@ export default function TicketsScreen() {
     });
   }, [tickets]);
 
-  // Filtered tickets based on activeFilter
   const filteredTickets = useMemo(() => {
     if (activeFilter === 'ALL') return sortedTickets;
     return sortedTickets.filter((t) => t.status === activeFilter);
   }, [sortedTickets, activeFilter]);
 
-  // Group filtered tickets into date sections for SectionList (T10.46)
   const ticketSections = useMemo(() => {
     const sectionsMap = new Map<string, SavedTicket[]>();
     for (const ticket of filteredTickets) {
@@ -183,9 +174,7 @@ export default function TicketsScreen() {
   }, [filteredTickets]);
 
   const handleDeleteTicket = async (ticket: SavedTicket) => {
-    if (undoTimeoutRef.current) {
-      clearTimeout(undoTimeoutRef.current);
-    }
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
     const success = await remove(ticket.id);
     if (success) {
       haptics.light();
@@ -202,9 +191,7 @@ export default function TicketsScreen() {
 
   const handleUndoDelete = async () => {
     if (!lastDeletedTicket) return;
-    if (undoTimeoutRef.current) {
-      clearTimeout(undoTimeoutRef.current);
-    }
+    if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
     await save(lastDeletedTicket);
     haptics.success();
     setIsUndoVisible(false);
@@ -268,162 +255,32 @@ export default function TicketsScreen() {
     }
   };
 
-  const renderSectionHeader = ({
-    section,
-  }: {
-    section: { title: string; drawDate: string; data: SavedTicket[] };
-  }) => (
-    <View
-      testID={`section-header-${section.drawDate}`}
-      className="pt-3 pb-1.5 px-1 flex-row items-center justify-between"
-      style={{ backgroundColor: colors.background }}
-    >
-      <View className="flex-row items-center">
-        <Icon name="calendar" size={13} color={colors.textMuted} />
-        <Text
-          className="text-xs font-bold uppercase tracking-wider ml-1.5"
-          style={{ color: colors.textMuted }}
-        >
-          {STRINGS.tickets.drawDateGroup(section.title)}
-        </Text>
-      </View>
-      <Text
-        className="text-[11px] font-medium"
-        style={{ color: colors.textMuted }}
-      >
-        {STRINGS.tickets.ticketCount(section.data.length)}
-      </Text>
-    </View>
+  const menuButton = (
+    <IconButton
+      testID="tickets-menu-btn"
+      accessibilityLabel={STRINGS.tickets.optionsMenuA11y}
+      onPress={() => setIsMenuOpen(true)}
+      icon={<Icon name="more" size={20} color={colors.textMain} />}
+      style={[
+        styles.menuBtn,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    />
   );
-
-  const renderItem = ({ item }: { item: SavedTicket }) => {
-    const renderRightActions = () => (
-      <TouchableOpacity
-        testID={`swipe-delete-btn-${item.id}`}
-        onPress={() => handleDeleteTicket(item)}
-        accessibilityRole="button"
-        accessibilityLabel={`Xóa vé ${item.ticket}`}
-        className="justify-center items-center px-5 mb-2 ml-2 rounded-xl"
-        style={{ backgroundColor: colors.error }}
-      >
-        <Icon name="trash" size={18} color="#ffffff" />
-        <Text className="text-white text-xs font-semibold mt-1">Xóa</Text>
-      </TouchableOpacity>
-    );
-
-    return (
-      <Swipeable
-        key={item.id}
-        renderRightActions={renderRightActions}
-        testID={`swipeable-${item.id}`}
-      >
-        <TouchableOpacity
-          testID={`saved-ticket-item-${item.id}`}
-          onPress={() => {
-            haptics.light();
-            setSelectedDetailTicket(item);
-            setNoteDraft(item.note || '');
-          }}
-          activeOpacity={0.7}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel={`Chi tiết vé ${item.ticket}, đài ${item.stationName || item.station}`}
-          className="mb-2 p-3 rounded-xl border flex-row items-center justify-between"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          {/* Left: Tabular ticket number & station name */}
-          <View className="flex-1 mr-2">
-            <Text
-              className="text-lg font-bold tracking-wider"
-              style={{
-                color: colors.textMain,
-                fontVariant: ['tabular-nums'],
-              }}
-            >
-              {item.ticket}
-            </Text>
-            <Text
-              className="text-xs mt-0.5"
-              style={{ color: colors.textMuted }}
-              numberOfLines={1}
-            >
-              {item.stationName || item.station}
-            </Text>
-          </View>
-
-          {/* Right: TicketStatusBadge & Delete button */}
-          <View className="flex-row items-center">
-            <TicketStatusBadge
-              status={item.status}
-              totalPrize={item.totalPrize}
-              size="sm"
-            />
-            <TouchableOpacity
-              testID={`delete-ticket-btn-${item.id}`}
-              onPress={() => handleDeleteTicket(item)}
-              accessibilityRole="button"
-              accessibilityLabel={`Xóa vé ${item.ticket}`}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              className="ml-2 p-1.5 rounded-full"
-            >
-              <Icon name="trash" size={15} color={colors.textMuted} />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Swipeable>
-    );
-  };
 
   return (
     <SafeAreaView
       edges={['bottom']}
       className="flex-1 bg-background"
+      style={{ backgroundColor: colors.background }}
       testID="tickets-screen"
     >
-      {/* Screen Header */}
-      <View
-        className="px-4 pt-4 pb-2 flex-row items-center justify-between"
-        style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
-      >
-        <View className="flex-1 mr-2">
-          <Text
-            className="text-2xl font-bold mb-1"
-            style={{ color: colors.textMain }}
-          >
-            {STRINGS.tickets.screenTitle}
-          </Text>
-          <Text className="text-xs mb-1" style={{ color: colors.textMuted }}>
-            {STRINGS.tickets.subtitle}
-          </Text>
-        </View>
-        <TouchableOpacity
-          testID="tickets-menu-btn"
-          onPress={() => {
-            haptics.light();
-            setIsMenuOpen(true);
-          }}
-          accessibilityRole="button"
-          accessibilityLabel={STRINGS.tickets.optionsMenuA11y}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          className="w-10 h-10 rounded-full items-center justify-center border"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
-        >
-          <Icon name="more" size={20} color={colors.textMain} />
-        </TouchableOpacity>
-      </View>
-
       {/* Corrupt storage: data kept, writes blocked (T11.07) */}
-      {storeHealth.state === 'corrupt' && (
-        <View
-          className="px-4 pb-2"
-          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
-        >
+      {storeHealth.state === 'corrupt' ? (
+        <View style={styles.bannerWrap}>
           <Banner
             variant="error"
             title={STRINGS.tickets.corruptTitle}
@@ -432,730 +289,270 @@ export default function TicketsScreen() {
             onAction={() => {
               exportCorruptTicketBackup(storeHealth.backupKey).then((res) => {
                 if (!res.success) {
-                  Alert.alert(STRINGS.tickets.exportTitle, res.error ?? STRINGS.tickets.exportError);
+                  Alert.alert(
+                    STRINGS.tickets.exportTitle,
+                    res.error ?? STRINGS.tickets.exportError,
+                  );
                 }
               });
             }}
           />
         </View>
-      )}
+      ) : null}
 
       {/* Recheck Progress & Result Banners (T10.51) */}
-      {(isRechecking || recheckBannerMessage) && (
-        <View
-          className="px-4 pt-1 pb-1"
-          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
-        >
-          {isRechecking && (
+      {isRechecking || recheckBannerMessage ? (
+        <View style={styles.bannerWrap}>
+          {isRechecking ? (
             <View
               testID="pending-recheck-indicator"
-              className="flex-row items-center justify-center py-2 px-3 mb-1.5 rounded-xl border"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              }}
+              style={[
+                styles.recheckBanner,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
             >
               <ActivityIndicator size="small" color={colors.primary} />
               <Text
-                className="text-xs font-medium ml-2"
-                style={{ color: colors.textMain }}
+                variant="caption"
+                color={colors.textMain}
+                style={styles.recheckText}
               >
                 {summaryStats.pending > 0
                   ? `Đang cập nhật ${summaryStats.pending} vé chờ…`
                   : STRINGS.tickets.recheckingStatus}
               </Text>
             </View>
-          )}
+          ) : null}
 
-          {recheckBannerMessage && (
+          {recheckBannerMessage ? (
             <View
               testID="pending-recheck-banner"
-              className="flex-row items-center justify-center py-2 px-3 mb-1.5 rounded-xl border"
-              style={{
-                backgroundColor: colors.winTint || `${colors.primary}15`,
-                borderColor: colors.win || colors.primary,
-              }}
+              style={[
+                styles.recheckBanner,
+                {
+                  backgroundColor: colors.winTint,
+                  borderColor: colors.winBorder,
+                },
+              ]}
             >
-              <Icon
-                name="checkCircle"
-                size={16}
-                color={colors.win || colors.primary}
-              />
+              <Icon name="checkCircle" size={16} color={colors.win} />
               <Text
-                className="text-xs font-semibold ml-2"
-                style={{ color: colors.win || colors.primary }}
+                variant="caption"
+                color={colors.win}
+                style={styles.recheckDoneText}
               >
                 {recheckBannerMessage}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
-      )}
+      ) : null}
 
       {sortedTickets.length === 0 ? (
-        <View
-          testID="saved-tickets-empty"
-          className="flex-1 items-center justify-center p-6 text-center"
-          style={{ width: '100%', maxWidth: layout.contentMaxWidth, alignSelf: 'center' }}
-        >
-          <TicketEmptyIllustration testID="tickets-empty-illustration" />
-          <Text
-            className="text-lg font-bold text-center mb-2"
-            style={{ color: colors.textMain }}
-            accessibilityRole="header"
-          >
-            {STRINGS.tickets.emptyTitle}
-          </Text>
-          <Text
-            className="text-sm text-center leading-relaxed max-w-[280px] mb-6"
-            style={{ color: colors.textMuted }}
-          >
-            {STRINGS.tickets.emptyDesc}
-          </Text>
-          <TouchableOpacity
-            testID="tickets-empty-check-btn"
-            onPress={() => router.push('/(tabs)/check')}
-            accessibilityRole="button"
-            accessibilityLabel={STRINGS.tickets.emptyAction}
-            className="px-6 py-3 rounded-xl shadow-sm flex-row items-center"
-            style={{ backgroundColor: colors.primary }}
-          >
-            <Icon name="ticket" size={18} color="#ffffff" />
-            <Text className="text-white text-sm font-semibold ml-2">
-              {STRINGS.tickets.emptyAction}
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.emptyOuter}>
+          <View style={styles.emptyToolbar}>{menuButton}</View>
 
-          <TouchableOpacity
-            testID="empty-import-btn"
-            onPress={handleImport}
-            accessibilityRole="button"
-            accessibilityLabel={STRINGS.tickets.emptyRestoreAction}
-            className="mt-3 px-5 py-2.5 rounded-xl border flex-row items-center"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <Icon name="download" size={16} color={colors.textMain} />
+          <View testID="saved-tickets-empty" style={styles.emptyCenter}>
+            <TicketEmptyIllustration testID="tickets-empty-illustration" />
             <Text
-              className="text-xs font-semibold ml-1.5"
-              style={{ color: colors.textMain }}
+              variant="title"
+              align="center"
+              color={colors.textMain}
+              accessibilityRole="header"
+              style={styles.emptyTitle}
             >
-              {STRINGS.tickets.emptyRestoreAction}
+              {STRINGS.tickets.emptyTitle}
             </Text>
-          </TouchableOpacity>
+            <Text
+              variant="body"
+              align="center"
+              color={colors.textMuted}
+              style={styles.emptyDesc}
+            >
+              {STRINGS.tickets.emptyDesc}
+            </Text>
 
-          {/* On-device Privacy Notice */}
-          <View
-            testID="tickets-privacy-notice"
-            className="flex-row items-center justify-center mt-6 px-4 py-2 rounded-xl"
-            style={{ backgroundColor: `${colors.border}30` }}
-          >
-            <Icon name="info" size={13} color={colors.textMuted} />
-            <Text
-              className="text-xs font-medium ml-1.5"
-              style={{ color: colors.textMuted }}
-            >
-              {STRINGS.tickets.privacyNotice}
-            </Text>
-          </View>
-        </View>
-      ) : (
-        <SectionList
-          testID="saved-tickets-list"
-          sections={ticketSections}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
-          stickySectionHeadersEnabled={true}
-          refreshControl={
-            <RefreshControl
-              testID="tickets-refresh-control"
-              refreshing={isRechecking}
-              onRefresh={() => refetchPending(true)}
-              colors={[colors.primary]}
-              tintColor={colors.primary}
+            <Button
+              testID="tickets-empty-check-btn"
+              size="lg"
+              title={STRINGS.tickets.emptyAction}
+              accessibilityLabel={STRINGS.tickets.emptyAction}
+              onPress={() => router.push('/(tabs)/check')}
+              style={styles.emptyPrimaryBtn}
             />
-          }
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingTop: 8,
-            paddingBottom: 40,
-            width: '100%',
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-          }}
-          ListHeaderComponent={
-            <View className="mb-1">
-              {/* Summary Stats Header (T10.44) */}
-              <SavedTicketsSummary
-                totalTickets={summaryStats.total}
-                pendingCount={summaryStats.pending}
-                wonCount={summaryStats.won}
-                totalWonPrize={summaryStats.totalWonPrize}
-                activeFilter={activeFilter}
-                onSelectFilter={setActiveFilter}
-              />
 
-              {/* Status Filter Chips (T10.45) */}
-              <View
-                testID="tickets-filter-chips"
-                className="flex-row items-center pt-1 pb-2"
-              >
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 8 }}
-                >
-                  {(
-                    [
-                      { key: 'ALL', label: STRINGS.tickets.filterAll },
-                      { key: 'WON', label: STRINGS.tickets.filterWon },
-                      { key: 'PENDING', label: STRINGS.tickets.filterPending },
-                      { key: 'LOST', label: STRINGS.tickets.filterLost },
-                    ] as const
-                  ).map((opt) => {
-                    const isSelected = activeFilter === opt.key;
-                    const count = filterCounts[opt.key];
-                    return (
-                      <TouchableOpacity
-                        key={opt.key}
-                        testID={`ticket-filter-chip-${opt.key}`}
-                        onPress={() => {
-                          haptics.selection();
-                          setActiveFilter(opt.key);
-                        }}
-                        accessibilityRole="button"
-                        accessibilityLabel={`${opt.label} (${count})`}
-                        accessibilityState={{ selected: isSelected }}
-                        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                        className="px-3 py-1.5 rounded-full border flex-row items-center"
-                        style={{
-                          backgroundColor: isSelected
-                            ? colors.primary
-                            : colors.surface,
-                          borderColor: isSelected
-                            ? colors.primary
-                            : colors.border,
-                        }}
-                      >
-                        <Text
-                          className="text-xs font-semibold"
-                          style={{
-                            color: isSelected ? '#ffffff' : colors.textMain,
-                          }}
-                        >
-                          {opt.label}
-                        </Text>
-                        <View
-                          className="ml-1.5 px-1.5 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: isSelected
-                              ? 'rgba(255, 255, 255, 0.25)'
-                              : colors.surfaceSubtle,
-                          }}
-                        >
-                          <Text
-                            className="text-[10px] font-bold"
-                            style={{
-                              color: isSelected ? '#ffffff' : colors.textMuted,
-                              fontVariant: ['tabular-nums'],
-                            }}
-                          >
-                            {count}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </ScrollView>
-              </View>
+            <Button
+              testID="empty-import-btn"
+              variant="secondary"
+              size="md"
+              title={STRINGS.tickets.emptyRestoreAction}
+              accessibilityLabel={STRINGS.tickets.emptyRestoreAction}
+              onPress={handleImport}
+              style={styles.emptySecondaryBtn}
+            />
 
-              <View
-                className="py-2.5 flex-row justify-between items-center border-b mb-1"
-                style={{ borderColor: colors.border }}
-              >
-                <Text
-                  className="text-xs font-medium"
-                  style={{ color: colors.textMuted }}
-                >
-                  {STRINGS.tickets.ticketCount(filteredTickets.length)}
-                </Text>
-              </View>
-            </View>
-          }
-          ListEmptyComponent={
-            sortedTickets.length > 0 ? (
-              <View
-                testID="tickets-filter-empty"
-                className="p-6 items-center justify-center rounded-2xl border my-4"
-                style={{
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                }}
-              >
-                <Icon name="search" size={24} color={colors.textMuted} />
-                <Text
-                  className="text-sm font-bold mt-2 text-center"
-                  style={{ color: colors.textMain }}
-                >
-                  {STRINGS.tickets.filterEmptyTitle}
-                </Text>
-                <Text
-                  className="text-xs text-center mt-1"
-                  style={{ color: colors.textMuted }}
-                >
-                  {STRINGS.tickets.filterEmptyDesc}
-                </Text>
-                <TouchableOpacity
-                  testID="tickets-filter-empty-reset-btn"
-                  onPress={() => {
-                    haptics.selection();
-                    setActiveFilter('ALL');
-                  }}
-                  className="mt-3 px-4 py-2 rounded-xl"
-                  style={{ backgroundColor: colors.primary }}
-                >
-                  <Text className="text-white text-xs font-semibold">
-                    {STRINGS.tickets.filterEmptyReset}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ) : undefined
-          }
-          ListFooterComponent={
             <View
               testID="tickets-privacy-notice"
-              className="flex-row items-center justify-center mt-6 py-2 px-4 rounded-xl"
-              style={{ backgroundColor: `${colors.border}30` }}
+              style={[
+                styles.privacyPill,
+                { backgroundColor: colors.surfaceSubtle },
+              ]}
             >
               <Icon name="info" size={13} color={colors.textMuted} />
               <Text
-                className="text-xs font-medium ml-1.5"
-                style={{ color: colors.textMuted }}
+                variant="caption"
+                color={colors.textMuted}
+                style={styles.privacyPillText}
               >
                 {STRINGS.tickets.privacyNotice}
               </Text>
             </View>
-          }
+          </View>
+        </View>
+      ) : (
+        <TicketList
+          sections={ticketSections}
+          summaryStats={summaryStats}
+          filterCounts={filterCounts}
+          filteredCount={filteredTickets.length}
+          hasAnyTickets={sortedTickets.length > 0}
+          activeFilter={activeFilter}
+          isRechecking={isRechecking}
+          onRefresh={() => refetchPending(true)}
+          onSelectFilter={setActiveFilter}
+          onPressTicket={(item) => {
+            setSelectedDetailTicket(item);
+            setNoteDraft(item.note || '');
+          }}
+          onDeleteTicket={handleDeleteTicket}
+          headerRight={menuButton}
         />
       )}
 
       {/* Undo Delete Ticket Snackbar (T10.47) */}
-      {isUndoVisible && lastDeletedTicket && (
-        <View
-          testID="undo-delete-snackbar"
-          accessible={true}
-          accessibilityLiveRegion="polite"
-          className="absolute bottom-6 left-4 right-4 p-3.5 rounded-xl flex-row items-center justify-between shadow-lg"
-          style={{
-            backgroundColor: colors.textMain,
-            maxWidth: layout.contentMaxWidth,
-            alignSelf: 'center',
-          }}
-        >
-          <View className="flex-row items-center flex-1 mr-2">
-            <Icon name="trash" size={16} color="#ffffff" />
-            <Text
-              testID="undo-delete-message"
-              className="text-white text-sm font-medium ml-2"
-              numberOfLines={1}
-            >
-              Đã xóa vé {lastDeletedTicket.ticket}
-            </Text>
-          </View>
-          <View className="flex-row items-center">
-            <TouchableOpacity
-              testID="undo-delete-btn"
-              onPress={handleUndoDelete}
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.tickets.undoDeleteA11y}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              className="px-3 py-1.5 rounded-lg mr-1.5"
-              style={{ backgroundColor: colors.primary }}
-            >
-              <Text className="text-white text-xs font-bold">Hoàn tác</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              testID="close-undo-snackbar-btn"
-              onPress={() => {
-                if (undoTimeoutRef.current) clearTimeout(undoTimeoutRef.current);
-                setIsUndoVisible(false);
-                setLastDeletedTicket(null);
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.common.close}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              className="p-1 rounded-full"
-            >
-              <Icon name="x" size={16} color="#9CA3AF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+      <Snackbar
+        visible={isUndoVisible && Boolean(lastDeletedTicket)}
+        message={
+          lastDeletedTicket ? `Đã xóa vé ${lastDeletedTicket.ticket}` : ''
+        }
+        actionLabel="Hoàn tác"
+        actionTestID="undo-delete-btn"
+        onAction={handleUndoDelete}
+        testID="undo-delete-snackbar"
+      />
 
       {/* Saved Ticket Detail Bottom Sheet (T10.48) */}
-      <Modal
-        visible={!!selectedDetailTicket}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setSelectedDetailTicket(null)}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="flex-1 justify-end"
-        >
-          <TouchableOpacity
-            testID="detail-sheet-backdrop"
-            activeOpacity={1}
-            onPress={() => setSelectedDetailTicket(null)}
-            className="flex-1 bg-black/50"
-          />
-          {selectedDetailTicket && (
-            <View
-              testID="saved-ticket-detail-sheet"
-              className="p-5 rounded-t-3xl border-t shadow-2xl"
-              style={{
-                backgroundColor: colors.background,
-                borderColor: colors.border,
-              }}
-            >
-              {/* Drag indicator */}
-              <View
-                className="w-10 h-1 rounded-full self-center mb-4"
-                style={{ backgroundColor: colors.border }}
-              />
+      <TicketDetailSheet
+        ticket={selectedDetailTicket}
+        noteDraft={noteDraft}
+        isSavingNote={isSavingNote}
+        onChangeNote={setNoteDraft}
+        onSaveNote={handleSaveNote}
+        onViewDraw={(t) => {
+          setSelectedDetailTicket(null);
+          router.push(`/(tabs)/results?station=${t.station}&date=${t.drawDate}`);
+        }}
+        onRecheck={(t) => {
+          setSelectedDetailTicket(null);
+          router.push(
+            `/(tabs)/check?ticket=${t.ticket}&station=${t.station}&date=${t.drawDate}`,
+          );
+        }}
+        onDelete={(t) => {
+          setSelectedDetailTicket(null);
+          handleDeleteTicket(t);
+        }}
+        onClose={() => setSelectedDetailTicket(null)}
+      />
 
-              {/* Header */}
-              <View
-                className="flex-row items-center justify-between pb-3 border-b mb-4"
-                style={{ borderColor: colors.border }}
-              >
-                <View>
-                  <Text
-                    className="text-base font-bold"
-                    style={{ color: colors.textMain }}
-                  >
-                    Chi tiết vé đã lưu
-                  </Text>
-                  <Text
-                    className="text-xs mt-0.5"
-                    style={{ color: colors.textMuted }}
-                  >
-                    Lưu trên máy này · Đã đối soát
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  testID="detail-sheet-close-btn"
-                  onPress={() => setSelectedDetailTicket(null)}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.closeDetailA11y}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  className="p-1 rounded-full"
-                >
-                  <Icon name="x" size={20} color={colors.textMuted} />
-                </TouchableOpacity>
-              </View>
-
-              {/* Ticket Card Info */}
-              <View
-                className="p-4 rounded-2xl border mb-4"
-                style={{
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                }}
-              >
-                <View className="flex-row items-center justify-between mb-2">
-                  <Text
-                    className="text-sm font-semibold"
-                    style={{ color: colors.textMain }}
-                  >
-                    {selectedDetailTicket.stationName ||
-                      selectedDetailTicket.station}
-                  </Text>
-                  <Text className="text-xs" style={{ color: colors.textMuted }}>
-                    {formatDateVN(selectedDetailTicket.drawDate)}
-                  </Text>
-                </View>
-
-                <View
-                  className="flex-row items-center justify-between pt-2 border-t"
-                  style={{ borderColor: colors.border }}
-                >
-                  <View>
-                    <Text
-                      className="text-xs"
-                      style={{ color: colors.textMuted }}
-                    >
-                      {STRINGS.check.ticketNumberLabel}
-                    </Text>
-                    <Text
-                      testID="detail-sheet-ticket-number"
-                      className="text-3xl font-bold tracking-widest mt-0.5"
-                      style={{
-                        color: colors.textMain,
-                        fontVariant: ['tabular-nums'],
-                      }}
-                    >
-                      {selectedDetailTicket.ticket}
-                    </Text>
-                  </View>
-                  <TicketStatusBadge
-                    status={selectedDetailTicket.status}
-                    totalPrize={selectedDetailTicket.totalPrize}
-                    size="md"
-                  />
-                </View>
-              </View>
-
-              {/* Note Section */}
-              <View className="mb-4">
-                <Text
-                  className="text-xs font-semibold mb-1.5"
-                  style={{ color: colors.textMuted }}
-                >
-                  Ghi chú cá nhân
-                </Text>
-                <View className="flex-row items-center">
-                  <TextInput
-                    testID="detail-sheet-note-input"
-                    value={noteDraft}
-                    onChangeText={setNoteDraft}
-                    placeholder={STRINGS.tickets.notePlaceholder}
-                    placeholderTextColor={colors.textMuted}
-                    maxLength={100}
-                    className="flex-1 px-3 py-2.5 rounded-xl border text-sm"
-                    style={{
-                      backgroundColor: colors.surface,
-                      borderColor: colors.border,
-                      color: colors.textMain,
-                    }}
-                  />
-                  <TouchableOpacity
-                    testID="detail-sheet-save-note-btn"
-                    onPress={handleSaveNote}
-                    disabled={isSavingNote}
-                    accessibilityRole="button"
-                    accessibilityLabel={STRINGS.tickets.saveNoteA11y}
-                    className="ml-2 px-3 py-2.5 rounded-xl"
-                    style={{ backgroundColor: colors.primary }}
-                  >
-                    <Text className="text-white text-xs font-bold">
-                      {isSavingNote ? STRINGS.tickets.savingNote : STRINGS.tickets.saveNote}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {/* Actions */}
-              <View className="gap-2 pt-2">
-                <TouchableOpacity
-                  testID="detail-sheet-view-draw-btn"
-                  onPress={() => {
-                    const t = selectedDetailTicket;
-                    setSelectedDetailTicket(null);
-                    router.push(
-                      `/(tabs)/results?station=${t.station}&date=${t.drawDate}`,
-                    );
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.viewDrawResultA11y}
-                  className="w-full py-3 rounded-xl border flex-row items-center justify-center"
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <Icon name="calendar" size={16} color={colors.textMain} />
-                  <Text
-                    className="text-sm font-semibold ml-2"
-                    style={{ color: colors.textMain }}
-                  >
-                    {STRINGS.tickets.viewDrawResultA11y}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  testID="detail-sheet-recheck-btn"
-                  onPress={() => {
-                    const t = selectedDetailTicket;
-                    setSelectedDetailTicket(null);
-                    router.push(
-                      `/(tabs)/check?ticket=${t.ticket}&station=${t.station}&date=${t.drawDate}`,
-                    );
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.recheckTicketA11y}
-                  className="w-full py-3 rounded-xl border flex-row items-center justify-center"
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <Icon name="search" size={16} color={colors.textMain} />
-                  <Text
-                    className="text-sm font-semibold ml-2"
-                    style={{ color: colors.textMain }}
-                  >
-                    {STRINGS.tickets.recheckTicketA11y}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  testID="detail-sheet-delete-btn"
-                  onPress={() => {
-                    const t = selectedDetailTicket;
-                    setSelectedDetailTicket(null);
-                    handleDeleteTicket(t);
-                  }}
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.tickets.deleteTicketA11y}
-                  className="w-full py-2.5 rounded-xl flex-row items-center justify-center mt-1"
-                >
-                  <Icon name="trash" size={15} color={colors.error} />
-                  <Text
-                    className="text-xs font-semibold ml-1.5"
-                    style={{ color: colors.error }}
-                  >
-                    Xóa vé khỏi máy
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </KeyboardAvoidingView>
-      </Modal>
-
-      {/* Overflow Menu Modal (T10.49) */}
-      <Modal
+      {/* Overflow Menu Sheet (T10.49) */}
+      <TicketsMenu
         visible={isMenuOpen}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsMenuOpen(false)}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setIsMenuOpen(false)}
-          className="flex-1 justify-end sm:justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            testID="tickets-overflow-menu"
-            className="rounded-2xl border p-4 shadow-xl mb-4 sm:mb-0"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }}
-          >
-            <View
-              className="flex-row items-center justify-between pb-3 border-b mb-2"
-              style={{ borderColor: colors.border }}
-            >
-              <Text
-                className="text-base font-bold"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.tickets.optionsMenuA11y}
-              </Text>
-              <TouchableOpacity
-                testID="tickets-menu-close-btn"
-                onPress={() => {
-                  haptics.light();
-                  setIsMenuOpen(false);
-                }}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.common.close}
-                className="w-8 h-8 rounded-full items-center justify-center"
-              >
-                <Icon name="x" size={18} color={colors.textMuted} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Export */}
-            <TouchableOpacity
-              testID="export-tickets-btn"
-              onPress={() => {
-                setIsMenuOpen(false);
-                handleExport();
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.tickets.exportBtn}
-              className="flex-row items-center py-3 px-2 rounded-xl"
-            >
-              <Icon name="upload" size={18} color={colors.primary} />
-              <View className="ml-3">
-                <Text
-                  className="text-sm font-semibold"
-                  style={{ color: colors.textMain }}
-                >
-                  {STRINGS.tickets.exportBtn}
-                </Text>
-                <Text className="text-xs" style={{ color: colors.textMuted }}>
-                  Lưu danh sách vé thành file JSON
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            {/* Import */}
-            <TouchableOpacity
-              testID="import-tickets-btn"
-              onPress={() => {
-                setIsMenuOpen(false);
-                handleImport();
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.tickets.importBtn}
-              className="flex-row items-center py-3 px-2 rounded-xl"
-            >
-              <Icon name="download" size={18} color={colors.primary} />
-              <View className="ml-3">
-                <Text
-                  className="text-sm font-semibold"
-                  style={{ color: colors.textMain }}
-                >
-                  {STRINGS.tickets.importBtn}
-                </Text>
-                <Text className="text-xs" style={{ color: colors.textMuted }}>
-                  Nạp vé đã lưu từ file dự phòng
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            <View
-              className="h-[1px] my-1"
-              style={{ backgroundColor: colors.border }}
-            />
-
-            {/* Clear all */}
-            <TouchableOpacity
-              testID="clear-all-tickets-btn"
-              onPress={() => {
-                setIsMenuOpen(false);
-                handleClearAll();
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.tickets.clearAll}
-              className="flex-row items-center py-3 px-2 rounded-xl"
-            >
-              <Icon name="trash" size={18} color={colors.error} />
-              <View className="ml-3">
-                <Text
-                  className="text-sm font-semibold"
-                  style={{ color: colors.error }}
-                >
-                  {STRINGS.tickets.clearAll}
-                </Text>
-                <Text className="text-xs" style={{ color: colors.textMuted }}>
-                  Xóa toàn bộ vé đang lưu trên máy
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        onClose={() => setIsMenuOpen(false)}
+        onExport={handleExport}
+        onImport={handleImport}
+        onClearAll={handleClearAll}
+      />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  bannerWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 6,
+    width: '100%',
+    maxWidth: layout.contentMaxWidth,
+    alignSelf: 'center',
+  },
+  recheckBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 6,
+    borderRadius: radii.md,
+    borderWidth: 1,
+  },
+  recheckText: {
+    marginLeft: 8,
+    fontFamily: 'BeVietnamPro-Medium',
+  },
+  recheckDoneText: {
+    marginLeft: 8,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+  menuBtn: {
+    borderWidth: 1,
+    borderRadius: radii.full,
+  },
+  emptyOuter: {
+    flex: 1,
+    width: '100%',
+    maxWidth: layout.contentMaxWidth,
+    alignSelf: 'center',
+    paddingHorizontal: 20,
+  },
+  emptyToolbar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingTop: 10,
+  },
+  emptyCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 28,
+  },
+  emptyTitle: {
+    marginBottom: 8,
+  },
+  emptyDesc: {
+    maxWidth: 290,
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+  emptyPrimaryBtn: {
+    minWidth: 200,
+  },
+  emptySecondaryBtn: {
+    marginTop: 10,
+    minWidth: 200,
+  },
+  privacyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: radii.md,
+  },
+  privacyPillText: {
+    marginLeft: 6,
+  },
+});

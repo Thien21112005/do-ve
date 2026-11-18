@@ -305,10 +305,11 @@ describe('Tab Screens', () => {
     expect(queryByText('Chọn ngày mở thưởng')).toBeNull();
   });
 
-  it('renders TicketsScreen correctly', async () => {
-    const { getByText } = await render(<TicketsScreen />);
-    expect(getByText('Vé của tôi')).toBeTruthy();
-    expect(getByText('Lưu trữ và theo dõi các vé số đã dò')).toBeTruthy();
+  it('renders TicketsScreen correctly without duplicate screen title (T11.41)', async () => {
+    const { getByTestId, queryByText } = await render(<TicketsScreen />);
+    expect(getByTestId('tickets-screen')).toBeTruthy();
+    expect(getByTestId('tickets-menu-btn')).toBeTruthy();
+    expect(queryByText('Lưu trữ và theo dõi các vé số đã dò')).toBeNull();
   });
 
   it('renders MoreScreen correctly', async () => {

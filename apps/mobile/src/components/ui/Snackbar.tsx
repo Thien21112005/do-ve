@@ -11,6 +11,7 @@ export interface SnackbarProps {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
+  actionTestID?: string;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
@@ -23,6 +24,7 @@ export function Snackbar({
   message,
   actionLabel,
   onAction,
+  actionTestID,
   style,
   testID = 'snackbar',
 }: SnackbarProps) {
@@ -52,11 +54,12 @@ export function Snackbar({
       </Text>
       {actionLabel && onAction ? (
         <Pressable
+          testID={actionTestID}
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           onPress={() => {
-            haptics.selection();
+            haptics.selection?.();
             onAction();
           }}
           {...pressHandlers}
