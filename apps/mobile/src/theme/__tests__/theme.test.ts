@@ -182,16 +182,20 @@ describe('Design Tokens & Theme', () => {
       expect(typography.fontSize.base).toBe(16);
     });
 
-    it('maps Be Vietnam Pro font families in tailwind.config.js (T10.06)', () => {
+    it('maps Be Vietnam Pro font families without colliding with fontWeight classes (T11.26)', () => {
       const configPath = path.resolve(process.cwd(), 'tailwind.config.js');
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const tailwindConfig = require(configPath);
       const fonts = tailwindConfig.theme.extend.fontFamily;
       expect(fonts.sans).toEqual(['BeVietnamPro-Regular']);
-      expect(fonts.regular).toEqual(['BeVietnamPro-Regular']);
-      expect(fonts.medium).toEqual(['BeVietnamPro-Medium']);
-      expect(fonts.semibold).toEqual(['BeVietnamPro-SemiBold']);
-      expect(fonts.bold).toEqual(['BeVietnamPro-Bold']);
+      expect(fonts['vn-regular']).toEqual(['BeVietnamPro-Regular']);
+      expect(fonts['vn-medium']).toEqual(['BeVietnamPro-Medium']);
+      expect(fonts['vn-semibold']).toEqual(['BeVietnamPro-SemiBold']);
+      expect(fonts['vn-bold']).toEqual(['BeVietnamPro-Bold']);
+      // Must NOT shadow Tailwind's font-medium / font-semibold / font-bold weights
+      expect(fonts.medium).toBeUndefined();
+      expect(fonts.semibold).toBeUndefined();
+      expect(fonts.bold).toBeUndefined();
     });
   });
 

@@ -48,10 +48,10 @@
 | `errorTint` | `#FEF3F2` | `#450A0A` | Nền banner lỗi |
 
 ### 2.2. Đồng bộ NativeWind & Tailwind CSS
-Tất cả các màu trên được ánh xạ thành CSS variables (`--color-*`) trong `src/global.css` và lớp utility Tailwind trong `tailwind.config.js`:
+Toàn bộ bảng màu chỉ có **một nguồn chân lý duy nhất là `src/theme/colors.ts`**, được chuyển thành CSS variables (`--color-*`) qua `vars()` của NativeWind tại `ThemeVarsRoot` (`src/theme/cssVars.ts`) và ánh xạ vào `tailwind.config.js` (`global.css` không khai báo màu tĩnh):
 - Nền: `bg-background`, `bg-surface`, `bg-surface-sunken`, `bg-primary`,...
 - Chữ: `text-main`, `text-muted`, `text-primary`, `text-special`, `text-win`,...
-- Viền: `border-default`, `border-border-focus`,...
+- Viền: `border-border`, `border-border-focus`,...
 
 ---
 
@@ -125,3 +125,25 @@ Rút gọn thành 3 bậc kỷ luật:
    - Lỗi nhập liệu / mất mạng: `haptics.warning()`.
    - **Tôn trọng cài đặt người dùng:** Kiểm tra `settings.hapticsEnabled` trước khi phát xung rung.
 3. **Giảm chuyển động (Reduce Motion):** Khi người dùng bật Reduce Motion trong cài đặt trợ năng hệ thống, các animation scale và trượt được tắt hoàn toàn.
+
+---
+
+## 7. Luật Styling Một Đường (One Styling Path Rules)
+
+Để đảm bảo 100% giao diện render đúng như thiết kế trên máy thật Android/iOS và được kiểm chứng tự động qua `src/__tests__/designGuard.test.ts` (T11.06, T11.26):
+
+1. **Chỉ dùng Primitive từ `@/components/ui`:**
+   - Mọi màn hình và feature component bắt buộc dùng `<Text variant="...">`, `<Button>`, `<IconButton>`, `<Chip>`, `<Card>`, `<ListRow>`, `<SectionHeader>`, `<Banner>`, `<EmptyState>`, `<Badge>`, `<Divider>`, `<Segmented>` (cùng các primitive chuyên biệt của tờ vé).
+   - **Cấm** import trực tiếp `Text` hoặc `TouchableOpacity` thô từ `'react-native'` ở tầng màn hình/feature.
+2. **Phân định vai trò của `className` (NativeWind v4):**
+   - `className` chỉ dùng cho **bố cục (layout)** (`flex`, `flex-row`, `items-center`, `justify-between`, `gap-*`, `p-*`, `m-*`) và **token ngữ nghĩa** (`bg-background`, `bg-surface`, `text-main`, `text-muted`, `border-border`).
+   - **Cấm** dùng các class palette thô của Tailwind (`slate-*`, `red-*`, `blue-*`, `green-*`, `amber-*`, `text-white`).
+   - **Cấm** cỡ chữ tuỳ biến nhỏ hơn 12px (`text-[10px]`, `text-[11px]`).
+3. **Không màu inline & không ghép chuỗi alpha:**
+   - **Cấm** viết cứng mã hex (`#xxxxxx`) ngoài `src/theme/colors.ts` và file SVG minh hoạ tĩnh được chỉ định.
+   - **Cấm** nối chuỗi hex alpha kiểu `` `${colors.primary}1A` ``. Mọi nền nhạt phải đi qua token tint chính thức (`primaryTint`, `winTint`, `pendingTint`, `errorTint`, `specialTint`). Nếu thiếu, bổ sung vào `colors.ts`.
+4. **Tránh va chạm tên Font trên Android (`font-vn-*` vs `font-bold`):**
+   - Trong `tailwind.config.js`, các họ font custom được đặt tên `font-vn-regular`, `font-vn-medium`, `font-vn-semibold`, `font-vn-bold` (kèm `font-sans`), tuyệt đối **không** khai báo key `bold`/`semibold`/`medium` đè lên `fontWeight` của Tailwind.
+   - Trên Android, kết hợp custom `fontFamily` với `fontWeight: '700'` (`font-bold`) khiến hệ điều hành rơi về font mặc định hoặc tô đậm giả (faux-bold). Vì vậy không dùng `font-bold` trong code màn hình — mọi trọng lượng chữ đều đi qua `<Text variant="...">` (gán trực tiếp file font `BeVietnamPro-*` tương ứng).
+5. **Tương thích `Pressable` với NativeWind `css-interop`:**
+   - NativeWind v4 bỏ qua hàm `style={({ pressed }) => ...}` trên thiết bị thật. Mọi `Pressable` cần phản hồi nhấn bắt buộc dùng hook `usePressed()` và truyền mảng style phẳng `style={[baseStyle, pressed && pressedStyle]}`.
