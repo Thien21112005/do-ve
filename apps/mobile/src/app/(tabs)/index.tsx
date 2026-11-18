@@ -1,13 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
-  Text,
   ScrollView,
   Pressable,
   RefreshControl,
-  TouchableOpacity,
   Animated,
   AccessibilityInfo,
+  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -23,21 +22,104 @@ import {
   Perforation,
   Chip,
   Button,
+  SectionHeader,
+  ListRow,
+  EmptyState,
   usePressed,
 } from '@/components/ui';
 import { useLatestDraws, useCheckTicket, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
-import { useTheme, layout } from '@/theme';
+import { useTheme, layout, radii } from '@/theme';
 import { formatDateVN } from '@/lib/format';
 import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
 import { haptics } from '@/lib/haptics';
 import { computeTodayStatus } from '@/lib/todayStatus';
+import type { UiDrawView } from '@/api/mappers';
+
+interface LatestDrawRowProps {
+  draw: UiDrawView;
+  isLast: boolean;
+  onPress: () => void;
+}
+
+function LatestDrawRow({ draw, isLast, onPress }: LatestDrawRowProps) {
+  const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
+  const formattedDrawDate = formatDateVN(draw.drawDate);
+  const drawNumbers = draw.numbers || draw.prizes;
+  const specialNumber = drawNumbers?.SPECIAL?.[0];
+  const stationLabel = draw.stationName || draw.stationCode;
+
+  return (
+    <Pressable
+      testID={`latest-draw-card-${draw.stationCode}`}
+      accessibilityRole="button"
+      accessibilityLabel={`Kết quả đài ${stationLabel}, kỳ quay ngày ${formattedDrawDate}${
+        specialNumber ? `, giải Đặc biệt ${specialNumber}` : ', đang cập nhật'
+      }`}
+      onPress={() => {
+        haptics.selection?.();
+        onPress();
+      }}
+      {...pressHandlers}
+      style={[
+        styles.drawRow,
+        {
+          backgroundColor: colors.surface,
+          borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
+          borderBottomColor: colors.border,
+          opacity: pressed ? 0.72 : 1,
+        },
+      ]}
+    >
+      <View style={styles.drawRowLeft}>
+        <UiText variant="bodyStrong" color={colors.textMain} numberOfLines={1}>
+          {stationLabel}
+        </UiText>
+      </View>
+
+      <View style={styles.drawRowRight}>
+        {specialNumber ? (
+          <>
+            <UiText
+              variant="caption"
+              color={colors.textMuted}
+              style={styles.specialTag}
+            >
+              ĐB
+            </UiText>
+            <UiText
+              variant="ticketMd"
+              color={colors.special}
+              style={styles.specialDigits}
+            >
+              {specialNumber}
+            </UiText>
+          </>
+        ) : (
+          <UiText variant="caption" color={colors.pending}>
+            {STRINGS.results.statusPending}
+          </UiText>
+        )}
+        <UiText
+          variant="body"
+          color={colors.textMuted}
+          style={styles.rowChevron}
+        >
+          ›
+        </UiText>
+      </View>
+    </Pressable>
+  );
+}
 
 export default function HomeScreen() {
   const { colors } = useTheme();
   const { pressed: changePressed, pressHandlers: changeHandlers } = usePressed();
+  const { pressed: fullTablePressed, pressHandlers: fullTableHandlers } =
+    usePressed();
   const router = useRouter();
   const { draws, isLoading, isError, refetch } = useLatestDraws();
   const {
@@ -337,184 +419,95 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* 3. My Tickets Shortcut (T10.18) */}
-        <View className="px-4 py-1">
-          <TouchableOpacity
-            testID="home-my-tickets-shortcut"
-            onPress={() => router.push('/(tabs)/tickets')}
-            className="flex-row items-center justify-between p-3.5 rounded-xl border"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }}
-          >
-            <View className="flex-row items-center flex-1 mr-2">
-              <View
-                className="w-8 h-8 rounded-lg items-center justify-center mr-2.5"
-                style={{
-                  backgroundColor:
-                    pendingCount > 0
-                      ? `${colors.pending}20`
-                      : `${colors.primary}1A`,
-                }}
-              >
-                <Icon
-                  name={pendingCount > 0 ? 'clock' : 'bookmark'}
-                  size={16}
-                  color={pendingCount > 0 ? colors.pending : colors.primary}
-                />
-              </View>
-              <View>
-                <Text
-                  className="text-xs font-bold"
-                  style={{ color: colors.textMain }}
-                >
-                  Vé của tôi
-                </Text>
-                <Text
-                  className="text-xs mt-0.5"
-                  style={{
-                    color:
-                      pendingCount > 0 ? colors.pending : colors.textMuted,
-                  }}
-                >
-                  {pendingCount > 0
-                    ? `${pendingCount} vé đang chờ kết quả`
-                    : `${savedTickets.length} vé đã lưu trên máy`}
-                </Text>
-              </View>
-            </View>
+        {/* 3. Latest Draws — flat rows >=56pt without card-in-card or G1/G8 clutter (T11.32) */}
+        <SectionHeader
+          title={
+            draws[0]?.drawDate
+              ? `${STRINGS.home.latestDrawsTitle} · ${
+                  WEEKLY_SCHEDULE.find(
+                    (s) => s.dayOfWeek === weekdayVN(draws[0].drawDate),
+                  )?.shortName || ''
+                } ${formatDateVN(draws[0].drawDate).slice(0, 5)}`.replace(
+                  '·  ',
+                  '· ',
+                )
+              : STRINGS.home.latestDrawsTitle
+          }
+          actionText={STRINGS.home.viewAll}
+          actionTestID="home-view-all-draws-btn"
+          onAction={() =>
+            router.push({
+              pathname: '/(tabs)/results',
+              params: draws[0]?.drawDate ? { date: draws[0].drawDate } : undefined,
+            })
+          }
+        />
 
-            <View className="flex-row items-center">
-              <Text
-                className="text-xs font-semibold mr-1"
-                style={{ color: colors.primary }}
-              >
-                Xem
-              </Text>
-              <Icon name="chevronRight" size={14} color={colors.primary} />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* 4. Latest Draws Section */}
-        <View className="px-4 pt-3 pb-2">
-          <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center">
-              <View
-                className="w-2 h-4 rounded-full mr-2"
-                style={{ backgroundColor: colors.primary }}
-              />
-              <Text
-                className="text-base font-bold"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.home.latestDrawsTitle}
-              </Text>
-            </View>
-            <Pressable
-              testID="home-view-all-draws-btn"
-              accessibilityRole="button"
-              accessibilityLabel={STRINGS.home.viewAll}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              onPress={() =>
-                router.push({
-                  pathname: '/(tabs)/results',
-                  params: draws[0]?.drawDate ? { date: draws[0].drawDate } : undefined,
-                })
-              }
-              className="flex-row items-center min-h-[44px] justify-center"
-            >
-              <Text
-                className="text-xs font-semibold mr-0.5"
-                style={{ color: colors.primary }}
-              >
-                {STRINGS.home.viewAll}
-              </Text>
-              <Icon name="chevronRight" size={14} color={colors.primary} />
-            </Pressable>
-          </View>
-
+        <View className="px-4 pb-2">
           {/* Loading State (T10.21) */}
-          {isLoading && (
+          {isLoading ? (
             <View testID="home-draws-loading">
               <HomeDrawsSkeleton count={3} />
             </View>
-          )}
+          ) : null}
 
           {/* Error State */}
-          {!isLoading && isError && (
+          {!isLoading && isError ? (
             <View
-              className="py-8 px-4 items-center justify-center rounded-2xl border"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              }}
+              style={[
+                styles.stateCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
             >
-              <Icon name="alertCircle" size={32} color={colors.error} />
-              <Text
-                className="text-sm font-semibold mt-2 text-center"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.home.errorLatest}
-              </Text>
-              <Pressable
-                onPress={() => refetch()}
-                className="mt-3 px-4 py-2 rounded-xl"
-                style={{ backgroundColor: `${colors.primary}1A` }}
-              >
-                <Text
-                  className="text-xs font-bold"
-                  style={{ color: colors.primary }}
-                >
-                  {STRINGS.common.retry}
-                </Text>
-              </Pressable>
+              <EmptyState
+                icon={<Icon name="alertCircle" size={28} color={colors.error} />}
+                title={STRINGS.home.errorLatest}
+                actionTitle={STRINGS.common.retry}
+                onAction={() => refetch()}
+                style={{ paddingVertical: 24 }}
+              />
             </View>
-          )}
+          ) : null}
 
           {/* Empty State */}
-          {!isLoading && !isError && draws.length === 0 && (
+          {!isLoading && !isError && draws.length === 0 ? (
             <View
-              className="py-8 px-4 items-center justify-center rounded-2xl border"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              }}
+              style={[
+                styles.stateCard,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
             >
-              <Icon name="clock" size={32} color={colors.pending} />
-              <Text
-                className="text-sm font-semibold mt-2 text-center"
-                style={{ color: colors.textMain }}
-              >
-                {STRINGS.home.emptyLatestTitle}
-              </Text>
-              <Text
-                className="text-xs mt-1 text-center"
-                style={{ color: colors.textMuted }}
-              >
-                {STRINGS.home.emptyLatestDesc}
-              </Text>
+              <EmptyState
+                icon={<Icon name="clock" size={28} color={colors.pending} />}
+                title={STRINGS.home.emptyLatestTitle}
+                description={STRINGS.home.emptyLatestDesc}
+                style={{ paddingVertical: 24 }}
+              />
             </View>
-          )}
+          ) : null}
 
-          {/* Draw Cards List */}
-          {!isLoading &&
-            !isError &&
-            draws.map((draw) => {
-              const formattedDrawDate = formatDateVN(draw.drawDate);
-              const drawNumbers = draw.numbers || draw.prizes;
-              const specialPrize = drawNumbers?.SPECIAL?.[0] || '------';
-              const firstPrize = drawNumbers?.FIRST?.[0] || '---';
-              const eighthPrize = drawNumbers?.EIGHTH?.[0] || '--';
-              const isFinal = draw.status === 'FINAL' || draw.isComplete;
-
-              return (
-                <TouchableOpacity
+          {/* Flat Draw Rows */}
+          {!isLoading && !isError && draws.length > 0 ? (
+            <View
+              style={[
+                styles.flatListGroup,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              {draws.map((draw) => (
+                <LatestDrawRow
                   key={`${draw.stationCode}-${draw.drawDate}`}
-                  testID={`latest-draw-card-${draw.stationCode}`}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Kết quả đài ${draw.stationName || draw.stationCode}, kỳ quay ngày ${formattedDrawDate}`}
+                  draw={draw}
+                  isLast={false}
                   onPress={() =>
                     router.push({
                       pathname: '/(tabs)/results',
@@ -524,143 +517,115 @@ export default function HomeScreen() {
                       },
                     })
                   }
-                  activeOpacity={0.8}
-                  className="p-4 rounded-2xl border mb-3 shadow-sm"
-                  style={{
+                />
+              ))}
+
+              <Pressable
+                testID="home-view-full-table-btn"
+                accessibilityRole="button"
+                accessibilityLabel="Xem bảng đầy đủ"
+                onPress={() => {
+                  haptics.selection?.();
+                  router.push({
+                    pathname: '/(tabs)/results',
+                    params: draws[0]?.drawDate
+                      ? { date: draws[0].drawDate }
+                      : undefined,
+                  });
+                }}
+                {...fullTableHandlers}
+                style={[
+                  styles.fullTableRow,
+                  {
                     backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                  }}
-                >
-                  {/* Card Header: Station name + Status badge */}
-                  <View className="flex-row items-center justify-between pb-2.5">
-                    <View>
-                      <Text
-                        className="text-base font-bold"
-                        style={{ color: colors.textMain }}
-                      >
-                        {draw.stationName || draw.stationCode}
-                      </Text>
-                      <Text
-                        className="text-xs mt-0.5"
-                        style={{ color: colors.textMuted }}
-                      >
-                        {STRINGS.results.drawDatePrefix} {formattedDrawDate}
-                      </Text>
-                    </View>
+                    opacity: fullTablePressed ? 0.72 : 1,
+                  },
+                ]}
+              >
+                <UiText variant="bodyStrong" color={colors.primary}>
+                  Xem bảng đầy đủ ›
+                </UiText>
+              </Pressable>
+            </View>
+          ) : null}
+        </View>
 
-                    <View
-                      className="px-2.5 py-1 rounded-full flex-row items-center"
-                      style={{
-                        backgroundColor: isFinal
-                          ? `${colors.win}1A`
-                          : `${colors.pending}1A`,
-                      }}
-                    >
-                      <View
-                        className="w-1.5 h-1.5 rounded-full mr-1.5"
-                        style={{
-                          backgroundColor: isFinal ? colors.win : colors.pending,
-                        }}
-                      />
-                      <Text
-                        className="text-xs font-semibold"
-                        style={{
-                          color: isFinal ? colors.win : colors.pending,
-                        }}
-                      >
-                        {isFinal
-                          ? STRINGS.results.statusFinal
-                          : STRINGS.results.statusPending}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Special Prize Display: Flat, no card-in-card, vermilion red */}
-                  <View
-                    className="py-3 px-3.5 rounded-xl flex-row items-center justify-between"
-                    style={{
-                      backgroundColor: colors.surfaceSubtle,
-                    }}
-                  >
-                    <View>
-                      <Text
-                        className="text-xs font-semibold uppercase tracking-wider"
-                        style={{ color: colors.textMuted }}
-                      >
-                        {STRINGS.home.specialPrizeBanner}
-                      </Text>
-                    </View>
-                    <Text
-                      className="text-2xl font-bold tracking-widest"
-                      style={{
-                        color: colors.special,
-                        fontVariant: ['tabular-nums'],
-                      }}
-                    >
-                      {specialPrize}
-                    </Text>
-                  </View>
-
-                  {/* Secondary prizes (First & Eighth) + Deep link cue */}
-                  <View
-                    className="flex-row items-center justify-between mt-3 pt-2.5 border-t"
-                    style={{ borderColor: colors.border }}
-                  >
-                    <View className="flex-row items-center">
-                      <Text
-                        className="text-xs font-medium mr-1"
-                        style={{ color: colors.textMuted }}
-                      >
-                        {STRINGS.home.firstPrizeLabel}:
-                      </Text>
-                      <Text
-                        className="text-xs font-bold mr-3"
-                        style={{
-                          color: colors.textMain,
-                          fontVariant: ['tabular-nums'],
-                        }}
-                      >
-                        {firstPrize}
-                      </Text>
-                      <Text
-                        className="text-xs font-medium mr-1"
-                        style={{ color: colors.textMuted }}
-                      >
-                        {STRINGS.home.eighthPrizeLabel}:
-                      </Text>
-                      <Text
-                        className="text-xs font-bold"
-                        style={{
-                          color: colors.textMain,
-                          fontVariant: ['tabular-nums'],
-                        }}
-                      >
-                        {eighthPrize}
-                      </Text>
-                    </View>
-
-                    <View
-                      testID={`home-card-view-details-${draw.stationCode}`}
-                      className="flex-row items-center"
-                    >
-                      <Text
-                        className="text-xs font-semibold mr-1"
-                        style={{ color: colors.primary }}
-                      >
-                        {STRINGS.home.viewFullTable}
-                      </Text>
-                      <Icon
-                        name="chevronRight"
-                        size={14}
-                        color={colors.primary}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
+        {/* 4. My Tickets Shortcut — clean ListRow (T11.32) */}
+        <View className="px-4 pt-2 pb-1">
+          <ListRow
+            testID="home-my-tickets-shortcut"
+            title="Vé của tôi"
+            subtitle={
+              pendingCount > 0
+                ? `${pendingCount} vé đang chờ kết quả`
+                : `${savedTickets.length} vé đã lưu trên máy`
+            }
+            icon={
+              <Icon
+                name={pendingCount > 0 ? 'clock' : 'bookmark'}
+                size={18}
+                color={pendingCount > 0 ? colors.pending : colors.textMuted}
+              />
+            }
+            showChevron={true}
+            onPress={() => router.push('/(tabs)/tickets')}
+            style={{
+              borderWidth: 1,
+              borderBottomWidth: 1,
+              borderColor: colors.border,
+              borderRadius: radii.md,
+            }}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  flatListGroup: {
+    borderWidth: 1,
+    borderRadius: radii.md,
+    overflow: 'hidden',
+  },
+  drawRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 56,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  drawRowLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  drawRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  specialTag: {
+    marginRight: 8,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+  specialDigits: {
+    letterSpacing: 1.5,
+  },
+  rowChevron: {
+    marginLeft: 10,
+    fontSize: 20,
+    lineHeight: 22,
+  },
+  fullTableRow: {
+    minHeight: 46,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  stateCard: {
+    borderWidth: 1,
+    borderRadius: radii.md,
+    overflow: 'hidden',
+  },
+});

@@ -41,7 +41,7 @@ export function ListRow({
 
   const handlePress = () => {
     if (!onPress) return;
-    haptics.selection();
+    haptics.selection?.();
     onPress();
   };
 

@@ -322,20 +322,30 @@ describe('Tab Screens', () => {
     ).toBeTruthy();
   });
 
-  it('deep links Home cards to station results with station and date params (T09.34, T10.19)', async () => {
+  it('renders flat latest draw rows (>=56pt, no G1/G8 clutter) and deep links to results (T11.32)', async () => {
     const router = useRouter();
-    const { getAllByText, getByText, getByTestId } = await render(<HomeScreen />, {
+    const { getByText, getByTestId, queryByText } = await render(<HomeScreen />, {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => {
-      expect(getAllByText('Xem toàn bộ bảng giải').length).toBeGreaterThan(0);
+      expect(getByTestId('latest-draw-card-tp-hcm')).toBeTruthy();
+      expect(getByTestId('latest-draw-card-dong-thap')).toBeTruthy();
     });
 
-    // Click entire card to navigate (T10.19)
-    const firstCard = getByTestId('latest-draw-card-tp-hcm');
-    fireEvent.press(firstCard);
+    // No fragmented G1/G8 labels on Home flat rows
+    expect(queryByText(/Giải Nhất/)).toBeNull();
+    expect(queryByText(/Giải Tám/)).toBeNull();
 
+    // Row height >= 56pt
+    const firstRow = getByTestId('latest-draw-card-tp-hcm');
+    const flatStyle = Array.isArray(firstRow.props.style)
+      ? Object.assign({}, ...firstRow.props.style.filter(Boolean))
+      : firstRow.props.style;
+    expect(flatStyle.minHeight).toBeGreaterThanOrEqual(56);
+
+    // Click row to navigate to station draw
+    fireEvent.press(firstRow);
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/(tabs)/results',
       params: {
@@ -344,22 +354,16 @@ describe('Tab Screens', () => {
       },
     });
 
-    // Click "Xem toàn bộ bảng giải" on the first card
-    const viewDetailsButtons = getAllByText('Xem toàn bộ bảng giải');
-    fireEvent.press(viewDetailsButtons[0]);
-
+    // Click footer "Xem bảng đầy đủ" or header "Xem tất cả"
+    fireEvent.press(getByTestId('home-view-full-table-btn'));
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/(tabs)/results',
       params: {
-        station: 'tp-hcm',
         date: '2026-11-14',
       },
     });
 
-    // Click "Xem tất cả"
-    const viewAllBtn = getByText('Xem tất cả');
-    fireEvent.press(viewAllBtn);
-
+    fireEvent.press(getByText('Xem tất cả'));
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/(tabs)/results',
       params: {

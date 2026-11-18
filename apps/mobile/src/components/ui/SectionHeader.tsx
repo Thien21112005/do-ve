@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { useTheme } from '@/theme';
+import { usePressed } from './usePressed';
 
 export interface SectionHeaderProps {
   title: string;
   actionText?: string;
   onAction?: () => void;
+  actionTestID?: string;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -14,9 +16,11 @@ export function SectionHeader({
   title,
   actionText,
   onAction,
+  actionTestID,
   style,
 }: SectionHeaderProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   return (
     <View style={[styles.container, style]}>
@@ -32,9 +36,13 @@ export function SectionHeader({
 
       {actionText && onAction ? (
         <Pressable
+          testID={actionTestID}
           accessibilityRole="button"
+          accessibilityLabel={actionText}
           onPress={onAction}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          {...pressHandlers}
+          style={{ opacity: pressed ? 0.7 : 1 }}
         >
           <Text
             variant="caption"
