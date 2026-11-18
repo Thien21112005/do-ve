@@ -1,11 +1,12 @@
 import React, { Component, type ReactNode } from 'react';
-import { View, Text, Pressable, Appearance, StyleSheet } from 'react-native';
+import { View, Pressable, Appearance, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { recordCrash } from '@/services/crashReporting';
 import { colors } from '@/theme/colors';
 import { radii } from '@/theme/tokens';
 import { haptics } from '@/lib/haptics';
 import { Icon } from './Icon';
+import { Text } from './ui/Text';
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
@@ -92,29 +93,27 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
           <View
             className="w-16 h-16 rounded-2xl items-center justify-center mb-4 border"
             style={{
-              backgroundColor: `${themeColors.error}15`,
-              borderColor: `${themeColors.error}30`,
+              backgroundColor: themeColors.errorTint,
+              borderColor: themeColors.error,
             }}
           >
             <Icon name="alertCircle" size={32} color={themeColors.error} />
           </View>
 
           <Text
-            className="text-lg font-bold text-center mb-2"
-            style={{
-              color: themeColors.textMain,
-              fontFamily: 'BeVietnamPro-Bold',
-            }}
+            variant="title"
+            align="center"
+            color={themeColors.textMain}
+            style={styles.titleSpacing}
           >
             Đã xảy ra lỗi không mong muốn
           </Text>
 
           <Text
-            className="text-xs text-center mb-6 leading-relaxed px-4"
-            style={{
-              color: themeColors.textMuted,
-              fontFamily: 'BeVietnamPro-Regular',
-            }}
+            variant="caption"
+            align="center"
+            color={themeColors.textMuted}
+            style={styles.messageSpacing}
           >
             Ứng dụng đã ghi nhận sự cố để xử lý. Dữ liệu vé của bạn vẫn an toàn trên thiết bị.
           </Text>
@@ -133,11 +132,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
             ]}
           >
             <Text
-              className="text-sm font-semibold text-center"
-              style={{
-                color: themeColors.onPrimary,
-                fontFamily: 'BeVietnamPro-SemiBold',
-              }}
+              variant="bodyStrong"
+              align="center"
+              color={themeColors.onPrimary}
             >
               Thử lại
             </Text>
@@ -155,6 +152,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 }
 
 const styles = StyleSheet.create({
+  titleSpacing: {
+    marginBottom: 8,
+  },
+  messageSpacing: {
+    marginBottom: 24,
+    paddingHorizontal: 16,
+  },
   retryBtn: {
     minHeight: 44,
     paddingHorizontal: 24,

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   AccessibilityInfo,
+  StyleSheet,
   type DimensionValue,
   type StyleProp,
   type ViewStyle,
@@ -14,7 +15,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useTheme } from '@/theme';
-import { motion } from '@/theme/tokens';
+import { motion, radii } from '@/theme/tokens';
 
 export interface SkeletonProps {
   width?: DimensionValue;
@@ -28,34 +29,43 @@ export interface SkeletonProps {
 export function Skeleton({
   width = '100%',
   height = 20,
-  borderRadius = 8,
+  borderRadius = 6,
   style,
   testID = 'skeleton-box',
 }: SkeletonProps) {
   const { colors } = useTheme();
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const opacity = useSharedValue(0.4);
+  const opacity = useSharedValue(0.6);
 
   useEffect(() => {
+    let active = true;
+    const applyMotion = (reduce: boolean) => {
+      if (!active) return;
+      if (reduce) {
+        opacity.value = 0.6;
+        return;
+      }
+      opacity.value = withRepeat(
+        withTiming(0.85, {
+          duration: motion.duration.slow,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        -1,
+        true,
+      );
+    };
+
     AccessibilityInfo.isReduceMotionEnabled()
-      .then(setReduceMotion)
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (reduceMotion) {
-      opacity.value = 0.6;
-      return;
-    }
-    opacity.value = withRepeat(
-      withTiming(0.85, {
-        duration: motion.duration.slow * 2,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true,
+      .then((enabled) => applyMotion(Boolean(enabled)))
+      .catch(() => applyMotion(false));
+    const sub = AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      (enabled) => applyMotion(Boolean(enabled)),
     );
-  }, [opacity, reduceMotion]);
+    return () => {
+      active = false;
+      sub?.remove();
+    };
+  }, [opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -90,49 +100,38 @@ export function HomeDrawsSkeleton({
   const { colors } = useTheme();
 
   return (
-    <View testID={testID}>
+    <View
+      testID={testID}
+      style={[
+        styles.frame,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
+    >
       {Array.from({ length: count }).map((_, index) => (
         <View
           key={index}
           testID={`${testID}-card-${index}`}
-          className="p-4 rounded-2xl border mb-3 shadow-sm"
-          style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-          }}
+          style={[
+            styles.homeRow,
+            {
+              borderBottomColor: colors.border,
+              borderBottomWidth: index === count - 1 ? 0 : 1,
+            },
+          ]}
         >
-          {/* Card Header: Station name + Status badge */}
-          <View className="flex-row items-center justify-between pb-2.5">
-            <View>
-              <Skeleton width={130} height={18} borderRadius={6} />
-              <View className="mt-1.5">
-                <Skeleton width={90} height={12} borderRadius={4} />
-              </View>
-            </View>
-            <Skeleton width={80} height={22} borderRadius={11} />
+          <View style={styles.homeRowLeft}>
+            <Skeleton width={120} height={16} borderRadius={5} />
+            <Skeleton
+              width={72}
+              height={12}
+              borderRadius={4}
+              style={styles.homeSub}
+            />
           </View>
-
-          {/* Special Prize Banner */}
-          <View
-            className="py-3 px-3.5 rounded-xl flex-row items-center justify-between mt-2"
-            style={{ backgroundColor: colors.surfaceSubtle }}
-          >
-            <Skeleton width={70} height={14} borderRadius={4} />
-            <Skeleton width={110} height={26} borderRadius={6} />
-          </View>
-
-          {/* Secondary prizes (First & Eighth) + View all cue */}
-          <View
-            className="flex-row items-center justify-between mt-3 pt-2.5 border-t"
-            style={{ borderColor: colors.border }}
-          >
-            <View className="flex-row items-center">
-              <Skeleton width={60} height={12} borderRadius={4} />
-              <View className="mx-2" />
-              <Skeleton width={50} height={12} borderRadius={4} />
-            </View>
-            <Skeleton width={80} height={14} borderRadius={4} />
-          </View>
+          <Skeleton width={96} height={22} borderRadius={6} />
         </View>
       ))}
     </View>
@@ -153,58 +152,110 @@ export function DrawTableSkeleton({
   return (
     <View
       testID={testID}
-      className="p-4 rounded-2xl border"
-      style={{
-        backgroundColor: colors.surface,
-        borderColor: colors.border,
-      }}
+      style={[
+        styles.frame,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+        },
+      ]}
     >
-      {/* Header bar */}
       <View
-        className="flex-row items-center justify-between pb-3 border-b"
-        style={{ borderColor: colors.border }}
+        style={[
+          styles.sheetHeader,
+          {
+            backgroundColor: colors.surfaceSubtle,
+            borderBottomColor: colors.border,
+          },
+        ]}
       >
-        <View>
-          <Skeleton width={140} height={18} borderRadius={6} />
-          <View className="mt-1.5">
-            <Skeleton width={90} height={12} borderRadius={4} />
-          </View>
-        </View>
-        <Skeleton width={80} height={22} borderRadius={11} />
+        <Skeleton width={150} height={16} borderRadius={5} />
+        <Skeleton width={64} height={16} borderRadius={5} />
       </View>
 
-      {/* Table grid skeleton */}
-      <View
-        className="mt-3 rounded-2xl border overflow-hidden"
-        style={{ borderColor: colors.border }}
-      >
-        {Array.from({ length: rowCount }).map((_, rIdx) => (
+      {Array.from({ length: rowCount }).map((_, rIdx) => {
+        const isSpecial = rIdx === rowCount - 1;
+        return (
           <View
             key={`skel-row-${rIdx}`}
-            className="flex-row items-center border-b py-2.5 px-3"
-            style={{
-              borderColor: colors.border,
-              borderBottomWidth: rIdx === rowCount - 1 ? 0 : 1,
-            }}
+            testID={`${testID}-row-${rIdx}`}
+            style={[
+              styles.tableRow,
+              {
+                borderBottomColor: colors.border,
+                borderBottomWidth: isSpecial ? 0 : 1,
+                backgroundColor: isSpecial ? colors.surfaceSubtle : colors.surface,
+              },
+            ]}
           >
-            <View className="w-16 items-center">
-              <Skeleton width={36} height={14} borderRadius={4} />
-            </View>
             <View
-              className="mx-2 w-[1px] h-6"
-              style={{ backgroundColor: colors.border }}
-            />
-            <View className="flex-1 flex-row justify-center items-center gap-2">
+              style={[
+                styles.tierCol,
+                { borderRightColor: colors.border },
+              ]}
+            >
+              <Skeleton width={28} height={14} borderRadius={4} />
+            </View>
+            <View style={styles.numbersCol}>
               <Skeleton
-                width={rIdx === rowCount - 1 ? 120 : 80}
-                height={18}
-                borderRadius={4}
+                width={isSpecial ? 128 : rIdx === 4 ? 196 : 96}
+                height={isSpecial ? 24 : 18}
+                borderRadius={5}
               />
             </View>
           </View>
-        ))}
-      </View>
+        );
+      })}
     </View>
   );
 }
 
+const styles = StyleSheet.create({
+  frame: {
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  homeRow: {
+    minHeight: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  homeRowLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  homeSub: {
+    marginTop: 5,
+  },
+  sheetHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+  },
+  tableRow: {
+    minHeight: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tierCol: {
+    width: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRightWidth: 1,
+  },
+  numbersCol: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+});

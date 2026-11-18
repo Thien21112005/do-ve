@@ -25,8 +25,29 @@ describe('OfflineBanner Component', () => {
     );
 
     const retryBtn = getByTestId('offline-banner-retry-btn');
-    fireEvent.press(retryBtn);
+    await fireEvent.press(retryBtn);
 
     expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders as a compact header sub-strip and keeps retry button outside accessible=true ancestors (T11.48)', async () => {
+    const { getByTestId } = await render(
+      <OfflineBanner isOffline={true} onRetry={jest.fn()} />,
+    );
+
+    const strip = getByTestId('offline-banner-strip');
+    const stripStyles = [strip.props.style].flat();
+    expect(stripStyles).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ borderBottomWidth: 1 }),
+      ]),
+    );
+
+    const retryBtn = getByTestId('offline-banner-retry-btn');
+    let parent = retryBtn.parent;
+    while (parent) {
+      expect(parent.props?.accessible).not.toBe(true);
+      parent = parent.parent;
+    }
   });
 });

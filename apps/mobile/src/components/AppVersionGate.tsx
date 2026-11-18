@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  Text,
   Linking,
   Platform,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from './Icon';
 import { Button } from './ui/Button';
+import { Text } from './ui/Text';
 import { useTheme } from '../theme';
 import { isVersionOutdated, CURRENT_APP_VERSION } from '../lib/version';
 import { STRINGS } from '../lib/strings';

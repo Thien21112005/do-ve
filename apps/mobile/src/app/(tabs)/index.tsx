@@ -24,6 +24,7 @@ import {
   Button,
   SectionHeader,
   ListRow,
+  Banner,
   EmptyState,
   usePressed,
 } from '@/components/ui';
@@ -271,6 +272,9 @@ export default function HomeScreen() {
       className="flex-1 bg-background"
       style={{ backgroundColor: colors.background }}
     >
+      {/* Offline Banner — pinned directly under header (T11.48) */}
+      <OfflineBanner onRetry={refetch} />
+
       <ScrollView
         testID="home-scroll-view"
         contentContainerStyle={{
@@ -291,9 +295,6 @@ export default function HomeScreen() {
           />
         }
       >
-        {/* Offline Banner */}
-        <OfflineBanner onRetry={refetch} />
-
         {/* 1. Today Block — data-driven stations & status without repeated branding (T11.30) */}
         <View className="px-4 pt-4 pb-1" testID="home-today-status">
           <UiText
@@ -451,25 +452,18 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          {/* Error State */}
+          {/* Error State — unified actionable Banner (T11.48) */}
           {!isLoading && isError ? (
-            <View
-              style={[
-                styles.stateCard,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                },
-              ]}
-            >
-              <EmptyState
-                icon={<Icon name="alertCircle" size={28} color={colors.error} />}
-                title={STRINGS.home.errorLatest}
-                actionTitle={STRINGS.common.retry}
-                onAction={() => refetch()}
-                style={{ paddingVertical: 24 }}
-              />
-            </View>
+            <Banner
+              testID="home-draws-error-banner"
+              actionTestID="home-draws-retry-btn"
+              variant="error"
+              title={STRINGS.home.errorLatest}
+              message="Kiểm tra kết nối mạng và bấm Thử lại để cập nhật."
+              icon={<Icon name="alertCircle" size={18} color={colors.error} />}
+              actionText={STRINGS.common.retry}
+              onAction={() => refetch()}
+            />
           ) : null}
 
           {/* Empty State */}

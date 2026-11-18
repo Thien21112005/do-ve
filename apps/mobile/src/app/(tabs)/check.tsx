@@ -26,7 +26,7 @@ import {
   BatchResultList,
   Segmented,
 } from '@/components';
-import { Text, Sheet, Chip, StickyFooter, usePressed } from '@/components/ui';
+import { Text, Sheet, Chip, StickyFooter, Banner, usePressed } from '@/components/ui';
 import { useTheme, layout } from '@/theme';
 import { radii } from '@/theme/tokens';
 import { useQueryClient } from '@tanstack/react-query';
@@ -57,7 +57,6 @@ export default function CheckScreen() {
   const { colors } = useTheme();
   const { pressed: pickerPressed, pressHandlers: pickerHandlers } = usePressed();
   const { pressed: ctaPressed, pressHandlers: ctaHandlers } = usePressed();
-  const { pressed: retryPressed, pressHandlers: retryHandlers } = usePressed();
   const queryClient = useQueryClient();
 
   const {
@@ -382,6 +381,8 @@ export default function CheckScreen() {
         behavior={getCheckKeyboardBehavior()}
         style={styles.flex}
       >
+        <OfflineBanner onRetry={handleOfflineRetry} />
+
         <ScrollView
           ref={scrollViewRef}
           testID="check-scroll-view"
@@ -389,8 +390,6 @@ export default function CheckScreen() {
           contentContainerStyle={styles.scrollContent}
           style={styles.flex}
         >
-          <OfflineBanner onRetry={handleOfflineRetry} />
-
           {/* Mode Selector at top (T11.33 wireframe) */}
           <View style={styles.modeSection}>
             <Segmented
@@ -414,7 +413,11 @@ export default function CheckScreen() {
 
           {/* Compact 1-line draw context + station chips (T11.33) */}
           <View testID="check-context-box" style={styles.contextRow}>
-            <Text variant="body" color={colors.textMuted}>
+            <Text
+              accessibilityRole="header"
+              variant="body"
+              color={colors.textMuted}
+            >
               Kỳ{'  '}
               <Text variant="bodyStrong" color={colors.textMain}>
                 {dayLabel} {shortDate}
@@ -495,58 +498,22 @@ export default function CheckScreen() {
             </View>
           )}
 
-          {/* API Error Notification */}
+          {/* API Error Notification — unified actionable Banner (T11.48) */}
           {activeError ? (
-            <View
+            <Banner
               testID="api-error-banner"
-              style={[
-                styles.errorBanner,
-                {
-                  backgroundColor: colors.errorTint,
-                  borderColor: colors.error,
-                },
-              ]}
-            >
-              <View style={styles.errorBannerText}>
-                <Text variant="bodyStrong" color={colors.error}>
-                  {getApiErrorMessage(
-                    activeErrorObj,
-                    STRINGS.common.unknownError,
-                  )}
-                </Text>
-                <Text
-                  variant="caption"
-                  color={colors.textMuted}
-                  style={styles.errorPreserved}
-                >
-                  {STRINGS.check.dataPreservedNotice}
-                </Text>
-              </View>
-              <Pressable
-                testID="api-error-retry-btn"
-                onPress={handleSubmit}
-                accessibilityRole="button"
-                accessibilityLabel={STRINGS.common.retry}
-                {...retryHandlers}
-                style={[
-                  styles.errorRetryBtn,
-                  {
-                    borderColor: colors.error,
-                    backgroundColor: colors.surface,
-                    opacity: retryPressed ? 0.8 : 1,
-                  },
-                ]}
-              >
-                <Icon name="refresh" size={14} color={colors.error} />
-                <Text
-                  variant="caption"
-                  color={colors.error}
-                  style={styles.retryLabel}
-                >
-                  {STRINGS.common.retry}
-                </Text>
-              </Pressable>
-            </View>
+              actionTestID="api-error-retry-btn"
+              variant="error"
+              title={getApiErrorMessage(
+                activeErrorObj,
+                STRINGS.common.unknownError,
+              )}
+              message={STRINGS.check.dataPreservedNotice}
+              icon={<Icon name="alertCircle" size={18} color={colors.error} />}
+              actionText={STRINGS.common.retry}
+              onAction={handleSubmit}
+              style={styles.errorBannerWrap}
+            />
           ) : null}
 
           {activeLoading ? (
@@ -764,34 +731,9 @@ const styles = StyleSheet.create({
   validationText: {
     marginLeft: 6,
   },
-  errorBanner: {
+  errorBannerWrap: {
     marginTop: 14,
     marginHorizontal: 16,
-    padding: 14,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  errorBannerText: {
-    flex: 1,
-    marginRight: 10,
-  },
-  errorPreserved: {
-    marginTop: 2,
-  },
-  errorRetryBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 44,
-  },
-  retryLabel: {
-    marginLeft: 6,
   },
   batchResultsSection: {
     marginTop: 14,

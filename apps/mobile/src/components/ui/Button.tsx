@@ -39,6 +39,7 @@ export function Button({
   style,
   titleStyle,
   enableHaptics = true,
+  hitSlop = { top: 4, bottom: 4, left: 4, right: 4 },
   onPress,
   ...props
 }: ButtonProps) {
@@ -54,7 +55,6 @@ export function Button({
     onPress?.(e);
   };
 
-  // Determine variant styling
   let bgColor = colors.primary;
   let textColor = colors.onPrimary;
   let borderColor = 'transparent';
@@ -75,13 +75,14 @@ export function Button({
 
   const height = size === 'lg' ? 52 : 44;
   const paddingHorizontal = size === 'lg' ? 24 : 16;
-  const textVariant = size === 'lg' ? 'bodyStrong' : 'bodyStrong';
+  const textVariant = 'bodyStrong';
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
+      hitSlop={hitSlop}
       onPress={handlePress}
       {...pressHandlers}
       style={[
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.md,
-    minHeight: 44, // WCAG minimum touch target
+    minHeight: 44,
   },
   text: {
     textAlign: 'center',

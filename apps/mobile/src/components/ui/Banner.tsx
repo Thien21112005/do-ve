@@ -1,6 +1,13 @@
 import React from 'react';
-import { View, Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  View,
+  Pressable,
+  StyleSheet,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { Text } from './Text';
+import { usePressed } from './usePressed';
 import { useTheme } from '@/theme';
 import { radii } from '@/theme/tokens';
 
@@ -12,7 +19,9 @@ export interface BannerProps {
   title?: string;
   icon?: React.ReactNode;
   actionText?: string;
+  actionTestID?: string;
   onAction?: () => void;
+  testID?: string;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -22,10 +31,13 @@ export function Banner({
   title,
   icon,
   actionText,
+  actionTestID,
   onAction,
+  testID,
   style,
 }: BannerProps) {
   const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
 
   let bgColor = colors.primaryTint;
   let borderColor = colors.primary;
@@ -33,7 +45,7 @@ export function Banner({
 
   if (variant === 'warning') {
     bgColor = colors.pendingTint;
-    borderColor = colors.pending;
+    borderColor = colors.pendingBorder;
     textColor = colors.pending;
   } else if (variant === 'error') {
     bgColor = colors.errorTint;
@@ -41,14 +53,13 @@ export function Banner({
     textColor = colors.error;
   } else if (variant === 'success') {
     bgColor = colors.winTint;
-    borderColor = colors.win;
+    borderColor = colors.winBorder;
     textColor = colors.win;
   }
 
   return (
     <View
-      accessible={true}
-      accessibilityRole="alert"
+      testID={testID}
       style={[
         styles.container,
         {
@@ -58,20 +69,27 @@ export function Banner({
         style,
       ]}
     >
-      <View style={styles.content}>
+      <View
+        accessible={true}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
+        style={styles.content}
+      >
         {icon ? <View style={styles.iconContainer}>{icon}</View> : null}
         <View style={styles.textContainer}>
           {title ? (
             <Text
               variant="bodyStrong"
-              style={[styles.title, { color: textColor }]}
+              color={textColor}
+              style={styles.title}
             >
               {title}
             </Text>
           ) : null}
           <Text
             variant="caption"
-            style={[styles.message, { color: colors.textMain }]}
+            color={colors.textMain}
+            style={styles.message}
           >
             {message}
           </Text>
@@ -80,13 +98,25 @@ export function Banner({
 
       {actionText && onAction ? (
         <Pressable
+          testID={actionTestID}
           accessibilityRole="button"
+          accessibilityLabel={actionText}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           onPress={onAction}
-          style={styles.actionButton}
+          {...pressHandlers}
+          style={[
+            styles.actionButton,
+            {
+              borderColor,
+              backgroundColor: colors.surface,
+              opacity: pressed ? 0.75 : 1,
+            },
+          ]}
         >
           <Text
             variant="caption"
-            style={[styles.actionText, { color: textColor }]}
+            color={textColor}
+            style={styles.actionText}
           >
             {actionText}
           </Text>
@@ -100,7 +130,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 12,
     borderRadius: radii.md,
-    borderLeftWidth: 4,
+    borderWidth: 1,
     marginVertical: 6,
   },
   content: {
@@ -109,7 +139,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginRight: 10,
-    marginTop: 1,
+    marginTop: 2,
   },
   textContainer: {
     flex: 1,
@@ -121,12 +151,17 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   actionButton: {
-    marginTop: 8,
+    marginTop: 10,
     alignSelf: 'flex-end',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    minHeight: 36,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionText: {
-    fontFamily: 'BeVietnamPro-Bold',
+    fontFamily: 'BeVietnamPro-SemiBold',
   },
 });

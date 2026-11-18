@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/theme';
+import { radii } from '@/theme/tokens';
 import { Icon } from './Icon';
+import { Text, usePressed } from './ui';
 import { useNetworkStatus } from '@/hooks';
 import { STRINGS } from '@/lib';
 
@@ -20,8 +22,8 @@ export function OfflineBanner({
 }: OfflineBannerProps) {
   const { colors } = useTheme();
   const netStatus = useNetworkStatus();
+  const { pressed, pressHandlers } = usePressed();
 
-  // If prop provided, use it; otherwise use hook
   const activeOffline =
     isOffline !== undefined ? isOffline : netStatus.isOffline;
 
@@ -31,49 +33,96 @@ export function OfflineBanner({
 
   return (
     <View
-      testID={testID}
-      className="mx-4 my-2 px-3.5 py-2.5 rounded-xl border flex-row items-center justify-between"
-      style={{
-        backgroundColor: colors.pendingBg,
-        borderColor: colors.pendingBorder,
-      }}
-      accessibilityRole="alert"
-      accessibilityLiveRegion="polite"
+      testID="offline-banner-strip"
+      style={[
+        styles.strip,
+        {
+          backgroundColor: colors.pendingTint,
+          borderBottomColor: colors.pendingBorder,
+        },
+      ]}
     >
-      <View className="flex-row items-center flex-1 mr-2">
-        <Icon name="alertCircle" size={18} color={colors.pending} />
+      <View
+        testID={testID}
+        accessible={true}
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
+        style={styles.alertContent}
+      >
+        <Icon name="alertCircle" size={15} color={colors.pending} />
         <Text
-          className="ml-2 text-xs font-medium flex-1"
-          style={{ color: colors.pending }}
+          variant="caption"
+          color={colors.pending}
           numberOfLines={2}
+          style={styles.message}
         >
           {message}
         </Text>
       </View>
 
-      {onRetry && (
-        <TouchableOpacity
+      {onRetry ? (
+        <Pressable
           testID="offline-banner-retry-btn"
           onPress={onRetry}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          className="px-2.5 py-1.5 rounded-lg border flex-row items-center justify-center min-h-[44px]"
-          style={{
-            borderColor: colors.pending,
-            backgroundColor: `${colors.pending}15`,
-          }}
           accessibilityRole="button"
           accessibilityLabel={STRINGS.common.retry}
+          {...pressHandlers}
+          style={[
+            styles.retryBtn,
+            {
+              borderColor: colors.pendingBorder,
+              backgroundColor: colors.surface,
+              opacity: pressed ? 0.72 : 1,
+            },
+          ]}
         >
-          <Icon name="refresh" size={13} color={colors.pending} />
+          <Icon name="refresh" size={12} color={colors.pending} />
           <Text
-            className="ml-1 text-xs font-semibold"
-            style={{ color: colors.pending }}
+            variant="caption"
+            color={colors.pending}
+            style={styles.retryText}
           >
             {STRINGS.common.retry}
           </Text>
-        </TouchableOpacity>
-      )}
+        </Pressable>
+      ) : null}
     </View>
   );
 }
 
+const styles = StyleSheet.create({
+  strip: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+  },
+  alertContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 10,
+  },
+  message: {
+    marginLeft: 6,
+    flex: 1,
+  },
+  retryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 28,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+  },
+  retryText: {
+    marginLeft: 4,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+});

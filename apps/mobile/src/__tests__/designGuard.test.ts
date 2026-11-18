@@ -9,15 +9,14 @@ import { scanDesignDebt, type DebtCounts } from '@/test-utils/designDebt';
  * text-white. Numbers may only go DOWN. When you migrate a file, lower
  * (or delete) its entry here. Goal at the end of Phase 11: empty.
  */
-const ALLOWLIST: DebtCounts = {
-  'components/AppVersionGate.tsx': { rawRnPrimitive: 1 },
-  'components/ErrorBoundary.tsx': { rawRnPrimitive: 1, alphaConcat: 2 },
-  'components/Icon.tsx': { hexColor: 1 },
-  'components/OfflineBanner.tsx': { rawRnPrimitive: 2, alphaConcat: 1 },
-};
+const ALLOWLIST: DebtCounts = {};
 
 describe('design-debt ratchet (T11.06)', () => {
   const actual = scanDesignDebt(process.cwd() + '/src');
+
+  it('has an empty allowlist at M11.3 completion (T11.48)', () => {
+    expect(Object.keys(ALLOWLIST)).toHaveLength(0);
+  });
 
   it('adds no new design debt anywhere', () => {
     const regressions: string[] = [];

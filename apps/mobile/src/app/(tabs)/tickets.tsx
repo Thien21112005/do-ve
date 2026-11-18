@@ -20,6 +20,7 @@ import {
 import { useTheme, layout, radii } from '@/theme';
 import {
   Icon,
+  OfflineBanner,
   TicketEmptyIllustration,
   type TicketFilterStatus,
 } from '@/components';
@@ -278,6 +279,9 @@ export default function TicketsScreen() {
       style={{ backgroundColor: colors.background }}
       testID="tickets-screen"
     >
+      {/* Offline Banner — pinned directly under header (T11.48) */}
+      <OfflineBanner onRetry={() => refetchPending(true)} />
+
       {/* Corrupt storage: data kept, writes blocked (T11.07) */}
       {storeHealth.state === 'corrupt' ? (
         <View style={styles.bannerWrap}>

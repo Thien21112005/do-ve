@@ -29,6 +29,7 @@ import {
   type LucideIcon,
   type LucideProps,
 } from 'lucide-react-native';
+import { colors } from '@/theme/colors';
 
 export const iconMap = {
   home: Home,
@@ -71,7 +72,7 @@ export interface IconProps extends LucideProps {
 export function Icon({
   name,
   size = 24,
-  color = '#0f172a',
+  color = colors.light.textMain,
   strokeWidth = 2,
   ...rest
 }: IconProps) {

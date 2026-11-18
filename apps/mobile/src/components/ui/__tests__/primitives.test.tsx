@@ -150,7 +150,7 @@ describe('UI Primitives (T10.09)', () => {
 
       expect(getByText('KẾT QUẢ MỚI NHẤT')).toBeTruthy();
       const actionBtn = getByRole('button');
-      fireEvent.press(actionBtn);
+      await fireEvent.press(actionBtn);
       expect(onAction).toHaveBeenCalledTimes(1);
     });
   });
@@ -171,8 +171,39 @@ describe('UI Primitives (T10.09)', () => {
       expect(getByText('Không có kết nối mạng')).toBeTruthy();
 
       const actionBtn = getByRole('button');
-      fireEvent.press(actionBtn);
+      await fireEvent.press(actionBtn);
       expect(onAction).toHaveBeenCalledTimes(1);
+
+      let parent = actionBtn.parent;
+      while (parent) {
+        expect(parent.props?.accessible).not.toBe(true);
+        parent = parent.parent;
+      }
+    });
+
+    it('uses 1px hairline border instead of thick colored left accent (T11.48)', async () => {
+      const { getByTestId } = await render(
+        <Banner
+          testID="error-banner"
+          message="Lỗi tải dữ liệu"
+          variant="error"
+          actionText="Thử lại"
+          actionTestID="error-banner-action"
+          onAction={jest.fn()}
+        />,
+      );
+
+      const banner = getByTestId('error-banner');
+      const styles = [banner.props.style].flat();
+      expect(styles).toEqual(
+        expect.arrayContaining([expect.objectContaining({ borderWidth: 1 })]),
+      );
+      for (const s of styles) {
+        if (s && typeof s === 'object' && 'borderLeftWidth' in s) {
+          expect((s as { borderLeftWidth?: number }).borderLeftWidth).toBeLessThanOrEqual(1);
+        }
+      }
+      expect(getByTestId('error-banner-action')).toBeTruthy();
     });
   });
 

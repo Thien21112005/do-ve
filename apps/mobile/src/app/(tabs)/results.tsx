@@ -23,7 +23,7 @@ import {
 import { getPastDays } from '@/components/DateStrip';
 import {
   Text,
-  Button,
+  Banner,
   Sheet,
   Chip,
   usePressed,
@@ -202,6 +202,9 @@ export default function ResultsScreen() {
       className="flex-1 bg-background"
       style={{ backgroundColor: colors.background }}
     >
+      {/* Offline Banner — pinned directly under header, retries current mode (T11.19 / T11.48) */}
+      <OfflineBanner onRetry={viewMode === 'all' ? refetchDaily : refetch} />
+
       <ScrollView
         testID="results-scroll-view"
         contentContainerStyle={{
@@ -223,9 +226,6 @@ export default function ResultsScreen() {
           />
         }
       >
-        {/* Offline Banner — retries what is on screen (T11.19) */}
-        <OfflineBanner onRetry={viewMode === 'all' ? refetchDaily : refetch} />
-
         {/* Compact Date Navigation Bar: ‹ Chủ nhật, 16/11/2026 › 📅 (T11.39) */}
         <View testID="results-date-nav" style={styles.dateNavRow}>
           <View
@@ -361,37 +361,19 @@ export default function ResultsScreen() {
             showLoading ? (
               <DrawTableSkeleton testID="draw-table-skeleton" />
             ) : isDailyError ? (
-              <View
+              <Banner
                 testID="results-error-container"
-                style={[
-                  styles.stateCard,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: colors.error,
-                  },
-                ]}
-              >
-                <Icon name="alertCircle" size={28} color={colors.error} />
-                <Text
-                  variant="bodyStrong"
-                  align="center"
-                  color={colors.error}
-                  style={styles.stateTitle}
-                >
-                  {getApiErrorMessage(
-                    dailyError,
-                    STRINGS.results.errorLoading,
-                  )}
-                </Text>
-                <Button
-                  testID="results-error-retry-btn"
-                  variant="secondary"
-                  size="md"
-                  title={STRINGS.common.retry}
-                  onPress={() => refetchDaily()}
-                  style={styles.retryBtn}
-                />
-              </View>
+                actionTestID="results-error-retry-btn"
+                variant="error"
+                title={getApiErrorMessage(
+                  dailyError,
+                  STRINGS.results.errorLoading,
+                )}
+                message="Bấm Thử lại để cập nhật bảng mở thưởng."
+                icon={<Icon name="alertCircle" size={18} color={colors.error} />}
+                actionText={STRINGS.common.retry}
+                onAction={() => refetchDaily()}
+              />
             ) : dailyDraws.length === 0 ? (
               <View
                 testID="results-empty-container"
@@ -493,34 +475,16 @@ export default function ResultsScreen() {
           ) : showLoading ? (
             <DrawTableSkeleton testID="draw-table-skeleton" />
           ) : isError ? (
-            <View
+            <Banner
               testID="results-error-container"
-              style={[
-                styles.stateCard,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.error,
-                },
-              ]}
-            >
-              <Icon name="alertCircle" size={28} color={colors.error} />
-              <Text
-                variant="bodyStrong"
-                align="center"
-                color={colors.error}
-                style={styles.stateTitle}
-              >
-                {getApiErrorMessage(error, STRINGS.results.errorLoading)}
-              </Text>
-              <Button
-                testID="results-error-retry-btn"
-                variant="secondary"
-                size="md"
-                title={STRINGS.common.retry}
-                onPress={() => refetch()}
-                style={styles.retryBtn}
-              />
-            </View>
+              actionTestID="results-error-retry-btn"
+              variant="error"
+              title={getApiErrorMessage(error, STRINGS.results.errorLoading)}
+              message="Bấm Thử lại để cập nhật bảng mở thưởng."
+              icon={<Icon name="alertCircle" size={18} color={colors.error} />}
+              actionText={STRINGS.common.retry}
+              onAction={() => refetch()}
+            />
           ) : !selectedStation ? (
             <View
               testID="results-no-station-container"
