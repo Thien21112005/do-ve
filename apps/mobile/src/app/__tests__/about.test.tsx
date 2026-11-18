@@ -72,4 +72,10 @@ describe('AboutScreen (Giới thiệu & Miễn trừ)', () => {
     const hasBorder = flatStyles.some((s) => s && s.borderWidth && s.borderWidth > 0);
     expect(hasBorder).toBe(false);
   });
+
+  it('contains clear non-gambling disclaimer and zero ticket-purchase solicitation copy (T11.47)', async () => {
+    const { getByText, queryByText } = await render(<AboutScreen />);
+    expect(getByText(/không bán vé số/i)).toBeTruthy();
+    expect(queryByText(/mua vé ngay|thử vận may|đổi đời|săn giải/i)).toBeNull();
+  });
 });
