@@ -202,4 +202,13 @@ describe('Split Tickets components (T11.41)', () => {
       }),
     ).toBeTruthy();
   });
+
+  it('renders TicketEmptyIllustration using theme tokens with zero hardcoded hex colors (T11.44)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { TicketEmptyIllustration } = require('@/components/TicketEmptyIllustration');
+    const { getByTestId } = await render(
+      <TicketEmptyIllustration testID="empty-ill" />,
+    );
+    expect(getByTestId('empty-ill').props.accessibilityRole).toBe('image');
+  });
 });

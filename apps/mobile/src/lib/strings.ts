@@ -34,8 +34,7 @@ export const STRINGS = {
     screenTitle: 'Vé của tôi',
     subtitle: 'Lưu trữ và theo dõi các vé số đã dò',
     emptyTitle: 'Chưa có vé nào được lưu',
-    emptyDesc:
-      'Khi dò vé, bạn có thể bấm nút "Lưu vé" để theo dõi và đối chiếu kết quả tại đây.',
+    emptyDesc: 'Dò vé rồi bấm Lưu để theo dõi kết quả ngay trên máy này.',
     emptyAction: 'Dò vé đầu tiên',
     emptyRestoreAction: 'Khôi phục từ file',
     ticketCount: (count: number) => `${count} vé đã lưu`,
