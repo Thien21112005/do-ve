@@ -51,7 +51,7 @@ describe('Home quick check uses one draw session (T11.08)', () => {
     const { getByTestId, getByText } = await render(<HomeScreen />, { wrapper: Wrapper });
 
     expect(getByText('Tiền Giang')).toBeTruthy();
-    fireEvent.changeText(getByTestId('home-ticket-input'), '012345');
+    fireEvent.changeText(getByTestId('home-ticket-input-digit-0'), '012345');
     await waitFor(() =>
       expect(getByTestId('home-quick-check-btn').props.accessibilityState.disabled).toBe(false),
     );

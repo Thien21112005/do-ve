@@ -171,11 +171,11 @@ describe('Tab Screens', () => {
     await waitFor(() => {
       expect(rendered.getByTestId('home-today-status')).toBeTruthy();
       expect(rendered.getByTestId('home-my-tickets-shortcut')).toBeTruthy();
-      expect(rendered.getByTestId('home-ticket-input')).toBeTruthy();
+      expect(rendered.getByTestId('home-ticket-input-digit-0')).toBeTruthy();
     });
 
-    // Input 6 digits into the home ticket input
-    const ticketInput = rendered.getByTestId('home-ticket-input');
+    // Input 6 digits into the 6-box TicketInput on Home (T11.31)
+    const ticketInput = rendered.getByTestId('home-ticket-input-digit-0');
     fireEvent.changeText(ticketInput, '654321');
 
     // Wait for the button to become enabled
@@ -188,17 +188,43 @@ describe('Tab Screens', () => {
     const checkBtn = rendered.getByTestId('home-quick-check-btn');
     fireEvent.press(checkBtn);
 
-    // Check that inline result appears without switching tabs
+    // Check that inline ResultStub appears without switching tabs
     await waitFor(() => {
       expect(apiCheck.checkTicket).toHaveBeenCalledWith(
         expect.objectContaining({
           ticket: '654321',
         }),
       );
-      expect(rendered.getByTestId('home-quick-check-result')).toBeTruthy();
-      expect(rendered.getByText(/Trúng thưởng/i)).toBeTruthy();
-      expect(rendered.getByTestId('home-save-ticket-btn')).toBeTruthy();
+      expect(rendered.getByTestId('home-quick-check-result-container')).toBeTruthy();
+      expect(rendered.getByText('Hai tỷ đồng')).toBeTruthy();
+      expect(rendered.getByTestId('result-card-save-btn')).toBeTruthy();
     });
+  });
+
+  it('allows saving a non-winning ticket from Home quick check stub (T11.31)', async () => {
+    (apiCheck.checkTicket as jest.Mock).mockResolvedValueOnce({
+      ticket: '112233',
+      stationCode: 'tp-hcm',
+      stationName: 'TP. Hồ Chí Minh',
+      drawDate: '2026-11-14',
+      status: 'CHECKED',
+      won: false,
+      wins: [],
+      totalAmount: 0,
+    });
+
+    const { getByTestId, findByTestId } = await render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+
+    fireEvent.changeText(getByTestId('home-ticket-input-digit-0'), '112233');
+    await waitFor(() =>
+      expect(getByTestId('home-quick-check-btn').props.accessibilityState.disabled).toBe(false),
+    );
+    fireEvent.press(getByTestId('home-quick-check-btn'));
+
+    // Non-winning stub still offers Save button on Home
+    expect(await findByTestId('result-card-save-btn')).toBeTruthy();
   });
 
   it('shows live drawing state during draw window 16h10 to 16h40 VN (T10.20)', async () => {

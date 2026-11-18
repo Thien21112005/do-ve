@@ -4,8 +4,6 @@ import {
   Text,
   ScrollView,
   Pressable,
-  TextInput,
-  ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
   Animated,
@@ -13,12 +11,24 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Icon, OfflineBanner, HomeDrawsSkeleton } from '@/components';
-import { Text as UiText, Perforation } from '@/components/ui';
+import {
+  Icon,
+  OfflineBanner,
+  HomeDrawsSkeleton,
+  TicketInput,
+  ResultStub,
+} from '@/components';
+import {
+  Text as UiText,
+  Perforation,
+  Chip,
+  Button,
+  usePressed,
+} from '@/components/ui';
 import { useLatestDraws, useCheckTicket, useActiveDrawSession } from '@/hooks';
 import { useSavedTickets, saveTicket } from '@/store/ticketStore';
 import { useTheme, layout } from '@/theme';
-import { formatDateVN, formatCurrency } from '@/lib/format';
+import { formatDateVN } from '@/lib/format';
 import { todayVN, nowVN, weekdayVN, isLiveDrawingVN } from '@/lib/date';
 import { WEEKLY_SCHEDULE } from '@/lib/schedule';
 import { STRINGS } from '@/lib/strings';
@@ -27,6 +37,7 @@ import { computeTodayStatus } from '@/lib/todayStatus';
 
 export default function HomeScreen() {
   const { colors } = useTheme();
+  const { pressed: changePressed, pressHandlers: changeHandlers } = usePressed();
   const router = useRouter();
   const { draws, isLoading, isError, refetch } = useLatestDraws();
   const {
@@ -135,11 +146,12 @@ export default function HomeScreen() {
   }, [refetch]);
 
   const handleQuickCheck = () => {
-    if (ticketNumber.length !== 6 || isChecking) return;
+    const clean = ticketNumber.replace(/\D/g, '');
+    if (clean.length !== 6 || isChecking) return;
     haptics.medium();
     setSaved(false);
     doCheckTicket({
-      ticket: ticketNumber,
+      ticket: clean,
       stationCode: activeStation,
       drawDate: session.date,
     });
@@ -244,231 +256,85 @@ export default function HomeScreen() {
           <Perforation />
         </View>
 
-        {/* 2. Inline Quick Check Card (T10.18) */}
+        {/* 2. Inline Quick Check — 6-box TicketInput + ResultStub (T11.31) */}
         <View className="px-4 py-2">
-          <View
-            className="p-4 rounded-2xl border shadow-sm"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }}
-          >
-            <View className="flex-row items-center justify-between mb-2">
-              <View className="flex-row items-center">
-                <View
-                  className="w-7 h-7 rounded-lg items-center justify-center mr-2.5"
-                  style={{ backgroundColor: `${colors.primary}1A` }}
-                >
-                  <Icon name="search" size={16} color={colors.primary} />
-                </View>
-                <Text
-                  className="text-base font-bold"
-                  style={{ color: colors.textMain }}
-                >
-                  {STRINGS.home.quickCheckTitle}
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => router.push('/(tabs)/check')}
-                className="flex-row items-center"
-              >
-                <Text
-                  className="text-xs font-medium"
-                  style={{ color: colors.primary }}
-                >
-                  Dò nhiều vé
-                </Text>
-                <Icon name="chevronRight" size={12} color={colors.primary} />
-              </Pressable>
-            </View>
-
-            <Text
-              className="text-xs leading-relaxed mb-3"
-              style={{ color: colors.textMuted }}
+          <View className="flex-row items-center justify-between mb-2.5">
+            <UiText variant="title" color={colors.textMain}>
+              {STRINGS.home.quickCheckTitle}
+            </UiText>
+            <Pressable
+              testID="home-quick-check-change-btn"
+              accessibilityRole="button"
+              accessibilityLabel="Đổi kỳ dò hoặc dò nhiều vé"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              onPress={() => router.push('/(tabs)/check')}
+              {...changeHandlers}
+              style={{ opacity: changePressed ? 0.7 : 1 }}
             >
-              {STRINGS.home.quickCheckSession(
-                sessionDay?.dayName ?? '',
-                formatDateVN(session.date),
-              )}
-            </Text>
-
-            {/* Today Station Selector Chips */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-3"
-              contentContainerStyle={{ paddingRight: 8 }}
-            >
-              {session.stations.map((st) => {
-                const isSelected = activeStation === st.code;
-                return (
-                  <TouchableOpacity
-                    key={st.code}
-                    onPress={() => setSelectedStation(st.code)}
-                    className="mr-2 px-3 py-1.5 rounded-lg border"
-                    style={{
-                      backgroundColor: isSelected
-                        ? colors.primary
-                        : colors.surfaceSubtle,
-                      borderColor: isSelected
-                        ? colors.primary
-                        : colors.border,
-                    }}
-                  >
-                    <Text
-                      className="text-xs font-medium"
-                      style={{
-                        color: isSelected ? '#FFFFFF' : colors.textMain,
-                      }}
-                    >
-                      {st.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            {/* Ticket Input & Submit Button */}
-            {!result ? (
-              <View className="space-y-3">
-                <TextInput
-                  testID="home-ticket-input"
-                  value={ticketNumber}
-                  onChangeText={(val) => setTicketNumber(val.replace(/\D/g, '').slice(0, 6))}
-                  placeholder={STRINGS.home.quickCheckPlaceholder}
-                  placeholderTextColor={colors.textMuted}
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  className="px-3.5 py-3 rounded-xl border text-base font-bold text-center tracking-widest"
-                  style={{
-                    backgroundColor: colors.surfaceSubtle,
-                    borderColor: colors.border,
-                    color: colors.textMain,
-                    fontVariant: ['tabular-nums'],
-                  }}
-                />
-
-                <TouchableOpacity
-                  testID="home-quick-check-btn"
-                  accessibilityRole="button"
-                  accessibilityLabel={STRINGS.home.quickCheckBtn}
-                  onPress={handleQuickCheck}
-                  disabled={ticketNumber.length !== 6 || isChecking}
-                  className="mt-2.5 py-3 px-4 rounded-xl flex-row items-center justify-center"
-                  style={{
-                    backgroundColor:
-                      ticketNumber.length === 6 && !isChecking
-                        ? colors.primary
-                        : colors.border,
-                  }}
-                >
-                  {isChecking ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <>
-                      <Text className="text-white font-bold text-sm mr-1.5">
-                        {STRINGS.home.quickCheckBtn}
-                      </Text>
-                      <Icon name="chevronRight" size={16} color="#FFFFFF" />
-                    </>
-                  )}
-                </TouchableOpacity>
-              </View>
-            ) : (
-              /* Inline Result Display */
-              <View
-                testID="home-quick-check-result"
-                className="p-3.5 rounded-xl border"
-                style={{
-                  backgroundColor: result.won
-                    ? `${colors.win}12`
-                    : colors.surfaceSubtle,
-                  borderColor: result.won ? colors.win : colors.border,
-                }}
-              >
-                <View className="flex-row items-center justify-between mb-1.5">
-                  <Text
-                    className="text-xs font-semibold"
-                    style={{
-                      color: result.won ? colors.win : colors.textMuted,
-                    }}
-                  >
-                    Số vé: {result.ticket} · {result.stationName || activeStation}
-                  </Text>
-                  <View
-                    className="px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: result.won
-                        ? colors.win
-                        : colors.textMuted,
-                    }}
-                  >
-                    <Text className="text-[10px] font-bold text-white">
-                      {result.won ? STRINGS.check.resultWonBadge : STRINGS.check.resultLostBadge}
-                    </Text>
-                  </View>
-                </View>
-
-                {result.won ? (
-                  <View className="my-1">
-                    <Text
-                      className="text-base font-bold"
-                      style={{ color: colors.win }}
-                    >
-                      {STRINGS.check.resultWonTitle}
-                    </Text>
-                    <Text
-                      className="text-xl font-bold tracking-tight mt-0.5"
-                      style={{ color: colors.win, fontVariant: ['tabular-nums'] }}
-                    >
-                      {formatCurrency(result.totalAmount)}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text
-                    className="text-xs my-1"
-                    style={{ color: colors.textMuted }}
-                  >
-                    {STRINGS.check.lostNotice(result.ticket)}
-                  </Text>
-                )}
-
-                <View className="flex-row items-center justify-end mt-2 pt-2 border-t" style={{ borderColor: colors.border }}>
-                  {result.won && (
-                    <TouchableOpacity
-                      testID="home-save-ticket-btn"
-                      onPress={handleSaveResultTicket}
-                      disabled={saved}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      className="px-3 py-1.5 rounded-lg mr-2 border min-h-[44px] justify-center items-center"
-                      style={{
-                        backgroundColor: saved ? colors.surfaceSubtle : colors.surface,
-                        borderColor: colors.border,
-                      }}
-                    >
-                      <Text
-                        className="text-xs font-semibold"
-                        style={{ color: saved ? colors.textMuted : colors.primary }}
-                      >
-                        {saved ? STRINGS.check.savedTicket : STRINGS.check.saveTicket}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  <TouchableOpacity
-                    testID="home-reset-check-btn"
-                    onPress={handleResetQuickCheck}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    className="px-3 py-1.5 rounded-lg min-h-[44px] justify-center items-center"
-                    style={{ backgroundColor: colors.primary }}
-                  >
-                    <Text className="text-xs font-semibold text-white">
-                      {STRINGS.check.checkAgain}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
+              <UiText variant="caption" color={colors.textMuted}>
+                kỳ {sessionDay?.shortName || ''}{' '}
+                {formatDateVN(session.date).slice(0, 5)}{'  '}
+                <UiText variant="bodyStrong" color={colors.primary}>
+                  Đổi ›
+                </UiText>
+              </UiText>
+            </Pressable>
           </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mb-3"
+            contentContainerStyle={{ gap: 8, paddingRight: 8 }}
+          >
+            {session.stations.map((st) => (
+              <Chip
+                key={st.code}
+                label={st.name}
+                selected={activeStation === st.code}
+                onPress={() => {
+                  setSelectedStation(st.code);
+                  if (result) resetCheck();
+                  setSaved(false);
+                }}
+              />
+            ))}
+          </ScrollView>
+
+          <TicketInput
+            testID="home-ticket-input"
+            autoFocus={false}
+            value={ticketNumber}
+            onChangeText={(val) => {
+              setTicketNumber(val);
+              if (result) resetCheck();
+              setSaved(false);
+            }}
+            disabled={isChecking}
+          />
+
+          {!result ? (
+            <Button
+              testID="home-quick-check-btn"
+              size="lg"
+              title={STRINGS.home.quickCheckBtn}
+              accessibilityLabel={STRINGS.home.quickCheckBtn}
+              loading={isChecking}
+              disabled={!/^\d{6}$/.test(ticketNumber) || isChecking}
+              onPress={handleQuickCheck}
+              style={{ marginTop: 12 }}
+            />
+          ) : (
+            <ResultStub
+              result={result}
+              compact={true}
+              showPerforation={true}
+              testID="home-quick-check-result"
+              onSaveTicket={handleSaveResultTicket}
+              isSaved={saved}
+              onCheckAgain={handleResetQuickCheck}
+            />
+          )}
         </View>
 
         {/* 3. My Tickets Shortcut (T10.18) */}
