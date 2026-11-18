@@ -27,26 +27,39 @@ public class CheckTicketUseCase {
   private final StationSchedulePort stationSchedulePort;
   private final StationRepository stationRepository;
   private final Clock clock;
+  private final Optional<OnDemandDrawBackfillService> backfillService;
 
   @Autowired
   public CheckTicketUseCase(
       DrawRepository drawRepository,
       StationSchedulePort stationSchedulePort,
       StationRepository stationRepository,
-      Optional<Clock> clock) {
+      Optional<Clock> clock,
+      Optional<OnDemandDrawBackfillService> backfillService) {
     this.drawRepository = Objects.requireNonNull(drawRepository, "drawRepository must not be null");
     this.stationSchedulePort =
         Objects.requireNonNull(stationSchedulePort, "stationSchedulePort must not be null");
     this.stationRepository =
         Objects.requireNonNull(stationRepository, "stationRepository must not be null");
     this.clock = clock.orElseGet(() -> Clock.system(VN_ZONE));
+    this.backfillService =
+        Objects.requireNonNull(backfillService, "backfillService must not be null");
+  }
+
+  public CheckTicketUseCase(
+      DrawRepository drawRepository,
+      StationSchedulePort stationSchedulePort,
+      StationRepository stationRepository,
+      Optional<Clock> clock) {
+    this(drawRepository, stationSchedulePort, stationRepository, clock, Optional.empty());
   }
 
   public CheckTicketUseCase(
       DrawRepository drawRepository,
       StationSchedulePort stationSchedulePort,
       StationRepository stationRepository) {
-    this(drawRepository, stationSchedulePort, stationRepository, Optional.empty());
+    this(
+        drawRepository, stationSchedulePort, stationRepository, Optional.empty(), Optional.empty());
   }
 
   public CheckTicketUseCase(
@@ -54,7 +67,12 @@ public class CheckTicketUseCase {
       StationSchedulePort stationSchedulePort,
       StationRepository stationRepository,
       Clock clock) {
-    this(drawRepository, stationSchedulePort, stationRepository, Optional.ofNullable(clock));
+    this(
+        drawRepository,
+        stationSchedulePort,
+        stationRepository,
+        Optional.ofNullable(clock),
+        Optional.empty());
   }
 
   public CheckOutcome check(TicketNumber ticket, String stationCode, LocalDate drawDate) {
@@ -77,6 +95,10 @@ public class CheckTicketUseCase {
     }
 
     Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
+    if ((drawResult.isEmpty() || !drawResult.get().isComplete()) && backfillService.isPresent()) {
+      backfillService.get().ensureDateIngested(drawDate);
+      drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
+    }
     if (drawResult.isEmpty() || !drawResult.get().isComplete()) {
       return CheckOutcome.notAvailable(ticket, stationCode, drawDate, null);
     }
@@ -104,6 +126,10 @@ public class CheckTicketUseCase {
     }
 
     Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
+    if ((drawResult.isEmpty() || !drawResult.get().isComplete()) && backfillService.isPresent()) {
+      backfillService.get().ensureDateIngested(drawDate);
+      drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
+    }
     if (drawResult.isEmpty() || !drawResult.get().isComplete()) {
       return tickets.stream()
           .map(t -> CheckOutcome.notAvailable(t, stationCode, drawDate, null))

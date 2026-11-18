@@ -636,4 +636,55 @@ class ReadEndpointsMockMvcTest {
         .andExpect(status().isOk())
         .andExpect(header().string("Cache-Control", "max-age=60"));
   }
+
+  @Test
+  @DisplayName("T12.02: GET /api/v1/draws and /latest-day lazy-backfill missing past draws")
+  void lazyBackfillPopulatesMissingPastDrawsOnRead() throws Exception {
+    LocalDate sunday = LocalDate.of(2026, 11, 8);
+    scheduleSundayThreeStations();
+
+    com.dove.application.StationSchedulePort schedulePort =
+        d ->
+            stationScheduleRepository.findStationsDrawingOn(d.getDayOfWeek().getValue()).stream()
+                .map(StationEntity::getCode)
+                .toList();
+    com.dove.application.ResultSource fakeSource =
+        (stationCode, date) -> Optional.of(completeDraw(stationCode, date));
+    com.dove.application.IngestDrawsUseCase ingestUseCase =
+        new com.dove.application.IngestDrawsUseCase(schedulePort, fakeSource, drawRepository);
+    Clock clock = Clock.fixed(Instant.parse("2026-11-09T08:00:00Z"), VN_ZONE); // 15:00 ICT Nov 9
+    com.dove.application.OnDemandDrawBackfillService backfillService =
+        new com.dove.application.OnDemandDrawBackfillService(
+            ingestUseCase,
+            schedulePort,
+            drawRepository,
+            clock,
+            true,
+            60,
+            java.time.Duration.ofSeconds(60));
+
+    DrawController controllerWithBackfill =
+        new DrawController(
+            stationScheduleRepository, drawRepository, stationRepository, clock, backfillService);
+    MockMvc mvcWithBackfill =
+        MockMvcBuilders.standaloneSetup(controllerWithBackfill)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .build();
+
+    // Initially DB is empty; calling /api/v1/draws/latest-day (no date) at 15:00 Nov 9
+    // auto-backfills yesterday (2026-11-08) and returns all 3 stations!
+    mvcWithBackfill
+        .perform(get("/api/v1/draws/latest-day"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(3)))
+        .andExpect(jsonPath("$[0].drawDate").value("2026-11-08"));
+
+    // Calling GET /api/v1/draws for another missing past Sunday (2026-11-01) auto-backfills it too!
+    mvcWithBackfill
+        .perform(get("/api/v1/draws").param("date", "2026-11-01").param("station", "tp-hcm"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.stationCode").value("tp-hcm"))
+        .andExpect(jsonPath("$.drawDate").value("2026-11-01"))
+        .andExpect(jsonPath("$.numbers.SPECIAL[0]").value("500001"));
+  }
 }

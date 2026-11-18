@@ -12,3 +12,10 @@ management:
     health:
       show-details: always
 
+dove:
+  ingestion:
+    on-demand-backfill:
+      enabled: false
+    startup-backfill:
+      enabled: false
+

@@ -9,6 +9,7 @@ import com.dove.adapter.web.error.ResultNotAvailableException;
 import com.dove.adapter.web.error.StationNotDrawingException;
 import com.dove.adapter.web.error.StationNotFoundException;
 import com.dove.application.DrawRepository;
+import com.dove.application.OnDemandDrawBackfillService;
 import com.dove.domain.DrawResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,13 +42,15 @@ public class DrawController {
   private final DrawRepository drawRepository;
   private final StationRepository stationRepository;
   private final Clock clock;
+  private final Optional<OnDemandDrawBackfillService> backfillService;
 
   @Autowired
   public DrawController(
       StationScheduleRepository stationScheduleRepository,
       DrawRepository drawRepository,
       StationRepository stationRepository,
-      Optional<Clock> clock) {
+      Optional<Clock> clock,
+      Optional<OnDemandDrawBackfillService> backfillService) {
     this.stationScheduleRepository =
         Objects.requireNonNull(
             stationScheduleRepository, "stationScheduleRepository must not be null");
@@ -55,13 +58,28 @@ public class DrawController {
     this.stationRepository =
         Objects.requireNonNull(stationRepository, "stationRepository must not be null");
     this.clock = clock.orElseGet(() -> Clock.system(VN_ZONE));
+    this.backfillService =
+        Objects.requireNonNull(backfillService, "backfillService must not be null");
+  }
+
+  public DrawController(
+      StationScheduleRepository stationScheduleRepository,
+      DrawRepository drawRepository,
+      StationRepository stationRepository,
+      Optional<Clock> clock) {
+    this(stationScheduleRepository, drawRepository, stationRepository, clock, Optional.empty());
   }
 
   public DrawController(
       StationScheduleRepository stationScheduleRepository,
       DrawRepository drawRepository,
       StationRepository stationRepository) {
-    this(stationScheduleRepository, drawRepository, stationRepository, Optional.empty());
+    this(
+        stationScheduleRepository,
+        drawRepository,
+        stationRepository,
+        Optional.empty(),
+        Optional.empty());
   }
 
   public DrawController(
@@ -69,7 +87,26 @@ public class DrawController {
       DrawRepository drawRepository,
       StationRepository stationRepository,
       Clock clock) {
-    this(stationScheduleRepository, drawRepository, stationRepository, Optional.ofNullable(clock));
+    this(
+        stationScheduleRepository,
+        drawRepository,
+        stationRepository,
+        Optional.ofNullable(clock),
+        Optional.empty());
+  }
+
+  public DrawController(
+      StationScheduleRepository stationScheduleRepository,
+      DrawRepository drawRepository,
+      StationRepository stationRepository,
+      Clock clock,
+      OnDemandDrawBackfillService backfillService) {
+    this(
+        stationScheduleRepository,
+        drawRepository,
+        stationRepository,
+        Optional.ofNullable(clock),
+        Optional.ofNullable(backfillService));
   }
 
   @GetMapping("/schedule")
@@ -114,10 +151,14 @@ public class DrawController {
       throw new StationNotDrawingException(station, date);
     }
 
+    Optional<DrawResult> existing = drawRepository.findByStationAndDate(station, date);
+    if ((existing.isEmpty() || !existing.get().isComplete()) && backfillService.isPresent()) {
+      backfillService.get().ensureDateIngested(date);
+      existing = drawRepository.findByStationAndDate(station, date);
+    }
+
     DrawResult drawResult =
-        drawRepository
-            .findByStationAndDate(station, date)
-            .orElseThrow(() -> new ResultNotAvailableException(station, date));
+        existing.orElseThrow(() -> new ResultNotAvailableException(station, date));
 
     String etag = generateETag(drawResult);
     if (webRequest != null && webRequest.checkNotModified(etag)) {
@@ -176,7 +217,12 @@ public class DrawController {
         throw new StationNotFoundException(station);
       }
       drawResultOpt = drawRepository.findLatestByStation(station);
+      if (drawResultOpt.isEmpty() && backfillService.isPresent()) {
+        backfillService.get().ensureLatestCompletedDateIngested();
+        drawResultOpt = drawRepository.findLatestByStation(station);
+      }
     } else {
+      backfillService.ifPresent(OnDemandDrawBackfillService::ensureLatestCompletedDateIngested);
       drawResultOpt = drawRepository.findLatestOverall();
     }
 
@@ -210,8 +256,10 @@ public class DrawController {
           LocalDate date) {
     List<DrawResult> draws;
     if (date != null) {
+      backfillService.ifPresent(s -> s.ensureDateIngested(date));
       draws = drawRepository.findByDrawDate(date);
     } else {
+      backfillService.ifPresent(OnDemandDrawBackfillService::ensureLatestCompletedDateIngested);
       draws = drawRepository.findLatestDayDraws();
     }
 
