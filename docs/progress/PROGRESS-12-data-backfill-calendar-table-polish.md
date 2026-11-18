@@ -15,5 +15,5 @@
 | T12.07 | Tinh chỉnh chiều cao dòng bảng tổng hợp & chặn gọi thừa `useDraw` khi xem `Cả ngày` | DONE | c8c1fd7 | 2026-11-18 | Ngắt useDraw khi ở Cả ngày, đồng bộ effectiveStation và chặn gọi đúp fetchLatestDayDraws khi lật ngày |
 | T12.08 | Xây dựng component `<CalendarPickerSheet />` lưới lịch tháng 7 cột (`T2 → CN`) | DONE | 74640aa | 2026-11-18 | Lịch tháng T2..CN thuần nội bộ, ô 44x44pt, chip Hôm nay/Hôm qua, khoá ngày tương lai; 8/8 test xanh |
 | T12.09 | Thay thế lưới 60 nút bằng `<CalendarPickerSheet />` trên màn `Kết quả` & `Dò vé` | DONE | 882a6ff | 2026-11-18 | Thay dứt điểm lưới 60 nút bằng lịch tháng trên cả Results & Check; 93/93 suite (561/561 test) xanh |
-| T12.10 | Chụp ảnh kiểm chứng Sáng/Tối toàn diện & nghiệm thu cổng chất lượng Phase 12 | DONE | 926df93 | 2026-11-18 | 8 ảnh Sáng/Tối trong docs/screenshots/phase12/ (3 đài, 4 đài T7, Lịch tháng Results & Check); Backend 306 test + Mobile 561 test + OpenAPI + audit:ci đều xanh |
+| T12.10 | Chụp ảnh kiểm chứng Sáng/Tối toàn diện & nghiệm thu cổng chất lượng Phase 12 | DONE | 926df93, 582bf3a | 2026-11-18 | 8 ảnh Sáng/Tối trong docs/screenshots/phase12/; đã qua Final Code Review độc lập + vá biên C1/I1–I5/M1; Backend 313 test + Mobile 562 test (93/93 suite) + 0 lint warning + audit:ci đều xanh |
 
