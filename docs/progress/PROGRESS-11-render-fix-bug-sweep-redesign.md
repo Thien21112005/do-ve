@@ -1,7 +1,7 @@
 # PROGRESS 11 — Mở khoá render, quét lỗi lần 2 & redesign có kiểm chứng
 
 - **Plan:** [`plans/PLAN-11-render-fix-bug-sweep-redesign.md`](../plans/PLAN-11-render-fix-bug-sweep-redesign.md)
-- **Tổng quan:** 34 / 53 task hoàn thành
+- **Tổng quan:** 35 / 53 task hoàn thành
 - **Quy tắc DONE cho task UI:** phải có ảnh `docs/screenshots/phase11/<task-id>/` (before/after, sáng/tối).
 
 **Trạng thái:** `TODO` chưa làm, `DOING` đang làm, `DONE` xong và đã commit, `BLOCKED` bị chặn (ghi lý do), `SKIP` bỏ qua (ghi lý do).
@@ -38,7 +38,7 @@
 | T11.27 | Primitive riêng của "tờ vé" | DONE | 9ee60c9 | 2026-11-18 | TicketNumber (tô winTint + gạch chân 2px win cho người mù màu, đọc a11y từng chữ số), PrizeRow (cột trái 64pt, ĐB/G8 đỏ son), Perforation, StickyFooter, Sheet (X icon Lucide, tôn trọng Reduce Motion), Snackbar (liveRegion polite, nút Hoàn tác focus riêng). 24 test xanh |
 | T11.28 | Ô nhập 6 số chịu được chữ to | DONE | f24ddcb | 2026-11-18 | StyleSheet phẳng flexDirection row (sửa lỗi Animated.View xếp dọc trên Web), 6 ô flex:1 aspectRatio 0.8 maxWidth 56; fontScale > 1.3 chuyển sang 1 ô liền ticketLg; maxLength 12/16 để dán '12 34 56' không bị cắt. Đủ ảnh 360dp 100%/150%/200% Sáng/Tối |
 | T11.29 | Màu & bề mặt: rà lại sau khi nhìn thấy thật | DONE | 5c5a655 | 2026-11-18 | Chuyển primary sang mực xanh đen #1A2230 (chữ ngà #F6F4EF, AAA > 14:1; dark #EAE5DB/#0F1217) để đỏ son ĐB & xanh trúng làm chủ đạo; tăng viền giấy lên #D9D2C3 tách rõ ngoài nắng. Cập nhật DESIGN.md + ảnh t11-29 |
-| T11.30 | Home: khối "Hôm nay" theo dữ liệu thật | TODO | | | |
+| T11.30 | Home: khối "Hôm nay" theo dữ liệu thật | DONE | 6def710 | 2026-11-18 | Bỏ pill lặp DoVe/MIỀN NAM & chữ cắt cụt; hiển thị tên các đài hôm nay + trạng thái thực tế + Perforation; hạ allowlist index.tsx. Đủ ảnh Sáng/Tối |
 | T11.31 | Home: dò nhanh dùng TicketInput 6 ô + cuống kết quả | TODO | | | |
 | T11.32 | Home: danh sách "Kết quả mới nhất" dạng hàng phẳng | TODO | | | |
 | T11.33 | Dò vé: 1 dòng ngữ cảnh kỳ + Sheet chọn ngày/đài | DONE | eb3d827 | 2026-11-18 | Thay hộp DateStrip nửa màn & tiêu đề đánh số '3. Nhập…' bằng 1 dòng 'Kỳ … Đổi ›' mở Sheet chọn ngày/đài + hàng Chip đài gọn; xoá nợ check.tsx, DateStrip, StationChips. Đủ ảnh Sáng/Tối |
