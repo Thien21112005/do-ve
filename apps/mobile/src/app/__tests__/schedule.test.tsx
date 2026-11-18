@@ -154,4 +154,35 @@ describe('ScheduleScreen', () => {
       },
     });
   });
+
+  it('renders 7-row schedule table with primaryTint on today and no outer accessible wrapper swallowing station buttons (T11.46)', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { colors } = require('@/theme/colors');
+    const { getByTestId } = await renderScheduleScreen();
+
+    // Every day row has accessible !== true so each station chip is focusable
+    for (let d = 1; d <= 7; d++) {
+      const row = getByTestId(`schedule-day-${d}`);
+      expect(row.props.accessible).not.toBe(true);
+    }
+
+    // Today's row uses primaryTint background
+    const badge = getByTestId('schedule-today-badge');
+    let cur = badge.parent;
+    let foundTint = false;
+    while (cur) {
+      const st = Object.assign(
+        {},
+        ...(Array.isArray(cur.props?.style)
+          ? cur.props.style.filter(Boolean)
+          : [cur.props?.style]),
+      );
+      if (st.backgroundColor === colors.light.primaryTint) {
+        foundTint = true;
+        break;
+      }
+      cur = cur.parent;
+    }
+    expect(foundTint).toBe(true);
+  });
 });

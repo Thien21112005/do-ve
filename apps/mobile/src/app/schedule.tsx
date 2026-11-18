@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Icon } from '@/components';
-import { useTheme, layout } from '@/theme';
+import { Text, usePressed } from '@/components/ui';
+import { useTheme, layout, radii } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 import {
   weekdayVN,
@@ -19,6 +19,46 @@ export { WEEKLY_SCHEDULE, type ScheduledStation, type DaySchedule };
 
 function getTodayWeekday(): number {
   return weekdayVN(new Date());
+}
+
+function ScheduleStationChip({
+  station,
+  isToday,
+  onPress,
+}: {
+  station: ScheduledStation;
+  isToday: boolean;
+  onPress: () => void;
+}) {
+  const { colors } = useTheme();
+  const { pressed, pressHandlers } = usePressed();
+
+  return (
+    <Pressable
+      testID={`schedule-station-${station.code}`}
+      accessibilityRole="button"
+      accessibilityLabel={`Xem kết quả đài ${station.name}`}
+      accessibilityHint={STRINGS.schedule.openResultA11yHint}
+      onPress={onPress}
+      {...pressHandlers}
+      style={[
+        styles.stationChip,
+        {
+          backgroundColor: isToday ? colors.surface : colors.surfaceSubtle,
+          borderColor: isToday ? colors.primary : colors.border,
+          opacity: pressed ? 0.72 : 1,
+        },
+      ]}
+    >
+      <Text
+        variant="caption"
+        color={isToday ? colors.primary : colors.textMain}
+        style={styles.stationChipText}
+      >
+        {station.name}
+      </Text>
+    </Pressable>
+  );
 }
 
 export default function ScheduleScreen() {
@@ -44,112 +84,89 @@ export default function ScheduleScreen() {
         }}
         className="flex-1 px-4 pt-3"
       >
-        {/* Info Banner */}
-        <View
-          className="p-3.5 rounded-2xl border mb-4 flex-row items-center"
-          style={{
-            backgroundColor: `${colors.primary}0D`,
-            borderColor: `${colors.primary}26`,
-          }}
-        >
-          <View
-            className="w-8 h-8 rounded-xl items-center justify-center mr-3"
-            style={{ backgroundColor: `${colors.primary}1A` }}
+        {/* Concise Draw Time & Holiday Notice */}
+        <View style={styles.noticeBlock}>
+          <Text variant="bodyStrong" color={colors.textMain}>
+            {STRINGS.schedule.drawTimeTitle}
+          </Text>
+          <Text
+            variant="caption"
+            color={colors.textMuted}
+            style={styles.noticeSub}
           >
-            <Icon name="clock" size={18} color={colors.primary} />
-          </View>
-          <View className="flex-1">
-            <Text
-              className="text-xs font-bold"
-              style={{ color: colors.primary }}
-            >
-              {STRINGS.schedule.drawTimeTitle}
-            </Text>
-            <Text
-              className="text-xs mt-0.5 leading-snug"
-              style={{ color: colors.textMuted }}
-            >
-              {STRINGS.schedule.holidayNotice}
-            </Text>
-          </View>
+            {STRINGS.schedule.holidayNotice}
+          </Text>
         </View>
 
-        {/* 7 Days Schedule Cards */}
-        {schedule.map((day) => {
-          const isToday = day.dayOfWeek === todayWeekday;
+        {/* 7-Row Schedule Table — no outer accessible=true on rows (T11.46) */}
+        <View
+          style={[
+            styles.tableFrame,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          {schedule.map((day, idx) => {
+            const isToday = day.dayOfWeek === todayWeekday;
+            const isLast = idx === schedule.length - 1;
+            const nearestDate = getMostRecentDateForWeekday(day.dayOfWeek);
 
-          return (
-            <View
-              key={day.dayOfWeek}
-              testID={`schedule-day-${day.dayOfWeek}`}
-              className="p-4 rounded-2xl border mb-3 shadow-sm"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: isToday ? colors.primary : colors.border,
-                borderWidth: isToday ? 1.5 : 1,
-              }}
-            >
-              {/* Day Header */}
+            return (
               <View
-                className="flex-row items-center justify-between pb-2.5 border-b"
-                style={{ borderColor: colors.border }}
+                key={day.dayOfWeek}
+                testID={`schedule-day-${day.dayOfWeek}`}
+                accessible={false}
+                style={[
+                  styles.dayRow,
+                  {
+                    backgroundColor: isToday
+                      ? colors.primaryTint
+                      : colors.surface,
+                    borderBottomWidth: isLast ? 0 : StyleSheet.hairlineWidth,
+                    borderBottomColor: colors.border,
+                  },
+                ]}
               >
-                <View className="flex-row items-center">
-                  <View
-                    className="w-7 h-7 rounded-lg items-center justify-center mr-2.5"
-                    style={{
-                      backgroundColor: isToday
-                        ? colors.primary
-                        : `${colors.border}77`,
-                    }}
-                  >
-                    <Text
-                      className="text-xs font-bold"
-                      style={{ color: isToday ? '#FFFFFF' : colors.textMain }}
-                    >
-                      {day.shortName}
-                    </Text>
-                  </View>
+                {/* Left Column: Weekday + Today tag */}
+                <View style={styles.dayLabelCol}>
                   <Text
-                    className="text-base font-bold"
-                    style={{
-                      color: isToday ? colors.primary : colors.textMain,
-                    }}
+                    variant="bodyStrong"
+                    color={isToday ? colors.primary : colors.textMain}
                   >
                     {day.dayName}
                   </Text>
+                  {isToday ? (
+                    <View
+                      testID="schedule-today-badge"
+                      style={[
+                        styles.todayPill,
+                        {
+                          backgroundColor: colors.primary,
+                        },
+                      ]}
+                    >
+                      <Text
+                        variant="caption"
+                        color={colors.onPrimary}
+                        style={styles.todayPillText}
+                      >
+                        {STRINGS.schedule.todayTag}
+                      </Text>
+                    </View>
+                  ) : null}
                 </View>
 
-                {isToday && (
-                  <View
-                    testID="schedule-today-badge"
-                    className="px-2.5 py-1 rounded-full"
-                    style={{ backgroundColor: `${colors.primary}1A` }}
-                  >
-                    <Text
-                      className="text-xs font-bold tracking-wide"
-                      style={{ color: colors.primary }}
-                    >
-                      {STRINGS.schedule.todayTag}
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              {/* Stations Grid */}
-              <View className="pt-3 flex-row flex-wrap gap-2">
-                {day.stations.map((station) => {
-                  const nearestDate = getMostRecentDateForWeekday(day.dayOfWeek);
-                  return (
-                    <Pressable
+                {/* Right Column: Tappable Stations */}
+                <View style={styles.stationsCol}>
+                  {day.stations.map((station) => (
+                    <ScheduleStationChip
                       key={station.code}
-                      testID={`schedule-station-${station.code}`}
-                      accessible
-                      accessibilityRole="button"
-                      accessibilityLabel={`Xem kết quả đài ${station.name}`}
-                      accessibilityHint={STRINGS.schedule.openResultA11yHint}
+                      station={station}
+                      isToday={isToday}
                       onPress={() => {
-                        haptics.selection();
+                        haptics.selection?.();
                         router.push({
                           pathname: '/(tabs)/results',
                           params: {
@@ -158,40 +175,71 @@ export default function ScheduleScreen() {
                           },
                         });
                       }}
-                      className="px-3 py-2 rounded-xl border flex-row items-center active:opacity-70"
-                      style={{
-                        backgroundColor: isToday
-                          ? `${colors.primary}0D`
-                          : colors.background,
-                        borderColor: isToday
-                          ? `${colors.primary}33`
-                          : colors.border,
-                      }}
-                    >
-                      <View
-                        className="w-2 h-2 rounded-full mr-2"
-                        style={{
-                          backgroundColor: isToday
-                            ? colors.primary
-                            : colors.textMuted,
-                        }}
-                      />
-                      <Text
-                        className="text-xs font-semibold"
-                        style={{
-                          color: isToday ? colors.primary : colors.textMain,
-                        }}
-                      >
-                        {station.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                    />
+                  ))}
+                </View>
               </View>
-            </View>
-          );
-        })}
+            );
+          })}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  noticeBlock: {
+    marginBottom: 12,
+    paddingHorizontal: 2,
+  },
+  noticeSub: {
+    marginTop: 4,
+    lineHeight: 19,
+  },
+  tableFrame: {
+    borderWidth: 1,
+    borderRadius: radii.lg,
+    overflow: 'hidden',
+  },
+  dayRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    minHeight: 56,
+  },
+  dayLabelCol: {
+    width: 92,
+    paddingTop: 4,
+    paddingRight: 8,
+  },
+  todayPill: {
+    alignSelf: 'flex-start',
+    marginTop: 4,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: radii.full,
+  },
+  todayPillText: {
+    fontSize: 11,
+    lineHeight: 15,
+    fontFamily: 'BeVietnamPro-SemiBold',
+  },
+  stationsCol: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  stationChip: {
+    minHeight: 36,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    justifyContent: 'center',
+  },
+  stationChipText: {
+    fontFamily: 'BeVietnamPro-Medium',
+  },
+});

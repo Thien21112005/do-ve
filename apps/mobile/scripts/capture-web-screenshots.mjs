@@ -47,11 +47,55 @@ if (fs.existsSync(jsDir)) {
   }
 }
 
-const SAMPLE_STATIONS = [
-  { code: 'ben-tre', name: 'Bến Tre', region: 'SOUTH' },
-  { code: 'vung-tau', name: 'Vũng Tàu', region: 'SOUTH' },
-  { code: 'bac-lieu', name: 'Bạc Liêu', region: 'SOUTH' },
-];
+const SCHEDULE_BY_ISO_DAY = {
+  1: [
+    { code: 'tp-hcm', name: 'TP. Hồ Chí Minh', region: 'SOUTH' },
+    { code: 'dong-thap', name: 'Đồng Tháp', region: 'SOUTH' },
+    { code: 'ca-mau', name: 'Cà Mau', region: 'SOUTH' },
+  ],
+  2: [
+    { code: 'ben-tre', name: 'Bến Tre', region: 'SOUTH' },
+    { code: 'vung-tau', name: 'Vũng Tàu', region: 'SOUTH' },
+    { code: 'bac-lieu', name: 'Bạc Liêu', region: 'SOUTH' },
+  ],
+  3: [
+    { code: 'dong-nai', name: 'Đồng Nai', region: 'SOUTH' },
+    { code: 'can-tho', name: 'Cần Thơ', region: 'SOUTH' },
+    { code: 'soc-trang', name: 'Sóc Trăng', region: 'SOUTH' },
+  ],
+  4: [
+    { code: 'tay-ninh', name: 'Tây Ninh', region: 'SOUTH' },
+    { code: 'an-giang', name: 'An Giang', region: 'SOUTH' },
+    { code: 'binh-thuan', name: 'Bình Thuận', region: 'SOUTH' },
+  ],
+  5: [
+    { code: 'vinh-long', name: 'Vĩnh Long', region: 'SOUTH' },
+    { code: 'binh-duong', name: 'Bình Dương', region: 'SOUTH' },
+    { code: 'tra-vinh', name: 'Trà Vinh', region: 'SOUTH' },
+  ],
+  6: [
+    { code: 'tp-hcm', name: 'TP. Hồ Chí Minh', region: 'SOUTH' },
+    { code: 'long-an', name: 'Long An', region: 'SOUTH' },
+    { code: 'binh-phuoc', name: 'Bình Phước', region: 'SOUTH' },
+    { code: 'hau-giang', name: 'Hậu Giang', region: 'SOUTH' },
+  ],
+  7: [
+    { code: 'tien-giang', name: 'Tiền Giang', region: 'SOUTH' },
+    { code: 'kien-giang', name: 'Kiên Giang', region: 'SOUTH' },
+    { code: 'da-lat', name: 'Đà Lạt (Lâm Đồng)', region: 'SOUTH' },
+  ],
+};
+
+const SAMPLE_STATIONS = SCHEDULE_BY_ISO_DAY[2];
+
+function stationsForDate(dateStr) {
+  if (!dateStr) return SAMPLE_STATIONS;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  if (!y || !m || !d) return SAMPLE_STATIONS;
+  const jsDay = new Date(Date.UTC(y, m - 1, d, 12, 0, 0)).getUTCDay();
+  const isoDay = jsDay === 0 ? 7 : jsDay;
+  return SCHEDULE_BY_ISO_DAY[isoDay] || SAMPLE_STATIONS;
+}
 
 function makeDraw(code, name, drawDate, seed) {
   return {
@@ -108,7 +152,8 @@ const apiServer = http.createServer((req, res) => {
     return;
   }
   if (u.pathname === '/api/v1/stations' || u.pathname === '/api/v1/draws/schedule') {
-    res.end(JSON.stringify(SAMPLE_STATIONS));
+    const d = u.searchParams.get('date');
+    res.end(JSON.stringify(stationsForDate(d)));
     return;
   }
   if (u.pathname === '/api/v1/draws/latest' || u.pathname === '/api/v1/draws/latest-day') {
