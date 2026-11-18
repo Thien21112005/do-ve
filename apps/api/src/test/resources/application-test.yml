@@ -11,3 +11,10 @@ spring:
     show-sql: false
   flyway:
     enabled: false
+
+dove:
+  ingestion:
+    on-demand-backfill:
+      enabled: false
+    startup-backfill:
+      enabled: false

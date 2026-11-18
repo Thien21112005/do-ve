@@ -31,18 +31,22 @@ const viewportSize = process.argv[6] || '390,844';
 const outDir = path.resolve(mobileRoot, outDirArg);
 fs.mkdirSync(outDir, { recursive: true });
 
-// Rewrite baked LAN URL in dist JS bundles so browser hits local mock API on 127.0.0.1:8080
+const apiPort = Number(process.env.MOCK_API_PORT || 18080);
+const webPort = Number(process.env.WEB_PORT || 18188);
+
+// Rewrite baked LAN/local API URL in dist JS bundles so browser hits local mock API
 const jsDir = path.join(distDir, '_expo', 'static', 'js', 'web');
 if (fs.existsSync(jsDir)) {
   for (const f of fs.readdirSync(jsDir)) {
     if (!f.endsWith('.js')) continue;
     const full = path.join(jsDir, f);
     const content = fs.readFileSync(full, 'utf8');
-    if (content.includes('http://192.168.1.149:8080')) {
-      fs.writeFileSync(
-        full,
-        content.replaceAll('http://192.168.1.149:8080', 'http://127.0.0.1:8080'),
-      );
+    const replaced = content.replace(
+      /http:\/\/(?:192\.168\.\d+\.\d+|127\.0\.0\.1|localhost):(8080|18080)/g,
+      `http://127.0.0.1:${apiPort}`,
+    );
+    if (replaced !== content) {
+      fs.writeFileSync(full, replaced);
     }
   }
 }
@@ -158,14 +162,27 @@ const apiServer = http.createServer((req, res) => {
   }
   if (u.pathname === '/api/v1/draws/latest' || u.pathname === '/api/v1/draws/latest-day') {
     const d = u.searchParams.get('date') || yesterdayVN;
-    res.end(JSON.stringify(SAMPLE_DRAWS.map((x) => ({ ...x, drawDate: d }))));
+    const dayStations = stationsForDate(d);
+    const dynamicDraws = dayStations.map((st, idx) =>
+      makeDraw(st.code, st.name, d, (idx * 2 + 3) % 10),
+    );
+    res.end(
+      JSON.stringify(
+        u.pathname === '/api/v1/draws/latest' ? dynamicDraws[0] : dynamicDraws,
+      ),
+    );
     return;
   }
   if (u.pathname === '/api/v1/draws') {
-    const st = u.searchParams.get('station') || 'ben-tre';
     const d = u.searchParams.get('date') || yesterdayVN;
-    const found = SAMPLE_DRAWS.find((x) => x.stationCode === st) || SAMPLE_DRAWS[0];
-    res.end(JSON.stringify({ ...found, stationCode: st, drawDate: d }));
+    const dayStations = stationsForDate(d);
+    const st = u.searchParams.get('station') || dayStations[0]?.code || 'ben-tre';
+    const foundStation = dayStations.find((x) => x.code === st) || dayStations[0];
+    res.end(
+      JSON.stringify(
+        makeDraw(foundStation.code, foundStation.name, d, 3),
+      ),
+    );
     return;
   }
   if (u.pathname === '/api/v1/check') {
@@ -226,8 +243,12 @@ const webServer = http.createServer((req, res) => {
 function runPlaywrightScreenshot(args) {
   return new Promise((resolve, reject) => {
     const cmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    const child = spawn(cmd, ['playwright', 'screenshot', ...args], {
-      stdio: 'inherit',
+    const safeArgs =
+      process.platform === 'win32'
+        ? args.map((a) => (/[\s&|<>^"]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a))
+        : args;
+    const child = spawn(cmd, ['playwright', 'screenshot', ...safeArgs], {
+      stdio: ['ignore', 'inherit', 'inherit'],
       shell: process.platform === 'win32',
     });
     child.on('error', reject);
@@ -238,12 +259,14 @@ function runPlaywrightScreenshot(args) {
   });
 }
 
-await new Promise((r) => apiServer.listen(8080, '127.0.0.1', r));
-await new Promise((r) => webServer.listen(8188, '127.0.0.1', r));
+await new Promise((r) => apiServer.listen(apiPort, '127.0.0.1', r));
+await new Promise((r) => webServer.listen(webPort, '127.0.0.1', r));
 
 try {
   const routes = routesCsv.split(',').map((pair) => {
-    const [name, routePath] = pair.split(':');
+    const idx = pair.indexOf(':');
+    const name = pair.slice(0, idx);
+    const routePath = pair.slice(idx + 1);
     return { name: name.trim(), routePath: routePath.trim() };
   });
   const themes = themesCsv.split(',').map((t) => t.trim());
@@ -252,12 +275,12 @@ try {
     for (const theme of themes) {
       const fileName = prefix ? `${name}-${prefix}-${theme}.png` : `${name}-${theme}.png`;
       const targetFile = path.join(outDir, fileName);
-      const url = `http://127.0.0.1:8188${routePath}`;
+      const url = `http://127.0.0.1:${webPort}${routePath}`;
       await runPlaywrightScreenshot([
         '--channel=msedge',
         `--viewport-size=${viewportSize}`,
         `--color-scheme=${theme}`,
-        '--wait-for-timeout=1500',
+        '--wait-for-timeout=1800',
         url,
         targetFile,
       ]);

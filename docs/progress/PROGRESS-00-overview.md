@@ -1,7 +1,7 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
 **Tổng (v0.1.0 gốc):** 179 / 179 task hoàn thành (100.0% — Hoàn thành toàn diện 8 Phase nền tảng)  
-**Sau v0.1.0 (Phase 09–11):** 187 / 187 task hoàn thành (Phase 09: 72/72 · Phase 10: 62/62 · Phase 11: 53/53)
+**Sau v0.1.0 (Phase 09–12):** 197 / 197 task hoàn thành (Phase 09: 72/72 · Phase 10: 62/62 · Phase 11: 53/53 · Phase 12: 10/10)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -23,6 +23,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 09 | [Quét lỗi toàn dự án](PROGRESS-09-bug-sweep.md) | 72 / 72 | DONE | 10 P0 · 29 P1 · 30 P2 · 3 P3 hoàn tất 100% |
 | 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | ⚠️ Ghi chú trung thực: Điểm số tự chấm ở cuối Phase 10 (`Nielsen 39/40`, `Native Audit 20/20`) chưa được kiểm chứng trên thiết bị thật — lúc đó thiếu `babel.config.js` nên `className` NativeWind không render trên máy và 9 unit test bị đỏ (đã khắc phục và kiểm chứng lại bằng ảnh thật ở Phase 11) |
 | 11 | [Mở khoá render, quét lỗi lần 2 & redesign](PROGRESS-11-render-fix-bug-sweep-redesign.md) | 53 / 53 | DONE | Khôi phục render NativeWind (`babel.config.js` + `vars()` CSS tokens), sửa dứt điểm 19 lỗi P0–P3, redesign trọn 8 màn theo hướng "Tờ vé giấy" (mực xanh đen `#1A2230`, giấy ngà `#F6F4EF`), `designGuard` `ALLOWLIST = {}` rỗng 100%, kiểm chứng bằng ảnh Sáng/Tối + ma trận `360×640` / `768×1024` / chữ `200%`; chấm lại trung thực `Nielsen 36/40` & `Native Audit 16/20` tại `docs/screenshots/phase11/REVIEW.md` |
+| 12 | [Nạp bù dữ liệu kỳ quay, chuẩn hoá lưới bảng 3–4 đài & Lịch tháng](PROGRESS-12-data-backfill-calendar-table-polish.md) | 10 / 10 | DONE | `OnDemandDrawBackfillService` (single-flight + cooldown 60s) + `StartupBackfillRunner` (14 ngày), sửa lỗi cache CDN `xskt` ngày `13/11`, kẻ thẳng tắp lưới cột `1dp` + hiển thị trọn 4 đài Thứ Bảy (`MultiStationDrawTable`), và thay lưới 60 chip bằng `<CalendarPickerSheet />` (`T2..CN`) trên cả `Kết quả` & `Dò vé` |
 
 ## Mốc
 
