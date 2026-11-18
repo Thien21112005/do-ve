@@ -2,7 +2,25 @@
   "name": "dove",
   "version": "0.1.0",
   "private": true,
-  "description": "DoVe - Tra cuu va do ve so kien thiet mien Nam",
+  "description": "Southern Vietnam Lottery (XSMN) lookup and ticket verification platform built with Java 21, Spring Boot 4 (Hexagonal Architecture), PostgreSQL 16, and React Native (Expo, TypeScript, Offline-First).",
+  "keywords": [
+    "vietnam",
+    "xsmn",
+    "lottery-checker",
+    "java-21",
+    "spring-boot",
+    "hexagonal-architecture",
+    "postgresql",
+    "flyway",
+    "jsoup",
+    "react-native",
+    "expo",
+    "typescript",
+    "nativewind",
+    "tanstack-query",
+    "offline-first",
+    "tdd"
+  ],
   "scripts": {
     "commitlint": "commitlint",
     "prepare": "husky"

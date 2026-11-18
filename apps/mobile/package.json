@@ -1,7 +1,17 @@
 {
   "name": "dove",
   "version": "1.0.0",
-  "description": "DoVe - Tra cuu va do ve so kien thiet mien Nam",
+  "description": "DoVe Mobile — Southern Vietnam Lottery (XSMN) lookup & ticket verification app (React Native, Expo, TypeScript, Offline-First).",
+  "keywords": [
+    "vietnam",
+    "xsmn",
+    "react-native",
+    "expo",
+    "typescript",
+    "nativewind",
+    "tanstack-query",
+    "offline-first"
+  ],
   "main": "expo-router/entry",
   "dependencies": {
     "@expo-google-fonts/be-vietnam-pro": "^0.4.1",
