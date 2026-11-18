@@ -29,6 +29,8 @@ public class XsktHtmlParser {
       Pattern.compile(
           "(\\d{4})-(\\d{2})-(\\d{2})|ng[aà]y\\s*(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})",
           Pattern.CASE_INSENSITIVE);
+  private static final Pattern DOCKQ_DATE_PATTERN =
+      Pattern.compile("(\\d{1,2})-(\\d{1,2})-(\\d{4})$");
   private static final Pattern HREF_STATION_PATTERN =
       Pattern.compile("xsmn/([a-z-]+)", Pattern.CASE_INSENSITIVE);
 
@@ -93,12 +95,27 @@ public class XsktHtmlParser {
       return List.of();
     }
 
-    // Check if table has specific data-date
+    // Check if table has specific data-date or authoritative dockq[data-url]
     String tableDateAttr = table.attr("data-date");
     if (!tableDateAttr.isBlank()) {
       try {
         drawDate = LocalDate.parse(tableDateAttr);
       } catch (Exception ignored) {
+      }
+    } else {
+      Element dockq = table.selectFirst("i.dockq[data-url], [data-url]");
+      if (dockq != null) {
+        Matcher dm = DOCKQ_DATE_PATTERN.matcher(dockq.attr("data-url").trim());
+        if (dm.find()) {
+          try {
+            drawDate =
+                LocalDate.of(
+                    Integer.parseInt(dm.group(3)),
+                    Integer.parseInt(dm.group(2)),
+                    Integer.parseInt(dm.group(1)));
+          } catch (Exception ignored) {
+          }
+        }
       }
     }
 

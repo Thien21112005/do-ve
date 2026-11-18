@@ -136,4 +136,36 @@ class XsktResultSourceAdapterTest {
     // Cache cho ngày yêu cầu không được chứa draw sai ngày
     assertThat(adapter.getDateCache().get(requestedDate)).isNullOrEmpty();
   }
+
+  @Test
+  @DisplayName(
+      "T12.04: falls back to /xsmn/ngay-DD-MM when /xsmn/ngay-DD-MM-YYYY serves stale wrong-date HTML")
+  void fetchFallsBackToShortYearUrlWhenPrimaryServesStaleDate() throws Exception {
+    String staleWrongDateHtml = loadHtml("xskt_xsmn_2026-11-02.html"); // 2026-11-02
+    String realNov03Html =
+        loadHtml("xskt_xsmn_2026-11-03.html"); // 2026-11-03 (ben-tre, vung-tau, bac-lieu)
+
+    wireMockServer.stubFor(
+        get(urlEqualTo("/xsmn/ngay-03-11-2026"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/html; charset=UTF-8")
+                    .withBody(staleWrongDateHtml)));
+
+    wireMockServer.stubFor(
+        get(urlEqualTo("/xsmn/ngay-03-11"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/html; charset=UTF-8")
+                    .withBody(realNov03Html)));
+
+    LocalDate nov03 = LocalDate.of(2026, 11, 3);
+    Optional<DrawResult> benTre = adapter.fetch("ben-tre", nov03);
+
+    assertThat(benTre).isPresent();
+    assertThat(benTre.get().drawDate()).isEqualTo(nov03);
+    assertThat(benTre.get().isComplete()).isTrue();
+  }
 }

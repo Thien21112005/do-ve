@@ -180,4 +180,30 @@ class XsktHtmlParserTest {
         .isInstanceOf(DrawParseException.class)
         .hasMessageContaining("không hợp lệ (phải đúng 2 chữ số)");
   }
+
+  @Test
+  @DisplayName(
+      "T12.04: parseStationSections trusts table data-url date over stale page <title> (13/11/2026 CDN mismatch)")
+  void parseStationSections_prefersTableDockqDataUrlOverStaleTitle() {
+    String staleCdnHtml =
+        """
+        <html>
+        <head><title>Kết quả xổ số Miền Nam ngày 13/11/2026- XSMN 13/11</title></head>
+        <body>
+          <h1>KẾT QUẢ XỔ SỐ MIỀN NAM NGÀY 13/11/2026</h1>
+          <table class="tbl-xsmn col3" id="MN0">
+            <tr>
+              <th><a href="/xsmn/thu-2">Thứ 2</a><br>22/03</th>
+              <th><a href="/xshcm-xstp">Hồ Chí Minh</a><i class="dockq" data-url="tp-ho-chi-minh/22-03-2021"></i></th>
+            </tr>
+          </table>
+        </body>
+        </html>
+        """;
+
+    List<XsktHtmlParser.StationSection> sections = parser.parseStationSections(staleCdnHtml);
+    assertThat(sections).hasSize(1);
+    assertThat(sections.getFirst().stationCode()).isEqualTo("tp-hcm");
+    assertThat(sections.getFirst().drawDate()).isEqualTo(LocalDate.of(2021, 3, 22));
+  }
 }

@@ -61,47 +61,51 @@ public class XsktResultSourceAdapter implements ResultSource {
       return Optional.of(stationMap.get(stationCode));
     }
 
-    // 2. Build target URL
-    String url = buildUrl(drawDate);
+    // 2. Try primary URL (/xsmn/ngay-DD-MM-YYYY), then short URL (/xsmn/ngay-DD-MM) if stale
+    List<DrawResult> matchingDraws = fetchMatchingDrawsFromUrl(buildUrl(drawDate), drawDate);
+    if (matchingDraws.isEmpty()) {
+      matchingDraws = fetchMatchingDrawsFromUrl(buildShortYearUrl(drawDate), drawDate);
+    }
 
+    if (matchingDraws.isEmpty()) {
+      return Optional.empty();
+    }
+
+    // Giới hạn kích thước cache để tránh rò rỉ bộ nhớ
+    if (dateCache.size() >= MAX_CACHED_DATES) {
+      dateCache.clear();
+    }
+
+    Map<String, DrawResult> cacheEntry =
+        dateCache.computeIfAbsent(drawDate, k -> new ConcurrentHashMap<>());
+    for (DrawResult draw : matchingDraws) {
+      cacheEntry.put(draw.stationCode(), draw);
+    }
+
+    return Optional.ofNullable(cacheEntry.get(stationCode));
+  }
+
+  private List<DrawResult> fetchMatchingDrawsFromUrl(String url, LocalDate drawDate) {
     try {
-      // 3. Acquire rate limiter token
       throttler.acquire();
-
-      // 4. Fetch HTML with retry & backoff
       String html = retryExecutor.executeWithRetry(() -> httpClient.fetchHtml(url));
       if (html == null || html.isBlank()) {
-        log.warn("Nhận HTML rỗng từ nguồn xskt cho ngày {}", drawDate);
-        return Optional.empty();
+        log.warn("Nhận HTML rỗng từ nguồn xskt cho URL {}", url);
+        return List.of();
       }
 
-      // 5. Parse all stations present in HTML
       List<DrawResult> draws = parser.parseAll(html);
-
-      // Chỉ chấp nhận các kết quả có ngày trùng khớp chính xác với ngày yêu cầu (T09.62)
       List<DrawResult> matchingDraws =
           draws.stream().filter(d -> drawDate.equals(d.drawDate())).toList();
 
       if (matchingDraws.isEmpty()) {
         log.warn(
-            "Trang nguồn xskt trả về kết quả không khớp ngày yêu cầu (yêu cầu: {}, tìm thấy: {})",
+            "Trang nguồn xskt [{}] trả về kết quả không khớp ngày yêu cầu (yêu cầu: {}, tìm thấy: {})",
+            url,
             drawDate,
             draws.isEmpty() ? "trống" : draws.get(0).drawDate());
-        return Optional.empty();
       }
-
-      // Giới hạn kích thước cache để tránh rò rỉ bộ nhớ
-      if (dateCache.size() >= MAX_CACHED_DATES) {
-        dateCache.clear();
-      }
-
-      Map<String, DrawResult> cacheEntry =
-          dateCache.computeIfAbsent(drawDate, k -> new ConcurrentHashMap<>());
-      for (DrawResult draw : matchingDraws) {
-        cacheEntry.put(draw.stationCode(), draw);
-      }
-
-      return Optional.ofNullable(cacheEntry.get(stationCode));
+      return matchingDraws;
     } catch (HttpStatusException ex) {
       if (ex.isClientError()) {
         log.info(
@@ -111,17 +115,17 @@ public class XsktResultSourceAdapter implements ResultSource {
       } else {
         log.error("Lỗi HTTP từ nguồn khi tải ngày {}: {}", drawDate, ex.getMessage());
       }
-      return Optional.empty();
+      return List.of();
     } catch (DrawParseException ex) {
       log.error("Lỗi parse kết quả từ HTML ngày {}: {}", drawDate, ex.getMessage());
-      return Optional.empty();
+      return List.of();
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
-      log.error("Tác vụ fetch bị gián đoạn cho đài {} ngày {}", stationCode, drawDate, ex);
-      return Optional.empty();
+      log.error("Tác vụ fetch bị gián đoạn cho URL {} ngày {}", url, drawDate, ex);
+      return List.of();
     } catch (Exception ex) {
-      log.error("Lỗi không xác định khi fetch đài {} ngày {}", stationCode, drawDate, ex);
-      return Optional.empty();
+      log.error("Lỗi không xác định khi fetch URL {} ngày {}", url, drawDate, ex);
+      return List.of();
     }
   }
 
@@ -130,6 +134,12 @@ public class XsktResultSourceAdapter implements ResultSource {
     return String.format(
         "%s/xsmn/ngay-%02d-%02d-%04d",
         baseUrl, drawDate.getDayOfMonth(), drawDate.getMonthValue(), drawDate.getYear());
+  }
+
+  /** Constructs the current-year short URL (/xsmn/ngay-DD-MM) used by xskt.com.vn. */
+  public String buildShortYearUrl(LocalDate drawDate) {
+    return String.format(
+        "%s/xsmn/ngay-%02d-%02d", baseUrl, drawDate.getDayOfMonth(), drawDate.getMonthValue());
   }
 
   /** Clears the in-memory date cache. */
