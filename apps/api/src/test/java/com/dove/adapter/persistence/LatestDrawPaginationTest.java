@@ -14,8 +14,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 /**
  * T13.09 - "latest draw" queries must limit rows in SQL. With collection fetch joins, Hibernate
- * would otherwise load every draw and paginate in memory (HHH90003004); this flag turns that into an
- * error.
+ * would otherwise load every draw and paginate in memory (HHH90003004); this flag turns that into
+ * an error.
  */
 @DataJpaTest(
     properties =

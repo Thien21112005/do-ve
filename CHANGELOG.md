@@ -4,6 +4,29 @@ Tất cả các thay đổi đáng chú ý của dự án DoVe được ghi nh�
 
 ---
 
+## [Unreleased] — Phase 13: Gia cố chốt hạ (2026-11-20)
+
+### 🐛 Sửa lỗi
+- **Vé của tôi:** vé `PENDING` không còn kẹt vĩnh viễn khi có hơn 20 vé cùng đài/ngày (dò lại theo lô ≤ 20); đài không tồn tại chuyển `INVALID`.
+- **API:** nạp bù kỳ quay trên luồng request chờ tối đa 6s (`request-wait-ms`), phần cào còn lại chạy nền — hết lỗi app báo quá thời gian 10s.
+- **Kết quả · Cả ngày:** mất mạng hiện banner lỗi có nút *Thử lại* thay vì báo nhầm "chưa có kết quả".
+- **Dò vé:** tự theo kỳ mở thưởng mới khi app mở qua mốc 16h10/nửa đêm (trừ khi người dùng đã tự chọn ngày).
+- **Vé của tôi:** ô *Tiền trúng* hiển thị đủ số (`4.050.300.000 đ`), không bị cắt, không làm tròn.
+- **Ingestion:** nhận diện tên giải theo token nguyên (`Giải bảy` không còn bị đọc thành Giải ba); một cột đài lỗi không làm mất các đài khác; bản ghi thiếu số trong DB được sửa khi cào lại (không bao giờ ghi đè bản ghi đủ 18 số).
+- **Cấu hình Boot 4:** chuyển `server.error.*` (không còn được bind) sang `spring.web.error.*`.
+- **Persistence:** entity khớp schema thật — `position`/`weekday` là `SMALLINT`.
+
+### 🔒 Bảo mật
+- Rate-limit riêng cho `/api/v1/draws/**` (120 request/phút/IP) vì truy vấn ngày thiếu có thể kích hoạt cào nguồn ngoài.
+
+### 🧪 Kiểm thử & hạ tầng
+- `e2e-web/`: bộ kiểm thử trình duyệt Playwright trên Expo Web, chạy với mock API (mặc định) hoặc API thật (`DOVE_E2E_REAL=1`); CORS chỉ bật ở profile `dev`.
+- Testcontainers 1.21.4 (tương thích Docker Engine 29) — test PostgreSQL thật lần đầu chạy thật thay vì bị bỏ qua.
+- Mockito nạp dạng `-javaagent`; Jest/Metro giới hạn bộ nhớ cho máy ít RAM.
+- `ArchitectureBoundaryTest` chặn tầng `application/` import adapter; `CheckTicketUseCase` dùng `StationLookupPort` + `CheckRejectedException`.
+
+---
+
 ## [0.1.0] — 2026-11-14
 
 ### 🚀 Tính Năng Mới (Features)

@@ -1,7 +1,7 @@
 # PROGRESS 00 — Bảng điều khiển tiến độ DoVe
 
 **Tổng (v0.1.0 gốc):** 179 / 179 task hoàn thành (100.0% — Hoàn thành toàn diện 8 Phase nền tảng)  
-**Sau v0.1.0 (Phase 09–12):** 197 / 197 task hoàn thành (Phase 09: 72/72 · Phase 10: 62/62 · Phase 11: 53/53 · Phase 12: 10/10)
+**Sau v0.1.0 (Phase 09–13):** 212 / 212 task hoàn thành (Phase 09: 72/72 · Phase 10: 62/62 · Phase 11: 53/53 · Phase 12: 10/10 · Phase 13: 15/15)
 
 Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 
@@ -24,6 +24,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | 10 | [Cải thiện giao diện mobile (Impeccable)](PROGRESS-10-ui-redesign.md) | 62 / 62 | DONE | ⚠️ Ghi chú trung thực: Điểm số tự chấm ở cuối Phase 10 (`Nielsen 39/40`, `Native Audit 20/20`) chưa được kiểm chứng trên thiết bị thật — lúc đó thiếu `babel.config.js` nên `className` NativeWind không render trên máy và 9 unit test bị đỏ (đã khắc phục và kiểm chứng lại bằng ảnh thật ở Phase 11) |
 | 11 | [Mở khoá render, quét lỗi lần 2 & redesign](PROGRESS-11-render-fix-bug-sweep-redesign.md) | 53 / 53 | DONE | Khôi phục render NativeWind (`babel.config.js` + `vars()` CSS tokens), sửa dứt điểm 19 lỗi P0–P3, redesign trọn 8 màn theo hướng "Tờ vé giấy" (mực xanh đen `#1A2230`, giấy ngà `#F6F4EF`), `designGuard` `ALLOWLIST = {}` rỗng 100%, kiểm chứng bằng ảnh Sáng/Tối + ma trận `360×640` / `768×1024` / chữ `200%`; chấm lại trung thực `Nielsen 36/40` & `Native Audit 16/20` tại `docs/screenshots/phase11/REVIEW.md` |
 | 12 | [Nạp bù dữ liệu kỳ quay, chuẩn hoá lưới bảng 3–4 đài & Lịch tháng](PROGRESS-12-data-backfill-calendar-table-polish.md) | 10 / 10 | DONE | `OnDemandDrawBackfillService` (single-flight + cooldown 60s) + `StartupBackfillRunner` (14 ngày), sửa lỗi cache CDN `xskt` ngày `13/11`, kẻ thẳng tắp lưới cột `1dp` + hiển thị trọn 4 đài Thứ Bảy (`MultiStationDrawTable`), và thay lưới 60 chip bằng `<CalendarPickerSheet />` (`T2..CN`) trên cả `Kết quả` & `Dò vé` |
+| 13 | [Gia cố chốt hạ](PROGRESS-13-final-hardening.md) | 15 / 15 | DONE | 3 lỗi P1 (vé PENDING kẹt khi >20 vé, backfill treo request quá 10s, endpoint đọc kết quả không rate-limit) + 6 P2 + 4 P3; kiểm thử trình duyệt Playwright (`e2e-web/`, mock + API thật); lần đầu chạy thật Testcontainers trên Docker 29 và sửa lệch schema `SMALLINT`; T13.09 không tái hiện (giữ test hàng rào). Backend 355 test (0 skip), mobile 575 test, trình duyệt 11 kịch bản (mock) + 9 kịch bản (API thật) |
 
 ## Mốc
 
@@ -37,6 +38,7 @@ Cập nhật bảng này sau khi xong mỗi phase (hoặc mỗi tuần).
 | M6 Phát hành v0.1.0 | 2026-11-14 | 2026-11-14 | Hoàn thành toàn bộ Phase 08 (25/25 task), nghiệm thu 100% 179 task dự án, tag v0.1.0 sẵn sàng sản xuất |
 | M7 Impeccable Mobile v0.2 (Code) | 2026-11-16 | 2026-11-16 | Hoàn thành 62/62 task Phase 10 trên mã nguồn (chưa kiểm render trên máy thật) |
 | M8 Mở khoá Render & Kiểm chứng Thị giác (Phase 11) | 2026-11-18 | 2026-11-18 | Hoàn thành 53/53 task Phase 11 (M11.1→M11.4): render thật Sáng/Tối, 0 nợ `designGuard`, 100% test/lint/typecheck xanh, review có ảnh tại `docs/screenshots/phase11/` |
+| M9 Gia cố chốt hạ (Phase 13) | 2026-11-20 | 2026-11-20 | 15/15 task, kiểm chứng trên trình duyệt với API thật + PostgreSQL 16 thật (Testcontainers) |
 
 ## Quyết định cần chốt (ADR)
 
