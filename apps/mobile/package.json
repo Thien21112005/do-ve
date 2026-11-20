@@ -72,13 +72,13 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "node --max-old-space-size=4096 node_modules/expo/bin/cli start",
-    "android": "node --max-old-space-size=4096 node_modules/expo/bin/cli start --android",
-    "ios": "node --max-old-space-size=4096 node_modules/expo/bin/cli start --ios",
-    "web": "node --max-old-space-size=4096 node_modules/expo/bin/cli start --web",
+    "start": "node --max-old-space-size=2048 node_modules/expo/bin/cli start --max-workers 2",
+    "android": "node --max-old-space-size=2048 node_modules/expo/bin/cli start --android --max-workers 2",
+    "ios": "node --max-old-space-size=2048 node_modules/expo/bin/cli start --ios --max-workers 2",
+    "web": "node --max-old-space-size=2048 node_modules/expo/bin/cli start --web --max-workers 2",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand",
+    "test": "node --max-old-space-size=2048 node_modules/jest/bin/jest.js --maxWorkers=2",
     "build:apk": "eas build -p android --profile preview",
     "build:testflight": "eas build -p ios --profile testflight",
     "build:prod": "eas build -p all --profile production",

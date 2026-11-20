@@ -1,6 +1,8 @@
 module.exports = {
   preset: 'jest-expo',
   testTimeout: 15000,
+  // Recycle workers that grow past 512MB so the suite fits on low-RAM machines.
+  workerIdleMemoryLimit: '512MB',
   setupFiles: ['<rootDir>/jest.setup.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.afterEnv.js'],
   moduleNameMapper: {
