@@ -71,6 +71,8 @@ dove:
     message: "${DOVE_APP_MESSAGE:}"
   rate-limit:
     check-per-minute: ${DOVE_RATE_LIMIT_CHECK_PER_MINUTE:60}
+    # Draw reads can trigger an upstream scrape for missing past dates (T13.05).
+    draws-per-minute: ${DOVE_RATE_LIMIT_DRAWS_PER_MINUTE:120}
 
 springdoc:
   api-docs:
