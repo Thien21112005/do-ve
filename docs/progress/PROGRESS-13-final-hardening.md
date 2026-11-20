@@ -19,4 +19,4 @@
 | T13.11 | Ổn định Metro/Jest trên máy ít RAM | P3 | [x] | `c83f0e6` | 2026-11-20 |
 | T13.13 | Ô "Tiền trúng" bị cắt chữ ở màn hẹp | P3 | [x] | `e272db9` | 2026-11-20 |
 | T13.14 | Chuyển `server.error.*` sang khoá Boot 4 `spring.web.error.*` | P2 | [x] | `bbb6553` | 2026-11-20 |
-| T13.12 | Chạy lại toàn bộ cổng có Docker & cập nhật tổng quan | — | [x] | (commit này) | 2026-11-20 |
+| T13.12 | Chạy lại toàn bộ cổng có Docker & cập nhật tổng quan | — | [x] | `02e7419` | 2026-11-20 |
