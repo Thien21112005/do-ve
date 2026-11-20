@@ -1,7 +1,7 @@
 # PROGRESS 13 — Gia cố chốt hạ
 
 **Plan:** [`docs/plans/PLAN-13-final-hardening.md`](../plans/PLAN-13-final-hardening.md)
-**Tổng:** 12 / 15 task
+**Tổng:** 13 / 15 task
 
 | Task | Nội dung | Mức | Trạng thái | Commit | Ngày |
 |---|---|---|---|---|---|
@@ -15,7 +15,7 @@
 | T13.07 | Đài lỗi cấu trúc không kéo theo các đài khác | P2 | [x] | `c7a2ec4` | 2026-11-20 |
 | T13.08 | Ghi đè bản ghi kỳ quay chưa đủ số | P2 | [x] | `dacfc3a` | 2026-11-20 |
 | T13.09 | Truy vấn "mới nhất" không phân trang trong bộ nhớ | P2 | [ ] | | |
-| T13.10 | Tách phụ thuộc adapter khỏi `CheckTicketUseCase` | P3 | [ ] | | |
+| T13.10 | Tách phụ thuộc adapter khỏi `CheckTicketUseCase` | P3 | [x] | `77cd515` | 2026-11-20 |
 | T13.11 | Ổn định Metro/Jest trên máy ít RAM | P3 | [x] | `c83f0e6` | 2026-11-20 |
 | T13.13 | Ô "Tiền trúng" bị cắt chữ ở màn hẹp | P3 | [x] | `e272db9` | 2026-11-20 |
 | T13.14 | Chuyển `server.error.*` sang khoá Boot 4 `spring.web.error.*` | P2 | [x] | `bbb6553` | 2026-11-20 |
