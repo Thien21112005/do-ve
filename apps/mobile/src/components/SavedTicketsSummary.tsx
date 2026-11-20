@@ -28,6 +28,8 @@ interface StatCellProps {
   valueColor: string;
   a11yLabel: string;
   onPress: () => void;
+  /** Long values (money) get more width and may wrap to 2 lines; never cut (T13.13). */
+  wide?: boolean;
 }
 
 function StatCell({
@@ -40,6 +42,7 @@ function StatCell({
   valueColor,
   a11yLabel,
   onPress,
+  wide = false,
 }: StatCellProps) {
   const { colors } = useTheme();
   const { pressed, pressHandlers } = usePressed();
@@ -54,6 +57,7 @@ function StatCell({
       {...pressHandlers}
       style={[
         styles.statCell,
+        wide && styles.statCellWide,
         {
           backgroundColor: selected ? colors.surfaceSubtle : colors.surface,
           opacity: pressed ? 0.75 : 1,
@@ -68,10 +72,13 @@ function StatCell({
         {label}
       </Text>
       <Text
+        testID={`${testID}-value`}
         variant="bodyStrong"
         color={valueColor}
-        numberOfLines={1}
-        style={styles.statValue}
+        numberOfLines={wide ? 2 : 1}
+        adjustsFontSizeToFit={wide}
+        minimumFontScale={0.8}
+        style={[styles.statValue, wide && styles.statValueWide]}
       >
         {value}
       </Text>
@@ -147,6 +154,7 @@ export function SavedTicketsSummary({
         valueColor={totalWonPrize > 0 ? colors.win : colors.textMain}
         a11yLabel={`${STRINGS.tickets.summaryWon}: ${formatCurrency(totalWonPrize)}`}
         onPress={() => handlePress('WON')}
+        wide
       />
     </View>
   );
@@ -171,9 +179,15 @@ const styles = StyleSheet.create({
   statLabel: {
     fontFamily: 'BeVietnamPro-Medium',
   },
+  statCellWide: {
+    flex: 1.6,
+  },
   statValue: {
     marginVertical: 2,
     fontVariant: ['tabular-nums'],
+  },
+  statValueWide: {
+    textAlign: 'center',
   },
   divider: {
     width: StyleSheet.hairlineWidth,
