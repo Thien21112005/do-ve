@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -29,6 +31,8 @@ public class StationScheduleEntity {
   @JoinColumn(name = "station_id", nullable = false)
   private StationEntity station;
 
+  // V4 migration stores weekday as SMALLINT (1..7).
+  @JdbcTypeCode(SqlTypes.SMALLINT)
   @Column(name = "weekday", nullable = false)
   private int weekday;
 

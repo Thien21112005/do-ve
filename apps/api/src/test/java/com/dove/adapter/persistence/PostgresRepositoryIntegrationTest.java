@@ -37,6 +37,9 @@ class PostgresRepositoryIntegrationTest {
   static void configureProperties(DynamicPropertyRegistry registry) {
     if (isDockerRunning()) {
       registry.add("spring.datasource.url", postgres::getJdbcUrl);
+      // The "test" profile pins the H2 driver; switch it along with the URL.
+      registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+      registry.add("spring.jpa.database-platform", () -> "org.hibernate.dialect.PostgreSQLDialect");
       registry.add("spring.datasource.username", postgres::getUsername);
       registry.add("spring.datasource.password", postgres::getPassword);
       registry.add("spring.flyway.enabled", () -> "true");

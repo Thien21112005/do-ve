@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(
@@ -32,6 +34,8 @@ public class PrizeNumberEntity {
   @Column(name = "tier", nullable = false, length = 30)
   private String tier;
 
+  // V3 migration stores position as SMALLINT; keep the int API but map the real column type.
+  @JdbcTypeCode(SqlTypes.SMALLINT)
   @Column(name = "position", nullable = false)
   private int position;
 
