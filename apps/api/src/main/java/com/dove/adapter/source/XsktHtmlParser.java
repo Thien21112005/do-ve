@@ -249,66 +249,64 @@ public class XsktHtmlParser {
     return Collections.unmodifiableList(results);
   }
 
-  /** Resolves prize tier from label text or row CSS classes. */
+  /**
+   * Matches a normalized label such as "giai bay", "g 7", "g7", "db" or "dac biet" as a whole, so
+   * "giai bay" can never be read as "ba" (T13.06).
+   */
+  private static final Pattern PRIZE_LABEL_PATTERN =
+      Pattern.compile("^(?:(?:giai|g)\\s*)?(dac biet|db|nhat|nhi|ba|tu|nam|sau|bay|tam|[1-8])$");
+
+  private static final Map<String, PrizeTier> PRIZE_WORDS =
+      Map.ofEntries(
+          Map.entry("dac biet", PrizeTier.SPECIAL),
+          Map.entry("db", PrizeTier.SPECIAL),
+          Map.entry("nhat", PrizeTier.FIRST),
+          Map.entry("1", PrizeTier.FIRST),
+          Map.entry("nhi", PrizeTier.SECOND),
+          Map.entry("2", PrizeTier.SECOND),
+          Map.entry("ba", PrizeTier.THIRD),
+          Map.entry("3", PrizeTier.THIRD),
+          Map.entry("tu", PrizeTier.FOURTH),
+          Map.entry("4", PrizeTier.FOURTH),
+          Map.entry("nam", PrizeTier.FIFTH),
+          Map.entry("5", PrizeTier.FIFTH),
+          Map.entry("sau", PrizeTier.SIXTH),
+          Map.entry("6", PrizeTier.SIXTH),
+          Map.entry("bay", PrizeTier.SEVENTH),
+          Map.entry("7", PrizeTier.SEVENTH),
+          Map.entry("tam", PrizeTier.EIGHTH),
+          Map.entry("8", PrizeTier.EIGHTH));
+
+  private static final Map<String, PrizeTier> PRIZE_ROW_CLASSES =
+      Map.of(
+          "gdb", PrizeTier.SPECIAL,
+          "special", PrizeTier.SPECIAL,
+          "g1", PrizeTier.FIRST,
+          "g2", PrizeTier.SECOND,
+          "g3", PrizeTier.THIRD,
+          "g4", PrizeTier.FOURTH,
+          "g5", PrizeTier.FIFTH,
+          "g6", PrizeTier.SIXTH,
+          "g7", PrizeTier.SEVENTH,
+          "g8", PrizeTier.EIGHTH);
+
+  /**
+   * Resolves prize tier from the row label (whole-token match) or, failing that, from an exact row
+   * CSS class ({@code gdb}, {@code g1}..{@code g8}). Returns null for non-prize rows.
+   */
   public PrizeTier resolvePrizeTier(String labelText, String className) {
-    String norm = normalizeString(labelText);
-    String classNorm = className != null ? className.toLowerCase(Locale.ROOT) : "";
-
-    if (norm.contains("db")
-        || norm.contains("dac biet")
-        || classNorm.contains("gdb")
-        || classNorm.contains("special")) {
-      return PrizeTier.SPECIAL;
+    Matcher m = PRIZE_LABEL_PATTERN.matcher(normalizeString(labelText).replace("-", " ").trim());
+    if (m.matches()) {
+      return PRIZE_WORDS.get(m.group(1));
     }
-    if (norm.equals("g 1")
-        || norm.equals("g1")
-        || norm.contains("nhat")
-        || classNorm.contains("g1")) {
-      return PrizeTier.FIRST;
+    if (className != null) {
+      for (String cls : className.toLowerCase(Locale.ROOT).trim().split("\\s+")) {
+        PrizeTier tier = PRIZE_ROW_CLASSES.get(cls);
+        if (tier != null) {
+          return tier;
+        }
+      }
     }
-    if (norm.equals("g 2")
-        || norm.equals("g2")
-        || norm.contains("nhi")
-        || classNorm.contains("g2")) {
-      return PrizeTier.SECOND;
-    }
-    if (norm.equals("g 3")
-        || norm.equals("g3")
-        || norm.contains("ba")
-        || classNorm.contains("g3")) {
-      return PrizeTier.THIRD;
-    }
-    if (norm.equals("g 4")
-        || norm.equals("g4")
-        || norm.contains("tu")
-        || classNorm.contains("g4")) {
-      return PrizeTier.FOURTH;
-    }
-    if (norm.equals("g 5")
-        || norm.equals("g5")
-        || norm.contains("nam")
-        || classNorm.contains("g5")) {
-      return PrizeTier.FIFTH;
-    }
-    if (norm.equals("g 6")
-        || norm.equals("g6")
-        || norm.contains("sau")
-        || classNorm.contains("g6")) {
-      return PrizeTier.SIXTH;
-    }
-    if (norm.equals("g 7")
-        || norm.equals("g7")
-        || norm.contains("bay")
-        || classNorm.contains("g7")) {
-      return PrizeTier.SEVENTH;
-    }
-    if (norm.equals("g 8")
-        || norm.equals("g8")
-        || norm.contains("tam")
-        || classNorm.contains("g8")) {
-      return PrizeTier.EIGHTH;
-    }
-
     return null;
   }
 
