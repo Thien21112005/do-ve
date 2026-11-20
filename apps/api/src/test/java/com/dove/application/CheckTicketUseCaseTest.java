@@ -2,8 +2,6 @@ package com.dove.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dove.adapter.persistence.StationEntity;
-import com.dove.adapter.persistence.StationRepository;
 import com.dove.domain.CheckOutcome;
 import com.dove.domain.CheckStatus;
 import com.dove.domain.DrawResult;
@@ -21,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 @DisplayName("T12.02 - CheckTicketUseCase Lazy Backfill Tests")
 class CheckTicketUseCaseTest {
@@ -50,9 +47,7 @@ class CheckTicketUseCaseTest {
         new OnDemandDrawBackfillServiceTest.InMemoryDrawRepository();
     StationSchedulePort schedulePort = date -> List.of("ben-tre", "vung-tau", "bac-lieu");
 
-    StationRepository stationRepo = Mockito.mock(StationRepository.class);
-    Mockito.when(stationRepo.findByCode("ben-tre"))
-        .thenReturn(Optional.of(new StationEntity("ben-tre", "Bến Tre", "SOUTH")));
+    StationLookupPort stationRepo = "ben-tre"::equals;
 
     AtomicInteger upstreamCalls = new AtomicInteger(0);
     ResultSource source =

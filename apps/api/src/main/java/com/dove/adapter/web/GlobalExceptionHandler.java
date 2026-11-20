@@ -2,6 +2,10 @@ package com.dove.adapter.web;
 
 import com.dove.adapter.web.error.BusinessException;
 import com.dove.adapter.web.error.ErrorCode;
+import com.dove.adapter.web.error.InvalidDateException;
+import com.dove.adapter.web.error.StationNotDrawingException;
+import com.dove.adapter.web.error.StationNotFoundException;
+import com.dove.application.CheckRejectedException;
 import com.dove.domain.InvalidTicketException;
 import java.net.URI;
 import java.time.Instant;
@@ -58,6 +62,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       return str.substring(0, 64) + "...";
     }
     return str;
+  }
+
+  /** Maps application-level check refusals to the same Problem Details as before (T13.10). */
+  @ExceptionHandler(CheckRejectedException.class)
+  public ProblemDetail handleCheckRejected(CheckRejectedException ex, WebRequest request) {
+    BusinessException translated =
+        switch (ex.reason()) {
+          case DATE_IN_FUTURE ->
+              new InvalidDateException("Ngày dò không thể ở tương lai: " + ex.drawDate());
+          case STATION_NOT_FOUND -> new StationNotFoundException(ex.stationCode());
+          case STATION_NOT_DRAWING ->
+              new StationNotDrawingException(ex.stationCode(), ex.drawDate());
+        };
+    return handleBusinessException(translated, request);
   }
 
   @ExceptionHandler(BusinessException.class)
