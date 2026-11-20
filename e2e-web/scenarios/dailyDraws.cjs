@@ -19,7 +19,7 @@ scenario(
     assert(!(await empty.isVisible().catch(() => false)), 'không được hiện khung "chưa có kết quả" khi mất mạng');
     assert(await error.isVisible().catch(() => false), 'phải hiện khung lỗi results-error-container');
   },
-  { overrides: offlineDraws },
+  { overrides: offlineDraws, mockOnly: true },
 );
 
 scenario('T13.03 Cả ngày có mạng: vẫn hiện đủ 3 đài', async ({ open, byId, page, shot }) => {

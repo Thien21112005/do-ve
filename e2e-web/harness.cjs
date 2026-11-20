@@ -37,6 +37,10 @@ async function run() {
 
   for (const s of scenarios) {
     if (only && !s.name.includes(only)) continue;
+    if (REAL && s.opts.mockOnly) {
+      console.log(`  - ${s.name} (bỏ qua: chỉ chạy với mock API)`);
+      continue;
+    }
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'vi-VN' });
     const page = await context.newPage();
     const consoleErrors = [];

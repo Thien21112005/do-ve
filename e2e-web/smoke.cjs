@@ -31,7 +31,7 @@ scenario('Dò 1 vé giữ số 0 đầu và trúng Đặc biệt', async ({ page
   assert(/2\.000\.\d{3}\.\d{3}/.test(total), `tổng thưởng có 2 tỷ (Đặc biệt), nhận "${total}"`);
   await shot('02-check-single-won');
   await page.keyboard.press('Escape');
-});
+}, { mockOnly: true }); // relies on the mock's pinned special number 012345
 
 scenario('Dò nhiều vé (3 vé) trả đủ 3 kết quả', async ({ open, byId, shot, api }) => {
   await open('check');
