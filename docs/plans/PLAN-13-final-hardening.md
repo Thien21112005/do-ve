@@ -147,6 +147,16 @@
 - [ ] Xoá `apps/api/hs_err_pid*.log`, `replay_pid*.log` (file rác, đã ignore).
 - [ ] **Commit:** `chore(mobile): cap metro and jest memory for low-RAM dev machines`
 
+### T13.13 — Ô "Tiền trúng" ở Vé của tôi bị cắt chữ
+
+Phát hiện bằng ảnh `docs/screenshots/phase13/05-tickets-persisted.png` (màn 390px): `2.000.000.000 đ` hiển thị `2.000.000....`.
+
+**Files:** `apps/mobile/src/components/SavedTicketsSummary.tsx`, test component tương ứng, kịch bản `e2e-web/scenarios/`
+
+- [ ] **Red:** kịch bản trình duyệt lưu vé trúng 2 tỷ → chữ trong ô không chứa `…`/bị cắt (so `scrollWidth <= clientWidth`).
+- [ ] **Green:** rút gọn kiểu `2 tỷ` / `1,5 tr` khi số dài, hoặc `adjustsFontSizeToFit`; giữ số đầy đủ trong `accessibilityLabel`.
+- [ ] **Commit:** `fix(mobile): keep saved tickets prize total readable on narrow screens`
+
 ### T13.12 — Chạy lại toàn bộ cổng có Docker & cập nhật tổng quan
 
 - [ ] `docker compose up -d` → `./mvnw spotless:check test` (bao gồm Testcontainers) + mobile `lint/typecheck/test` xanh.

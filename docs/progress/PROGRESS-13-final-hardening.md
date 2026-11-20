@@ -1,7 +1,7 @@
 # PROGRESS 13 — Gia cố chốt hạ
 
 **Plan:** [`docs/plans/PLAN-13-final-hardening.md`](../plans/PLAN-13-final-hardening.md)
-**Tổng:** 0 / 13 task
+**Tổng:** 1 / 14 task
 
 | Task | Nội dung | Mức | Trạng thái | Commit | Ngày |
 |---|---|---|---|---|---|
@@ -16,5 +16,6 @@
 | T13.08 | Ghi đè bản ghi kỳ quay chưa đủ số | P2 | [ ] | | |
 | T13.09 | Truy vấn "mới nhất" không phân trang trong bộ nhớ | P2 | [ ] | | |
 | T13.10 | Tách phụ thuộc adapter khỏi `CheckTicketUseCase` | P3 | [ ] | | |
-| T13.11 | Ổn định Metro/Jest trên máy ít RAM | P3 | [ ] | | |
+| T13.11 | Ổn định Metro/Jest trên máy ít RAM | P3 | [x] | `c83f0e6` | 2026-11-20 |
+| T13.13 | Ô "Tiền trúng" bị cắt chữ ở màn hẹp | P3 | [ ] | | |
 | T13.12 | Chạy lại toàn bộ cổng có Docker & cập nhật tổng quan | — | [ ] | | |

@@ -23,11 +23,13 @@
   ],
   "scripts": {
     "commitlint": "commitlint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "e2e:web": "node e2e-web/smoke.cjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "playwright": "1.65.1"
   }
 }
