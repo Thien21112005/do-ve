@@ -1,11 +1,11 @@
 # PROGRESS 13 — Gia cố chốt hạ
 
 **Plan:** [`docs/plans/PLAN-13-final-hardening.md`](../plans/PLAN-13-final-hardening.md)
-**Tổng:** 1 / 14 task
+**Tổng:** 2 / 14 task
 
 | Task | Nội dung | Mức | Trạng thái | Commit | Ngày |
 |---|---|---|---|---|---|
-| T13.00 | CORS dev + smoke test Playwright trên Expo Web | — | [ ] | | |
+| T13.00 | CORS dev + smoke test Playwright trên Expo Web | — | [x] | `d136896` | 2026-11-20 |
 | T13.01 | Dò lại PENDING theo lô ≤20 vé, chốt `STATION_NOT_FOUND` | P1 | [ ] | | |
 | T13.02 | Màn Dò vé theo kịp kỳ mặc định qua 16:10 / nửa đêm | P3 | [ ] | | |
 | T13.03 | Không che lỗi mạng bằng "chưa có kết quả" (Cả ngày) | P2 | [ ] | | |

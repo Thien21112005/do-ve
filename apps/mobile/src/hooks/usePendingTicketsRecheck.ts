@@ -35,9 +35,25 @@ export function groupPendingTickets(tickets: SavedTicket[]): PendingGroup[] {
   return Array.from(groupMap.values());
 }
 
+/** Max tickets per /check/batch request, same as the backend's @Size(max = 20) (T13.01). */
+export const RECHECK_BATCH_SIZE = 20;
+
 /**
- * Checks all PENDING tickets by querying the batch check API for each group.
- * Automatically updates the store with WON/LOST status and prize details.
+ * Errors that will never go away by retrying: the tickets are marked INVALID
+ * instead of being rechecked forever (T11.16d, T13.01).
+ */
+const PERMANENT_ERROR_CODES = new Set(['STATION_NOT_DRAWING', 'STATION_NOT_FOUND']);
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
+
+/**
+ * Checks all PENDING tickets by querying the batch check API for each group,
+ * in chunks of at most RECHECK_BATCH_SIZE tickets. A failing chunk does not
+ * stop the others. Automatically updates the store with WON/LOST status.
  */
 export async function recheckPendingTickets(
   batchCheckFn = checkBatchTickets,
@@ -45,7 +61,9 @@ export async function recheckPendingTickets(
 ): Promise<{ updatedCount: number }> {
   try {
     const allTickets = await getTickets();
-    const groups = groupPendingTickets(allTickets);
+    const groups = groupPendingTickets(allTickets).flatMap((group) =>
+      chunk(group.tickets, RECHECK_BATCH_SIZE).map((tickets) => ({ ...group, tickets })),
+    );
 
     if (groups.length === 0) {
       return { updatedCount: 0 };
@@ -87,9 +105,9 @@ export async function recheckPendingTickets(
           }
         }
       } catch (err) {
-        // A station that does not draw that day will never get a result:
-        // mark the tickets INVALID instead of rechecking forever (T11.16d)
-        if (err instanceof ApiError && err.code === 'STATION_NOT_DRAWING') {
+        // A station that does not draw that day (or no longer exists) will never
+        // get a result: mark the tickets INVALID instead of rechecking forever
+        if (err instanceof ApiError && err.code && PERMANENT_ERROR_CODES.has(err.code)) {
           for (const t of group.tickets) {
             await updateFn(t.id, { status: 'INVALID' });
             updatedCount++;
