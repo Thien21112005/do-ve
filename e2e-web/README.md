@@ -48,3 +48,5 @@ scenario('Tên kịch bản', async ({ page, open, byId, shot, api }) => {
 ## Giới hạn của bản web
 
 Không kiểm được: rung (haptics), thông báo nhắc 16h45, chia sẻ/nhập file sao lưu. Vé lưu trong `localStorage` thay cho AsyncStorage. Các phần này vẫn dựa vào Jest + Maestro trên máy thật.
+
+# Ảnh FAIL-*.png chỉ là ảnh tạm khi kịch bản đỏ; ảnh "trước khi sửa" được đổi tên t13-xx-before-fix.png.

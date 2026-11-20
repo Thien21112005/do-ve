@@ -65,15 +65,23 @@ async function run() {
       byId: (id) => page.getByTestId(id),
     };
 
+    const slug = s.name
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/đ/gi, 'd')
+      .replace(/[^a-z0-9]+/gi, '-')
+      .replace(/^-|-$/g, '')
+      .toLowerCase();
+    const failShot = path.join(SHOTS, `FAIL-${slug}.png`);
     const started = Date.now();
     try {
       await s.fn(ctx);
       assert(consoleErrors.length === 0, `no console errors, got:\n  ${consoleErrors.join('\n  ')}`);
+      fs.rmSync(failShot, { force: true }); // drop a stale failure shot once the scenario passes
       console.log(`  ✔ ${s.name} (${Date.now() - started} ms)`);
     } catch (err) {
       failed++;
-      const safe = s.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-      await page.screenshot({ path: path.join(SHOTS, `FAIL-${safe}.png`) }).catch(() => {});
+      await page.screenshot({ path: failShot }).catch(() => {});
       console.log(`  ✘ ${s.name}\n    ${String(err.message).split('\n').join('\n    ')}`);
     } finally {
       await context.close();
