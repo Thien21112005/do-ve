@@ -1,11 +1,21 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@/components';
 import { useTheme } from '@/theme';
 import { STRINGS } from '@/lib/strings';
 
+/**
+ * Tab bar height above the bottom inset. Each item needs ~28px for the icon plus a full 16px label
+ * line; the default bar squeezed the label to 13px and cut Be Vietnam Pro descenders (ủ, ả, ố).
+ */
+export const TAB_BAR_CONTENT_HEIGHT = 62;
+export const TAB_BAR_MIN_BOTTOM_PADDING = 8;
+
 export default function TabLayout() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, TAB_BAR_MIN_BOTTOM_PADDING);
 
   return (
     <Tabs
@@ -17,10 +27,15 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
+          // Default height clipped label descenders when there is no bottom inset (web, Android 3-button nav).
+          height: TAB_BAR_CONTENT_HEIGHT + bottomPadding,
+          paddingTop: 4,
+          paddingBottom: bottomPadding,
         },
         tabBarLabelStyle: {
           fontFamily: 'BeVietnamPro-Medium',
           fontSize: 12,
+          lineHeight: 16,
         },
         headerStyle: {
           backgroundColor: colors.surface,
