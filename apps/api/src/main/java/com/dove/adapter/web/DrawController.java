@@ -153,7 +153,7 @@ public class DrawController {
 
     Optional<DrawResult> existing = drawRepository.findByStationAndDate(station, date);
     if ((existing.isEmpty() || !existing.get().isComplete()) && backfillService.isPresent()) {
-      backfillService.get().ensureDateIngested(date);
+      backfillService.get().ensureDateIngestedForRequest(date);
       existing = drawRepository.findByStationAndDate(station, date);
     }
 
@@ -224,12 +224,13 @@ public class DrawController {
         if (lastScheduledDate.isPresent()
             && (drawResultOpt.isEmpty()
                 || drawResultOpt.get().drawDate().isBefore(lastScheduledDate.get()))) {
-          backfillService.get().ensureDateIngested(lastScheduledDate.get());
+          backfillService.get().ensureDateIngestedForRequest(lastScheduledDate.get());
           drawResultOpt = drawRepository.findLatestByStation(station);
         }
       }
     } else {
-      backfillService.ifPresent(OnDemandDrawBackfillService::ensureLatestCompletedDateIngested);
+      backfillService.ifPresent(
+          OnDemandDrawBackfillService::ensureLatestCompletedDateIngestedForRequest);
       drawResultOpt = drawRepository.findLatestOverall();
     }
 
@@ -263,10 +264,11 @@ public class DrawController {
           LocalDate date) {
     List<DrawResult> draws;
     if (date != null) {
-      backfillService.ifPresent(s -> s.ensureDateIngested(date));
+      backfillService.ifPresent(s -> s.ensureDateIngestedForRequest(date));
       draws = drawRepository.findByDrawDate(date);
     } else {
-      backfillService.ifPresent(OnDemandDrawBackfillService::ensureLatestCompletedDateIngested);
+      backfillService.ifPresent(
+          OnDemandDrawBackfillService::ensureLatestCompletedDateIngestedForRequest);
       draws = drawRepository.findLatestDayDraws();
     }
 

@@ -96,7 +96,7 @@ public class CheckTicketUseCase {
 
     Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
     if ((drawResult.isEmpty() || !drawResult.get().isComplete()) && backfillService.isPresent()) {
-      backfillService.get().ensureDateIngested(drawDate);
+      backfillService.get().ensureDateIngestedForRequest(drawDate);
       drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
     }
     if (drawResult.isEmpty() || !drawResult.get().isComplete()) {
@@ -127,7 +127,7 @@ public class CheckTicketUseCase {
 
     Optional<DrawResult> drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
     if ((drawResult.isEmpty() || !drawResult.get().isComplete()) && backfillService.isPresent()) {
-      backfillService.get().ensureDateIngested(drawDate);
+      backfillService.get().ensureDateIngestedForRequest(drawDate);
       drawResult = drawRepository.findByStationAndDate(stationCode, drawDate);
     }
     if (drawResult.isEmpty() || !drawResult.get().isComplete()) {

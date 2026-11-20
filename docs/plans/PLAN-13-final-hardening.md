@@ -157,6 +157,16 @@ Phát hiện bằng ảnh `docs/screenshots/phase13/05-tickets-persisted.png` (m
 - [ ] **Green:** rút gọn kiểu `2 tỷ` / `1,5 tr` khi số dài, hoặc `adjustsFontSizeToFit`; giữ số đầy đủ trong `accessibilityLabel`.
 - [ ] **Commit:** `fix(mobile): keep saved tickets prize total readable on narrow screens`
 
+### T13.14 — Chuyển `server.error.*` sang khoá Spring Boot 4 `spring.web.error.*`
+
+Phát hiện bằng chẩn đoán IDE: `server.error.include-stacktrace/include-message/include-binding-errors` đã deprecated ở Boot 4. Nếu bị bỏ qua, trang lỗi mặc định (ngoài `GlobalExceptionHandler`, ví dụ 404 tĩnh) có thể lộ message nội bộ.
+
+**Files:** `apps/api/src/main/resources/application.yml`, test `ProductionSecurityConfigurationTest.java`
+
+- [ ] **Red:** test đọc cấu hình đã bind (`ErrorProperties`/`WebProperties`) → `includeMessage == NEVER`, `includeStacktrace == NEVER`.
+- [ ] **Green:** đổi sang `spring.web.error.*`.
+- [ ] **Commit:** `fix(api): move error exposure settings to Spring Boot 4 keys`
+
 ### T13.12 — Chạy lại toàn bộ cổng có Docker & cập nhật tổng quan
 
 - [ ] `docker compose up -d` → `./mvnw spotless:check test` (bao gồm Testcontainers) + mobile `lint/typecheck/test` xanh.
