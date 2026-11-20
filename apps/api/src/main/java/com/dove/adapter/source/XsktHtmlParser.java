@@ -25,6 +25,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class XsktHtmlParser {
 
+  private static final org.slf4j.Logger log =
+      org.slf4j.LoggerFactory.getLogger(XsktHtmlParser.class);
+
   private static final Pattern DATE_PATTERN =
       Pattern.compile(
           "(\\d{4})-(\\d{2})-(\\d{2})|ng[aà]y\\s*(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})",
@@ -235,16 +238,29 @@ public class XsktHtmlParser {
   }
 
   /**
-   * Parses all station draws present in the HTML document.
+   * Parses all station draws present in the HTML document. A station column that fails structural
+   * validation (e.g. still being drawn) is skipped so the other stations are not lost (T13.07).
    *
    * @param html raw HTML string
    * @return list of validated domain DrawResults
+   * @throws DrawParseException if the page has station columns but none of them is valid
    */
   public List<DrawResult> parseAll(String html) {
     List<StationSection> sections = parseStationSections(html);
     List<DrawResult> results = new ArrayList<>(sections.size());
+    DrawParseException firstFailure = null;
     for (StationSection section : sections) {
-      results.add(parseDrawResult(section));
+      try {
+        results.add(parseDrawResult(section));
+      } catch (DrawParseException ex) {
+        log.warn("Bỏ qua cột đài lỗi cấu trúc: {}", ex.getMessage());
+        if (firstFailure == null) {
+          firstFailure = ex;
+        }
+      }
+    }
+    if (results.isEmpty() && firstFailure != null) {
+      throw firstFailure;
     }
     return Collections.unmodifiableList(results);
   }
