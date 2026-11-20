@@ -1,8 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchLatestDayDraws, fetchDraw } from '@/api/draws';
+import { ApiError } from '@/api/client';
 import { mapDrawResponseToUi, type UiDrawView } from '@/api/mappers';
 import type { StationResponse } from '@/types';
 import { drawQueryTiming } from '@/lib/drawTiming';
+
+/** Backend answers that mean "nothing to show yet", not a failure. */
+function isExpectedEmpty(err: unknown): boolean {
+  return (
+    err instanceof ApiError &&
+    (err.code === 'RESULT_NOT_AVAILABLE' || err.code === 'STATION_NOT_DRAWING')
+  );
+}
 
 function isDayComplete(draws: UiDrawView[] | undefined, stations: StationResponse[]): boolean {
   if (!draws || stations.length === 0) return false;
@@ -22,6 +31,7 @@ export function useDailyDraws(
       stations.map((s) => s.code).join(','),
     ],
     queryFn: async () => {
+      let firstFailure: unknown = null;
       try {
         const latestDayData = await fetchLatestDayDraws(date);
         if (
@@ -31,11 +41,15 @@ export function useDailyDraws(
         ) {
           return latestDayData.map((d) => mapDrawResponseToUi(d));
         }
-      } catch {
+      } catch (err) {
         // Fallback to per-station query
+        if (!isExpectedEmpty(err)) firstFailure = err;
       }
 
-      if (stations.length === 0) return [];
+      if (stations.length === 0) {
+        if (firstFailure) throw firstFailure;
+        return [];
+      }
       const results = await Promise.all(
         stations.map(async (st) => {
           try {
@@ -46,12 +60,19 @@ export function useDailyDraws(
               mapped.stationName = st.name;
             }
             return mapped;
-          } catch {
+          } catch (err) {
+            // "No result yet" / "not drawing" are normal; anything else is a real failure.
+            if (!isExpectedEmpty(err) && !firstFailure) firstFailure = err;
             return null;
           }
         }),
       );
-      return results.filter(Boolean) as UiDrawView[];
+      const draws = results.filter(Boolean) as UiDrawView[];
+      // Nothing came back and something actually failed (network, timeout, 5xx):
+      // surface it so the screen shows the error banner with retry, not
+      // "no result yet" (T13.03).
+      if (draws.length === 0 && firstFailure) throw firstFailure;
+      return draws;
     },
     enabled: Boolean(date) && enabled,
     // Poll until every scheduled station is complete (T11.11)
