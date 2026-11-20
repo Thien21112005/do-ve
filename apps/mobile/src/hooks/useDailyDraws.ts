@@ -1,16 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchLatestDayDraws, fetchDraw } from '@/api/draws';
-import { ApiError } from '@/api/client';
 import { mapDrawResponseToUi, type UiDrawView } from '@/api/mappers';
 import type { StationResponse } from '@/types';
 import { drawQueryTiming } from '@/lib/drawTiming';
 
-/** Backend answers that mean "nothing to show yet", not a failure. */
+/** Backend answers that mean "nothing to show yet", not a failure (matched by code). */
 function isExpectedEmpty(err: unknown): boolean {
-  return (
-    err instanceof ApiError &&
-    (err.code === 'RESULT_NOT_AVAILABLE' || err.code === 'STATION_NOT_DRAWING')
-  );
+  const code = (err as { code?: unknown } | null)?.code;
+  return code === 'RESULT_NOT_AVAILABLE' || code === 'STATION_NOT_DRAWING';
 }
 
 function isDayComplete(draws: UiDrawView[] | undefined, stations: StationResponse[]): boolean {
