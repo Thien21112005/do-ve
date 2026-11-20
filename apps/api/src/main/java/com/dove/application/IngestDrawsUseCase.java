@@ -95,7 +95,10 @@ public class IngestDrawsUseCase {
         ingestTimer.record(durationMs, TimeUnit.MILLISECONDS);
 
         if (fetched.isPresent()) {
-          boolean saved = drawRepository.saveIfAbsent(fetched.get(), "SCRAPER");
+          boolean saved =
+              existing.isPresent()
+                  ? repairIncomplete(fetched.get())
+                  : drawRepository.saveIfAbsent(fetched.get(), "SCRAPER");
           if (saved) {
             newlySaved++;
             successCounter.increment();
@@ -138,5 +141,30 @@ public class IngestDrawsUseCase {
 
     return new IngestSummary(
         date, scheduledStations.size(), newlySaved, alreadyExisted, failedOrUnavailable);
+  }
+
+  /**
+   * Replaces a stored draw that is missing numbers with a complete scraped one (T13.08). A stored
+   * draw that is already complete (e.g. entered by an admin meanwhile) is never overwritten, and an
+   * incomplete scrape never replaces anything.
+   */
+  private boolean repairIncomplete(DrawResult scraped) {
+    if (!scraped.isComplete()) {
+      return false;
+    }
+    boolean storedNowComplete =
+        drawRepository
+            .findByStationAndDate(scraped.stationCode(), scraped.drawDate())
+            .map(DrawResult::isComplete)
+            .orElse(false);
+    if (storedNowComplete) {
+      return false;
+    }
+    drawRepository.save(scraped, "SCRAPER");
+    log.info(
+        "Đã sửa bản ghi thiếu số của đài [{}] ngày [{}] bằng kết quả đủ 18 số",
+        scraped.stationCode(),
+        scraped.drawDate());
+    return true;
   }
 }
