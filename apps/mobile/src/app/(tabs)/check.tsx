@@ -9,6 +9,7 @@ import {
   Alert,
   Keyboard,
   AccessibilityInfo,
+  AppState,
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -93,6 +94,23 @@ export default function CheckScreen() {
   // Default to the latest drawn session: before 16h10 that is yesterday (T11.18)
   const { date: defaultDate } = useActiveDrawSession();
   const [selectedDate, setSelectedDate] = useState<string>(defaultDate);
+  // Until the user picks a date, keep following the session across 16h10 / midnight (T13.02).
+  const [userPickedDate, setUserPickedDate] = useState(false);
+  const [, setForegroundTick] = useState(0);
+
+  useEffect(() => {
+    // Re-render on return to foreground so useActiveDrawSession re-reads the clock.
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') setForegroundTick((n) => n + 1);
+    });
+    return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
+    if (!userPickedDate && defaultDate !== selectedDate) {
+      setSelectedDate(defaultDate);
+    }
+  }, [defaultDate, selectedDate, userPickedDate]);
   const [selectedStation, setSelectedStation] = useState<string>('');
   const [isPickerOpen, setIsPickerOpen] = useState<boolean>(false);
   const [mode, setMode] = useState<'single' | 'batch'>('single');
@@ -632,7 +650,10 @@ export default function CheckScreen() {
         <CalendarPickerSheet
           visible={isPickerOpen}
           selectedDate={selectedDate}
-          onSelectDate={(dateStr) => setSelectedDate(dateStr)}
+          onSelectDate={(dateStr) => {
+            setUserPickedDate(true);
+            setSelectedDate(dateStr);
+          }}
           onClose={() => setIsPickerOpen(false)}
           title="Chọn kỳ mở thưởng"
           dayTestIDPrefix="sheet-date"
